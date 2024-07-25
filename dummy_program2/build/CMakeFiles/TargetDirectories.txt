@@ -1,0 +1,3 @@
+/home/tamar/QtCMakeProject/dummy_program2/build/CMakeFiles/dummy_program.dir
+/home/tamar/QtCMakeProject/dummy_program2/build/CMakeFiles/edit_cache.dir
+/home/tamar/QtCMakeProject/dummy_program2/build/CMakeFiles/rebuild_cache.dir
