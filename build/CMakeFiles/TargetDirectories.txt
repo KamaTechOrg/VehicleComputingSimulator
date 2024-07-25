@@ -1,0 +1,4 @@
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/QtCMakeExample.dir
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/QtCMakeExample_autogen.dir
