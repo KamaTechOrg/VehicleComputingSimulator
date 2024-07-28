@@ -7,16 +7,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     //////////////
     ///add 4 Processes 
     int i=0;
-    Process Main(i, "Main", "CMakeProject", "QEMUPlatform");
+    Process Main(i, "Main", "./CMakeProject", "QEMUPlatform");
     addProcessSquare(Main,i);
     addId(i++);
-    Process HSM(i, "HSM", "CMakeProject", "QEMUPlatform");
+    Process HSM(i, "HSM", "./CMakeProject", "QEMUPlatform");
     addProcessSquare(HSM,i);
     addId(i++);
-    Process LogsDb(i, "LogsDb", "CMakeProject", "QEMUPlatform");
+    Process LogsDb(i, "LogsDb", "./CMakeProject", "QEMUPlatform");
     addProcessSquare(LogsDb,i);
     addId(i++);
-    Process Bus_Manager(i, "Bus_Manager", "CMakeProject", "QEMUPlatform");
+    Process Bus_Manager(i, "Bus_Manager", "./CMakeProject", "QEMUPlatform");
     addProcessSquare(Bus_Manager,i);
     addId(i++);
 }
@@ -30,8 +30,8 @@ void MainWindow::addProcessSquare(const Process& process,int index) {
     
     int x = (index % 2) * (square->width() + 10);
     int y = (index / 2) * (square->height() + 10);
-//QPoint pos = squarePositions.value(process.getId(), QPoint(0, 0));
-QPoint pos = squarePositions.value(process.getId(),QPoint(x, y));
+    
+    QPoint pos = squarePositions.value(process.getId(),QPoint(x, y));
     // Move the square to the specified position
     square->move(pos);
 
