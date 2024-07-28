@@ -359,10 +359,20 @@ CMakeFiles/QtCMakeExample.dir/main.cpp.o: ../main.cpp \
   /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
   /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlabel.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFileDialog \
+  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qfiledialog.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdir.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
+  /usr/include/x86_64-linux-gnu/qt5/QtGui/QPixmap \
+  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpixmap.h \
   QtCMakeExample_autogen/include/main.moc
 
 
 QtCMakeExample_autogen/include/main.moc:
+
+/usr/include/x86_64-linux-gnu/qt5/QtGui/QPixmap:
+
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qfiledialog.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlabel.h:
 
@@ -441,6 +451,8 @@ QtCMakeExample_autogen/include/main.moc:
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qrect.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtGui/qpaintdevice.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtGui/qpixmap.h:
 
@@ -797,6 +809,8 @@ QtCMakeExample_autogen/mocs_compilation.cpp:
 /usr/include/c++/11/bits/stl_iterator.h:
 
 /usr/include/c++/11/new:
+
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFileDialog:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h:
 
