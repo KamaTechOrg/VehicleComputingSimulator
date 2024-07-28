@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include <QMessageBox>
 #include <QHBoxLayout>
-
+//httuy
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
