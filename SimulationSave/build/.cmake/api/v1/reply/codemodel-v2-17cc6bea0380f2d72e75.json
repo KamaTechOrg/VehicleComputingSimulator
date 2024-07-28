@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "SimulationSave",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "SimulationSave::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SimulationSave-Debug-bcc9be5b3dd8b5777e7c.json",
+					"name" : "SimulationSave",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SimulationSave_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SimulationSave_autogen-Debug-65a9ad407242a11b0af1.json",
+					"name" : "SimulationSave_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SimulationSave_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SimulationSave_autogen_timestamp_deps-Debug-8e553e74f74e42f47086.json",
+					"name" : "SimulationSave_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/dvora/VehicleComputingSimulator/SimulationSave/build",
+		"source" : "/home/dvora/VehicleComputingSimulator/SimulationSave"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

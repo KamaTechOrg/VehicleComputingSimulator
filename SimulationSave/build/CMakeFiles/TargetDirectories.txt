@@ -1,0 +1,5 @@
+/home/dvora/VehicleComputingSimulator/SimulationSave/build/CMakeFiles/SimulationSave.dir
+/home/dvora/VehicleComputingSimulator/SimulationSave/build/CMakeFiles/edit_cache.dir
+/home/dvora/VehicleComputingSimulator/SimulationSave/build/CMakeFiles/rebuild_cache.dir
+/home/dvora/VehicleComputingSimulator/SimulationSave/build/CMakeFiles/SimulationSave_autogen_timestamp_deps.dir
+/home/dvora/VehicleComputingSimulator/SimulationSave/build/CMakeFiles/SimulationSave_autogen.dir

@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/home/dvora/VehicleComputingSimulator/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/dvora/VehicleComputingSimulator/build/SimulationSave_autogen/include -I/usr/include/libbson-1.0 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -g -std=gnu++17 -fPIC -o CMakeFiles/SimulationSave.dir/SimulationSave_autogen/mocs_compilation.cpp.o -c /home/dvora/VehicleComputingSimulator/build/SimulationSave_autogen/mocs_compilation.cpp",
+  "file": "/home/dvora/VehicleComputingSimulator/build/SimulationSave_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/SimulationSave.dir/SimulationSave_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/home/dvora/VehicleComputingSimulator/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/dvora/VehicleComputingSimulator/build/SimulationSave_autogen/include -I/usr/include/libbson-1.0 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -g -std=gnu++17 -fPIC -o CMakeFiles/SimulationSave.dir/main.cpp.o -c /home/dvora/VehicleComputingSimulator/SimulationSave/main.cpp",
+  "file": "/home/dvora/VehicleComputingSimulator/SimulationSave/main.cpp",
+  "output": "CMakeFiles/SimulationSave.dir/main.cpp.o"
+},
+{
+  "directory": "/home/dvora/VehicleComputingSimulator/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/dvora/VehicleComputingSimulator/build/SimulationSave_autogen/include -I/usr/include/libbson-1.0 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -g -std=gnu++17 -fPIC -o CMakeFiles/SimulationSave.dir/SimulationDataManager.cpp.o -c /home/dvora/VehicleComputingSimulator/SimulationSave/SimulationDataManager.cpp",
+  "file": "/home/dvora/VehicleComputingSimulator/SimulationSave/SimulationDataManager.cpp",
+  "output": "CMakeFiles/SimulationSave.dir/SimulationDataManager.cpp.o"
+}
+]
