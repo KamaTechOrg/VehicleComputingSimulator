@@ -32,6 +32,7 @@ private:
     bool isUniqueId(int id);
     void addId(int id);
     void resizeSquares(const QSize& oldSize, const QSize& newSize);
+    void addProcessSquare(const Process& process,int index);
 
     // QVBoxLayout *toolboxLayout;
     // QGridLayout *workspaceLayout;
