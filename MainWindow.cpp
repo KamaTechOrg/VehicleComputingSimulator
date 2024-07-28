@@ -11,19 +11,47 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     QWidget *toolbox = new QWidget(this);
     toolboxLayout = new QVBoxLayout(toolbox);
+    startButton = new QPushButton("Start", this);
+    endButton = new QPushButton("End", this);
+    timerButton = new QPushButton("Set Timer", this);
+    timeInput = new QLineEdit(this);
+    timeLabel = new QLabel("Enter time in seconds:", this);
+    logOutput = new QTextEdit(this);
+    QPushButton *chooseButton = new QPushButton("choose img", this);
+
+    timeLabel->hide();
+    timeInput->hide();
+    logOutput->setReadOnly(true);
+
     mainLayout->addWidget(toolbox);
 
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->addStretch();
     connect(addProcessButton, &QPushButton::clicked, this, &MainWindow::createNewProcess);
+    connect(startButton, &QPushButton::clicked, this, &MainWindow::startProcesses);
+    connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
+    connect(timerButton, &QPushButton::clicked, this, &MainWindow::showTimerInput);
+    connect(chooseButton, &QPushButton::clicked, this, &MainWindow::openImageDialog);
 
     // Set toolbox width
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
+    toolboxLayout->addWidget(startButton);
+    toolboxLayout->addWidget(endButton);
+    toolboxLayout->addWidget(timerButton);
+    toolboxLayout->addWidget(timeLabel);
+    toolboxLayout->addWidget(timeInput);
+    toolboxLayout->addWidget(logOutput);
+    toolboxLayout->addWidget(chooseButton);
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
+    mainLayout->addWidget(imageLabel);
+
+    imageLabel = new QLabel(this);
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     // No layout is set to workspace to allow free positioning of squares
     mainLayout->addWidget(workspace);
 
@@ -46,9 +74,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     addId(i++);
 }
 
+
+
 MainWindow::~MainWindow() 
 {
     qDeleteAll(squares);
+    if (process1) delete process1;
+    if (process2) delete process2;
+    if (timer) delete timer;
 }
 
 void MainWindow::createNewProcess() {
@@ -148,3 +181,126 @@ void MainWindow::resizeSquares(const QSize& oldSize, const QSize& newSize) {
         square->setGeometry(QRect(newPos, newSize));
     }
 }
+
+void MainWindow::startProcesses() {
+    if (process1 && process1->state() != QProcess::NotRunning) {
+        logOutput->append("Process1 is already running.");
+        return;
+    }
+
+    if (process2 && process2->state() != QProcess::NotRunning) {
+        logOutput->append("Process2 is already running.");
+        return;
+    }
+
+    process1 = new QProcess(this);
+    process2 = new QProcess(this);
+
+    QDir dir1("/home/tamar/QtCMakeProject/dummy_program1/build");
+    QDir dir2("/home/tamar/QtCMakeProject/dummy_program2/build");
+
+    connect(process1, &QProcess::readyReadStandardOutput, this, &MainWindow::readProcess1Output);
+    connect(process2, &QProcess::readyReadStandardOutput, this, &MainWindow::readProcess2Output);
+
+    logOutput->append("Starting process1 from: " + dir1.absoluteFilePath("dummy_program"));
+    logOutput->append("Starting process2 from: " + dir2.absoluteFilePath("dummy_program"));
+
+    process1->start(dir1.absoluteFilePath("dummy_program"), QStringList());
+    process2->start(dir2.absoluteFilePath("dummy_program"), QStringList());
+
+    if (!process1->waitForStarted() || !process2->waitForStarted()) {
+        logOutput->append("Failed to start one or both processes.");
+        delete process1;
+        delete process2;
+        process1 = nullptr;
+        process2 = nullptr;
+        return;
+    }
+
+    logOutput->append("Both processes started successfully.");
+
+    bool ok;
+    int time = timeInput->text().toInt(&ok);
+    if (ok && time > 0) {
+        logOutput->append("Timer started for " + QString::number(time) + " seconds.");
+
+        if (timer) {
+            timer->stop();
+            delete timer;
+        }
+
+        timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &MainWindow::timerTimeout);
+
+        timer->start(time * 1000);
+
+        timeLabel->hide();
+        timeInput->hide();
+    }
+}
+
+void MainWindow::endProcesses() {
+    logOutput->append("Ending processes...");
+
+    if (process1 && process1->state() != QProcess::NotRunning) {
+        logOutput->append("Ending process1...");
+        process1->terminate();
+        process1->waitForFinished();
+        delete process1;
+        process1 = nullptr;
+    }
+
+    if (process2 && process2->state() != QProcess::NotRunning) {
+        logOutput->append("Ending process2...");
+        process2->terminate();
+        process2->waitForFinished();
+        delete process2;
+        process2 = nullptr;
+    }
+
+    logOutput->append("All processes ended.");
+
+    if (timer) {
+        timer->stop();
+        delete timer;
+        timer = nullptr;
+    }
+
+    timeInput->show();
+    timeLabel->show();
+    timeInput->clear();
+}
+
+void MainWindow::showTimerInput() {
+    timeLabel->show();
+    timeInput->show();
+}
+
+void MainWindow::timerTimeout() {
+    logOutput->append("Timer timeout reached.");
+    endProcesses();
+}
+
+void MainWindow::readProcess1Output() {
+    logOutput->append("Process1: " + process1->readAllStandardOutput());
+}
+
+void MainWindow::readProcess2Output() {
+    logOutput->append("Process2: " + process2->readAllStandardOutput());
+}
+
+void MainWindow::openImageDialog() {
+    QString imagePath = QFileDialog::getOpenFileName(this, tr("בחר תמונה"), "", tr("קבצי תמונה (*.png *.jpg *.jpeg)"));
+    if (!imagePath.isEmpty()) {
+        QPixmap pixmap(imagePath);
+        if (!pixmap.isNull()) {
+            QPalette palette;
+            palette.setBrush(this->backgroundRole(), QBrush(pixmap.scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+            this->setPalette(palette);
+            this->setAutoFillBackground(true);
+        }
+    }
+}
+
+// Include the generated moc file
+#include "moc_MainWindow.cpp"

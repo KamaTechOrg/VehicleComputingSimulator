@@ -1,0 +1,4 @@
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
+/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir

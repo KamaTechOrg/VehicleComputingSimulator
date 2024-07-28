@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 project(DraggableSquares VERSION 1.0)
 
 # Find the Qt5 library
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui)
 
 # Include current source directory
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -17,4 +17,6 @@ set(CMAKE_AUTOUIC ON)
 add_executable(DraggableSquares main.cpp DraggableSquare.cpp Process.cpp ProcessDialog.cpp MainWindow.cpp)
 
 # Use the Qt5 Widgets module
-target_link_libraries(DraggableSquares Qt5::Widgets)
+target_link_libraries(DraggableSquares Qt5::Core Qt5::Gui Qt5::Widgets)
+
+
