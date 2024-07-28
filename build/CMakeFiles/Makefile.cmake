@@ -78,12 +78,12 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "CMakeFiles/QtCMakeExample_autogen.dir/AutogenInfo.json"
+  "CMakeFiles/ProcessManagerApp_autogen.dir/AutogenInfo.json"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/QtCMakeExample.dir/DependInfo.cmake"
-  "CMakeFiles/QtCMakeExample_autogen.dir/DependInfo.cmake"
+  "CMakeFiles/ProcessManagerApp.dir/DependInfo.cmake"
+  "CMakeFiles/ProcessManagerApp_autogen.dir/DependInfo.cmake"
   )

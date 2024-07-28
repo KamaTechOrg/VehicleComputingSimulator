@@ -117,61 +117,85 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named QtCMakeExample
+# Target rules for targets named ProcessManagerApp
 
 # Build rule for target.
-QtCMakeExample: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 QtCMakeExample
-.PHONY : QtCMakeExample
+ProcessManagerApp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ProcessManagerApp
+.PHONY : ProcessManagerApp
 
 # fast build rule for target.
-QtCMakeExample/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/build
-.PHONY : QtCMakeExample/fast
+ProcessManagerApp/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/build
+.PHONY : ProcessManagerApp/fast
 
 #=============================================================================
-# Target rules for targets named QtCMakeExample_autogen
+# Target rules for targets named ProcessManagerApp_autogen
 
 # Build rule for target.
-QtCMakeExample_autogen: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 QtCMakeExample_autogen
-.PHONY : QtCMakeExample_autogen
+ProcessManagerApp_autogen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ProcessManagerApp_autogen
+.PHONY : ProcessManagerApp_autogen
 
 # fast build rule for target.
-QtCMakeExample_autogen/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample_autogen.dir/build.make CMakeFiles/QtCMakeExample_autogen.dir/build
-.PHONY : QtCMakeExample_autogen/fast
+ProcessManagerApp_autogen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp_autogen.dir/build.make CMakeFiles/ProcessManagerApp_autogen.dir/build
+.PHONY : ProcessManagerApp_autogen/fast
 
-QtCMakeExample_autogen/mocs_compilation.o: QtCMakeExample_autogen/mocs_compilation.cpp.o
-.PHONY : QtCMakeExample_autogen/mocs_compilation.o
+MainWindow.o: MainWindow.cpp.o
+.PHONY : MainWindow.o
 
 # target to build an object file
-QtCMakeExample_autogen/mocs_compilation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/QtCMakeExample_autogen/mocs_compilation.cpp.o
-.PHONY : QtCMakeExample_autogen/mocs_compilation.cpp.o
+MainWindow.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/MainWindow.cpp.o
+.PHONY : MainWindow.cpp.o
 
-QtCMakeExample_autogen/mocs_compilation.i: QtCMakeExample_autogen/mocs_compilation.cpp.i
-.PHONY : QtCMakeExample_autogen/mocs_compilation.i
+MainWindow.i: MainWindow.cpp.i
+.PHONY : MainWindow.i
 
 # target to preprocess a source file
-QtCMakeExample_autogen/mocs_compilation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/QtCMakeExample_autogen/mocs_compilation.cpp.i
-.PHONY : QtCMakeExample_autogen/mocs_compilation.cpp.i
+MainWindow.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/MainWindow.cpp.i
+.PHONY : MainWindow.cpp.i
 
-QtCMakeExample_autogen/mocs_compilation.s: QtCMakeExample_autogen/mocs_compilation.cpp.s
-.PHONY : QtCMakeExample_autogen/mocs_compilation.s
+MainWindow.s: MainWindow.cpp.s
+.PHONY : MainWindow.s
 
 # target to generate assembly for a file
-QtCMakeExample_autogen/mocs_compilation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/QtCMakeExample_autogen/mocs_compilation.cpp.s
-.PHONY : QtCMakeExample_autogen/mocs_compilation.cpp.s
+MainWindow.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/MainWindow.cpp.s
+.PHONY : MainWindow.cpp.s
+
+ProcessManagerApp_autogen/mocs_compilation.o: ProcessManagerApp_autogen/mocs_compilation.cpp.o
+.PHONY : ProcessManagerApp_autogen/mocs_compilation.o
+
+# target to build an object file
+ProcessManagerApp_autogen/mocs_compilation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/ProcessManagerApp_autogen/mocs_compilation.cpp.o
+.PHONY : ProcessManagerApp_autogen/mocs_compilation.cpp.o
+
+ProcessManagerApp_autogen/mocs_compilation.i: ProcessManagerApp_autogen/mocs_compilation.cpp.i
+.PHONY : ProcessManagerApp_autogen/mocs_compilation.i
+
+# target to preprocess a source file
+ProcessManagerApp_autogen/mocs_compilation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/ProcessManagerApp_autogen/mocs_compilation.cpp.i
+.PHONY : ProcessManagerApp_autogen/mocs_compilation.cpp.i
+
+ProcessManagerApp_autogen/mocs_compilation.s: ProcessManagerApp_autogen/mocs_compilation.cpp.s
+.PHONY : ProcessManagerApp_autogen/mocs_compilation.s
+
+# target to generate assembly for a file
+ProcessManagerApp_autogen/mocs_compilation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/ProcessManagerApp_autogen/mocs_compilation.cpp.s
+.PHONY : ProcessManagerApp_autogen/mocs_compilation.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -179,7 +203,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -187,7 +211,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/QtCMakeExample.dir/build.make CMakeFiles/QtCMakeExample.dir/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProcessManagerApp.dir/build.make CMakeFiles/ProcessManagerApp.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -198,11 +222,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... QtCMakeExample_autogen"
-	@echo "... QtCMakeExample"
-	@echo "... QtCMakeExample_autogen/mocs_compilation.o"
-	@echo "... QtCMakeExample_autogen/mocs_compilation.i"
-	@echo "... QtCMakeExample_autogen/mocs_compilation.s"
+	@echo "... ProcessManagerApp_autogen"
+	@echo "... ProcessManagerApp"
+	@echo "... MainWindow.o"
+	@echo "... MainWindow.i"
+	@echo "... MainWindow.s"
+	@echo "... ProcessManagerApp_autogen/mocs_compilation.o"
+	@echo "... ProcessManagerApp_autogen/mocs_compilation.i"
+	@echo "... ProcessManagerApp_autogen/mocs_compilation.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
