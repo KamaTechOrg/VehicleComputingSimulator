@@ -1,8 +1,8 @@
-/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/include/moc_MainWindow.cpp: /home/tamar/checkGIT/VehicleComputingSimulator/MainWindow.h \
+/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/include/moc_MainWindow.cpp: /home/tamar/checkGIT/VehicleComputingSimulator/src/MainWindow.h \
   /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h \
-  /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.h \
-  /home/tamar/checkGIT/VehicleComputingSimulator/Process.h \
-  /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.h \
+  /home/tamar/checkGIT/VehicleComputingSimulator/src/DraggableSquare.h \
+  /home/tamar/checkGIT/VehicleComputingSimulator/src/Process.h \
+  /home/tamar/checkGIT/VehicleComputingSimulator/src/ProcessDialog.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

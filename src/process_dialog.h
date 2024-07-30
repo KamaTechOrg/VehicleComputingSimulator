@@ -13,6 +13,7 @@ class ProcessDialog : public QDialog
 
 public:
     explicit ProcessDialog(QWidget *parent = nullptr);
+
     int getId() const;
     QString getName() const;
     QString getCMakeProject() const;

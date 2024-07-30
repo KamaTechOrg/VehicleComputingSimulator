@@ -14,7 +14,7 @@ set(CMAKE_AUTOUIC ON)
 
 # Add the main application files
 
-add_executable(DraggableSquares main.cpp DraggableSquare.cpp Process.cpp ProcessDialog.cpp MainWindow.cpp)
+add_executable(DraggableSquares src/main.cpp src/draggable_square.cpp src/process.cpp src/process_dialog.cpp src/main_window.cpp)
 
 # Use the Qt5 Widgets module
 target_link_libraries(DraggableSquares Qt5::Core Qt5::Gui Qt5::Widgets)

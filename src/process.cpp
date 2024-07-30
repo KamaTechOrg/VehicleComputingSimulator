@@ -1,4 +1,4 @@
-#include "Process.h"
+#include "process.h"
 
 Process::Process(int id, const QString &name, const QString &cmakeProject, const QString &qemuPlatform)
     : id(id), name(name), cmakeProject(cmakeProject), qemuPlatform(qemuPlatform)
@@ -6,7 +6,9 @@ Process::Process(int id, const QString &name, const QString &cmakeProject, const
 }
 
 Process::Process()
- : id(-1), name(""), cmakeProject(""), qemuPlatform("") {}
+    : id(-1), name(""), cmakeProject(""), qemuPlatform("") 
+{
+}
 
 int Process::getId() const
 {

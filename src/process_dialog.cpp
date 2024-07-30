@@ -1,4 +1,4 @@
-#include "ProcessDialog.h"
+#include "process_dialog.h"
 #include <QIntValidator>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -31,18 +31,14 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     layout->addWidget(qemuPlatformLabel);
     layout->addWidget(qemuPlatformEdit);
 
-    // Adding the QRegExpValidator for string validation
     QRegExp regex("[a-zA-Z0-9]*"); // Allows only English letters and numbers
     QRegExpValidator *validator = new QRegExpValidator(regex, this);
 
-    QRegExp cmakeProjectRegex("[\\x20-\\x7E]*"); // Allows any printable ASCII character (excluding Hebrew)
+    QRegExp cmakeProjectRegex("[\\x20-\\x7E]*"); // Allows any printable ASCII character
     QRegExpValidator *cmakeProjectValidator = new QRegExpValidator(cmakeProjectRegex, this);
 
-    // Set the validator for each QLineEdit
     nameEdit->setValidator(validator);
     cmakeProjectEdit->setValidator(cmakeProjectValidator);
-
-    // cmakeProjectEdit->setValidator(validator);
     qemuPlatformEdit->setValidator(validator);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();

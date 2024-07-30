@@ -1,10 +1,10 @@
-#ifndef DRAGGABLESQUARE_H
-#define DRAGGABLESQUARE_H
+#ifndef __DRAGGABLE_SQUARE_H__
+#define __DRAGGABLE_SQUARE_H__
 
 #include <QWidget>
 #include <QLabel>
 #include <QMouseEvent>
-#include "Process.h"
+#include "process.h"
 
 class DraggableSquare : public QWidget
 {
@@ -25,4 +25,4 @@ private:
     Process process;
 };
 
-#endif // DRAGGABLESQUARE_H
+#endif // __DRAGGABLE_SQUARE_H__

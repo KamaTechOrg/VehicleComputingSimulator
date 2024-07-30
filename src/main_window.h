@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -9,9 +9,6 @@
 #include <QSet>
 #include <QMap>
 #include <QGridLayout>
-#include "Process.h"
-#include "DraggableSquare.h"
-#include "ProcessDialog.h"
 #include <QWidget>
 #include <QProcess>
 #include <QDir>
@@ -21,6 +18,9 @@
 #include <QLabel>
 #include <QFileDialog>
 #include <QPixmap>
+#include "process.h"
+#include "draggable_square.h"
+#include "process_dialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -29,6 +29,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
     void startProcesses();
     void endProcesses();
     void showTimerInput();
@@ -42,19 +43,20 @@ protected:
 
 private slots:
     void createNewProcess();
-    
+
 private:
     void addProcessSquare(const Process &process);
     bool isUniqueId(int id);
     void addId(int id);
     void resizeSquares(const QSize& oldSize, const QSize& newSize);
-    void addProcessSquare(const Process& process,int index);
+    void addProcessSquare(const Process& process, int index);
+
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
     std::vector<DraggableSquare*> squares;
-    QMap<int, QPoint> squarePositions;  // Map to store the positions of squares by their ID
+    QMap<int, QPoint> squarePositions; 
     QSet<int> usedIds;
-    QSize originalSize;  // Store the original size of the window
+    QSize originalSize;
     QPushButton *startButton;
     QPushButton *endButton;
     QPushButton *timerButton;
@@ -65,9 +67,6 @@ private:
     QProcess *process2;
     QTimer *timer;
     QLabel *imageLabel;
-
-  
 };
 
-#endif // MAINWINDOW_H
-
+#endif // MAIN_WINDOW_H

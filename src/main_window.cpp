@@ -1,9 +1,11 @@
-#include "MainWindow.h"
 #include <QMessageBox>
 #include <QHBoxLayout>
-#include "Process.h"
+#include "process.h"
+#include "main_window.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(QWidget *parent) 
+    : QMainWindow(parent), process1(nullptr), process2(nullptr), timer(nullptr) 
+{
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
@@ -34,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(timerButton, &QPushButton::clicked, this, &MainWindow::showTimerInput);
     connect(chooseButton, &QPushButton::clicked, this, &MainWindow::openImageDialog);
 
-    // Set toolbox width
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
     toolboxLayout->addWidget(startButton);
@@ -47,34 +48,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
-    mainLayout->addWidget(workspace);
-
 
     imageLabel = new QLabel(this);
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    // No layout is set to workspace to allow free positioning of squares
-    mainLayout->addWidget(imageLabel);
+
+    mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
 
-
-    ///add 4 Processes 
-    int i=0;
-    Process Main(i, "Main", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(Main,i);
+    int i = 0;
+    Process mainProcess(i, "Main", "./CMakeProject", "QEMUPlatform");
+    addProcessSquare(mainProcess, i);
     addId(i++);
-    Process HSM(i, "HSM", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(HSM,i);
+    Process hsmProcess(i, "HSM", "./CMakeProject", "QEMUPlatform");
+    addProcessSquare(hsmProcess, i);
     addId(i++);
-    Process LogsDb(i, "LogsDb", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(LogsDb,i);
+    Process logsDbProcess(i, "LogsDb", "./CMakeProject", "QEMUPlatform");
+    addProcessSquare(logsDbProcess, i);
     addId(i++);
-    Process Bus_Manager(i, "Bus_Manager", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(Bus_Manager,i);
+    Process busManagerProcess(i, "Bus_Manager", "./CMakeProject", "QEMUPlatform");
+    addProcessSquare(busManagerProcess, i);
     addId(i++);
 }
-
-
 
 MainWindow::~MainWindow() 
 {
@@ -84,8 +79,9 @@ MainWindow::~MainWindow()
     if (timer) delete timer;
 }
 
-void MainWindow::createNewProcess() {
-     ProcessDialog dialog(this);
+void MainWindow::createNewProcess() 
+{
+    ProcessDialog dialog(this);
 
     if (dialog.exec() == QDialog::Accepted && dialog.isValid()) {
         int id = dialog.getId();
@@ -94,8 +90,7 @@ void MainWindow::createNewProcess() {
             return;
         }
         if (!isUniqueId(id)) {
-            QMessageBox::warning(this, "Non-unique ID",
-                                 "The ID entered is already in use. Please choose a different ID.");
+            QMessageBox::warning(this, "Non-unique ID", "The ID entered is already in use. Please choose a different ID.");
             return;
         }
         Process newProcess(id, dialog.getName(), dialog.getCMakeProject(), dialog.getQEMUPlatform());
@@ -104,85 +99,98 @@ void MainWindow::createNewProcess() {
     }
 }
 
-void MainWindow::addProcessSquare(const Process& process) {
+void MainWindow::addProcessSquare(const Process& process) 
+{
     DraggableSquare *square = new DraggableSquare(workspace);
     square->setProcess(process);
 
-    // Retrieve the position for the square
     QPoint pos = squarePositions.value(process.getId(), QPoint(0, 0));
-
-    // Move the square to the specified position
     square->move(pos);
-
-    // Ensure the square is visible
     square->show();
 
-    // Store the position of the new square
     squarePositions[process.getId()] = pos;
 }
 
-
-
-void MainWindow::addProcessSquare(const Process& process,int index) {
+void MainWindow::addProcessSquare(const Process& process, int index) 
+{
     DraggableSquare *square = new DraggableSquare(workspace);
     square->setProcess(process);
 
-    // Retrieve the position for the square
-    
     int x = (index % 2) * (square->width() + 10);
     int y = (index / 2) * (square->height() + 10);
-    
-    QPoint pos = squarePositions.value(process.getId(),QPoint(x, y));
-    // Move the square to the specified position
+    QPoint pos = squarePositions.value(process.getId(), QPoint(x, y));
     square->move(pos);
-
-    // Ensure the square is visible
     square->show();
 
-    // Store the position of the new square
     squarePositions[process.getId()] = pos;
 }
 
-
-// Function to check if an ID is unique
-bool MainWindow::isUniqueId(int id) {
+bool MainWindow::isUniqueId(int id) 
+{
     return !usedIds.contains(id);
 }
 
-// Function to add a new ID to the set
-void MainWindow::addId(int id) {
+void MainWindow::addId(int id) 
+{
     usedIds.insert(id);
 }
 
-
-void MainWindow::resizeEvent(QResizeEvent *event) {
+void MainWindow::resizeEvent(QResizeEvent *event) 
+{
     QMainWindow::resizeEvent(event);
     resizeSquares(originalSize, event->size());
-    originalSize = event->size(); // Update originalSize to the new size
+    originalSize = event->size();
 }
 
-void MainWindow::resizeSquares(const QSize& oldSize, const QSize& newSize) {
+void MainWindow::resizeSquares(const QSize& oldSize, const QSize& newSize) 
+{
     float widthRatio = static_cast<float>(newSize.width()) / oldSize.width();
     float heightRatio = static_cast<float>(newSize.height()) / oldSize.height();
 
     for (DraggableSquare* square : squares) {
-        // Get current size and position
         QRect currentRect = square->geometry();
         QSize currentSize = currentRect.size();
         QPoint currentPos = currentRect.topLeft();
 
-        // Calculate new size
         QSize newSize = QSize(currentSize.width() * widthRatio, currentSize.height() * heightRatio);
-
-        // Calculate new position
         QPoint newPos = QPoint(currentPos.x() * widthRatio, currentPos.y() * heightRatio);
 
-        // Resize and move square
         square->setGeometry(QRect(newPos, newSize));
     }
 }
 
-void MainWindow::startProcesses() {
+void MainWindow::startProcesses() 
+{
+    QString inputText = timeInput->text();
+    bool ok = true;
+    int time = 0;
+
+    if (!inputText.isEmpty()) {
+        time = inputText.toInt(&ok);
+    }
+
+    if (!ok || (time <= 0 && !inputText.isEmpty())) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a valid number of seconds.");
+        timeInput->clear();
+        return;
+    }
+
+    if (time > 0) {
+        logOutput->append("Timer started for " + QString::number(time) + " seconds.");
+
+        if (timer) {
+            timer->stop();
+            delete timer;
+        }
+
+        timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &MainWindow::timerTimeout);
+
+        timer->start(time * 1000);
+        timeLabel->hide();
+        timeInput->hide();
+    }
+
     if (process1 && process1->state() != QProcess::NotRunning) {
         logOutput->append("Process1 is already running.");
         return;
@@ -218,28 +226,10 @@ void MainWindow::startProcesses() {
     }
 
     logOutput->append("Both processes started successfully.");
-
-    bool ok;
-    int time = timeInput->text().toInt(&ok);
-    if (ok && time > 0) {
-        logOutput->append("Timer started for " + QString::number(time) + " seconds.");
-
-        if (timer) {
-            timer->stop();
-            delete timer;
-        }
-
-        timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, &MainWindow::timerTimeout);
-
-        timer->start(time * 1000);
-
-        timeLabel->hide();
-        timeInput->hide();
-    }
 }
 
-void MainWindow::endProcesses() {
+void MainWindow::endProcesses() 
+{
     logOutput->append("Ending processes...");
 
     if (process1 && process1->state() != QProcess::NotRunning) {
@@ -271,26 +261,31 @@ void MainWindow::endProcesses() {
     timeInput->clear();
 }
 
-void MainWindow::showTimerInput() {
+void MainWindow::showTimerInput() 
+{
     timeLabel->show();
     timeInput->show();
 }
 
-void MainWindow::timerTimeout() {
+void MainWindow::timerTimeout() 
+{
     logOutput->append("Timer timeout reached.");
     endProcesses();
 }
 
-void MainWindow::readProcess1Output() {
+void MainWindow::readProcess1Output() 
+{
     logOutput->append("Process1: " + process1->readAllStandardOutput());
 }
 
-void MainWindow::readProcess2Output() {
+void MainWindow::readProcess2Output() 
+{
     logOutput->append("Process2: " + process2->readAllStandardOutput());
 }
 
-void MainWindow::openImageDialog() {
-    QString imagePath = QFileDialog::getOpenFileName(this, tr("בחר תמונה"), "", tr("קבצי תמונה (*.png *.jpg *.jpeg)"));
+void MainWindow::openImageDialog() 
+{
+    QString imagePath = QFileDialog::getOpenFileName(this, tr("Select Image"), "", tr("Image Files (*.png *.jpg *.jpeg)"));
     if (!imagePath.isEmpty()) {
         QPixmap pixmap(imagePath);
         if (!pixmap.isNull()) {
@@ -303,4 +298,4 @@ void MainWindow::openImageDialog() {
 }
 
 // Include the generated moc file
-#include "moc_MainWindow.cpp"
+#include "moc_main_window.cpp"

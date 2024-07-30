@@ -142,30 +142,6 @@ DraggableSquares_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares_autogen.dir/build.make CMakeFiles/DraggableSquares_autogen.dir/build
 .PHONY : DraggableSquares_autogen/fast
 
-DraggableSquare.o: DraggableSquare.cpp.o
-.PHONY : DraggableSquare.o
-
-# target to build an object file
-DraggableSquare.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o
-.PHONY : DraggableSquare.cpp.o
-
-DraggableSquare.i: DraggableSquare.cpp.i
-.PHONY : DraggableSquare.i
-
-# target to preprocess a source file
-DraggableSquare.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.i
-.PHONY : DraggableSquare.cpp.i
-
-DraggableSquare.s: DraggableSquare.cpp.s
-.PHONY : DraggableSquare.s
-
-# target to generate assembly for a file
-DraggableSquare.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.s
-.PHONY : DraggableSquare.cpp.s
-
 DraggableSquares_autogen/mocs_compilation.o: DraggableSquares_autogen/mocs_compilation.cpp.o
 .PHONY : DraggableSquares_autogen/mocs_compilation.o
 
@@ -190,101 +166,125 @@ DraggableSquares_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s
 .PHONY : DraggableSquares_autogen/mocs_compilation.cpp.s
 
-MainWindow.o: MainWindow.cpp.o
-.PHONY : MainWindow.o
+src/draggable_square.o: src/draggable_square.cpp.o
+.PHONY : src/draggable_square.o
 
 # target to build an object file
-MainWindow.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o
-.PHONY : MainWindow.cpp.o
+src/draggable_square.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o
+.PHONY : src/draggable_square.cpp.o
 
-MainWindow.i: MainWindow.cpp.i
-.PHONY : MainWindow.i
+src/draggable_square.i: src/draggable_square.cpp.i
+.PHONY : src/draggable_square.i
 
 # target to preprocess a source file
-MainWindow.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/MainWindow.cpp.i
-.PHONY : MainWindow.cpp.i
+src/draggable_square.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.i
+.PHONY : src/draggable_square.cpp.i
 
-MainWindow.s: MainWindow.cpp.s
-.PHONY : MainWindow.s
+src/draggable_square.s: src/draggable_square.cpp.s
+.PHONY : src/draggable_square.s
 
 # target to generate assembly for a file
-MainWindow.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/MainWindow.cpp.s
-.PHONY : MainWindow.cpp.s
+src/draggable_square.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.s
+.PHONY : src/draggable_square.cpp.s
 
-Process.o: Process.cpp.o
-.PHONY : Process.o
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
 
 # target to build an object file
-Process.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/Process.cpp.o
-.PHONY : Process.cpp.o
+src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
 
-Process.i: Process.cpp.i
-.PHONY : Process.i
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-Process.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/Process.cpp.i
-.PHONY : Process.cpp.i
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-Process.s: Process.cpp.s
-.PHONY : Process.s
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-Process.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/Process.cpp.s
-.PHONY : Process.cpp.s
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
-ProcessDialog.o: ProcessDialog.cpp.o
-.PHONY : ProcessDialog.o
+src/main_window.o: src/main_window.cpp.o
+.PHONY : src/main_window.o
 
 # target to build an object file
-ProcessDialog.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o
-.PHONY : ProcessDialog.cpp.o
+src/main_window.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/main_window.cpp.o
+.PHONY : src/main_window.cpp.o
 
-ProcessDialog.i: ProcessDialog.cpp.i
-.PHONY : ProcessDialog.i
+src/main_window.i: src/main_window.cpp.i
+.PHONY : src/main_window.i
 
 # target to preprocess a source file
-ProcessDialog.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.i
-.PHONY : ProcessDialog.cpp.i
+src/main_window.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/main_window.cpp.i
+.PHONY : src/main_window.cpp.i
 
-ProcessDialog.s: ProcessDialog.cpp.s
-.PHONY : ProcessDialog.s
+src/main_window.s: src/main_window.cpp.s
+.PHONY : src/main_window.s
 
 # target to generate assembly for a file
-ProcessDialog.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.s
-.PHONY : ProcessDialog.cpp.s
+src/main_window.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/main_window.cpp.s
+.PHONY : src/main_window.cpp.s
 
-main.o: main.cpp.o
-.PHONY : main.o
+src/process.o: src/process.cpp.o
+.PHONY : src/process.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/main.cpp.o
-.PHONY : main.cpp.o
+src/process.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/process.cpp.o
+.PHONY : src/process.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/process.i: src/process.cpp.i
+.PHONY : src/process.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/process.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/process.cpp.i
+.PHONY : src/process.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/process.s: src/process.cpp.s
+.PHONY : src/process.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/process.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/process.cpp.s
+.PHONY : src/process.cpp.s
+
+src/process_dialog.o: src/process_dialog.cpp.o
+.PHONY : src/process_dialog.o
+
+# target to build an object file
+src/process_dialog.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.o
+.PHONY : src/process_dialog.cpp.o
+
+src/process_dialog.i: src/process_dialog.cpp.i
+.PHONY : src/process_dialog.i
+
+# target to preprocess a source file
+src/process_dialog.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.i
+.PHONY : src/process_dialog.cpp.i
+
+src/process_dialog.s: src/process_dialog.cpp.s
+.PHONY : src/process_dialog.s
+
+# target to generate assembly for a file
+src/process_dialog.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.s
+.PHONY : src/process_dialog.cpp.s
 
 # Help Target
 help:
@@ -296,24 +296,24 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... DraggableSquares_autogen"
 	@echo "... DraggableSquares"
-	@echo "... DraggableSquare.o"
-	@echo "... DraggableSquare.i"
-	@echo "... DraggableSquare.s"
 	@echo "... DraggableSquares_autogen/mocs_compilation.o"
 	@echo "... DraggableSquares_autogen/mocs_compilation.i"
 	@echo "... DraggableSquares_autogen/mocs_compilation.s"
-	@echo "... MainWindow.o"
-	@echo "... MainWindow.i"
-	@echo "... MainWindow.s"
-	@echo "... Process.o"
-	@echo "... Process.i"
-	@echo "... Process.s"
-	@echo "... ProcessDialog.o"
-	@echo "... ProcessDialog.i"
-	@echo "... ProcessDialog.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... src/draggable_square.o"
+	@echo "... src/draggable_square.i"
+	@echo "... src/draggable_square.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/main_window.o"
+	@echo "... src/main_window.i"
+	@echo "... src/main_window.s"
+	@echo "... src/process.o"
+	@echo "... src/process.i"
+	@echo "... src/process.s"
+	@echo "... src/process_dialog.o"
+	@echo "... src/process_dialog.i"
+	@echo "... src/process_dialog.s"
 .PHONY : help
 
 

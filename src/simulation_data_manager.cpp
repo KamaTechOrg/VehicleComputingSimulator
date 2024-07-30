@@ -1,4 +1,4 @@
-#include "SimulationDataManager.h"
+#include "simulation_data_manager.h"
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <fstream>
