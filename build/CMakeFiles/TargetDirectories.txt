@@ -1,0 +1,4 @@
+/home/devora/basicApi/build/CMakeFiles/user1.dir
+/home/devora/basicApi/build/CMakeFiles/user2.dir
+/home/devora/basicApi/build/CMakeFiles/edit_cache.dir
+/home/devora/basicApi/build/CMakeFiles/rebuild_cache.dir

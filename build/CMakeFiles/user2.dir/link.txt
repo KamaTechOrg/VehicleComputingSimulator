@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/user2.dir/user2.cpp.o CMakeFiles/user2.dir/communication.cpp.o CMakeFiles/user2.dir/myClass.cpp.o -o user2  -lpthread 
