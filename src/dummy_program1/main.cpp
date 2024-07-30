@@ -5,8 +5,6 @@
 int main() {
     for (int i = 0; i < 10; ++i) {
         std::cout << "Dummy Program 1 is running: " << i << std::endl;
-        std::cout.flush();  // Ensure output is flushed immediately
-        std::this_thread::sleep_for(std::chrono::seconds(1));  // Simulate work
     }
     return 0;
 }

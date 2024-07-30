@@ -62,15 +62,15 @@ MainWindow::MainWindow(QWidget *parent)
     Process mainProcess(i, "Main", "../src/dummy_program1", "QEMUPlatform");
     addProcessSquare(mainProcess, i);
     addId(i++);
-    // Process hsmProcess(i, "HSM", "./CMakeProject", "QEMUPlatform");
-    // addProcessSquare(hsmProcess, i);
-    // addId(i++);
-    // Process logsDbProcess(i, "LogsDb", "./CMakeProject", "QEMUPlatform");
-    // addProcessSquare(logsDbProcess, i);
-    // addId(i++);
-    // Process busManagerProcess(i, "Bus_Manager", "./CMakeProject", "QEMUPlatform");
-    // addProcessSquare(busManagerProcess, i);
-    // addId(i++);
+    Process hsmProcess(i, "HSM", "../src/dummy_program2", "QEMUPlatform");
+    addProcessSquare(hsmProcess, i);
+    addId(i++);
+    Process logsDbProcess(i, "LogsDb", "../src/dummy_program1", "QEMUPlatform");
+    addProcessSquare(logsDbProcess, i);
+    addId(i++);
+    Process busManagerProcess(i, "Bus_Manager", "../src/dummy_program2", "QEMUPlatform");
+    addProcessSquare(busManagerProcess, i);
+    addId(i++);
 }
 
 MainWindow::~MainWindow() 
@@ -103,7 +103,7 @@ void MainWindow::createNewProcess()
 
 void MainWindow::addProcessSquare(const Process& process) 
 {
-    draggable_square *square = new draggable_square(workspace);
+    DraggableSquare *square = new DraggableSquare(workspace);
     square->setProcess(process);
 
     QPoint pos = squarePositions.value(process.getId(), QPoint(0, 0));
@@ -116,7 +116,7 @@ void MainWindow::addProcessSquare(const Process& process)
 
 void MainWindow::addProcessSquare(const Process& process, int index) 
 {
-    draggable_square *square = new draggable_square(workspace);
+    DraggableSquare *square = new DraggableSquare(workspace);
     square->setProcess(process);
 
     int x = (index % 2) * (square->width() + 10);
