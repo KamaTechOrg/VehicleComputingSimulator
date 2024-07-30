@@ -4,12 +4,17 @@
 #include <QStyleOption>
 #include <QPainter>
 #include <qboxlayout.h>
+#include <QWidget>
+#include <QLabel>
+#include <QString>
 #include "draggable_square.h"
 
-DraggableSquare::DraggableSquare(QWidget *parent) : QWidget(parent), label(new QLabel(this))
+// Update the constructor definition to match the declaration
+DraggableSquare::DraggableSquare(QWidget *parent, const QString &color, int width, int height) 
+    : QWidget(parent), label(new QLabel(this))
 {
-    setFixedSize(100, 100);
-    setStyleSheet("background-color: green;");
+    setFixedSize(width, height);
+    setStyleSheet(color);
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(label);
     setLayout(layout);
