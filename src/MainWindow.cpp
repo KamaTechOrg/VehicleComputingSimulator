@@ -47,14 +47,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
-    mainLayout->addWidget(imageLabel);
+    mainLayout->addWidget(workspace);
+
 
     imageLabel = new QLabel(this);
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     // No layout is set to workspace to allow free positioning of squares
-    mainLayout->addWidget(workspace);
-
+    mainLayout->addWidget(imageLabel);
     centralWidget->setLayout(mainLayout);
 
 
