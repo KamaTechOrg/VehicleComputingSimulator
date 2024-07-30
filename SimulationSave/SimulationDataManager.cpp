@@ -21,15 +21,18 @@ SimulationDataManager::SimulationDataManager(QWidget *parent) : QWidget(parent)
     data.user = { 1, "User1", "./img" };
 }
 
-void SimulationDataManager::on_save_button_clicked() {
+void SimulationDataManager::on_save_button_clicked() 
+{
     save_simulation_data("simulation_data.bson");
 }
 
-void SimulationDataManager::on_load_button_clicked() {
+void SimulationDataManager::on_load_button_clicked() 
+{
     load_simulation_data("simulation_data.bson");
 }
 
-void SimulationDataManager::save_simulation_data(const std::string &fileName) {
+void SimulationDataManager::save_simulation_data(const std::string &fileName)
+{
     bson_t *document = bson_new();
 
     bson_t processes;
@@ -85,7 +88,8 @@ void SimulationDataManager::save_simulation_data(const std::string &fileName) {
     bson_free(buf);
 }
 
-void SimulationDataManager::load_simulation_data(const std::string &fileName) {
+void SimulationDataManager::load_simulation_data(const std::string &fileName)
+{
     std::ifstream file(fileName, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << fileName << std::endl;
@@ -110,7 +114,8 @@ void SimulationDataManager::load_simulation_data(const std::string &fileName) {
     }
 }
 
-void SimulationDataManager::print_json(const bson_t *document) {
+void SimulationDataManager::print_json(const bson_t *document) 
+{
     char *json = bson_as_json(document, nullptr);
     std::cout << json << std::endl;
     bson_free(json);

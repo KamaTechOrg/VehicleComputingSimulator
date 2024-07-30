@@ -57,7 +57,6 @@ private:
     SimulationData data;
 
     void print_json(const bson_t *document);
-    void parse_json_to_bson(const std::string &fileName);
 };
 
 #endif // SIMULATION_DATA_MANAGER_H
