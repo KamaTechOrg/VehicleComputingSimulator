@@ -1,27 +1,27 @@
 cmake_minimum_required(VERSION 3.10)
 
-# שם הפרויקט
+# Project name
 project(BasicApi)
 
-# הגדרת התקנים
+# Set standards
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# הוספת ספריות וכולל
+# Include directories
 include_directories(${CMAKE_SOURCE_DIR})
 
-# הוספת קבצי מקור
+# Add source files
 set(COMMON_SOURCES
     communication.cpp
     myClass.cpp
 )
 
-# יצירת קובץ ביצוע עבור user1
+# Create executable for user1
 add_executable(user1 user1.cpp ${COMMON_SOURCES})
 
-# יצירת קובץ ביצוע עבור user2
+# Create executable for user2
 add_executable(user2 user2.cpp ${COMMON_SOURCES})
 
-# הוספת קישור לספריית pthread
+# Link pthread library
 target_link_libraries(user1 pthread)
 target_link_libraries(user2 pthread)
