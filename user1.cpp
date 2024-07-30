@@ -6,8 +6,7 @@
 
 int main() {
     communication comm;
-    int portNumber = 8080;
-    int socket = comm.initConnection(portNumber);
+    int socket = comm.initConnection();
     if (socket < 0) {
         std::cerr << "Failed to initialize connection." << std::endl;
         return 1;
@@ -17,7 +16,7 @@ int main() {
 
     // שליחת אובייקט מסוג MyClass
 
-    const char* str = "aaaaaaaaaaaaaaaaa";
+    const char* str = "bbbbbbb";
     comm.sendMessages(socket, (void*)str, sizeof(str));
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -28,6 +27,8 @@ int main() {
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(10));
     }
+
+    communication::cleanUp(); // ניקוי הקבצים בסוף הריצה
 
     return 0;
 }

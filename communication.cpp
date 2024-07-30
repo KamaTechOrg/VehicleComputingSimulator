@@ -5,8 +5,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <algorithm>
+#include <fstream>
 
 const size_t communication::PACKET_SIZE = 16;
+const char* communication::STATE_FILE = "comm_state3.txt";
+const char* communication::LOCK_FILE = "comm_state3.lock";
+std::mutex communication::state_file_mutex;
 
 void communication::receiveMessages(int socketFd) 
 {
@@ -40,8 +44,24 @@ void communication::sendMessages(int socketFd, void* data, size_t dataLen)
     }
 }
 
-int communication::initConnection(int portNumber) {
-    int peerPort = (portNumber == PORT1) ? PORT2 : PORT1;
+int communication::initConnection() {
+    int portNumber, peerPort;
+
+    std::lock_guard<std::mutex> lock(state_file_mutex);
+    std::ifstream infile(STATE_FILE);
+    if (!infile) {  // אם הקובץ לא קיים
+        portNumber = PORT2;
+        peerPort = PORT1;
+        std::ofstream outfile(STATE_FILE);
+        outfile << "initialized";
+        outfile.close();  // יוצר את הקובץ ומעדכן את המצב
+        std::ofstream lockFile(LOCK_FILE); // יוצר את קובץ הנעילה
+        lockFile.close();
+    } else {  // אם הקובץ כבר קיים
+        portNumber = PORT1;
+        peerPort = PORT2;
+    }
+    infile.close();
 
     int sockFd, newSocket;
     struct sockaddr_in address, peerAddr;
@@ -115,9 +135,18 @@ int communication::initConnection(int portNumber) {
             perror("Connection Failed");
             return -1;
         }
+
+        // לאחר קבלת פורט 8080, נמחק את הקובץ המשותף
+        std::remove(STATE_FILE);
+        std::remove(LOCK_FILE);
     }
 
     recvThread.detach();
     std::cout << "Connection initialized" << std::endl;
     return clientSock;
+}
+
+void communication::cleanUp() {
+    std::lock_guard<std::mutex> lock(state_file_mutex);
+    // אין צורך למחוק את הקובץ כאן שוב, זה מתבצע בתהליך השני
 }
