@@ -1,7 +1,7 @@
 CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o: \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.cpp \
  /usr/include/stdc-predef.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \

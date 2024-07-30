@@ -1,6 +1,6 @@
-/home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_DraggableSquare.cpp: /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.h \
-  /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h \
-  /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.h \
+/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_DraggableSquare.cpp: /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.h \
+  /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h \
+  /home/tamar/checkGIT/VehicleComputingSimulator/Process.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

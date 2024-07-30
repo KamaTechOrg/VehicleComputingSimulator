@@ -14,15 +14,9 @@
 			}
 		]
 	},
-	"dependencies" : 
-	[
-		{
-			"id" : "SimulationSave_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
-		}
-	],
-	"id" : "SimulationSave_autogen::@6890427a1f51a3e7e1df",
+	"id" : "DraggableSquares_autogen::@6890427a1f51a3e7e1df",
 	"isGeneratorProvided" : true,
-	"name" : "SimulationSave_autogen",
+	"name" : "DraggableSquares_autogen",
 	"paths" : 
 	{
 		"build" : ".",
@@ -41,8 +35,7 @@
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				1,
-				2
+				1
 			]
 		}
 	],
@@ -51,19 +44,13 @@
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "/home/dvora/VehicleComputingSimulator/build/CMakeFiles/SimulationSave_autogen",
+			"path" : "build/CMakeFiles/DraggableSquares_autogen",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "/home/dvora/VehicleComputingSimulator/build/CMakeFiles/SimulationSave_autogen.rule",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 0,
-			"isGenerated" : true,
-			"path" : "/home/dvora/VehicleComputingSimulator/build/SimulationSave_autogen/timestamp.rule",
+			"path" : "build/CMakeFiles/DraggableSquares_autogen.rule",
 			"sourceGroupIndex" : 1
 		}
 	],

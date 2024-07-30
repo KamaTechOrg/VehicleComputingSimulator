@@ -1,7 +1,7 @@
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o: \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_DraggableSquare.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_DraggableSquare.cpp \
  /usr/include/c++/11/memory /usr/include/c++/11/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -117,7 +117,7 @@ CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o:
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /usr/include/c++/11/pstl/execution_defs.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/../../../DraggableSquare.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/../../../DraggableSquare.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -294,11 +294,11 @@ CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o:
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qvector2d.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtouchdevice.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/../../../Process.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/../../../Process.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_ProcessDialog.cpp \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/../../../ProcessDialog.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_ProcessDialog.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/../../../ProcessDialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit \

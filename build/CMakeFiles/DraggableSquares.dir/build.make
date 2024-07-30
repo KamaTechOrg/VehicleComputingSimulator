@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/tamar/mergeQtProject/VehicleComputingSimulator
+CMAKE_SOURCE_DIR = /home/tamar/checkGIT/VehicleComputingSimulator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/tamar/mergeQtProject/VehicleComputingSimulator/build
+CMAKE_BINARY_DIR = /home/tamar/checkGIT/VehicleComputingSimulator/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/DraggableSquares.dir/depend.make
@@ -72,86 +72,86 @@ include CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o: CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o: DraggableSquares_autogen/mocs_compilation.cpp
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o: CMakeFiles/DraggableSquares.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o -MF CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o -c /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o -MF CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o -c /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp
 
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp > CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp > CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp -o CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp -o CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/DraggableSquares.dir/main.cpp.o: CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/main.cpp.o: ../main.cpp
 CMakeFiles/DraggableSquares.dir/main.cpp.o: CMakeFiles/DraggableSquares.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DraggableSquares.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/main.cpp.o -MF CMakeFiles/DraggableSquares.dir/main.cpp.o.d -o CMakeFiles/DraggableSquares.dir/main.cpp.o -c /home/tamar/mergeQtProject/VehicleComputingSimulator/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DraggableSquares.dir/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/main.cpp.o -MF CMakeFiles/DraggableSquares.dir/main.cpp.o.d -o CMakeFiles/DraggableSquares.dir/main.cpp.o -c /home/tamar/checkGIT/VehicleComputingSimulator/main.cpp
 
 CMakeFiles/DraggableSquares.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DraggableSquares.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/mergeQtProject/VehicleComputingSimulator/main.cpp > CMakeFiles/DraggableSquares.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/checkGIT/VehicleComputingSimulator/main.cpp > CMakeFiles/DraggableSquares.dir/main.cpp.i
 
 CMakeFiles/DraggableSquares.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DraggableSquares.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/mergeQtProject/VehicleComputingSimulator/main.cpp -o CMakeFiles/DraggableSquares.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/checkGIT/VehicleComputingSimulator/main.cpp -o CMakeFiles/DraggableSquares.dir/main.cpp.s
 
 CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o: CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o: ../DraggableSquare.cpp
 CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o: CMakeFiles/DraggableSquares.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o -MF CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o.d -o CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o -c /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o -MF CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o.d -o CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o -c /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.cpp
 
 CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.cpp > CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.cpp > CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.i
 
 CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.cpp -o CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.cpp -o CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.s
 
 CMakeFiles/DraggableSquares.dir/Process.cpp.o: CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/Process.cpp.o: ../Process.cpp
 CMakeFiles/DraggableSquares.dir/Process.cpp.o: CMakeFiles/DraggableSquares.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/DraggableSquares.dir/Process.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/Process.cpp.o -MF CMakeFiles/DraggableSquares.dir/Process.cpp.o.d -o CMakeFiles/DraggableSquares.dir/Process.cpp.o -c /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/DraggableSquares.dir/Process.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/Process.cpp.o -MF CMakeFiles/DraggableSquares.dir/Process.cpp.o.d -o CMakeFiles/DraggableSquares.dir/Process.cpp.o -c /home/tamar/checkGIT/VehicleComputingSimulator/Process.cpp
 
 CMakeFiles/DraggableSquares.dir/Process.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DraggableSquares.dir/Process.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.cpp > CMakeFiles/DraggableSquares.dir/Process.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/checkGIT/VehicleComputingSimulator/Process.cpp > CMakeFiles/DraggableSquares.dir/Process.cpp.i
 
 CMakeFiles/DraggableSquares.dir/Process.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DraggableSquares.dir/Process.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.cpp -o CMakeFiles/DraggableSquares.dir/Process.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/checkGIT/VehicleComputingSimulator/Process.cpp -o CMakeFiles/DraggableSquares.dir/Process.cpp.s
 
 CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o: CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o: ../ProcessDialog.cpp
 CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o: CMakeFiles/DraggableSquares.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o -MF CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o.d -o CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o -c /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o -MF CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o.d -o CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.o -c /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.cpp
 
 CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.cpp > CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.cpp > CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.i
 
 CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.cpp -o CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.cpp -o CMakeFiles/DraggableSquares.dir/ProcessDialog.cpp.s
 
 CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: CMakeFiles/DraggableSquares.dir/flags.make
 CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: ../MainWindow.cpp
 CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: CMakeFiles/DraggableSquares.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o -MF CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o.d -o CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o -c /home/tamar/mergeQtProject/VehicleComputingSimulator/MainWindow.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o -MF CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o.d -o CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o -c /home/tamar/checkGIT/VehicleComputingSimulator/MainWindow.cpp
 
 CMakeFiles/DraggableSquares.dir/MainWindow.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DraggableSquares.dir/MainWindow.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/mergeQtProject/VehicleComputingSimulator/MainWindow.cpp > CMakeFiles/DraggableSquares.dir/MainWindow.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tamar/checkGIT/VehicleComputingSimulator/MainWindow.cpp > CMakeFiles/DraggableSquares.dir/MainWindow.cpp.i
 
 CMakeFiles/DraggableSquares.dir/MainWindow.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DraggableSquares.dir/MainWindow.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/mergeQtProject/VehicleComputingSimulator/MainWindow.cpp -o CMakeFiles/DraggableSquares.dir/MainWindow.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tamar/checkGIT/VehicleComputingSimulator/MainWindow.cpp -o CMakeFiles/DraggableSquares.dir/MainWindow.cpp.s
 
 # Object files for target DraggableSquares
 DraggableSquares_OBJECTS = \
@@ -176,7 +176,7 @@ DraggableSquares: /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.3
 DraggableSquares: /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.3
 DraggableSquares: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.3
 DraggableSquares: CMakeFiles/DraggableSquares.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable DraggableSquares"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable DraggableSquares"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DraggableSquares.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -188,6 +188,6 @@ CMakeFiles/DraggableSquares.dir/clean:
 .PHONY : CMakeFiles/DraggableSquares.dir/clean
 
 CMakeFiles/DraggableSquares.dir/depend:
-	cd /home/tamar/mergeQtProject/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tamar/mergeQtProject/VehicleComputingSimulator /home/tamar/mergeQtProject/VehicleComputingSimulator /home/tamar/mergeQtProject/VehicleComputingSimulator/build /home/tamar/mergeQtProject/VehicleComputingSimulator/build /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/tamar/checkGIT/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tamar/checkGIT/VehicleComputingSimulator /home/tamar/checkGIT/VehicleComputingSimulator /home/tamar/checkGIT/VehicleComputingSimulator/build /home/tamar/checkGIT/VehicleComputingSimulator/build /home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/DraggableSquares.dir/depend
 

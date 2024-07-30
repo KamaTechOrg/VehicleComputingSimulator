@@ -1,7 +1,7 @@
 CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/MainWindow.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/MainWindow.cpp \
  /usr/include/stdc-predef.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/MainWindow.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/MainWindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -303,10 +303,10 @@ CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGridLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/Process.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
@@ -320,7 +320,7 @@ CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qvector2d.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtouchdevice.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit \
@@ -354,5 +354,5 @@ CMakeFiles/DraggableSquares.dir/MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMessageBox \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmessagebox.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QHBoxLayout \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/include/moc_MainWindow.cpp \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/include/../../../MainWindow.h
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/include/moc_MainWindow.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/include/../../../MainWindow.h

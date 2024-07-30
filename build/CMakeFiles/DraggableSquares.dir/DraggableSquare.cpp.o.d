@@ -1,7 +1,7 @@
 CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o: \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.cpp \
  /usr/include/stdc-predef.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/DraggableSquare.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/DraggableSquare.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -292,7 +292,7 @@ CMakeFiles/DraggableSquares.dir/DraggableSquare.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qvector2d.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtouchdevice.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/Process.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \

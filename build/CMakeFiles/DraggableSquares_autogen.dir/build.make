@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/tamar/mergeQtProject/VehicleComputingSimulator
+CMAKE_SOURCE_DIR = /home/tamar/checkGIT/VehicleComputingSimulator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/tamar/mergeQtProject/VehicleComputingSimulator/build
+CMAKE_BINARY_DIR = /home/tamar/checkGIT/VehicleComputingSimulator/build
 
 # Utility rule file for DraggableSquares_autogen.
 
@@ -67,8 +67,8 @@ include CMakeFiles/DraggableSquares_autogen.dir/compiler_depend.make
 include CMakeFiles/DraggableSquares_autogen.dir/progress.make
 
 CMakeFiles/DraggableSquares_autogen:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target DraggableSquares"
-	/usr/bin/cmake -E cmake_autogen /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenInfo.json ""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target DraggableSquares"
+	/usr/bin/cmake -E cmake_autogen /home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenInfo.json ""
 
 DraggableSquares_autogen: CMakeFiles/DraggableSquares_autogen
 DraggableSquares_autogen: CMakeFiles/DraggableSquares_autogen.dir/build.make
@@ -83,6 +83,6 @@ CMakeFiles/DraggableSquares_autogen.dir/clean:
 .PHONY : CMakeFiles/DraggableSquares_autogen.dir/clean
 
 CMakeFiles/DraggableSquares_autogen.dir/depend:
-	cd /home/tamar/mergeQtProject/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tamar/mergeQtProject/VehicleComputingSimulator /home/tamar/mergeQtProject/VehicleComputingSimulator /home/tamar/mergeQtProject/VehicleComputingSimulator/build /home/tamar/mergeQtProject/VehicleComputingSimulator/build /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/tamar/checkGIT/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tamar/checkGIT/VehicleComputingSimulator /home/tamar/checkGIT/VehicleComputingSimulator /home/tamar/checkGIT/VehicleComputingSimulator/build /home/tamar/checkGIT/VehicleComputingSimulator/build /home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/DraggableSquares_autogen.dir/depend
 

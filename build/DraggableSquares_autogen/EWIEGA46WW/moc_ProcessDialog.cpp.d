@@ -1,5 +1,5 @@
-/home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_ProcessDialog.cpp: /home/tamar/mergeQtProject/VehicleComputingSimulator/ProcessDialog.h \
-  /home/tamar/mergeQtProject/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h \
+/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/EWIEGA46WW/moc_ProcessDialog.cpp: /home/tamar/checkGIT/VehicleComputingSimulator/ProcessDialog.h \
+  /home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

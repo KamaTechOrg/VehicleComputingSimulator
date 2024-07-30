@@ -1,7 +1,7 @@
 CMakeFiles/DraggableSquares.dir/Process.cpp.o: \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.cpp \
+ /home/tamar/checkGIT/VehicleComputingSimulator/Process.cpp \
  /usr/include/stdc-predef.h \
- /home/tamar/mergeQtProject/VehicleComputingSimulator/Process.h \
+ /home/tamar/checkGIT/VehicleComputingSimulator/Process.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qchar.h \
