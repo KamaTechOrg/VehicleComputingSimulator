@@ -5,8 +5,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <algorithm>
+#include <fstream>
 
+// Constants for packet size and state file names
 const size_t communication::PACKET_SIZE = 16;
+const char* communication::STATE_FILE = "comm_state3.txt";
+const char* communication::LOCK_FILE = "comm_state3.lock";
+std::mutex communication::state_file_mutex;
 
 // Function to receive messages from a socket
 void communication::receiveMessages(int socketFd)
@@ -28,7 +33,7 @@ void communication::receiveMessages(int socketFd)
     }
 }
 
-// Function to send messages through a socket
+// Function to send messages to a socket
 void communication::sendMessages(int socketFd, void* data, size_t dataLen)
 {
     uint8_t buffer[PACKET_SIZE] = {0};
@@ -42,15 +47,31 @@ void communication::sendMessages(int socketFd, void* data, size_t dataLen)
     }
 }
 
-// Function to initialize a connection and set up listening
-int communication::initConnection(int portNumber) {
-    int peerPort = (portNumber == PORT1) ? PORT2 : PORT1;
 
-    int sockFd, newSocket;
-    struct sockaddr_in address, peerAddr;
+// Function to initialize the state based on the presence of the state file
+void communication::initializeState(int& portNumber, int& peerPort) 
+{
+    std::lock_guard<std::mutex> lock(state_file_mutex);
+    std::ifstream infile(STATE_FILE);
+    if (!infile) {  // If the file doesn't exist - means this is the first process
+        portNumber = PORT2;
+        peerPort = PORT1;
+        std::ofstream outfile(STATE_FILE);
+        outfile << "initialized";
+        outfile.close();  
+        std::ofstream lockFile(LOCK_FILE); 
+        lockFile.close();
+    } else {  // If the file already exists - means this is the second process
+        portNumber = PORT1;
+        peerPort = PORT2;
+    }
+    infile.close();
+}
+
+// Function to set up a socket for listening
+int communication::setupSocket(int portNumber, int& sockFd, struct sockaddr_in& address) 
+{
     int opt = 1;
-    int addrlen = sizeof(address);
-
     if ((sockFd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket creation error");
         return -1;
@@ -80,44 +101,92 @@ int communication::initConnection(int portNumber) {
     }
 
     std::cout << "Listening on port " << portNumber << std::endl;
+    return 0;
+}
 
-    memset(&peerAddr, 0, sizeof(peerAddr));
-    peerAddr.sin_family = AF_INET;
-    peerAddr.sin_port = htons(peerPort);
+// Function to wait for an incoming connection
+int communication::waitForConnection(int sockFd, struct sockaddr_in& address) 
+{
+    int newSocket;
+    int addrlen = sizeof(address);
+    if ((newSocket = accept(sockFd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0) {
+        perror("Accept failed");
+        return -1;
+    }
+    return newSocket;
+}
+
+// Function to connect to a peer socket
+int communication::connectToPeer(int portNumber, struct sockaddr_in& peerAddr) 
+{
+    int clientSock = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientSock < 0) {
+        perror("Socket creation error");
+        return -1;
+    }
 
     if (inet_pton(AF_INET, "127.0.0.1", &peerAddr.sin_addr) <= 0) {
         perror("Invalid address/ Address not supported");
         return -1;
     }
 
+    if (connect(clientSock, (struct sockaddr*)&peerAddr, sizeof(peerAddr)) < 0) {
+        perror("Connection Failed");
+        return -1;
+    }
+
+    return clientSock;
+}
+
+// Function to initialize the connection
+int communication::initConnection() 
+{
+    int portNumber, peerPort;
+    initializeState(portNumber, peerPort);
+
+    int sockFd, newSocket;
+    struct sockaddr_in address, peerAddr;
+
+    if (setupSocket(portNumber, sockFd, address) < 0) {
+        return -1;
+    }
+
+    memset(&peerAddr, 0, sizeof(peerAddr));
+    peerAddr.sin_family = AF_INET;
+    peerAddr.sin_port = htons(peerPort);
+
     int clientSock = -1;
     std::thread recvThread;
+
     if (portNumber == PORT1) {
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Waiting for the other process to listen
-        clientSock = socket(AF_INET, SOCK_STREAM, 0);
-        if (connect(clientSock, (struct sockaddr*)&peerAddr, sizeof(peerAddr)) < 0) {
-            perror("Connection Failed");
-            return -1;
-        }
-        newSocket = accept(sockFd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-        if (newSocket < 0) {
-            perror("Accept failed");
-            return -1;
-        }
+        // Wait briefly to ensure the second process (PORT2) starts listening
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        clientSock = connectToPeer(portNumber, peerAddr);
+        if (clientSock < 0) return -1; 
+
+        // Wait for an incoming connection from PORT2
+        newSocket = waitForConnection(sockFd, address);
+        if (newSocket < 0) return -1; 
+        
+        // Start a separate thread to handle incoming messages on the new socket
         recvThread = std::thread(&communication::receiveMessages, this, newSocket);
     } else {
-        newSocket = accept(sockFd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-        if (newSocket < 0) {
-            perror("Accept failed");
-            return -1;
-        }
+       
+        // Wait for an incoming connection from PORT1
+        newSocket = waitForConnection(sockFd, address);
+        if (newSocket < 0) return -1; 
+        
+        // Start a separate thread to handle incoming messages on the new socket
         recvThread = std::thread(&communication::receiveMessages, this, newSocket);
         std::this_thread::sleep_for(std::chrono::seconds(1)); // Waiting for the server to listen
-        clientSock = socket(AF_INET, SOCK_STREAM, 0);
-        if (connect(clientSock, (struct sockaddr*)&peerAddr, sizeof(peerAddr)) < 0) {
-            perror("Connection Failed");
-            return -1;
-        }
+        
+        clientSock = connectToPeer(portNumber, peerAddr);
+        if (clientSock < 0) return -1; 
+
+        // Clean up: remove state and lock files as they are no longer needed
+        std::remove(STATE_FILE);
+        std::remove(LOCK_FILE);
     }
 
     recvThread.detach();

@@ -6,8 +6,8 @@
 
 int main() {
     communication comm;
-    int portNumber = 8081; // Port number for this connection
-    int socket = comm.initConnection(portNumber);
+    // Initialize the connection and get the socket descriptor
+    int socket = comm.initConnection();
     if (socket < 0) {
         std::cerr << "Failed to initialize connection." << std::endl; // Error initializing connection
         return 1;
@@ -16,13 +16,18 @@ int main() {
     std::cout << "Connection initialized" << std::endl;
 
     // Sending an object of type MyClass
-    MyClass obj2(2, "Object from user2");
-    comm.sendMessages(socket, &obj2, sizeof(obj2));
+    MyClass obj(3, "name of the object");
+    comm.sendMessages(socket, &obj, sizeof(obj));
 
-    // Keeping the listening active
+    // Wait for a short period to ensure the message is sent
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    char str2[] = "bbbbb";
+    comm.sendMessages(socket, (void*)str2, strlen(str2));
+
+    // Keep the program running to maintain the connection and receive messages
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(10)); // Sleep to keep the process alive
     }
-
     return 0;
 }
