@@ -25,6 +25,11 @@ void DraggableSquare::setProcess(const Process &process)
         .arg(process.getQEMUPlatform()));
 }
 
+const Process DraggableSquare::getProcess() const
+{
+    return process;
+}
+
 void DraggableSquare::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {

@@ -1,16 +1,16 @@
 {
-	"BUILD_DIR" : "/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen",
-	"CMAKE_BINARY_DIR" : "/home/tamar/checkGIT/VehicleComputingSimulator/build",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/tamar/checkGIT/VehicleComputingSimulator/build",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/tamar/checkGIT/VehicleComputingSimulator",
+	"BUILD_DIR" : "/home/chaya/git3/VehicleComputingSimulator/build/DraggableSquares_autogen",
+	"CMAKE_BINARY_DIR" : "/home/chaya/git3/VehicleComputingSimulator/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/chaya/git3/VehicleComputingSimulator/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/chaya/git3/VehicleComputingSimulator",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/tamar/checkGIT/VehicleComputingSimulator/CMakeLists.txt",
-		"/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/3.22.1/CMakeSystem.cmake",
+		"/home/chaya/git3/VehicleComputingSimulator/CMakeLists.txt",
+		"/home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/3.22.1/CMakeSystem.cmake",
 		"/usr/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake",
-		"/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/3.22.1/CMakeCCompiler.cmake",
-		"/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/3.22.1/CMakeCXXCompiler.cmake",
+		"/home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/3.22.1/CMakeCCompiler.cmake",
+		"/home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/3.22.1/CMakeCXXCompiler.cmake",
 		"/usr/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake",
 		"/usr/share/cmake-3.22/Modules/CMakeGenericSystem.cmake",
 		"/usr/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake",
@@ -77,39 +77,39 @@
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5GuiConfigVersion.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5GuiConfig.cmake"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/tamar/checkGIT/VehicleComputingSimulator",
+	"CMAKE_SOURCE_DIR" : "/home/chaya/git3/VehicleComputingSimulator",
 	"DEP_FILE" : "",
 	"DEP_FILE_RULE_NAME" : "",
 	"HEADERS" : 
 	[
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/draggable_square.h",
+			"/home/chaya/git3/VehicleComputingSimulator/src/draggable_square.h",
 			"MU",
 			"UVLADIE3JM/moc_draggable_square.cpp",
 			null
 		],
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/main_window.h",
+			"/home/chaya/git3/VehicleComputingSimulator/src/main_window.h",
 			"MU",
 			"UVLADIE3JM/moc_main_window.cpp",
 			null
 		],
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/process.h",
+			"/home/chaya/git3/VehicleComputingSimulator/src/process.h",
 			"MU",
 			"UVLADIE3JM/moc_process.cpp",
 			null
 		],
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/process_dialog.h",
+			"/home/chaya/git3/VehicleComputingSimulator/src/process_dialog.h",
 			"MU",
 			"UVLADIE3JM/moc_process_dialog.cpp",
 			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/include",
-	"MOC_COMPILATION_FILE" : "/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "/home/chaya/git3/VehicleComputingSimulator/build/DraggableSquares_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/chaya/git3/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : [ "QT_CORE_LIB", "QT_GUI_LIB", "QT_NO_DEBUG", "QT_WIDGETS_LIB" ],
 	"MOC_DEPEND_FILTERS" : 
 	[
@@ -120,8 +120,8 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/tamar/checkGIT/VehicleComputingSimulator/build",
-		"/home/tamar/checkGIT/VehicleComputingSimulator",
+		"/home/chaya/git3/VehicleComputingSimulator/build",
+		"/home/chaya/git3/VehicleComputingSimulator",
 		"/usr/include/x86_64-linux-gnu/qt5",
 		"/usr/include/x86_64-linux-gnu/qt5/QtCore",
 		"/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++",
@@ -146,41 +146,37 @@
 		"-c",
 		"/usr/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "/home/tamar/checkGIT/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "/home/chaya/git3/VehicleComputingSimulator/build/DraggableSquares_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : [],
 	"MULTI_CONFIG" : false,
-	"PARALLEL" : 4,
-	"PARSE_CACHE_FILE" : "/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/ParseCache.txt",
+	"PARALLEL" : 6,
+	"PARSE_CACHE_FILE" : "/home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/usr/lib/qt5/bin/moc",
 	"QT_UIC_EXECUTABLE" : "/usr/lib/qt5/bin/uic",
 	"QT_VERSION_MAJOR" : 5,
 	"QT_VERSION_MINOR" : 15,
-	"SETTINGS_FILE" : "/home/tamar/checkGIT/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "/home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/draggable_square.cpp",
+			"/home/chaya/git3/VehicleComputingSimulator/src/draggable_square.cpp",
+			"MU",
+			null
+		],
+		[ "/home/chaya/git3/VehicleComputingSimulator/src/main.cpp", "MU", null ],
+		[
+			"/home/chaya/git3/VehicleComputingSimulator/src/main_window.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/main.cpp",
+			"/home/chaya/git3/VehicleComputingSimulator/src/process.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/main_window.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/process.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/tamar/checkGIT/VehicleComputingSimulator/src/process_dialog.cpp",
+			"/home/chaya/git3/VehicleComputingSimulator/src/process_dialog.cpp",
 			"MU",
 			null
 		]

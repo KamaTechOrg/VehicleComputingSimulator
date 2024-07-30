@@ -38,9 +38,6 @@ public:
     void readProcess2Output();
     void openImageDialog();
     
-protected:
-    void resizeEvent(QResizeEvent *event) override;
-
 private slots:
     void createNewProcess();
 
@@ -48,9 +45,9 @@ private:
     void addProcessSquare(const Process &process);
     bool isUniqueId(int id);
     void addId(int id);
-    void resizeSquares(const QSize& oldSize, const QSize& newSize);
     void addProcessSquare(const Process& process, int index);
-
+    void compileBoxes();
+    QString getExecutableName(const QString &buildDirPath);
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
     std::vector<DraggableSquare*> squares;

@@ -2,6 +2,8 @@
 #include <QHBoxLayout>
 #include "process.h"
 #include "main_window.h"
+#include <QFileInfo>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) 
     : QMainWindow(parent), process1(nullptr), process2(nullptr), timer(nullptr) 
@@ -57,18 +59,18 @@ MainWindow::MainWindow(QWidget *parent)
     centralWidget->setLayout(mainLayout);
 
     int i = 0;
-    Process mainProcess(i, "Main", "./CMakeProject", "QEMUPlatform");
+    Process mainProcess(i, "Main", "../src/dummy_program1", "QEMUPlatform");
     addProcessSquare(mainProcess, i);
     addId(i++);
-    Process hsmProcess(i, "HSM", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(hsmProcess, i);
-    addId(i++);
-    Process logsDbProcess(i, "LogsDb", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(logsDbProcess, i);
-    addId(i++);
-    Process busManagerProcess(i, "Bus_Manager", "./CMakeProject", "QEMUPlatform");
-    addProcessSquare(busManagerProcess, i);
-    addId(i++);
+    // Process hsmProcess(i, "HSM", "./CMakeProject", "QEMUPlatform");
+    // addProcessSquare(hsmProcess, i);
+    // addId(i++);
+    // Process logsDbProcess(i, "LogsDb", "./CMakeProject", "QEMUPlatform");
+    // addProcessSquare(logsDbProcess, i);
+    // addId(i++);
+    // Process busManagerProcess(i, "Bus_Manager", "./CMakeProject", "QEMUPlatform");
+    // addProcessSquare(busManagerProcess, i);
+    // addId(i++);
 }
 
 MainWindow::~MainWindow() 
@@ -101,7 +103,7 @@ void MainWindow::createNewProcess()
 
 void MainWindow::addProcessSquare(const Process& process) 
 {
-    DraggableSquare *square = new DraggableSquare(workspace);
+    draggable_square *square = new draggable_square(workspace);
     square->setProcess(process);
 
     QPoint pos = squarePositions.value(process.getId(), QPoint(0, 0));
@@ -109,11 +111,12 @@ void MainWindow::addProcessSquare(const Process& process)
     square->show();
 
     squarePositions[process.getId()] = pos;
+    squares.push_back(square);
 }
 
 void MainWindow::addProcessSquare(const Process& process, int index) 
 {
-    DraggableSquare *square = new DraggableSquare(workspace);
+    draggable_square *square = new draggable_square(workspace);
     square->setProcess(process);
 
     int x = (index % 2) * (square->width() + 10);
@@ -123,6 +126,8 @@ void MainWindow::addProcessSquare(const Process& process, int index)
     square->show();
 
     squarePositions[process.getId()] = pos;
+    squares.push_back(square);
+
 }
 
 bool MainWindow::isUniqueId(int id) 
@@ -133,30 +138,6 @@ bool MainWindow::isUniqueId(int id)
 void MainWindow::addId(int id) 
 {
     usedIds.insert(id);
-}
-
-void MainWindow::resizeEvent(QResizeEvent *event) 
-{
-    QMainWindow::resizeEvent(event);
-    resizeSquares(originalSize, event->size());
-    originalSize = event->size();
-}
-
-void MainWindow::resizeSquares(const QSize& oldSize, const QSize& newSize) 
-{
-    float widthRatio = static_cast<float>(newSize.width()) / oldSize.width();
-    float heightRatio = static_cast<float>(newSize.height()) / oldSize.height();
-
-    for (DraggableSquare* square : squares) {
-        QRect currentRect = square->geometry();
-        QSize currentSize = currentRect.size();
-        QPoint currentPos = currentRect.topLeft();
-
-        QSize newSize = QSize(currentSize.width() * widthRatio, currentSize.height() * heightRatio);
-        QPoint newPos = QPoint(currentPos.x() * widthRatio, currentPos.y() * heightRatio);
-
-        square->setGeometry(QRect(newPos, newSize));
-    }
 }
 
 void MainWindow::startProcesses() 
@@ -191,41 +172,45 @@ void MainWindow::startProcesses()
         timeInput->hide();
     }
 
-    if (process1 && process1->state() != QProcess::NotRunning) {
-        logOutput->append("Process1 is already running.");
-        return;
-    }
 
-    if (process2 && process2->state() != QProcess::NotRunning) {
-        logOutput->append("Process2 is already running.");
-        return;
-    }
 
-    process1 = new QProcess(this);
-    process2 = new QProcess(this);
+    compileBoxes();
 
-    QDir dir1("../src/dummy_program1/build");
-    QDir dir2("../src/dummy_program2/build");
+    // if (process1 && process1->state() != QProcess::NotRunning) {
+    //     logOutput->append("Process1 is already running.");
+    //     return;
+    // }
 
-    connect(process1, &QProcess::readyReadStandardOutput, this, &MainWindow::readProcess1Output);
-    connect(process2, &QProcess::readyReadStandardOutput, this, &MainWindow::readProcess2Output);
+    // if (process2 && process2->state() != QProcess::NotRunning) {
+    //     logOutput->append("Process2 is already running.");
+    //     return;
+    // }
 
-    logOutput->append("Starting process1 from: " + dir1.absoluteFilePath("dummy_program"));
-    logOutput->append("Starting process2 from: " + dir2.absoluteFilePath("dummy_program"));
+    // process1 = new QProcess(this);
+    // process2 = new QProcess(this);
 
-    process1->start(dir1.absoluteFilePath("dummy_program"), QStringList());
-    process2->start(dir2.absoluteFilePath("dummy_program"), QStringList());
+    // QDir dir1("../src/dummy_program1/build");
+    // QDir dir2("../src/dummy_program2/build");
 
-    if (!process1->waitForStarted() || !process2->waitForStarted()) {
-        logOutput->append("Failed to start one or both processes.");
-        delete process1;
-        delete process2;
-        process1 = nullptr;
-        process2 = nullptr;
-        return;
-    }
+    // connect(process1, &QProcess::readyReadStandardOutput, this, &MainWindow::readProcess1Output);
+    // connect(process2, &QProcess::readyReadStandardOutput, this, &MainWindow::readProcess2Output);
 
-    logOutput->append("Both processes started successfully.");
+    // logOutput->append("Starting process1 from: " + dir1.absoluteFilePath("dummy_program"));
+    // logOutput->append("Starting process2 from: " + dir2.absoluteFilePath("dummy_program"));
+
+    // process1->start(dir1.absoluteFilePath("dummy_program"), QStringList());
+    // process2->start(dir2.absoluteFilePath("dummy_program"), QStringList());
+
+    // if (!process1->waitForStarted() || !process2->waitForStarted()) {
+    //     logOutput->append("Failed to start one or both processes.");
+    //     delete process1;
+    //     delete process2;
+    //     process1 = nullptr;
+    //     process2 = nullptr;
+    //     return;
+    // }
+
+    // logOutput->append("Both processes started successfully.");
 }
 
 void MainWindow::endProcesses() 
@@ -296,6 +281,107 @@ void MainWindow::openImageDialog()
         }
     }
 }
+
+
+QString MainWindow::getExecutableName(const QString &buildDirPath) {
+    QDir buildDir(buildDirPath);
+
+    // List all files in the build directory
+    QStringList files = buildDir.entryList(QDir::Files | QDir::NoSymLinks);
+
+    // Iterate over the files to find the executable
+    foreach (const QString &file, files) {
+        QFileInfo fileInfo(buildDir.filePath(file));
+        
+        // Check if the file has no extension (common on Linux) or is an executable (on Windows)
+        if (!fileInfo.suffix().isEmpty()) continue;
+
+        // Check if the file has execute permissions (Unix-based systems)
+        if (fileInfo.isExecutable()) {
+            return fileInfo.fileName();
+        }
+    }
+
+    // If no executable file is found, return an empty string
+    return QString();
+}
+
+
+void MainWindow::compileBoxes() {
+
+    // Iterate over each directory and compile
+    for (const DraggableSquare* square : squares) {
+        QString cmakePath=square->getProcess().getCMakeProject();
+        logOutput->append("Compiling " + cmakePath);
+
+        // Define the build directory path
+        QDir cmakeDir(cmakePath);
+        QString buildDirPath = cmakeDir.absoluteFilePath("build");
+
+        // Create the build directory if it doesn't exist
+        QDir buildDir(buildDirPath);
+        if (!buildDir.exists()) {
+            if (!buildDir.mkpath(".")) {
+                logOutput->append("Failed to create build directory " + buildDirPath);
+                continue;
+            }
+        }
+
+        QProcess cmakeProcess(this);
+        cmakeProcess.setWorkingDirectory(buildDirPath);
+        cmakeProcess.start("cmake", QStringList() << "..");
+        if (!cmakeProcess.waitForFinished()) {
+            logOutput->append("Failed to run cmake in " + buildDirPath);
+            continue;
+        }
+        logOutput->append(cmakeProcess.readAllStandardOutput());
+        logOutput->append(cmakeProcess.readAllStandardError());
+
+        QProcess makeProcess(this);
+        makeProcess.setWorkingDirectory(buildDirPath);
+        makeProcess.start("make", QStringList());
+        if (!makeProcess.waitForFinished()) {
+            logOutput->append("Failed to compile " + buildDirPath);
+            continue;
+        }
+        logOutput->append(makeProcess.readAllStandardOutput());
+        logOutput->append(makeProcess.readAllStandardError());
+
+
+        logOutput->append("Successfully compiled " + buildDirPath);
+
+
+        // Run the compiled program
+        QString exeFile=getExecutableName(buildDirPath);
+        QString executablePath = buildDir.absoluteFilePath(exeFile);
+        QProcess runProcess(this);
+        runProcess.setWorkingDirectory(buildDirPath);
+        runProcess.start(executablePath, QStringList());
+        if (!runProcess.waitForFinished()) {
+            logOutput->append("Failed to run the program in " + buildDirPath);
+            continue;
+        }
+        logOutput->append(runProcess.readAllStandardOutput());
+        logOutput->append(runProcess.readAllStandardError());
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Include the generated moc file
 #include "moc_main_window.cpp"

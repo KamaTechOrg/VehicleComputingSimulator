@@ -13,6 +13,7 @@ class DraggableSquare : public QWidget
 public:
     explicit DraggableSquare(QWidget *parent = nullptr);
     void setProcess(const Process &process);
+    const Process getProcess() const;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
