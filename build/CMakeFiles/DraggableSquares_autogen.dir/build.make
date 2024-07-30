@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/chaya/git3/VehicleComputingSimulator
+CMAKE_SOURCE_DIR = /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/chaya/git3/VehicleComputingSimulator/build
+CMAKE_BINARY_DIR = /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build
 
 # Utility rule file for DraggableSquares_autogen.
 
@@ -67,8 +67,8 @@ include CMakeFiles/DraggableSquares_autogen.dir/compiler_depend.make
 include CMakeFiles/DraggableSquares_autogen.dir/progress.make
 
 CMakeFiles/DraggableSquares_autogen:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target DraggableSquares"
-	/usr/bin/cmake -E cmake_autogen /home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenInfo.json ""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target DraggableSquares"
+	/usr/bin/cmake -E cmake_autogen /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenInfo.json ""
 
 DraggableSquares_autogen: CMakeFiles/DraggableSquares_autogen
 DraggableSquares_autogen: CMakeFiles/DraggableSquares_autogen.dir/build.make
@@ -83,6 +83,6 @@ CMakeFiles/DraggableSquares_autogen.dir/clean:
 .PHONY : CMakeFiles/DraggableSquares_autogen.dir/clean
 
 CMakeFiles/DraggableSquares_autogen.dir/depend:
-	cd /home/chaya/git3/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/chaya/git3/VehicleComputingSimulator /home/chaya/git3/VehicleComputingSimulator /home/chaya/git3/VehicleComputingSimulator/build /home/chaya/git3/VehicleComputingSimulator/build /home/chaya/git3/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build /home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/DraggableSquares_autogen.dir/depend
 

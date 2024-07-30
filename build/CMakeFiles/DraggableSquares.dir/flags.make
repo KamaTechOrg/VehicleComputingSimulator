@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
 
-CXX_INCLUDES = -I/home/chaya/git3/VehicleComputingSimulator/build -I/home/chaya/git3/VehicleComputingSimulator -I/home/chaya/git3/VehicleComputingSimulator/build/DraggableSquares_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets
+CXX_INCLUDES = -I/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build -I/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator -I/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build/DraggableSquares_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets
 
 CXX_FLAGS = -fPIC
 
