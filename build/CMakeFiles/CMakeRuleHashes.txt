@@ -1,2 +1,8 @@
 # Hashes of file build rules.
+<<<<<<< HEAD
 d99f6b86fea0d80be04e1bcb9395240a CMakeFiles/DraggableSquares_autogen
+=======
+c64bcf9fa21282706d014b19c326c3bc CMakeFiles/SimulationSave_autogen
+c64bcf9fa21282706d014b19c326c3bc CMakeFiles/SimulationSave_autogen_timestamp_deps
+c935cd22484448483636a582282842ba SimulationSave_autogen/timestamp
+>>>>>>> Saving_and_loading_simulation_setups_in_a_binary_form

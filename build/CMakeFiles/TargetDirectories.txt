@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir
 /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
 /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
 /home/tamar/mergeQtProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir
+=======
+/home/dvora/VehicleComputingSimulator/build/CMakeFiles/SimulationSave.dir
+/home/dvora/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
+/home/dvora/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
+/home/dvora/VehicleComputingSimulator/build/CMakeFiles/SimulationSave_autogen_timestamp_deps.dir
+/home/dvora/VehicleComputingSimulator/build/CMakeFiles/SimulationSave_autogen.dir
+>>>>>>> Saving_and_loading_simulation_setups_in_a_binary_form

@@ -1,0 +1,1 @@
+/usr/bin/g++ -g CMakeFiles/SimulationSave.dir/SimulationSave_autogen/mocs_compilation.cpp.o CMakeFiles/SimulationSave.dir/main.cpp.o CMakeFiles/SimulationSave.dir/SimulationDataManager.cpp.o -o SimulationSave  /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.15.13 -lbson-1.0 -lrt /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.13 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13 
