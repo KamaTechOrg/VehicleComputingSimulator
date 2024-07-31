@@ -28,7 +28,7 @@ int main() {
         return 1;
     }
 
-    const char* str = "cccc";
+    const char* str = "abcdefghijklmnopqrstuv";
     comm.sendMessages(socket, (void*)str, strlen(str));
     // Wait for a short period to ensure the message is sent
     std::this_thread::sleep_for(std::chrono::seconds(1));

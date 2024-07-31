@@ -27,11 +27,11 @@ int main() {
         return 1;
     }
 
-    MyClass obj(3, "name of the object");
+    // MyClass obj(3, "name of the object");
 
-    comm.sendMessages(socket, &obj, sizeof(obj));
-    // Wait for a short period to ensure the message is sent
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    // comm.sendMessages(socket, &obj, sizeof(obj));
+    // // Wait for a short period to ensure the message is sent
+    // std::this_thread::sleep_for(std::chrono::seconds(1));
 
     // Example message to send
     char str2[] = "bbbbb";

@@ -2,6 +2,10 @@
 #define MYCLASS_H
 #include <string>
 #include <cstring>
+#include <iostream>
+#include <fstream>
+#include <chrono>
+#include <iomanip>
 
 class MyClass {
 public:
@@ -20,3 +24,4 @@ public:
 };
 
 #endif
+
