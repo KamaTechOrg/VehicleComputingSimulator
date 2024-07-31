@@ -6,7 +6,21 @@
 
 int main() {
     communication comm;
-    
+
+    // Set the callback for data received
+    comm.setDataReceivedCallback([](const std::vector<uint8_t>& data) {
+        std::cout << "Data received callback: ";
+        for (auto byte : data) {
+            std::cout << static_cast<char>(byte); // Print as characters
+        }
+        std::cout << std::endl;
+    });
+
+    // Set the callback for acknowledgment
+    comm.setAckCallback([](AckType ack) {
+        std::cout << "Acknowledgment received: " << (ack == AckType::ACK ? "ACK" : "NACK") << std::endl;
+    });
+
     // Initialize the connection and get the socket descriptor
     int socket = comm.initConnection();
     if (socket < 0) {
@@ -14,35 +28,15 @@ int main() {
         return 1;
     }
 
-    std::cout << "Connection initialized" << std::endl;
-
-<<<<<<< HEAD
-    // Sending an object of type MyClass
-
-    const char* str = "bbbbbbb";
-    comm.sendMessages(socket, (void*)str, sizeof(str));
-||||||| parent of 9052823 (Clean the code, add comments)
-    // שליחת אובייקט מסוג MyClass
-
-    const char* str = "bbbbbbb";
-    comm.sendMessages(socket, (void*)str, sizeof(str));
-=======
     const char* str = "cccc";
     comm.sendMessages(socket, (void*)str, strlen(str));
     // Wait for a short period to ensure the message is sent
->>>>>>> 9052823 (Clean the code, add comments)
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     char str2[] = "dddd";
     comm.sendMessages(socket, (void*)str2, strlen(str2));
 
-<<<<<<< HEAD
-    // Keeping the listening active
-||||||| parent of 9052823 (Clean the code, add comments)
-    // שמירה על ההאזנה פעילה
-=======
     // Keep the program running to maintain the connection and receive messages
->>>>>>> 9052823 (Clean the code, add comments)
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(10));
     }
