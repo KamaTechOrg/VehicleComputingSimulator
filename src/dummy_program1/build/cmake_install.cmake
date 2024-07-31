@@ -1,4 +1,4 @@
-# Install script for directory: /home/chaya/git3/VehicleComputingSimulator/src/dummy_program1
+# Install script for directory: /home/tamar/chayaProject/VehicleComputingSimulator/src/dummy_program1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/chaya/git3/VehicleComputingSimulator/src/dummy_program1/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/tamar/chayaProject/VehicleComputingSimulator/src/dummy_program1/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

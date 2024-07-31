@@ -1,4 +1,4 @@
-/home/chaya/git2/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir
-/home/chaya/git2/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
-/home/chaya/git2/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
-/home/chaya/git2/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir
+/home/tamar/chayaProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir
+/home/tamar/chayaProject/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
+/home/tamar/chayaProject/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
+/home/tamar/chayaProject/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir

@@ -1,7 +1,7 @@
 CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o: \
- /home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp \
+ /home/tamar/chayaProject/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/moc_draggable_square.cpp \
+ /home/tamar/chayaProject/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/moc_draggable_square.cpp \
  /usr/include/c++/11/memory /usr/include/c++/11/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -117,7 +117,7 @@ CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o:
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /usr/include/c++/11/pstl/execution_defs.h \
- /home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/../../../src/draggable_square.h \
+ /home/tamar/chayaProject/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/../../../src/draggable_square.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -294,11 +294,11 @@ CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o:
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qvector2d.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtouchdevice.h \
- /home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/../../../src/process.h \
+ /home/tamar/chayaProject/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/../../../src/process.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/moc_process_dialog.cpp \
- /home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/../../../src/process_dialog.h \
+ /home/tamar/chayaProject/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/moc_process_dialog.cpp \
+ /home/tamar/chayaProject/VehicleComputingSimulator/build/DraggableSquares_autogen/UVLADIE3JM/../../../src/process_dialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit \

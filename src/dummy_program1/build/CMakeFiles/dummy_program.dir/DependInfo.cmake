@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/chaya/git3/VehicleComputingSimulator/src/dummy_program1/main.cpp" "CMakeFiles/dummy_program.dir/main.cpp.o" "gcc" "CMakeFiles/dummy_program.dir/main.cpp.o.d"
+  "/home/tamar/chayaProject/VehicleComputingSimulator/src/dummy_program1/main.cpp" "CMakeFiles/dummy_program.dir/main.cpp.o" "gcc" "CMakeFiles/dummy_program.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links.
