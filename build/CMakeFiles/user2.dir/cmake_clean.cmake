@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/user2.dir/Packet.cpp.o"
+  "CMakeFiles/user2.dir/Packet.cpp.o.d"
   "CMakeFiles/user2.dir/communication.cpp.o"
   "CMakeFiles/user2.dir/communication.cpp.o.d"
   "CMakeFiles/user2.dir/myClass.cpp.o"

@@ -142,6 +142,33 @@ user2/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/user2.dir/build.make CMakeFiles/user2.dir/build
 .PHONY : user2/fast
 
+Packet.o: Packet.cpp.o
+.PHONY : Packet.o
+
+# target to build an object file
+Packet.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/user1.dir/build.make CMakeFiles/user1.dir/Packet.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/user2.dir/build.make CMakeFiles/user2.dir/Packet.cpp.o
+.PHONY : Packet.cpp.o
+
+Packet.i: Packet.cpp.i
+.PHONY : Packet.i
+
+# target to preprocess a source file
+Packet.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/user1.dir/build.make CMakeFiles/user1.dir/Packet.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/user2.dir/build.make CMakeFiles/user2.dir/Packet.cpp.i
+.PHONY : Packet.cpp.i
+
+Packet.s: Packet.cpp.s
+.PHONY : Packet.s
+
+# target to generate assembly for a file
+Packet.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/user1.dir/build.make CMakeFiles/user1.dir/Packet.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/user2.dir/build.make CMakeFiles/user2.dir/Packet.cpp.s
+.PHONY : Packet.cpp.s
+
 communication.o: communication.cpp.o
 .PHONY : communication.o
 
@@ -254,6 +281,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... user1"
 	@echo "... user2"
+	@echo "... Packet.o"
+	@echo "... Packet.i"
+	@echo "... Packet.s"
 	@echo "... communication.o"
 	@echo "... communication.i"
 	@echo "... communication.s"

@@ -14,6 +14,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(COMMON_SOURCES
     communication.cpp
     myClass.cpp
+    Packet.cpp
 )
 
 # Create executable for user1

@@ -83,12 +83,12 @@ clean: CMakeFiles/user2.dir/clean
 CMakeFiles/user1.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/user1.dir/build.make CMakeFiles/user1.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/user1.dir/build.make CMakeFiles/user1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/devora/basicApi/build/CMakeFiles --progress-num=1,2,3,4 "Built target user1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/devora/basicApi/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target user1"
 .PHONY : CMakeFiles/user1.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/user1.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/devora/basicApi/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/devora/basicApi/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/user1.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/devora/basicApi/build/CMakeFiles 0
 .PHONY : CMakeFiles/user1.dir/rule
@@ -109,12 +109,12 @@ CMakeFiles/user1.dir/clean:
 CMakeFiles/user2.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/user2.dir/build.make CMakeFiles/user2.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/user2.dir/build.make CMakeFiles/user2.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/devora/basicApi/build/CMakeFiles --progress-num=5,6,7,8 "Built target user2"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/devora/basicApi/build/CMakeFiles --progress-num=6,7,8,9,10 "Built target user2"
 .PHONY : CMakeFiles/user2.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/user2.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/devora/basicApi/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/devora/basicApi/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/user2.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/devora/basicApi/build/CMakeFiles 0
 .PHONY : CMakeFiles/user2.dir/rule
