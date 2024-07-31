@@ -13,8 +13,8 @@ public:
         comm1 = new communication();
         comm2 = new communication();
 
-        std::thread t1([&]() { socket1 = comm1->initConnection(8080); });
-        std::thread t2([&]() { socket2 = comm2->initConnection(8081); });
+        std::thread t1([&]() { socket1 = comm1->initConnection(); });
+        std::thread t2([&]() { socket2 = comm2->initConnection(); });
 
         t1.join();
         t2.join();

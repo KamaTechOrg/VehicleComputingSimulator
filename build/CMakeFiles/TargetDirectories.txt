@@ -1,0 +1,4 @@
+/home/ayala/generalCode/build/CMakeFiles/user1.dir
+/home/ayala/generalCode/build/CMakeFiles/user2.dir
+/home/ayala/generalCode/build/CMakeFiles/edit_cache.dir
+/home/ayala/generalCode/build/CMakeFiles/rebuild_cache.dir

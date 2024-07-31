@@ -1,4 +1,5 @@
 #include "communication.h"
+#include "Packet.cpp"
 #include <cstring>
 #include <iostream>
 #include <thread>
@@ -6,14 +7,29 @@
 #include <unistd.h>
 #include <algorithm>
 #include <fstream>
-#include <chrono>
+#include <vector>
+#include <functional>
 #include <iomanip>
 
-const size_t communication::PACKET_SIZE = 16;
+// Constants for packet size and state file names
+const char* communication::STATE_FILE = "comm_state3.txt";
+const char* communication::LOCK_FILE = "comm_state3.lock";
+std::mutex communication::state_file_mutex;
+
+// Type definition for callback function
+using DataReceivedCallback = std::function<void(const std::vector<uint8_t>&)>;
+
+// Add a member to store the callback function
+DataReceivedCallback dataReceivedCallback;
 const std::string LOG_FILE = "communication.log";
+
 
 void logMessage(const std::string& src, const std::string& dst, const std::string& message) {
     std::ofstream logFile(LOG_FILE, std::ios_base::app);
+    if (!logFile) {
+        std::cerr << "[ERROR] Failed to open log file" << std::endl;
+        return;
+    }
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
     std::tm tm = *std::localtime(&time);
@@ -22,72 +38,132 @@ void logMessage(const std::string& src, const std::string& dst, const std::strin
             << "SRC: " << src << " DST: " << dst << " " << message << std::endl;
 }
 
+
+// Function to send acknowledgment messages
+void communication::sendAck(int socketFd, AckType ackType) {
+    const char* ackMessage = (ackType == AckType::ACK) ? "ACK" : "NACK";
+    send(socketFd, ackMessage, strlen(ackMessage), 0);
+    //std::cout << "Acknowledgment sent: " << ackMessage << std::endl;
+
+    // Trigger the acknowledgment callback
+    if (ackCallback) {
+        ackCallback(ackType);
+    }
+}
+
+// Function to set the callback for data received
+void communication::setDataReceivedCallback(std::function<void(const std::vector<uint8_t>&)> callback) {
+    dataReceivedCallback = callback;
+}
+
+// Function to set the callback for acknowledgment received
+void communication::setAckCallback(std::function<void(AckType)> callback) {
+    ackCallback = callback;
+}
+
+// Function to receive messages from a socket
 void communication::receiveMessages(int socketFd) 
 {
-    uint8_t buffer[PACKET_SIZE] = {0};
-    std::cout << "[INFO] Entering receiveMessages function" << std::endl;
-    logMessage("Server", "Client", "[INFO] Entering receiveMessages function");
-
+    Packet packet;
+    std::vector<uint8_t> receivedData;
     while (true) {
-        int valread = recv(socketFd, buffer, PACKET_SIZE, 0);
+        int valread = recv(socketFd, &packet, sizeof(Packet), 0);
         if (valread <= 0) {
-            std::cerr << "[ERROR] Connection closed or error occurred" << std::endl;
+            std::cerr << "Connection closed or error occurred" << std::endl;
             logMessage("Server", "Client", "[ERROR] Connection closed or error occurred");
             break;
         }
-
-        std::ostringstream receivedPacket;
-        receivedPacket << "[INFO] Received packet: ";
+      std::string recievePacketForLog="";
+        // Append the received data to the vector
         for (int i = 0; i < valread; ++i) {
-            receivedPacket << static_cast<int>(buffer[i]) << " ";
+            if (i < sizeof(packet.getData())) {
+                receivedData.push_back(packet.getData()[i]);
+                recievePacketForLog+=packet.getData()[i];
+            }
         }
-        std::cout << receivedPacket.str() << std::endl;
-        logMessage("Server", "Client", receivedPacket.str());
+        logMessage("Server", "Client",recievePacketForLog );
+
+        // Notify the user via callback function
+        if (dataReceivedCallback) {
+            dataReceivedCallback(receivedData);
+        }
+
+        // Check if all packets have been received
+        if (packet.getPsn() == packet.getTotalPacketSum()) {
+            sendAck(socketFd, AckType::ACK);
+        }
     }
 }
 
+
+// Function to send messages to a socket
 void communication::sendMessages(int socketFd, void* data, size_t dataLen) 
 {
-    uint8_t buffer[PACKET_SIZE] = {0};
+    Packet packet;
+    int psn = 0;
     size_t offset = 0;
-    std::cout << "[INFO] Entering sendMessages function" << std::endl;
-    logMessage("Client", "Server", "[INFO] Entering sendMessages function");
+    size_t totalPackets = (dataLen + PACKET_SIZE - 1) / PACKET_SIZE; // Calculate total number of packets
 
     while (offset < dataLen) {
         size_t packetLen = std::min(dataLen - offset, PACKET_SIZE);
-        std::memcpy(buffer, static_cast<uint8_t*>(data) + offset, packetLen);
-        if (send(socketFd, buffer, packetLen, 0) == -1) {
-            std::cerr << "[ERROR] Failed to send packet" << std::endl;
-            logMessage("Client", "Server", "[ERROR] Failed to send packet");
-            break;
-        }
-        std::string message = "[INFO] Sent packet of size: " + std::to_string(packetLen);
-        std::cout << message << std::endl;
-        logMessage("Client", "Server", message);
+        packet.setData(static_cast<uint8_t*>(data) + offset, packetLen);
+        packet.setPsn(psn++);
+        packet.setTotalPacketSum(totalPackets - 1); // Set total packet sum to totalPackets - 1
+
+        send(socketFd, &packet, sizeof(Packet), 0);
         offset += packetLen;
+    }
+
+    // Wait for acknowledgment
+    char buffer[4];
+    int valread = recv(socketFd, buffer, sizeof(buffer), 0);
+    if (valread > 0) {
+        buffer[valread] = '\0'; // Null-terminate the received string
+        AckType receivedAck = (strcmp(buffer, "ACK") == 0) ? AckType::ACK : AckType::NACK;
+        logMessage("Client", "Server",buffer);
+        // Trigger the acknowledgment callback
+        if (ackCallback) {
+            ackCallback(receivedAck);
+        }
+    } else {
+        //std::cerr << "Failed to receive acknowledgment" << std::endl;
+        logMessage("Client", "Server","Failed to receive acknowledgment");
+
     }
 }
 
-int communication::initConnection(int portNumber) {
-    int peerPort = (portNumber == PORT1) ? PORT2 : PORT1;
+// Function to initialize the state based on the presence of the state file
+void communication::initializeState(int& portNumber, int& peerPort) 
+{
+    std::lock_guard<std::mutex> lock(state_file_mutex);
+    std::ifstream infile(STATE_FILE);
 
-    int sockFd, newSocket;
-    struct sockaddr_in address, peerAddr;
+    if (!infile) {  // If the file doesn't exist - means this is the first process
+        portNumber = PORT2;
+        peerPort = PORT1;
+        std::ofstream outfile(STATE_FILE);
+        outfile << "initialized";
+        outfile.close();  
+        std::ofstream lockFile(LOCK_FILE); 
+        lockFile.close();
+    } else {  // If the file already exists - means this is the second process
+        portNumber = PORT1;
+        peerPort = PORT2;
+    }
+    infile.close();
+}
+
+// Function to set up a socket for listening
+int communication::setupSocket(int portNumber, int& sockFd, struct sockaddr_in& address) 
+{
     int opt = 1;
-    int addrlen = sizeof(address);
-
-    std::cout << "[INFO] Initializing connection on port " << portNumber << std::endl;
-    logMessage("System", "System", "[INFO] Initializing connection on port " + std::to_string(portNumber));
-
     if ((sockFd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("[ERROR] Socket creation error");
-        logMessage("System", "System", "[ERROR] Socket creation error");
+        //perror("Socket creation error");
         return -1;
     }
 
     if (setsockopt(sockFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        perror("[ERROR] setsockopt");
-        logMessage("System", "System", "[ERROR] setsockopt");
+        //perror("setsockopt");
         close(sockFd);
         return -1;
     }
@@ -98,69 +174,125 @@ int communication::initConnection(int portNumber) {
     address.sin_port = htons(portNumber);
 
     if (bind(sockFd, (struct sockaddr*)&address, sizeof(address)) < 0) {
-        perror("[ERROR] Bind failed");
-        logMessage("System", "System", "[ERROR] Bind failed");
+        //perror("Bind failed");
         close(sockFd);
         return -1;
     }
 
     if (listen(sockFd, 3) < 0) {
-        perror("[ERROR] Listen failed");
-        logMessage("System", "System", "[ERROR] Listen failed");
+        perror("Listen");
         close(sockFd);
         return -1;
     }
+    std::cout << "Listening on port " << portNumber << std::endl;
+    return 0;
+}
 
-    std::cout << "[INFO] Listening on port " << portNumber << std::endl;
-    logMessage("System", "System", "[INFO] Listening on port " + std::to_string(portNumber));
+// Function to wait for an incoming connection
+int communication::waitForConnection(int sockFd, struct sockaddr_in& address) 
+{
+    int newSocket;
+    int addrlen = sizeof(address);
+    if ((newSocket = accept(sockFd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0) {
+        perror("Accept failed");
+        return -1;
+    }
+    return newSocket;
+}
+
+// Function to connect to a peer socket
+int communication::connectToPeer(int portNumber, struct sockaddr_in& peerAddr) 
+{
+    int clientSock = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientSock < 0) {
+        perror("Socket creation error");
+        return -1;
+    }
+
+    if (inet_pton(AF_INET, "127.0.0.1", &peerAddr.sin_addr) <= 0) {
+        perror("Invalid address/ Address not supported");
+        return -1;
+    }
+
+    if (connect(clientSock, (struct sockaddr*)&peerAddr, sizeof(peerAddr)) < 0) {
+        perror("Connection Failed");
+        return -1;
+    }
+
+    return clientSock;
+}
+
+// Function to initialize the connection
+int communication::initConnection() 
+{
+    int portNumber, peerPort;
+    initializeState(portNumber, peerPort);
+
+    int sockFd, newSocket;
+    struct sockaddr_in address, peerAddr;
+
+    if (setupSocket(portNumber, sockFd, address) < 0) {
+        logMessage(std::to_string(portNumber),std::to_string(peerPort), "[ERROR] setupSocket failed");
+        return -1;
+    }
 
     memset(&peerAddr, 0, sizeof(peerAddr));
     peerAddr.sin_family = AF_INET;
     peerAddr.sin_port = htons(peerPort);
 
-    if (inet_pton(AF_INET, "127.0.0.1", &peerAddr.sin_addr) <= 0) {
-        perror("[ERROR] Invalid address/ Address not supported");
-        logMessage("System", "System", "[ERROR] Invalid address/ Address not supported");
-        return -1;
-    }
-
     int clientSock = -1;
     std::thread recvThread;
+
     if (portNumber == PORT1) {
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Waiting for the other process to listen
-        clientSock = socket(AF_INET, SOCK_STREAM, 0);
-        if (connect(clientSock, (struct sockaddr*)&peerAddr, sizeof(peerAddr)) < 0) {
-            perror("[ERROR] Connection Failed");
-            logMessage("Client", "Server", "[ERROR] Connection Failed");
-            return -1;
-        }
-        newSocket = accept(sockFd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-        if (newSocket < 0) {
-            perror("[ERROR] Accept failed");
-            logMessage("Server", "Client", "[ERROR] Accept failed");
-            return -1;
-        }
+        // Wait briefly to ensure the second process (PORT2) starts listening
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        clientSock = connectToPeer(portNumber, peerAddr);
+        if (clientSock < 0){
+            logMessage(std::to_string(portNumber),std::to_string(peerPort), "[ERROR] connect To Peer failed");
+            return -1; 
+        } 
+        logMessage(std::to_string(portNumber),std::to_string(peerPort), "[INFO] connected");
+
+        // Wait for an incoming connection from PORT2
+        newSocket = waitForConnection(sockFd, address);
+        if (newSocket < 0){
+            logMessage(std::to_string(peerPort),std::to_string(portNumber), "[ERROR] wait For Connection failed");
+            return -1; 
+        } 
+        logMessage(std::to_string(peerPort),std::to_string(portNumber), "[INFO] connected");
+
+        
+        // Start a separate thread to handle incoming messages on the new socket
         recvThread = std::thread(&communication::receiveMessages, this, newSocket);
     } else {
-        newSocket = accept(sockFd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-        if (newSocket < 0) {
-            perror("[ERROR] Accept failed");
-            logMessage("Server", "Client", "[ERROR] Accept failed");
-            return -1;
+       
+        // Wait for an incoming connection from PORT1
+        newSocket = waitForConnection(sockFd, address);
+        if (newSocket < 0){
+            logMessage(std::to_string(peerPort),std::to_string(portNumber), "[ERROR] wait For Connection failed");
+             return -1; 
         }
+        logMessage(std::to_string(peerPort),std::to_string(portNumber), "[INFO] connected");
+        // Start a separate thread to handle incoming messages on the new socket
         recvThread = std::thread(&communication::receiveMessages, this, newSocket);
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Waiting for the server to listen
-        clientSock = socket(AF_INET, SOCK_STREAM, 0);
-        if (connect(clientSock, (struct sockaddr*)&peerAddr, sizeof(peerAddr)) < 0) {
-            perror("[ERROR] Connection Failed");
-            logMessage("Client", "Server", "[ERROR] Connection Failed");
-            return -1;
+        
+        // Wait briefly to ensure the PORT1 process has started and is listening
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        clientSock = connectToPeer(portNumber, peerAddr);
+        if (clientSock < 0){
+            logMessage(std::to_string(portNumber),std::to_string(peerPort), "[ERROR] wait For Connection failed");
+            return -1; 
         }
+        logMessage(std::to_string(portNumber),std::to_string(peerPort), "[INFO] connected");
+
+        // Clean up: remove state and lock files as they are no longer needed
+        std::remove(STATE_FILE);
+        std::remove(LOCK_FILE);
     }
 
     recvThread.detach();
-    std::cout << "[INFO] Connection initialized successfully" << std::endl;
-    logMessage("System", "System", "[INFO] Connection initialized successfully");
     return clientSock;
-    
 }
+
