@@ -8,12 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp" "CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o.d"
-  "/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/src/draggable_square.cpp" "CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o.d"
-  "/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/src/main.cpp" "CMakeFiles/DraggableSquares.dir/src/main.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/main.cpp.o.d"
-  "/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/src/main_window.cpp" "CMakeFiles/DraggableSquares.dir/src/main_window.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/main_window.cpp.o.d"
-  "/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/src/process.cpp" "CMakeFiles/DraggableSquares.dir/src/process.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/process.cpp.o.d"
-  "/home/rivki/my_qt_project/VehicleComputingSimulator/VehicleComputingSimulator/src/process_dialog.cpp" "CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.o.d"
+  "/home/chaya/git2/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp" "CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o.d"
+  "/home/chaya/git2/VehicleComputingSimulator/src/draggable_square.cpp" "CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o.d"
+  "/home/chaya/git2/VehicleComputingSimulator/src/main.cpp" "CMakeFiles/DraggableSquares.dir/src/main.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/main.cpp.o.d"
+  "/home/chaya/git2/VehicleComputingSimulator/src/main_window.cpp" "CMakeFiles/DraggableSquares.dir/src/main_window.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/main_window.cpp.o.d"
+  "/home/chaya/git2/VehicleComputingSimulator/src/process.cpp" "CMakeFiles/DraggableSquares.dir/src/process.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/process.cpp.o.d"
+  "/home/chaya/git2/VehicleComputingSimulator/src/process_dialog.cpp" "CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.o" "gcc" "CMakeFiles/DraggableSquares.dir/src/process_dialog.cpp.o.d"
   )
 
 # Targets to which this target links.
