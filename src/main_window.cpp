@@ -4,7 +4,6 @@
 #include "main_window.h"
 #include <QFileInfo>
 #include <QDebug>
-#include "log_file.log"
 
 MainWindow::MainWindow(QWidget *parent) 
     : QMainWindow(parent), process1(nullptr), process2(nullptr), timer(nullptr) 
@@ -197,7 +196,7 @@ void MainWindow::endProcesses() {
 
     QString filePath = "log_file.log";
     logHandler.readLogFile(filePath);
-    logHandler.analyzeLogEntries(this,);
+    logHandler.analyzeLogEntries(this,"simulation_data.bson");
 
     for (QProcess* process : runningProcesses) {
         if (process->state() != QProcess::NotRunning) {

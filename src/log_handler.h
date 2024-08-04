@@ -31,6 +31,7 @@ public:
     void sortLogEntries();
     void analyzeLogEntries(QMainWindow *mainWindow,const QString &fileName); 
     void draw(int xSrc, int ySrc, int xDest, int yDest);
+    QVector<int> findProcessCoordinatesById(int processId, const QString &fileName);
 
 private:
     QVector<LogEntry> logEntries;

@@ -60,7 +60,7 @@ void LogHandler::sortLogEntries() {
     std::sort(logEntries.begin(), logEntries.end());
 }
 
-void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,onst QString &fileName) {
+void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,const QString &fileName) {
     // יצירת חלון להציג את זמן הלוג
     QWidget *timeWidget = new QWidget(mainWindow);
     QVBoxLayout *layout = new QVBoxLayout(timeWidget);
@@ -91,7 +91,7 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,onst QString &fileNam
         
         QVector<int> coordinatesSrc = findProcessCoordinatesById(log_entry.srcId,fileName);
         if (!coordinatesSrc.isEmpty()) {
-          qDebug() << "Coordinates for process ID" << processId << ":" << coordinatesSrc[0] << "," << coordinatesSrc[1];
+          qDebug() << "Coordinates for process ID" << log_entry.srcId << ":" << coordinatesSrc[0] << "," << coordinatesSrc[1];
           xsrcId=coordinatesSrc[0];
           ysrcId=coordinatesSrc[1];
         } else {
@@ -99,7 +99,7 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,onst QString &fileNam
         }
          QVector<int> coordinatesDst = findProcessCoordinatesById(log_entry.dstId,fileName);
         if (!coordinatesDst.isEmpty()) {
-          qDebug() << "Coordinates for process ID" << processId << ":" << coordinatesDst[0] << "," << coordinatesDst[1];
+          qDebug() << "Coordinates for process ID" << log_entry.dstId << ":" << coordinatesDst[0] << "," << coordinatesDst[1];
           xdstId=coordinatesDst[0];
           ydstId=coordinatesDst[1];
         } else {
@@ -109,4 +109,33 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,onst QString &fileNam
     }
 
     qDebug() << "Analyzing log entries";
+}
+
+QVector<int> LogHandler::findProcessCoordinatesById(int processId, const QString &fileName) {
+    QVector<int> coordinates;
+
+    // טעינת JSON מהקובץ
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning("Could not open file");
+        return coordinates;
+    }
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    QJsonObject rootObject = document.object();
+    QJsonArray processesArray = rootObject["processes"].toArray();
+
+    // חיפוש ID התהליך ומציאת הקואורדינטות שלו
+    for (const QJsonValue &value : processesArray) {
+        QJsonObject processObject = value.toObject();
+        if (processObject["id"].toInt() == processId) {
+            coordinates.append(processObject["x"].toInt());
+            coordinates.append(processObject["y"].toInt());
+            break;
+        }
+    }
+
+    return coordinates;
 }
