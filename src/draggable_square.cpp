@@ -1,5 +1,4 @@
 #include <QMouseEvent>
-#include <QLabel>
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
@@ -9,12 +8,13 @@
 #include <QString>
 #include "draggable_square.h"
 
-// Update the constructor definition to match the declaration
-DraggableSquare::DraggableSquare(QWidget *parent, const QString &color, int width, int height) 
-    : QWidget(parent), label(new QLabel(this))
+DraggableSquare::DraggableSquare(QWidget *parent, const QString &color, 
+                                 int width, int height) 
+    : QWidget(parent), label(new QLabel(this)), dragging(false)
 {
     setFixedSize(width, height);
     setStyleSheet(color);
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(label);
     setLayout(layout);
@@ -23,6 +23,8 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color, int widt
 void DraggableSquare::setProcess(const Process &process)
 {
     this->process = process;
+    this->id = process.getId();
+
     label->setText(QString("ID: %1\nName: %2\nCMake: %3\nQEMU: %4")
         .arg(process.getId())
         .arg(process.getName())
@@ -40,19 +42,75 @@ const QPoint DraggableSquare::getDragStartPosition() const
     return dragStartPosition;
 }
 
+DraggableSquare::~DraggableSquare()
+{
+    if (label) {
+        delete label;
+        label = nullptr;
+    }
+    
+    qDebug() << "DraggableSquare with ID" << id << "is being destroyed.";
+}
+
 void DraggableSquare::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::RightButton) {
+        if (id < 0 || id > 4) { // Prevent menu for IDs 1 to 4
+            QMenu contextMenu(this);
+
+            QAction *editAction = contextMenu.addAction("Edit");
+            QAction *deleteAction = contextMenu.addAction("Delete");
+
+            QAction *selectedAction = contextMenu.exec(event->globalPos());
+
+            if (selectedAction == editAction) {
+                editSquare(id);
+            } else if (selectedAction == deleteAction) {
+                deleteSquare(id);
+            }
+        }
+    } else if (event->button() == Qt::LeftButton) {
         dragStartPosition = event->pos();
-        initialPosition = pos();
+        dragging = true;
+    } else {
+        QWidget::mousePressEvent(event);
     }
 }
 
 void DraggableSquare::mouseMoveEvent(QMouseEvent *event)
 {
-    if (!(event->buttons() & Qt::LeftButton)) return;
+    if (!dragging) {
+        return;
+    }
+
     QPoint newPos = mapToParent(event->pos() - dragStartPosition);
     newPos.setX(qMax(0, qMin(newPos.x(), parentWidget()->width() - width())));
     newPos.setY(qMax(0, qMin(newPos.y(), parentWidget()->height() - height())));
+    
     move(newPos);
+}
+
+void DraggableSquare::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        dragging = false;
+    }
+
+    QWidget::mouseReleaseEvent(event);
+}
+
+void DraggableSquare::editSquare(int id)
+{
+    MainWindow *mainWindow = qobject_cast<MainWindow*>(parentWidget()->window());
+    if (mainWindow) {
+        mainWindow->editSquare(id);
+    }
+}
+
+void DraggableSquare::deleteSquare(int id)
+{
+    MainWindow *mainWindow = qobject_cast<MainWindow*>(parentWidget()->window());
+    if (mainWindow) {
+        mainWindow->deleteSquare(id);
+    }
 }
