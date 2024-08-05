@@ -21,7 +21,6 @@ public:
         QString status;  // SEND/RECEIVE
 
         bool operator<(const LogEntry& other) const {
-        // השוואה ישירה של ה-timestamp
             return timestamp < other.timestamp;
         }
 
@@ -32,7 +31,6 @@ public:
     void analyzeLogEntries(QMainWindow *mainWindow,const QString &fileName); 
     void draw(int xSrc, int ySrc, int xDest, int yDest);
     QVector<int> findProcessCoordinatesById(int processId, const QString &fileName);
-
 private:
     QVector<LogEntry> logEntries;
 };
