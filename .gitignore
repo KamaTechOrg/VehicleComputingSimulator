@@ -1,0 +1,13 @@
+# Ignore Visual Studio Code settings folder
+.vscode/
+
+# Ignore specific VS Code settings file
+.vscode/settings.json
+
+*mb
+
+*u1
+*u2
+*u3
+
+*run_processes.sh
