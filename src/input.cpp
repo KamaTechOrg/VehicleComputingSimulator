@@ -39,7 +39,7 @@ void Input::s_buildSensors(vector<Sensor*>& sensors)
 json& Input::s_readData()
 {
 	// Read the json file
-	std::ifstream f("C:\\Users\\משתמש\\Desktop\\תכנות\\בוטקאמפ\\Project\\CMakeProject\\json_to_read.json");
+	std::ifstream f("json_to_read.json");
 
 	// Check if the input is correct
 	if (!f.is_open()) {

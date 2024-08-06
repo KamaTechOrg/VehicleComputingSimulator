@@ -70,3 +70,5 @@ if (UNIX)
         target_link_libraries(CMakeProject -fsanitize=address)
     endif()
 endif()
+# Copy json_to_read.json to the build directory
+configure_file(${CMAKE_SOURCE_DIR}/json_to_read.json ${CMAKE_BINARY_DIR}/json_to_read.json COPYONLY)

@@ -27,7 +27,7 @@ int main()
 
     // Vectors for fields, values, and IDs to be updated
     vector<string> fields = { "code", "code", "status", "msg" };
-    vector<string> values = { "800", "500", "\"high\"", "\"aca\"" };
+    vector<string> values = { "800", "500", "\"high\"", "\"aaa\"" };
     vector<int> ids = { 8, 5, 5, 5 };
 
     // Number of updates to process
