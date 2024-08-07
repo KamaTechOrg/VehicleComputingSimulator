@@ -296,6 +296,7 @@ QString MainWindow::getExecutableName(const QString &buildDirPath)
     return QString();
 }
 
+
 void MainWindow::compileBoxes() 
 {
     // Clear previous running processes
@@ -335,8 +336,8 @@ void MainWindow::compileBoxes()
                 logOutput->append("Failed to create build directory " + buildDirPath);
                 continue;
             }
-        }
 
+        }
         // Run cmake
         QProcess* cmakeProcess = new QProcess(this);
         cmakeProcess->setWorkingDirectory(buildDirPath);
@@ -365,20 +366,20 @@ void MainWindow::compileBoxes()
         logOutput->append(makeProcess->readAllStandardError());
         logOutput->append("Successfully compiled " + buildDirPath);
         delete makeProcess;
+        logOutput->append("Successfully compiled " + buildDirPath);
 
+        // Run the compiled program
         QString exeFile = getExecutableName(buildDirPath);
         QString executablePath = buildDir.absoluteFilePath(exeFile);
-        QProcess *runProcess = new QProcess(this);
+        QProcess* runProcess = new QProcess(this);
         runProcess->setWorkingDirectory(buildDirPath);
 
         connect(runProcess, &QProcess::readyReadStandardOutput, [this, runProcess]() {
             logOutput->append(runProcess->readAllStandardOutput());
         });
-
         connect(runProcess, &QProcess::readyReadStandardError, [this, runProcess]() {
             logOutput->append(runProcess->readAllStandardError());
         });
-
         runProcess->start(executablePath, QStringList());
         if (!runProcess->waitForStarted()) {
             logOutput->append("Failed to start the program in " + buildDirPath);
@@ -391,9 +392,24 @@ void MainWindow::compileBoxes()
     }
 }
 
-void MainWindow::editSquare(int id) 
+void MainWindow::editSquare(int id)
 {
-    logOutput->append(QString("Edit square with ID: %1").arg(id));
+    for (DraggableSquare *square : squares)
+    {
+        if (square->getProcess().getId() == id) {
+            ProcessDialog dialog(this);
+            dialog.setId(square->getProcess().getId());
+            dialog.setName(square->getProcess().getName());
+            dialog.setCMakeProject(square->getProcess().getCMakeProject());
+            dialog.setQEMUPlatform(square->getProcess().getQEMUPlatform());
+
+            if (dialog.exec() == QDialog::Accepted && dialog.isValid()) {
+                // Update the process details
+                square->setProcess(Process(dialog.getId(), dialog.getName(), dialog.getCMakeProject(), dialog.getQEMUPlatform()));
+            }
+            break;
+        }
+    }
 }
 
 void MainWindow::deleteSquare(int id) 
