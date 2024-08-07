@@ -1,6 +1,6 @@
 #include "input.h"
 #include "sensor.h"
-#include "speedSensor.h"
+#include "speed_sensor.h"
 
 // Function that builds the sensors according to the json file
 void Input::s_buildSensors(vector<Sensor*>& sensors)
@@ -17,7 +17,7 @@ void Input::s_buildSensors(vector<Sensor*>& sensors)
 		// Create parallel sensors
 		switch (sensorType) {
 		case SensorsTypes::Speed: {
-			sensorPtr = new speedSensor(stoi(sensor["id"]));
+			sensorPtr = new SpeedSensor(stoi(sensor["id"]));
 			break;
 		}
 		case SensorsTypes::TirePressure: {
