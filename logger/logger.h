@@ -14,21 +14,23 @@
 #endif
 
 class logger {
-public:
+   public:
     enum class LogLevel {
         ERROR,
         INFO,
         DEBUG,
     };
-    logger(){}
+    logger() {}
     logger(std::string componentName);
     void logMessage(LogLevel level, const std::string &message);
-    void logMessage(LogLevel level, std::string src, std::string dst, const std::string &message);
+    void logMessage(LogLevel level, std::string src, std::string dst,
+                    const std::string &message);
     void initializeLogFile();
     std::string getLogFileName();
     std::string sharedLogFileName = "shared_log_file_name.txt";
     void cleanUp();
-private:
+
+   private:
     static std::string logLevelToString(LogLevel level);
     static bool shouldLog(LogLevel level);
     static std::string getElapsedTime();
@@ -39,4 +41,4 @@ private:
     static std::chrono::system_clock::time_point initTime;
 };
 
-#endif // LOGGER_H
+#endif  // LOGGER_H
