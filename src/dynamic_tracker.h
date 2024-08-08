@@ -1,21 +1,18 @@
 #ifndef __DYNAMIC_TRACKER_H__
 #define __DYNAMIC_TRACKER_H__
 #include <opencv2/opencv.hpp>
+#include "tracker_object_struct.h"
+#include "detection_object_struct.h"
 #include "object_type_enum.h"
-
-struct TrackerObject {
-    int id;
-    ObjectType type;
-    cv::Rect prevPosition;
-    cv::Rect currentPosition;
-};
 
 class DynamicTracker {
    public:
     // loading the moodle
     void init();
     void track(const std::shared_ptr<cv::Mat>& prevFrame,
-               const std::shared_ptr<cv::Mat>& currentFrame);
+               const std::shared_ptr<cv::Mat>& currentFrame,
+               const std::vector<DetectionObject>& prevOutput,
+               const std::vector<DetectionObject>& currentOutput);
     //--maybe--:--pre and after process
    private:
     std::shared_ptr<cv::Mat> prevFrame;

@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include "detector.h"
 #include "dynamic_tracker.h"
+#include "alerter.h"
 
 class Manager {
    public:
@@ -11,12 +12,16 @@ class Manager {
     // Gets the currentFrame and sends it for detection and then tracking,
     // finally if necessary sends a alert
     void processing(const cv::Mat& newFrame);
-
+    void findDifference();
+    void init();
    private:
     std::shared_ptr<cv::Mat> prevFrame;
     std::shared_ptr<cv::Mat> currentFrame;
+    std::vector<DetectionObject> prevOutput;
+    std::vector<DetectionObject> currentOutput;
     Detector detector;
     DynamicTracker dynamicTracker;
+    Alerter alerter;
     // Moves the current image to the prevFrame and clears the memory of the currentFrame;
     void prepareForTheNext();
 };
