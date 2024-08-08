@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QFormLayout>
+#include <QComboBox>
 
 class ProcessDialog : public QDialog
 {
@@ -27,7 +28,7 @@ private:
     QLineEdit *idEdit;
     QLineEdit *nameEdit;
     QLineEdit *cmakeProjectEdit;
-    QLineEdit *qemuPlatformEdit;
+    QComboBox *qemuPlatformCombo;
 };
 
 #endif // PROCESSDIALOG_H
