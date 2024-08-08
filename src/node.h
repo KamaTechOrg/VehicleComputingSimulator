@@ -1,4 +1,7 @@
-#pragma once
+#ifndef __NODE_H__
+#define __NODE_H__
+
+
 #include "condition.h"
 
 class Node : public Condition {
@@ -12,3 +15,4 @@ public:
 	// Function that updates the status of all nodes that should change
 	virtual void updateTree() = 0;
 };
+#endif // _NODE_H_

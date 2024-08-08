@@ -1,4 +1,8 @@
-#pragma once
+
+#ifndef __CONDITION_H__
+#define __CONDITION_H__
+
+
 #include <vector>
 #include <iostream>
 using namespace std;
@@ -19,3 +23,4 @@ public:
 	virtual void print() const = 0;
 	virtual void printNice() const = 0;
 };
+#endif // _CONDITION_H_

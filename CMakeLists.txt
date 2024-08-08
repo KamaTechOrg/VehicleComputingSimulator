@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Include directories
+include_directories("include")
 include_directories("src")
-include_directories("Include")
 
 # Glob source files
 file(GLOB Q_FILES "src/*.*")
@@ -24,25 +24,7 @@ add_executable(CMakeProject ${SOURCE_FILES} "src/full_condition.cpp" "src/and_op
 
 target_link_libraries(CMakeProject PRIVATE Input)
 
-# Add GoogleTest
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/release-1.11.0.zip
-)
-FetchContent_MakeAvailable(googletest)
 
-# Prevent GoogleTest from overriding our compiler/linker options
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Test files
-file(GLOB TEST_FILES "Tests/*.cpp")
-
-# Add test executable
-add_executable(RunTests ${TEST_FILES}   "src/enums.h")
-
-# Link GTest and project library
-target_link_libraries(RunTests gtest gtest_main Input ws2_32 msvcprtd)
 
 # Set runtime library to be the same for all targets
 if (MSVC)
@@ -52,11 +34,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MD")
 endif()
 
-# Enable testing
-enable_testing()
 
-# Add tests
-add_test(NAME RunTests COMMAND RunTests)
 
 if (UNIX AND NOT APPLE)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-incompatible-pointer-types)

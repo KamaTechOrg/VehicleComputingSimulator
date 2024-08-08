@@ -1,4 +1,4 @@
-#pragma once
+
 #include <iostream>
 #include <vector>
 #include "sensor.h"
@@ -37,9 +37,9 @@ int main()
 
     // Build the condition tree
     FullCondition cond("|([5]&(|(=(code,500),<(status,\"high\")),=(msg,\"aaa\")),[5]&(|(=(code,500),<(status,\"high\")),>(msg,\"aaa\")))", map1);
-    g_instanceGP.conditions.insert({ cond.id, cond});
+    g_instanceGP.conditions.insert({ cond.id, &cond});
     FullCondition c2("[5]|(=(code,500),<(status,\"high\"))", map2);
-    g_instanceGP.conditions.insert({ c2.id, c2 });
+    g_instanceGP.conditions.insert({ c2.id, &c2 });
 
     // --Test updates in the sensors--
 
@@ -63,7 +63,7 @@ int main()
             sensor->updateTrueRoots(fields[i], values[i]);
             cout << "After update in sensor " << ids[i] << ": " << fields[i] << " " << values[i] << endl;
             for (int cId : g_instanceGP.trueConditions)
-                sendToActions(g_instanceGP.conditions[cId].actions);
+                sendToActions(g_instanceGP.conditions[cId]->actions);
         }
     }
 	

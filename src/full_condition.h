@@ -1,4 +1,8 @@
-#pragma once
+
+#ifndef __FULL_CONDITION_H__
+#define __FULL_CONDITION_H__
+
+
 #include <map>
 #include <string>
 #include <algorithm>
@@ -34,3 +38,4 @@ public:
 	FullCondition() {};
 
 };
+#endif // _FULL_CONDITION_H_

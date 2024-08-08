@@ -1,4 +1,8 @@
-#pragma once
+
+#ifndef __OPERATOR_NODE_H__
+#define __OPERATOR_NODE_H__
+
+
 #include<iostream>
 #include <vector>
 #include <optional>
@@ -17,3 +21,4 @@ public:
 	virtual void updateStatus() = 0;
 
 };
+#endif // _OPERATOR_NODE_H_
