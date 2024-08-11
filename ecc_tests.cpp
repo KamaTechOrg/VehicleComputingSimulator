@@ -4,16 +4,15 @@
 // This test case checks the encryption and decryption functionality of the ECC class.
 TEST(ECCTest, EncryptDecrypt) {
     // Create an ECC object
-    ECC ecc;
-
+    init();
     // The message to be encrypted
     std::string message = "hello";
 
     // Encrypt the message
-    auto cipher = ecc.encrypt(message);
+    auto cipher = encrypt(message);
 
     // Decrypt the message
-    std::string decryptedMessage = ecc.decrypt(cipher);
+    std::string decryptedMessage = decrypt(cipher);
 
     // Check if the decrypted message matches the original message
     EXPECT_EQ(message, decryptedMessage);

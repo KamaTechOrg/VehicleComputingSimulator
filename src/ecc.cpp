@@ -2,23 +2,25 @@
 #include <gmpxx.h>
 #include <gmp.h>
 #include <iostream>
-#include <iostream>
 #include <bitset>
 #include <string>
+#include "ecc.h"
 
-// Prime number for the elliptic curve
-std::string decimalString = "115792089237316195423570985008687907853269984665640564039457584007913129639936";
-const mpz_class ECC::prime(decimalString);
-const mpz_class ECC::a = 0;// Curve parameter a
-const mpz_class ECC::b = 7;// Curve parameter b
-//Curve basic point
-const Point ECC::basicPoint(mpz_class("55066263022277343669578718895168534326250603453777594175500187360389116729240"),
-                     mpz_class("32670510020758816978083085130507043184471273380659243275938904335757337482424"));
+unsigned int added = 0;
+mpz_class privateKey;
+Point publicKey;
+mpz_class k;
 
-/**
- * ECC constructor.
- */
-ECC::ECC()  
+// Define static constants
+const mpz_class prime("115792089237316195423570985008687907853269984665640564039457584007913129639936");
+const mpz_class a=0; 
+const mpz_class b=7; 
+const Point basicPoint(
+    mpz_class("55066263022277343669578718895168534326250603453777594175500187360389116729240"),
+    mpz_class("32670510020758816978083085130507043184471273380659243275938904335757337482424")
+);
+
+void init()  
 {
     privateKey = generatePrivateKey();
     publicKey = generatePublicKey();
@@ -31,7 +33,7 @@ ECC::ECC()
  * @return The point on the elliptic curve.
  */
 
-Point ECC::convertMessageToPoint(const std::string& text) 
+Point convertMessageToPoint(const std::string& text) 
 {
     std::string binaryStr;
     for (char c : text) 
@@ -56,7 +58,7 @@ Point ECC::convertMessageToPoint(const std::string& text)
  * @param point The point to convert.
  * @return The message string.
  */
-std::string ECC::convertPointToMessage(const Point& point) 
+std::string convertPointToMessage(const Point& point) 
 {
     mpz_class x = point.x - mpz_class(added);
     std::string binaryStr = x.get_str(2);
@@ -83,7 +85,7 @@ std::string ECC::convertPointToMessage(const Point& point)
  * @param p The modulus.
  * @return True if the square root exists, false otherwise.
  */
-bool ECC::modularSqrt(mpz_t result, const mpz_t a, const mpz_t p) {
+bool modularSqrt(mpz_t result, const mpz_t a, const mpz_t p) {
     mpz_t q, s, z, m, c, t, r, b, temp;
     mpz_inits(q, s, z, m, c, t, r, b, temp, NULL);
 
@@ -149,7 +151,7 @@ bool ECC::modularSqrt(mpz_t result, const mpz_t a, const mpz_t p) {
  * Generates a private key for ECC.
  * @return The generated private key.
  */
-mpz_class ECC::generatePrivateKey() 
+mpz_class generatePrivateKey() 
 {
     gmp_randclass rng(gmp_randinit_default);
     rng.seed(time(nullptr));
@@ -160,7 +162,7 @@ mpz_class ECC::generatePrivateKey()
  * Generates a random value k for ECC.
  * @return The generated value of k.
  */
-mpz_class ECC::generateK() 
+mpz_class generateK() 
 {
     gmp_randclass rng(gmp_randinit_default);
     rng.seed(time(nullptr));
@@ -171,7 +173,7 @@ mpz_class ECC::generateK()
  * Generates a public key for ECC.
  * @return The generated public key.
  */
-Point ECC::generatePublicKey() 
+Point generatePublicKey() 
 {
     return multiply(basicPoint, privateKey);
 }
@@ -181,7 +183,7 @@ Point ECC::generatePublicKey()
  * @param x The x-coordinate.
  * @return The y-coordinate.
  */
-mpz_class ECC::calculateY(mpz_class x) 
+mpz_class calculateY(mpz_class x) 
 {
     mpz_class rhs = mod(x * x * x + a * x + b);
     mpz_class y;
@@ -196,7 +198,7 @@ mpz_class ECC::calculateY(mpz_class x)
  * @param P The point to check.
  * @return True if the point is on the curve, false otherwise.
  */
-bool ECC::isOnCurve(Point P) 
+bool isOnCurve(Point P) 
 {
     return mod(P.y * P.y) == mod(P.x * P.x * P.x + a * P.x + b);
 }
@@ -206,7 +208,7 @@ bool ECC::isOnCurve(Point P)
  * @param x The value to reduce.
  * @return The reduced value.
  */
-mpz_class ECC::mod(mpz_class x) 
+mpz_class mod(mpz_class x) 
 {
     mpz_class result;
     mpz_mod(result.get_mpz_t(), x.get_mpz_t(), prime.get_mpz_t());
@@ -218,7 +220,7 @@ mpz_class ECC::mod(mpz_class x)
  * @param base The value to invert.
  * @return The modular inverse.
  */
-mpz_class ECC::inverse(mpz_class base) 
+mpz_class inverse(mpz_class base) 
 {
     mpz_class result;
     mpz_invert(result.get_mpz_t(), base.get_mpz_t(), prime.get_mpz_t());
@@ -231,7 +233,7 @@ mpz_class ECC::inverse(mpz_class base)
  * @param Q The second point.
  * @return The resulting point.
  */
-Point ECC::add(Point P, Point Q) 
+Point add(Point P, Point Q) 
 {
     mpz_class incline;
     if (P.x == 0 && P.y == 0)
@@ -259,7 +261,7 @@ Point ECC::add(Point P, Point Q)
  * @param times The scalar to multiply by.
  * @return The resulting point.
  */
-Point ECC::multiply(Point P, mpz_class times)
+Point multiply(Point P, mpz_class times)
 {
     Point R(0, 0);
     Point N = P;
@@ -278,7 +280,7 @@ Point ECC::multiply(Point P, mpz_class times)
  * @param message The message text to encrypt.
  * @return A pair of points representing the ciphertext.
  */
-EncryptedMessage ECC::encrypt(std::string message) 
+EncryptedMessage encrypt(std::string message) 
 {
     Point meesagePoint = convertMessageToPoint(message);
     Point C1 = multiply(basicPoint, k);
@@ -291,7 +293,7 @@ EncryptedMessage ECC::encrypt(std::string message)
  * @param ciphertext The ciphertext to decrypt.
  * @return The decrypted message point.
  */
-std::string ECC::decrypt(EncryptedMessage ciphertext)
+std::string decrypt(EncryptedMessage ciphertext)
 {
     Point temp = multiply(Point(ciphertext.c1X,calculateY(ciphertext.c1X) * (ciphertext.c1Y ? -1 : 1)), privateKey);
     Point negTemp = Point(temp.x, mod(-temp.y));
