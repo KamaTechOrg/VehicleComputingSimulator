@@ -4,20 +4,35 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <vector>
 
-//Structure to hold the state of the SHA-256 hash computation.
-struct SHA256State{
-    uint32_t result[8];        // Holds the current hash state
-    uint8_t message[64];       // Buffer to store the current message block
-    size_t messageSize = 0;    // Size of the current message block
-    size_t bitLength = 0;      // Total length of the message in bits
+class Sha256
+{
+private:
+    uint32_t state[8];          // Internal state of the SHA-256 hash function
+    uint32_t result[8];         // Intermediate hash values
+    uint8_t message[64];        // Message block (64 bytes)
+    size_t messageSize;         // Size of the current message block
+    size_t bitLength;           // Total length of the input message in bits
+
+    void padding();             // Applies padding to the message
+    void transform();           // Processes a message block to update hash values
+
+public:
+    // Constructor: Initializes the SHA-256 state and message block
+    Sha256();
+
+    // Updates the hash with additional data
+    void update(const std::vector<uint8_t>& data);
+
+    // Finalizes the hash computation and returns the hash value
+    std::vector<uint8_t> finalize();
+
+    // Returns the current hash value
+    std::vector<uint8_t> getHash();
+
+    // Computes the SHA-256 hash of the given input
+    std::vector<uint8_t> computeSHA256(const std::vector<uint8_t>& input);
 };
-
-// Function prototypes for SHA-256 hashing
-void sha256_update(SHA256State& state, const std::vector<uint8_t>& data);
-void padding(SHA256State& state);
-std::vector<uint8_t> sha256_finalize(SHA256State& state);
-std::vector<uint8_t> sha256_compute(const std::vector<uint8_t>& input);
-void transform(SHA256State& state);
 
 #endif // SHA256_H
