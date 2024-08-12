@@ -58,3 +58,4 @@ Desktop.ini
 
 #clangd library
 .cache
+.clang-format
