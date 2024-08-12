@@ -460,4 +460,36 @@ void MainWindow::deleteSquare(int id)
     squarePositions.remove(id);
 }
 
+
+// void MainWindow::deleteSquare(int squareId)
+// {
+//     if (runningProcesses.contains(squareId)) {
+//         Process process = runningProcesses.value(squareId);
+
+//         // Find and remove the corresponding square widget
+//         QWidget* targetSquare = nullptr;
+//         for (QWidget* square : squares) {
+//             // Assuming the square ID can be associated with the widget
+//             // You may need to modify this based on your implementation
+//             if (square->property("id").toInt() == squareId) {
+//                 targetSquare = square;
+//                 break;
+//             }
+//         }
+
+//         if (targetSquare) {
+//             squares.removeOne(targetSquare);
+//             targetSquare->deleteLater(); // Safely delete the widget
+//         }
+
+//         runningProcesses.remove(squareId);
+//         squarePositions.remove(squareId);
+//         usedIds.remove(squareId);
+
+//         // Optionally, update the UI
+//         update();
+//     }
+// }
+
+
 #include "moc_main_window.cpp"

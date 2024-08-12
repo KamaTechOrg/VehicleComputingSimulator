@@ -38,15 +38,21 @@ public:
     void showTimerInput();
     void timerTimeout();
     void openImageDialog();
-    
-private slots:
-    void createNewProcess();
+    QLineEdit* getTimeInput() const { return timeInput; }
+    QPushButton* getStartButton() const { return startButton; }
+    QTimer* getTimer() const { return timer; }
+    QTextEdit* getLogOutput() const { return logOutput; }
+
+
 
 public slots:
+    void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
 
 private:
+    friend class TestMainWindow;
+
     void addProcessSquare(const Process &process);
     bool isUniqueId(int id);
     void addId(int id);
