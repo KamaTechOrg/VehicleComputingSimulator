@@ -5,20 +5,14 @@
 #include "input.h"
 #include "full_condition.h"
 #include "global_properties.h"
+#include "test_helper.h"
 using namespace std;
 
-GlobalProperties& g_instanceGP = GlobalProperties::getInstance();
-
-// Fuction that activates all actions in the vector 
-void sendToActions(map<int, string> actions) {
-	for (pair<int, string> action : actions) {
-        Sensor* destinationSensor = g_instanceGP.sensors[action.first];
-		destinationSensor->doAction(action.second);
-	}
-}
 
 int main()
 {
+    GlobalProperties& g_instanceGP = GlobalProperties::getInstance();
+
     map<int, string> map1 = { {5, "slow down"}, {8, "ccc"} };
     map<int, string> map2 = { {8, "good!!!"} };
 
