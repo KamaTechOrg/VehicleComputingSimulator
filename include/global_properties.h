@@ -19,6 +19,8 @@ private:
 
 public:
 	static GlobalProperties& getInstance();
+	static void resetInstance();
+
 	unordered_map<int, Sensor*> sensors;
 	unordered_map<int, FullCondition*> conditions;
 	unordered_set<int> trueConditions;

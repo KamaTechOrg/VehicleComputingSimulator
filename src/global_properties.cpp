@@ -15,3 +15,7 @@ GlobalProperties& GlobalProperties::getInstance()
 }
 
 unique_ptr<GlobalProperties> GlobalProperties::instance = NULL;
+void GlobalProperties::resetInstance()
+{
+  instance.reset(new GlobalProperties());
+}
