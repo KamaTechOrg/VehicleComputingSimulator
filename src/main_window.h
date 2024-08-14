@@ -41,6 +41,8 @@ public:
     
 private slots:
     void createNewProcess();
+    void showSimulation(); 
+    void loadSimulation();
 
 public slots:
     void editSquare(int id);
@@ -62,6 +64,7 @@ private:
     QPushButton *startButton;
     QPushButton *endButton;
     QPushButton *timerButton;
+    QPushButton *showSimulationButton; 
     QLineEdit *timeInput;
     QLabel *timeLabel;
     QTextEdit *logOutput;

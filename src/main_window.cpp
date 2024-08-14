@@ -29,6 +29,20 @@ MainWindow::MainWindow(QWidget *parent)
     timeLabel = new QLabel("Enter time in seconds:", this);
     logOutput = new QTextEdit(this);
     QPushButton *chooseButton = new QPushButton("Choose Image", this);
+    QPushButton *showSimulationButton = new QPushButton("Show\nSimulation", this);
+    showSimulationButton->setStyleSheet("QPushButton {"
+                                        "border: 2px solid #8f8f91;"
+                                        "border-radius: 25px;"  // הקוטר כאן הוא חצי מהגובה והרוחב כדי לקבל עיגול
+                                        "background-color: #d1d1d1;"
+                                        "min-width: 50px;"
+                                        "min-height: 50px;"
+                                        "font-size: 14px;"
+                                        "}"
+                                        "QPushButton:pressed {"
+                                        "background-color: #a8a8a8;"
+                                        "}");
+    QPushButton *loadSimulationButton = new QPushButton("LOAD\nSIMULATION", toolbox);  
+    loadSimulationButton->setFixedHeight(loadSimulationButton->sizeHint().height() * 1.5);                                  
 
     timeLabel->hide();
     timeInput->hide();
@@ -37,7 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(toolbox);
 
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
+    
     toolboxLayout->addWidget(addProcessButton);
+    toolboxLayout->insertWidget(1, showSimulationButton);
+    toolboxLayout->insertWidget(2, loadSimulationButton);
     toolboxLayout->addStretch();
 
     connect(addProcessButton, &QPushButton::clicked, this, &MainWindow::createNewProcess);
@@ -45,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
     connect(timerButton, &QPushButton::clicked, this, &MainWindow::showTimerInput);
     connect(chooseButton, &QPushButton::clicked, this, &MainWindow::openImageDialog);
+    connect(showSimulationButton, &QPushButton::clicked, this, &MainWindow::showSimulation);
+    connect(loadSimulationButton, &QPushButton::clicked, this, &MainWindow::loadSimulation);
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
@@ -82,7 +101,13 @@ MainWindow::MainWindow(QWidget *parent)
     addProcessSquare(busManagerProcess, id, "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #0000FF, stop: 1 #800080);");
     addId(id++);
 }
+void MainWindow::showSimulation() {
+   // Here you will implement the functionality you want to run when the button is clicked
+}
 
+void MainWindow::loadSimulation() {
+
+}
 
 MainWindow::~MainWindow() 
 {

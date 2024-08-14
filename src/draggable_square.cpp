@@ -6,6 +6,9 @@
 #include <QWidget>
 #include <QLabel>
 #include <QString>
+#include <QDebug>
+#include <QMenu>
+#include "main_window.h"
 #include "draggable_square.h"
 
 DraggableSquare::DraggableSquare(QWidget *parent, const QString &color, 
