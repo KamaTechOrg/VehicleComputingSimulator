@@ -1,0 +1,1210 @@
+[2024-08-05 19:03:58] ID Process: manager INFO create a server socket
+[2024-08-05 19:03:58] ID Process: manager INFO ï¿½ï¿½ï¿½B
+[2024-08-05 19:22:39] ID Process: 1 INFO create a client socket
+[2024-08-05 19:22:39] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-05 19:22:39] ID Process: 1 INFO connection succeed to server socket
+[2024-08-05 19:22:39] ID Process: manager ERROR ection closed or error occurred in client socket number: 
+[2024-08-05 19:22:39] ID Process: 1 ERROR sending id for init failed from 1 to 0 Sequence Number 2023929792
+[2024-08-05 19:22:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-05 19:22:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 1
+[2024-08-05 19:22:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 2
+[2024-08-05 19:22:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 3
+[2024-08-05 19:22:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 4
+[2024-08-05 19:23:28] ID Process: 2 INFO create a client socket
+[2024-08-05 19:23:28] ID Process: 2 INFO connection succeed to server socket
+[2024-08-05 19:23:28] ID Process: manager INFO ction succeed to client socket number: 
+[2024-08-05 19:23:28] ID Process: 2 ERROR sending id for init failed from 2 to 0 Sequence Number 1123010496
+[2024-08-05 19:23:28] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 0
+[2024-08-05 19:23:28] ID Process: manager ERROR ction closed or error occurred in client socket number: 
+[2024-08-05 19:23:28] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 1
+[2024-08-05 19:23:28] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 2
+[2024-08-05 19:23:28] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 3
+[2024-08-05 19:23:28] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 4[2024-08-06 00:10:08] ID Process: manager INFO create a server socket
+[2024-08-06 00:10:08] ID Process: manager INFO C
+]
+[2024-08-06 00:10:58] ID Process: 1 INFO create a client socket
+[2024-08-06 00:10:58] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:10:58] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:10:58] ID Process: manager ERROR Connection closed or error occurred
+[2024-08-06 00:10:58] ID Process: 1 ERROR sending id for init failed from 1 to 0 Sequence Number 3004020672
+[2024-08-06 00:10:58] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-06 00:10:58] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 1
+[2024-08-06 00:10:58] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 2
+[2024-08-06 00:10:58] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 3
+[2024-08-06 00:10:58] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 4
+[2024-08-06 00:13:40] ID Process: manager INFO create a server socket
+[2024-08-06 00:13:40] ID Process: manager INFO C
+]
+[2024-08-06 00:14:03] ID Process: manager INFO create a server socket
+[2024-08-06 00:14:03] ID Process: manager INFO C
+]
+[2024-08-06 00:14:14] ID Process: 1 INFO create a client socket
+[2024-08-06 00:14:14] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:14:14] ID Process: manager ERROR Connection closed or error occurred
+[2024-08-06 00:14:14] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:14:14] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-06 00:14:14] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 1
+[2024-08-06 00:14:14] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 2
+[2024-08-06 00:14:14] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 3
+[2024-08-06 00:14:14] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 4
+[2024-08-06 00:14:14] ID Process: 1 ERROR nection closed or error occurred in client socket number: 
+[2024-08-06 00:14:46] ID Process: 2 INFO create a client socket
+[2024-08-06 00:14:46] ID Process: 2 ERROR error to connect to server
+[2024-08-06 00:15:29] ID Process: manager INFO create a server socket
+[2024-08-06 00:15:29] ID Process: manager INFO C
+]
+[2024-08-06 00:15:42] ID Process: 1 INFO create a client socket
+[2024-08-06 00:15:42] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:15:42] ID Process: manager ERROR Connection closed or error occurred
+[2024-08-06 00:15:42] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:15:42] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-06 00:15:42] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:19:13] ID Process: manager INFO create a server socket
+[2024-08-06 00:19:13] ID Process: manager INFO C
+]
+[2024-08-06 00:19:48] ID Process: 1 INFO create a client socket
+[2024-08-06 00:19:48] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:19:48] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:19:48] ID Process: manager ERROR Connection closed or error occurred
+[2024-08-06 00:19:48] ID Process: 1 ERROR sending id for init failed from 1 to 0 Sequence Number 4221425600
+[2024-08-06 00:19:48] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-06 00:19:48] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 1
+[2024-08-06 00:19:48] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 2
+[2024-08-06 00:19:48] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 3
+[2024-08-06 00:19:48] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 4
+[2024-08-06 00:24:18] ID Process: manager INFO create a server socket
+[2024-08-06 00:24:18] ID Process: manager INFO C
+]
+[2024-08-06 00:24:39] ID Process: 1 INFO create a client socket
+[2024-08-06 00:24:39] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:24:39] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:24:39] ID Process: 1 ERROR sending id for init failed from 1 to 0 Sequence Number 738342848
+[2024-08-06 00:24:39] ID Process: manager INFO recieve ID for init from 1 to 0 Sequence Number 738342848
+[2024-08-06 00:24:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-06 00:24:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 1
+[2024-08-06 00:24:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 2
+[2024-08-06 00:24:39] ID Process: manager ERROR ection closed or error occurred in client socket number: 
+[2024-08-06 00:24:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 3
+[2024-08-06 00:24:39] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 4
+[2024-08-06 00:31:16] ID Process: manager INFO create a server socket
+[2024-08-06 00:31:16] ID Process: manager INFO C
+]
+[2024-08-06 00:31:25] ID Process: 1 INFO create a client socket
+[2024-08-06 00:31:25] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:31:25] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:31:25] ID Process: 1 ERROR sending id for init failed from 1 to 0 Sequence Number 1172334528
+[2024-08-06 00:31:25] ID Process: manager INFO recieve ID for init from 1 to 0 Sequence Number 1172334528
+[2024-08-06 00:31:25] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 0
+[2024-08-06 00:31:25] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 1
+[2024-08-06 00:31:25] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 2
+[2024-08-06 00:31:25] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 0
+[2024-08-06 00:31:25] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 3
+[2024-08-06 00:31:25] ID Process: 1 ERROR sending failed from 1 to 2 Sequence Number 4
+[2024-08-06 00:31:25] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 1
+[2024-08-06 00:31:25] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 2
+[2024-08-06 00:31:25] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 3
+[2024-08-06 00:31:25] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 4
+[2024-08-06 00:31:48] ID Process: 2 INFO create a client socket
+[2024-08-06 00:31:48] ID Process: 2 INFO connection succeed to server socket
+[2024-08-06 00:31:48] ID Process: manager INFO ction succeed to client socket number: 
+[2024-08-06 00:31:48] ID Process: 2 ERROR sending id for init failed from 2 to 0 Sequence Number 1298065344
+[2024-08-06 00:31:48] ID Process: manager INFO recieve ID for init from 2 to 0 Sequence Number 1298065344
+[2024-08-06 00:31:48] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 0
+[2024-08-06 00:31:48] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 1
+[2024-08-06 00:31:48] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 2
+[2024-08-06 00:31:48] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 3
+[2024-08-06 00:31:48] ID Process: 2 ERROR sending failed from 2 to 1 Sequence Number 4
+[2024-08-06 00:31:48] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 0
+[2024-08-06 00:31:48] ID Process: manager ERROR sending failed from 2 to 1 Sequence Number 0
+[2024-08-06 00:31:48] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 1
+[2024-08-06 00:31:48] ID Process: manager ERROR sending failed from 2 to 1 Sequence Number 1
+[2024-08-06 00:31:48] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 2
+[2024-08-06 00:31:48] ID Process: manager ERROR sending failed from 2 to 1 Sequence Number 2
+[2024-08-06 00:31:48] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 3
+[2024-08-06 00:31:48] ID Process: manager ERROR sending failed from 2 to 1 Sequence Number 3
+[2024-08-06 00:31:48] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 4
+[2024-08-06 00:31:48] ID Process: manager ERROR sending failed from 2 to 1 Sequence Number 4
+[2024-08-06 00:33:10] ID Process: manager INFO create a server socket
+[2024-08-06 00:33:10] ID Process: manager INFO C
+]
+[2024-08-06 00:33:18] ID Process: 1 INFO create a client socket
+[2024-08-06 00:33:18] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:33:18] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:33:18] ID Process: manager INFO recieve ID for init from 1 to 0 Sequence Number 1956493248
+[2024-08-06 00:33:18] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 1956493248
+[2024-08-06 00:33:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:33:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 0
+[2024-08-06 00:33:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:33:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 1
+[2024-08-06 00:33:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:33:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 2
+[2024-08-06 00:33:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:33:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 3
+[2024-08-06 00:33:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:33:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 4
+[2024-08-06 00:33:26] ID Process: 2 INFO create a client socket
+[2024-08-06 00:33:26] ID Process: 2 INFO connection succeed to server socket
+[2024-08-06 00:33:26] ID Process: manager INFO ction succeed to client socket number: 
+[2024-08-06 00:33:26] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 2016278464
+[2024-08-06 00:33:26] ID Process: manager INFO recieve ID for init from 2 to 0 Sequence Number 2016278464
+[2024-08-06 00:33:26] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-06 00:33:26] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 0
+[2024-08-06 00:33:26] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-06 00:33:26] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-06 00:33:26] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-06 00:33:26] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 1
+[2024-08-06 00:33:26] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 0
+[2024-08-06 00:33:26] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-06 00:33:26] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-06 00:33:26] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 2
+[2024-08-06 00:33:26] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-06 00:33:26] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-06 00:33:26] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 3
+[2024-08-06 00:33:26] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-06 00:33:26] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 4
+[2024-08-06 00:33:26] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-06 00:33:26] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 1
+[2024-08-06 00:33:26] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 2
+[2024-08-06 00:33:26] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 3
+[2024-08-06 00:33:26] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 4
+[2024-08-06 00:33:39] ID Process: manager ERROR ction closed or error occurred in client socket number: 
+[2024-08-06 00:33:42] ID Process: manager ERROR ection closed or error occurred in client socket number: 
+[2024-08-06 00:34:12] ID Process: manager INFO create a server socket
+[2024-08-06 00:34:12] ID Process: manager INFO ï¿½ï¿½ï¿½B
+[2024-08-06 00:34:21] ID Process: 1 INFO create a client socket
+[2024-08-06 00:34:21] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:34:21] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:34:21] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 116398016
+[2024-08-06 00:34:21] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:34:21] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:34:21] ID Process: manager INFO recieved packet from 1 to 0 Sequence Number 116398016
+[2024-08-06 00:34:21] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:34:21] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:34:21] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:34:21] ID Process: 1 ERROR nection closed or error occurred in client socket number: 
+
+
+[2024-08-06 00:35:54] ID Process: manager INFO create a server socket
+[2024-08-06 00:35:54] ID Process: manager INFO ­ÿÿB
+[2024-08-06 00:36:10] ID Process: 1 INFO create a client socket
+[2024-08-06 00:36:10] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:36:10] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:36:10] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 3828643776
+[2024-08-06 00:36:10] ID Process: manager INFO recieved packet from 1 to 0 Sequence Number 3828643776
+[2024-08-06 00:36:10] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:36:10] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:36:10] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:36:10] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:36:10] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:36:10] ID Process: 1 ERROR nection closed or error occurred in client socket number: 
+[2024-08-06 00:38:59] ID Process: manager INFO create a server socket
+[2024-08-06 00:38:59] ID Process: manager INFO ­ÿÿB
+[2024-08-06 00:39:14] ID Process: 1 INFO create a client socket
+[2024-08-06 00:39:14] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:39:14] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:39:14] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 707037120
+[2024-08-06 00:39:14] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:39:14] ID Process: manager INFO recieved packet from 1 to 0 Sequence Number 707037120
+[2024-08-06 00:39:14] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:39:14] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:39:14] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:39:14] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:39:14] ID Process: 1 ERROR nection closed or error occurred in client socket number: 
+[2024-08-06 00:43:28] ID Process: manager INFO create a server socket
+[2024-08-06 00:43:28] ID Process: manager INFO ­ÿÿB
+[2024-08-06 00:44:06] ID Process: 1 INFO create a client socket
+[2024-08-06 00:44:06] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:44:06] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:44:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:44:06] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 0
+[2024-08-06 00:44:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:44:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:44:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:44:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:44:06] ID Process: 1 ERROR nection closed or error occurred in client socket number: 
+[2024-08-06 00:56:08] ID Process: manager INFO create a server socket
+[2024-08-06 00:56:08] ID Process: manager INFO ­ÿÿB
+[2024-08-06 00:56:18] ID Process: 1 INFO create a client socket
+[2024-08-06 00:56:18] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 00:56:18] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 00:56:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:56:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 0
+[2024-08-06 00:56:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:56:18] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 00:56:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:56:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 1
+[2024-08-06 00:56:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:56:18] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 00:56:18] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:56:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 2
+[2024-08-06 00:56:18] ID Process: 1 INFO recieved packet from 1 to 2 Sequence Number 0
+[2024-08-06 00:56:18] ID Process: 1 INFO recieved packet from 1 to 2 Sequence Number 1
+[2024-08-06 00:56:18] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 00:56:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 3
+[2024-08-06 00:56:18] ID Process: 1 INFO recieved packet from 1 to 2 Sequence Number 2
+[2024-08-06 00:56:18] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 00:56:18] ID Process: 1 INFO recieved packet from 1 to 2 Sequence Number 3
+[2024-08-06 00:56:18] ID Process: manager INFO recieved packet from 1 to 2 Sequence Number 4
+[2024-08-06 00:56:18] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 00:56:18] ID Process: 1 INFO recieved packet from 1 to 2 Sequence Number 4
+[2024-08-06 00:56:28] ID Process: 2 INFO create a client socket
+[2024-08-06 00:56:28] ID Process: manager INFO ction succeed to client socket number: 
+[2024-08-06 00:56:28] ID Process: 2 INFO connection succeed to server socket
+[2024-08-06 00:56:28] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 997365696
+[2024-08-06 00:56:28] ID Process: manager INFO recieved packet from 2 to 0 Sequence Number 997365696
+[2024-08-06 00:56:28] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-06 00:56:28] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-06 00:56:28] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-06 00:56:28] ID Process: 1 INFO recieved packet from 2 to 0 Sequence Number 997365696
+[2024-08-06 00:56:28] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 0 Sequence Number 997365696
+[2024-08-06 00:56:28] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 0 Sequence Number 997365696
+[2024-08-06 00:56:28] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 0
+[2024-08-06 00:56:28] ID Process: 2 INFO recieved packet from 2 to 0 Sequence Number 997365696
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-06 00:56:28] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 0
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-06 00:56:28] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 1
+[2024-08-06 00:56:28] ID Process: 2 INFO recieved packet from 2 to 1 Sequence Number 0
+[2024-08-06 00:56:28] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 1
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-06 00:56:28] ID Process: 2 INFO recieved packet from 2 to 1 Sequence Number 1
+[2024-08-06 00:56:28] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 2
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-06 00:56:28] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 2
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-06 00:56:28] ID Process: 2 INFO recieved packet from 2 to 1 Sequence Number 2
+[2024-08-06 00:56:28] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 3
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-06 00:56:28] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 3
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-06 00:56:28] ID Process: 2 INFO recieved packet from 2 to 1 Sequence Number 3
+[2024-08-06 00:56:28] ID Process: manager INFO recieved packet from 2 to 1 Sequence Number 4
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-06 00:56:28] ID Process: 1 INFO recieved packet from 2 to 1 Sequence Number 4
+[2024-08-06 00:56:28] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-06 00:56:28] ID Process: 2 INFO recieved packet from 2 to 1 Sequence Number 4
+[2024-08-06 01:00:32] ID Process: 2 ERROR nection closed or error occurred in client socket number: 
+[2024-08-06 01:00:32] ID Process: 1 ERROR nection closed or error occurred in client socket number: 
+[2024-08-06 01:00:48] ID Process: manager INFO create a server socket
+[2024-08-06 01:00:48] ID Process: manager INFO 
+[2024-08-06 01:00:55] ID Process: 1 INFO create a client socket
+[2024-08-06 01:00:55] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 01:00:55] ID Process: manager INFO ection succeed to client socket number: 
+[2024-08-06 01:03:17] ID Process: 2 INFO create a client socket
+[2024-08-06 01:03:17] ID Process: manager INFO ction succeed to client socket number: 
+[2024-08-06 01:03:17] ID Process: 2 INFO connection succeed to server socket
+[2024-08-06 20:27:08] ID Process: manager INFO create a server socket
+[2024-08-06 20:27:08] ID Process: manager INFO server running on port 8080
+[2024-08-06 20:29:06] ID Process: 1 INFO create a client socket
+[2024-08-06 20:29:06] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-06 20:29:06] ID Process: 1 INFO connection succeed to server socket
+[2024-08-06 20:29:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-06 20:29:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 20:29:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 20:29:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 20:29:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-06 20:29:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-06 20:29:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 20:29:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-06 20:29:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-06 20:29:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 20:29:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-06 20:29:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-06 20:29:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-06 20:29:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-06 20:29:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-06 20:29:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-06 20:29:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-06 20:29:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-06 20:29:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-06 20:29:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-06 20:44:33] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 15:36:43] ID Process: manager INFO create a server socket
+[2024-08-07 15:36:44] ID Process: manager INFO server running on port 8080
+[2024-08-07 15:38:06] ID Process: 1 INFO create a client socket
+[2024-08-07 15:38:06] ID Process: 1 INFO connection succeed to server socket
+[2024-08-07 15:38:06] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 15:38:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-07 15:38:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-07 15:38:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-07 15:38:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-07 15:38:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-07 15:38:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-07 15:38:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-07 15:38:06] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-07 15:38:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-07 15:38:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-07 15:38:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-07 15:38:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-07 15:38:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-07 15:38:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-07 15:38:06] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-07 15:38:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-07 15:38:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-07 15:38:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-07 15:38:06] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-07 15:38:06] ID Process: 1 INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-07 15:38:36] ID Process: 1 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-07 15:39:01] ID Process: manager INFO create a server socket
+[2024-08-07 15:39:01] ID Process: manager INFO server running on port 8080
+[2024-08-07 15:39:09] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 15:39:09] ID Process: manager INFO received packet from 1 to 0 Sequence Number 2974352800
+[2024-08-07 15:39:09] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 2974352800
+[2024-08-07 15:39:09] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 15:39:09] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 15:39:09] ID Process: manager INFO received packet from 1 to 0 Sequence Number 2974352912
+[2024-08-07 15:39:09] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 2974352912
+[2024-08-07 15:39:09] ID Process: manager INFO received packet from 0 to 0 Sequence Number 0
+[2024-08-07 15:39:09] ID Process: manager INFO sending succeed from 0 to 0 Sequence Number 0
+[2024-08-07 15:39:09] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-07 15:39:09] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-07 15:39:09] ID Process: manager INFO received packet from 1 to 0 Sequence Number 2974341792
+[2024-08-07 15:39:09] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 2974341792
+[2024-08-07 15:42:31] ID Process: manager ERROR Connection closed or error occurred in client socket number: 6
+[2024-08-07 15:54:17] ID Process: manager INFO connection succeed to client socket number: 7
+[2024-08-07 15:54:17] ID Process: manager INFO connection succeed to client socket number: 8
+[2024-08-07 15:54:17] ID Process: manager INFO connection succeed to client socket number: 9
+[2024-08-07 15:54:17] ID Process: manager INFO received packet from 1 to 0 Sequence Number 2137536512
+[2024-08-07 15:54:17] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 2137536512
+[2024-08-07 15:54:17] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 2137536512
+[2024-08-07 15:54:17] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 2137536512
+[2024-08-07 15:54:17] ID Process: manager INFO received packet from 1 to 0 Sequence Number 2137556496
+[2024-08-07 15:54:49] ID Process: manager INFO create a server socket
+[2024-08-07 15:54:49] ID Process: manager INFO server running on port 8080
+[2024-08-07 15:55:02] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 15:55:02] ID Process: manager INFO received packet from 1 to 0 Sequence Number 1091032480
+[2024-08-07 15:55:02] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 1091032480
+[2024-08-07 15:55:02] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 15:55:02] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 15:55:02] ID Process: manager INFO received packet from 1 to 0 Sequence Number 1091032592
+[2024-08-07 15:55:02] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 1091032592
+[2024-08-07 15:55:02] ID Process: manager INFO received packet from 0 to 0 Sequence Number 0
+[2024-08-07 15:55:02] ID Process: manager INFO sending succeed from 0 to 0 Sequence Number 0
+[2024-08-07 15:55:02] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-07 15:55:02] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-07 15:55:02] ID Process: manager INFO received packet from 1 to 0 Sequence Number 1091012608
+[2024-08-07 15:55:02] ID Process: manager INFO sending succeed from 1 to 0 Sequence Number 1091012608
+[2024-08-07 15:55:02] ID Process: manager ERROR Connection closed or error occurred in client socket number: 6
+[2024-08-07 15:57:01] ID Process: manager INFO create a server socket
+[2024-08-07 15:57:01] ID Process: manager INFO server running on port 8080
+[2024-08-07 15:57:11] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 15:57:11] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 344659360
+[2024-08-07 15:57:11] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 15:57:11] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 15:57:11] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 344659472
+[2024-08-07 15:57:11] ID Process: manager INFO received packet from 0 to 0 Sequence Number 0
+[2024-08-07 15:57:11] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-07 15:57:11] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 344639488
+[2024-08-07 16:00:30] ID Process: manager ERROR Connection closed or error occurred in client socket number: 6
+[2024-08-07 16:00:30] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-07 16:01:16] ID Process: manager INFO connection succeed to client socket number: 7
+[2024-08-07 16:01:16] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1711027616
+[2024-08-07 16:01:16] ID Process: manager INFO connection succeed to client socket number: 8
+[2024-08-07 16:01:16] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1711027728
+[2024-08-07 16:01:16] ID Process: manager INFO connection succeed to client socket number: 9
+[2024-08-07 16:01:16] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1711007744
+[2024-08-07 16:01:16] ID Process: manager INFO received packet from 0 to 0 Sequence Number 0
+[2024-08-07 16:01:16] ID Process: manager ERROR Connection closed or error occurred in client socket number: 8
+[2024-08-07 16:01:16] ID Process: manager ERROR Connection closed or error occurred in client socket number: 7
+[2024-08-07 16:01:16] ID Process: manager ERROR Connection closed or error occurred in client socket number: 9
+[2024-08-07 16:01:25] ID Process: manager INFO create a server socket
+[2024-08-07 16:01:25] ID Process: manager INFO server running on port 8080
+[2024-08-07 16:01:39] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 16:01:39] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1591543200
+[2024-08-07 16:01:39] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 16:01:39] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 16:01:39] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1591543312
+[2024-08-07 16:01:39] ID Process: manager INFO received packet from 0 to 0 Sequence Number 0
+[2024-08-07 16:01:39] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-07 16:01:39] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1591523328
+[2024-08-07 16:04:11] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-07 16:04:11] ID Process: manager ERROR Connection closed or error occurred in client socket number: 6
+[2024-08-07 16:15:16] ID Process: manager INFO create a server socket
+[2024-08-07 16:15:16] ID Process: manager INFO server running on port 8080
+[2024-08-07 16:15:35] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 16:15:35] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 2113279392
+[2024-08-07 16:15:35] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 16:15:35] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 16:15:35] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 2113279504
+[2024-08-07 16:15:35] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-07 16:15:35] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 2113259520
+[2024-08-07 16:15:35] ID Process: manager INFO received packet from 0 to 0 Sequence Number 0
+[2024-08-07 16:15:35] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-07 16:19:58] ID Process: manager ERROR Connection closed or error occurred in client socket number: 6
+[2024-08-07 16:20:04] ID Process: manager INFO create a server socket
+[2024-08-07 16:20:04] ID Process: manager INFO server running on port 8080
+[2024-08-07 16:20:16] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 16:20:16] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 3141694880
+[2024-08-07 16:20:16] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 16:21:28] ID Process: manager INFO create a server socket
+[2024-08-07 16:21:28] ID Process: manager INFO server running on port 8080
+[2024-08-07 16:21:40] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 16:21:40] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 467203488
+[2024-08-07 16:21:40] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 16:30:12] ID Process: manager INFO create a server socket
+[2024-08-07 16:30:12] ID Process: manager INFO server running on port 8080
+[2024-08-07 16:30:21] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 16:30:21] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 321398176
+[2024-08-07 16:30:21] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 16:39:17] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 16:39:17] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 2362697120
+[2024-08-07 16:39:17] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-07 16:45:13] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-07 16:45:13] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 3145311648
+[2024-08-07 16:45:13] ID Process: manager ERROR Connection closed or error occurred in client socket number: 6
+[2024-08-07 16:45:25] ID Process: manager INFO create a server socket
+[2024-08-07 16:45:25] ID Process: manager INFO server running on port 8080
+[2024-08-07 16:48:29] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-07 16:48:29] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 3242714528
+[2024-08-07 16:48:29] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-07 16:48:29] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-07 16:48:29] ID Process: manager ERROR Connection closed or error occurred
+[2024-08-07 16:48:29] ID Process: manager INFO close manager socket number: 3
+[2024-08-07 16:48:29] ID Process: manager INFO close client socket number: 4
+[2024-08-07 16:48:29] ID Process: manager INFO close client socket number: 5
+[2024-08-08 14:32:37] ID Process: manager INFO create a server socket
+[2024-08-08 14:32:37] ID Process: manager INFO server running on port 8080
+[2024-08-08 16:09:11] ID Process: 1 INFO create a client socket
+[2024-08-08 16:09:11] ID Process: 1 INFO connection succeed to server socket
+[2024-08-08 16:09:11] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 1690666976
+[2024-08-08 16:09:11] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-08 16:09:11] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-08 16:09:11] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-08 16:09:11] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-08 16:09:11] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-08 16:09:11] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-08 16:09:11] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 1690666976
+[2024-08-08 16:09:11] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-08 16:09:11] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-08 16:09:11] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-08 16:09:11] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-08 16:09:11] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-08 16:10:34] ID Process: 2 INFO create a client socket
+[2024-08-08 16:10:34] ID Process: 2 INFO connection succeed to server socket
+[2024-08-08 16:10:34] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-08 16:10:34] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 469006304
+[2024-08-08 16:10:34] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 469006304
+[2024-08-08 16:10:34] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-08 16:10:34] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-08 16:10:34] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-08 16:10:34] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-08 16:10:34] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-08 16:10:34] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-08 16:10:34] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-08 16:10:34] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-08 16:10:34] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-08 16:10:34] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-08 16:10:34] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-08 16:10:34] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-08 16:10:34] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-08 16:10:34] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-08 16:10:34] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-08 16:10:34] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-08 16:10:34] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-08 16:10:34] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-08 16:10:34] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-08 16:10:34] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-08 16:12:54] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-08 16:13:01] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-08 16:22:12] ID Process: manager INFO create a server socket
+[2024-08-08 16:22:12] ID Process: manager INFO server running on port 8080
+[2024-08-08 16:22:41] ID Process: 1 INFO create a client socket
+[2024-08-08 16:22:41] ID Process: 1 INFO connection succeed to server socket
+[2024-08-08 16:22:41] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 933840864
+[2024-08-08 16:22:41] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-08 16:22:41] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 933840864
+[2024-08-08 16:22:41] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-08 16:22:41] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-08 16:22:41] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-08 16:22:41] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-08 16:22:41] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-08 16:22:41] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-08 16:22:41] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-08 16:22:41] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-08 16:22:41] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-08 16:22:41] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-08 16:22:50] ID Process: 2 INFO create a client socket
+[2024-08-08 16:22:50] ID Process: 2 INFO connection succeed to server socket
+[2024-08-08 16:22:50] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-08 16:22:50] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 3220350944
+[2024-08-08 16:22:50] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 3220350944
+[2024-08-08 16:22:50] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-08 16:22:50] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-08 16:22:50] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-08 16:22:50] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-08 16:22:50] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-08 16:22:50] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-08 16:22:50] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-08 16:22:50] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-08 16:22:50] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-08 16:22:50] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-08 16:22:50] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-08 16:22:50] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-08 16:22:50] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-08 16:22:50] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-08 16:22:50] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-08 16:22:50] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-08 16:22:50] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-08 16:22:50] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-08 16:22:50] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-08 16:22:50] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-08 16:23:46] ID Process: manager ERROR Connection closed or error occurred in client socket number: 5
+[2024-08-08 16:23:51] ID Process: manager ERROR Connection closed or error occurred in client socket number: 4
+[2024-08-15 19:24:57] ID Process: manager INFO create a server socket
+[2024-08-15 19:24:57] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:24:58] ID Process: 1 INFO create a client socket
+[2024-08-15 19:24:58] ID Process: manager INFO connection succeed to client socket number: 7
+[2024-08-15 19:24:58] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:24:58] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:24:58] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:24:58] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:24:58] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:24:58] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:24:58] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:24:58] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:24:58] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:24:58] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:24:58] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:24:58] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:24:58] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:24:58] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:24:58] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:24:58] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:24:58] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:24:58] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:24:58] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:24:58] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:24:59] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:24:59] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:24:59] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:25:00] ID Process: 2 INFO create a client socket
+[2024-08-15 19:25:00] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:25:00] ID Process: manager INFO connection succeed to client socket number: 30
+[2024-08-15 19:25:00] ID Process: manager INFO received ID for init from 0 to 2 Sequence Number 0
+[2024-08-15 19:25:00] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:25:00] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:25:00] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:25:00] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:25:00] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:25:00] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:25:00] ID Process: manager INFO received packet from 0 to 5 Sequence Number 656
+[2024-08-15 19:25:00] ID Process: manager INFO received packet from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:25:00] ID Process: manager INFO sending succeed from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:25:00] ID Process: manager INFO received packet from 1114793331 to 1559625 Sequence Number 0
+[2024-08-15 19:25:00] ID Process: manager INFO received packet from 1852142368 to 1735289188 Sequence Number 1723739100
+[2024-08-15 19:25:00] ID Process: manager INFO received packet from 0 to 544175136 Sequence Number 11966
+[2024-08-15 19:25:00] ID Process: manager INFO received packet from 1723739100 to 4030113280 Sequence Number 3
+[2024-08-15 19:25:00] ID Process: 1 INFO received packet from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:25:02] ID Process: 3 INFO create a client socket
+[2024-08-15 19:25:02] ID Process: 3 INFO connection succeed to server socket
+[2024-08-15 19:25:02] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-15 19:25:02] ID Process: 3 INFO sending id for init succeed from 3 to 0 Sequence Number 0
+[2024-08-15 19:25:02] ID Process: manager INFO received ID for init from 3 to 0 Sequence Number 0
+[2024-08-15 19:25:02] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 0
+[2024-08-15 19:25:02] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 1
+[2024-08-15 19:25:02] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 2
+[2024-08-15 19:25:02] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 3
+[2024-08-15 19:25:02] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 4
+[2024-08-15 19:25:02] ID Process: manager INFO received packet from 3 to 1 Sequence Number 0
+[2024-08-15 19:25:02] ID Process: manager INFO received packet from 3 to 1 Sequence Number 1
+[2024-08-15 19:25:02] ID Process: manager INFO received packet from 3 to 1 Sequence Number 2
+[2024-08-15 19:25:02] ID Process: manager INFO received packet from 3 to 1 Sequence Number 3
+[2024-08-15 19:25:02] ID Process: manager INFO received packet from 3 to 1 Sequence Number 4
+[2024-08-15 19:26:26] ID Process: manager INFO create a server socket
+[2024-08-15 19:26:26] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:26:28] ID Process: 1 INFO create a client socket
+[2024-08-15 19:26:28] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:26:28] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:26:28] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-15 19:26:28] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:26:28] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:26:28] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:26:28] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:26:28] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:26:28] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:26:28] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:26:28] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:26:28] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:26:28] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:26:28] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:26:30] ID Process: 2 INFO create a client socket
+[2024-08-15 19:26:30] ID Process: manager INFO connection succeed to client socket number: 7
+[2024-08-15 19:26:30] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:26:30] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:26:30] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:26:30] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:26:30] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:26:30] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:26:30] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:26:30] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 0
+[2024-08-15 19:26:30] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:26:30] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:26:30] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:26:30] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:26:30] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:26:30] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:26:30] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:26:30] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:26:30] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:26:30] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:26:30] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:26:30] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:26:30] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:26:30] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:26:30] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:26:32] ID Process: 3 INFO create a client socket
+[2024-08-15 19:26:32] ID Process: manager INFO connection succeed to client socket number: 7
+[2024-08-15 19:26:32] ID Process: 3 INFO connection succeed to server socket
+[2024-08-15 19:26:32] ID Process: 3 INFO sending id for init succeed from 3 to 0 Sequence Number 0
+[2024-08-15 19:26:32] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 0
+[2024-08-15 19:26:32] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 1
+[2024-08-15 19:26:32] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 2
+[2024-08-15 19:26:32] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 3
+[2024-08-15 19:26:32] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 4
+[2024-08-15 19:26:32] ID Process: manager INFO received ID for init from 3 to 0 Sequence Number 0
+[2024-08-15 19:26:32] ID Process: manager INFO received packet from 3 to 1 Sequence Number 0
+[2024-08-15 19:26:32] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 0
+[2024-08-15 19:26:32] ID Process: manager INFO received packet from 3 to 1 Sequence Number 1
+[2024-08-15 19:26:32] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 0
+[2024-08-15 19:26:32] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 1
+[2024-08-15 19:26:32] ID Process: manager INFO received packet from 3 to 1 Sequence Number 2
+[2024-08-15 19:26:32] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 1
+[2024-08-15 19:26:32] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 2
+[2024-08-15 19:26:32] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 2
+[2024-08-15 19:26:32] ID Process: manager INFO received packet from 3 to 1 Sequence Number 3
+[2024-08-15 19:26:32] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 3
+[2024-08-15 19:26:32] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 3
+[2024-08-15 19:26:32] ID Process: manager INFO received packet from 3 to 1 Sequence Number 4
+[2024-08-15 19:26:32] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 4
+[2024-08-15 19:26:32] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 4
+[2024-08-15 19:26:53] ID Process: manager INFO create a server socket
+[2024-08-15 19:26:53] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:27:25] ID Process: 1 INFO create a client socket
+[2024-08-15 19:27:25] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:27:25] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:27:25] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:27:25] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:27:25] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:27:25] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:27:25] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:27:25] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-15 19:27:25] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:27:25] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:27:25] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:27:25] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:27:25] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:27:25] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:27:54] ID Process: 2 INFO create a client socket
+[2024-08-15 19:27:54] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:27:54] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:27:54] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:27:54] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:27:54] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:27:54] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:27:54] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:27:54] ID Process: manager INFO connection succeed to client socket number: 31
+[2024-08-15 19:27:54] ID Process: manager INFO received ID for init from 0 to 2 Sequence Number 0
+[2024-08-15 19:27:54] ID Process: manager INFO received packet from 0 to 5 Sequence Number 656
+[2024-08-15 19:27:54] ID Process: manager INFO received packet from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:27:54] ID Process: 1 INFO received packet from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:27:54] ID Process: manager INFO sending succeed from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:27:54] ID Process: manager INFO received packet from 1114793331 to 1559625 Sequence Number 0
+[2024-08-15 19:27:54] ID Process: manager INFO received packet from 1852142368 to 1735289188 Sequence Number 1723739274
+[2024-08-15 19:27:54] ID Process: manager INFO received packet from 0 to 544175136 Sequence Number 11966
+[2024-08-15 19:27:54] ID Process: manager INFO received packet from 1723739274 to 4030113280 Sequence Number 3
+[2024-08-15 19:28:33] ID Process: manager INFO create a server socket
+[2024-08-15 19:28:33] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:28:54] ID Process: 1 INFO create a client socket
+[2024-08-15 19:28:54] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-15 19:28:54] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:28:54] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:28:54] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:28:54] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:28:54] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:28:54] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:28:54] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:28:54] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:28:54] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:28:54] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:28:54] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:28:54] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:28:54] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:29:14] ID Process: 2 INFO create a client socket
+[2024-08-15 19:29:14] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-15 19:29:14] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:29:14] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:29:14] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:29:14] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:29:14] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:29:14] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:29:14] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:29:14] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 0
+[2024-08-15 19:29:14] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:29:14] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:29:14] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:29:14] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:29:14] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:29:14] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:29:14] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:29:14] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:29:14] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:29:14] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:29:14] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:29:14] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:29:14] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:29:14] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:29:14] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:31:25] ID Process: manager INFO create a server socket: 3
+[2024-08-15 19:31:25] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:31:25] ID Process: manager INFO close manager socket number: 3
+[2024-08-15 19:31:50] ID Process: 1 INFO create a client socket: 3
+[2024-08-15 19:31:50] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-15 19:31:50] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:31:50] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:31:50] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:31:50] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:31:50] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:31:50] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:31:50] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:31:50] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:31:50] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:31:50] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:31:50] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:31:50] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:31:50] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:32:11] ID Process: 2 INFO create a client socket: 3
+[2024-08-15 19:32:11] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:32:11] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:32:11] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:32:11] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:32:11] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:32:11] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:32:11] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:32:11] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-15 19:32:11] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 0
+[2024-08-15 19:32:11] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:32:11] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:32:11] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:32:11] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:32:11] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:32:34] ID Process: 3 INFO create a client socket: 3
+[2024-08-15 19:32:34] ID Process: manager INFO connection succeed to client socket number: 32
+[2024-08-15 19:32:34] ID Process: 3 INFO connection succeed to server socket
+[2024-08-15 19:32:34] ID Process: manager INFO received ID for init from 0 to 3 Sequence Number 0
+[2024-08-15 19:32:34] ID Process: 3 INFO sending id for init succeed from 3 to 0 Sequence Number 0
+[2024-08-15 19:32:34] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 0
+[2024-08-15 19:32:34] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 1
+[2024-08-15 19:32:34] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 2
+[2024-08-15 19:32:34] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 3
+[2024-08-15 19:32:34] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 4
+[2024-08-15 19:32:34] ID Process: manager INFO received packet from 0 to 5 Sequence Number 656
+[2024-08-15 19:32:34] ID Process: manager INFO received packet from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:32:34] ID Process: manager INFO sending succeed from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:32:34] ID Process: manager INFO received packet from 1131570547 to 1559625 Sequence Number 0
+[2024-08-15 19:32:34] ID Process: 1 INFO received packet from 0 to 1 Sequence Number 1819043144
+[2024-08-15 19:32:34] ID Process: manager INFO received packet from 1852142368 to 1735289188 Sequence Number 1723739554
+[2024-08-15 19:32:34] ID Process: manager INFO received packet from 0 to 544175136 Sequence Number 11966
+[2024-08-15 19:32:34] ID Process: manager INFO received packet from 1723739554 to 4026531840 Sequence Number 3
+[2024-08-15 19:34:22] ID Process: manager INFO create a server socket: 3
+[2024-08-15 19:34:22] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:34:45] ID Process: 1 INFO create a client socket: 3
+[2024-08-15 19:34:45] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-15 19:34:45] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:34:45] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:34:45] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:34:45] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:34:45] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:34:45] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:34:45] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:34:45] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:34:45] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:34:45] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:34:45] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:34:45] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:34:45] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:34:45] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:34:45] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:34:45] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:34:45] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:34:45] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:34:45] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:34:45] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:34:45] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:34:45] ID Process: 2 INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:34:45] ID Process: manager INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:35:08] ID Process: 2 INFO create a client socket: 3
+[2024-08-15 19:35:08] ID Process: manager INFO connection succeed to client socket number: 8
+[2024-08-15 19:35:08] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:35:08] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:35:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:35:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:35:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:35:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:35:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:35:08] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 0
+[2024-08-15 19:35:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:35:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:35:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:35:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:35:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:35:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:35:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:35:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:35:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:35:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:35:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:35:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:35:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:35:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:35:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:36:58] ID Process: 3 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-15 19:36:58] ID Process: 2 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-15 19:36:58] ID Process: 2 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-15 19:36:58] ID Process: 3 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-15 19:36:58] ID Process: 2 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-15 19:36:58] ID Process: 2 ERROR Connection closed or error occurred in client socket number: 3
+[2024-08-15 19:38:52] ID Process: manager INFO create a server socket: 3
+[2024-08-15 19:38:52] ID Process: manager INFO server running on port 8080
+[2024-08-15 19:39:00] ID Process: 1 INFO create a client socket: 3
+[2024-08-15 19:39:00] ID Process: 1 INFO connection succeed to server socket
+[2024-08-15 19:39:00] ID Process: 1 INFO sending id for init succeed from 1 to 0 Sequence Number 0
+[2024-08-15 19:39:00] ID Process: manager INFO connection succeed to client socket number: 4
+[2024-08-15 19:39:00] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 0
+[2024-08-15 19:39:00] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 1
+[2024-08-15 19:39:00] ID Process: manager INFO received ID for init from 1 to 0 Sequence Number 0
+[2024-08-15 19:39:00] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 2
+[2024-08-15 19:39:00] ID Process: manager INFO received packet from 1 to 2 Sequence Number 0
+[2024-08-15 19:39:00] ID Process: manager INFO received packet from 1 to 2 Sequence Number 1
+[2024-08-15 19:39:00] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 3
+[2024-08-15 19:39:00] ID Process: manager INFO received packet from 1 to 2 Sequence Number 2
+[2024-08-15 19:39:00] ID Process: manager INFO received packet from 1 to 2 Sequence Number 3
+[2024-08-15 19:39:00] ID Process: 1 INFO sending succeed from 1 to 2 Sequence Number 4
+[2024-08-15 19:39:00] ID Process: manager INFO received packet from 1 to 2 Sequence Number 4
+[2024-08-15 19:39:08] ID Process: 2 INFO create a client socket: 3
+[2024-08-15 19:39:08] ID Process: 2 INFO connection succeed to server socket
+[2024-08-15 19:39:08] ID Process: 2 INFO sending id for init succeed from 2 to 0 Sequence Number 0
+[2024-08-15 19:39:08] ID Process: manager INFO connection succeed to client socket number: 5
+[2024-08-15 19:39:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:39:08] ID Process: manager INFO received ID for init from 2 to 0 Sequence Number 0
+[2024-08-15 19:39:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:39:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:39:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:39:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:39:08] ID Process: 2 INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:39:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 0
+[2024-08-15 19:39:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:39:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 1
+[2024-08-15 19:39:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 0
+[2024-08-15 19:39:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:39:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 2
+[2024-08-15 19:39:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 1
+[2024-08-15 19:39:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:39:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 2
+[2024-08-15 19:39:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 3
+[2024-08-15 19:39:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 3
+[2024-08-15 19:39:08] ID Process: manager INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:39:08] ID Process: manager INFO sending succeed from 2 to 1 Sequence Number 4
+[2024-08-15 19:39:08] ID Process: 1 INFO received packet from 2 to 1 Sequence Number 4
+[2024-08-15 19:39:18] ID Process: 3 INFO create a client socket: 3
+[2024-08-15 19:39:18] ID Process: 3 INFO connection succeed to server socket
+[2024-08-15 19:39:18] ID Process: manager INFO connection succeed to client socket number: 6
+[2024-08-15 19:39:18] ID Process: 3 INFO sending id for init succeed from 3 to 0 Sequence Number 0
+[2024-08-15 19:39:18] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 0
+[2024-08-15 19:39:18] ID Process: manager INFO received ID for init from 3 to 0 Sequence Number 0
+[2024-08-15 19:39:18] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 1
+[2024-08-15 19:39:18] ID Process: manager INFO received packet from 3 to 1 Sequence Number 0
+[2024-08-15 19:39:18] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 2
+[2024-08-15 19:39:18] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 3
+[2024-08-15 19:39:18] ID Process: 3 INFO sending succeed from 3 to 1 Sequence Number 4
+[2024-08-15 19:39:18] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 0
+[2024-08-15 19:39:18] ID Process: manager INFO received packet from 3 to 1 Sequence Number 1
+[2024-08-15 19:39:18] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 0
+[2024-08-15 19:39:18] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 1
+[2024-08-15 19:39:18] ID Process: manager INFO received packet from 3 to 1 Sequence Number 2
+[2024-08-15 19:39:18] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 1
+[2024-08-15 19:39:18] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 2
+[2024-08-15 19:39:18] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 2
+[2024-08-15 19:39:18] ID Process: manager INFO received packet from 3 to 1 Sequence Number 3
+[2024-08-15 19:39:18] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 3
+[2024-08-15 19:39:18] ID Process: manager INFO received packet from 3 to 1 Sequence Number 4
+[2024-08-15 19:39:18] ID Process: manager INFO sending succeed from 3 to 1 Sequence Number 4
+[2024-08-15 19:39:18] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 3
+[2024-08-15 19:39:18] ID Process: 1 INFO received packet from 3 to 1 Sequence Number 4
+[2024-09-02 11:26:07] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:26:07] ID Process: 0 ERROR Connection Failed: Connection refused
+[2024-09-02 11:26:07] ID Process: 0 INFO connection succeed to server socketConnection refused
+[2024-09-02 11:36:07] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:36:07] ID Process: 0 INFO create a server socket: 3
+[2024-09-02 11:36:07] ID Process: 0 INFO server running on port 8080
+[2024-09-02 11:36:36] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:36:36] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 11:36:36] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 11:36:36] ID Process: 0 INFO sending packet succeed: Success from 3 to 468988624 Sequence Number 32767
+[2024-09-02 11:36:36] ID Process: 0 INFO sending packet succeed: Success from 3 to 468988624 Sequence Number 22045
+[2024-09-02 11:36:36] ID Process: 0 INFO sending packet succeed: Success from 3 to 468988624 Sequence Number 22045
+[2024-09-02 11:36:36] ID Process: 0 INFO sending packet succeed: Success from 3 to 468988624 Sequence Number 22045
+[2024-09-02 11:36:36] ID Process: 0 INFO sending packet succeed: Success from 3 to 468988624 Sequence Number 22045
+[2024-09-02 11:36:36] ID Process: 0 INFO received packet from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:36:36] ID Process: 0 INFO sending packet succeed: Success from 3 to 468988624 Sequence Number 22045
+[2024-09-02 11:36:36] ID Process: 0 INFO received packet from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:36:36] ID Process: 0 INFO received packet from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:36:36] ID Process: 0 INFO received packet from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:36:36] ID Process: 0 INFO received packet from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:36:36] ID Process: 0 INFO received packet from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:37:03] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 11:37:03] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 3 to 4152144592 Sequence Number 32767
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 3 to 4152144592 Sequence Number 21849
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 3 to 4152144592 Sequence Number 21849
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 3 to 4152144592 Sequence Number 21849
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 3 to 4152144592 Sequence Number 21849
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 3 to 4152144592 Sequence Number 21849
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:03] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:03] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:37:30] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 3 to 1831027408 Sequence Number 32764
+[2024-09-02 11:37:30] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 3 to 1831027408 Sequence Number 22021
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 3 to 1831027408 Sequence Number 22021
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 6 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 3 to 1831027408 Sequence Number 22021
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 6 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 3 to 1831027408 Sequence Number 22021
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 3 to 1831027408 Sequence Number 22021
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 6 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 6 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 6 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 6 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:37:30] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 11:45:18] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:45:18] ID Process: 0 INFO create a server socket: 3
+[2024-09-02 11:45:18] ID Process: 0 INFO server running on port 8080
+[2024-09-02 11:45:58] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:45:58] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 11:45:58] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 3 to 1661260496 Sequence Number 32764
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 3 to 1661260496 Sequence Number 22086
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 3 to 1661260496 Sequence Number 22086
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 3 to 1661260496 Sequence Number 22086
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 3 to 1661260496 Sequence Number 22086
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 3 to 1661260496 Sequence Number 22086
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 7 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 7 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 7 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 7 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 7 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 7 to 3134849744 Sequence Number 32625
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 11:45:58] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 11:45:58] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 11:46:35] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:46:35] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 11:46:35] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 11:46:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1121780432 Sequence Number 32766
+[2024-09-02 11:46:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1121780432 Sequence Number 21923
+[2024-09-02 11:46:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1121780432 Sequence Number 21923
+[2024-09-02 11:46:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1121780432 Sequence Number 21923
+[2024-09-02 11:46:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1121780432 Sequence Number 21923
+[2024-09-02 11:46:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1121780432 Sequence Number 21923
+[2024-09-02 11:46:35] ID Process: 0 INFO received packet from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:46:35] ID Process: 0 INFO received packet from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:46:35] ID Process: 0 INFO received packet from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:46:35] ID Process: 0 INFO received packet from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:46:35] ID Process: 0 INFO received packet from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:46:35] ID Process: 0 INFO received packet from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 11:47:10] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 11:47:10] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 3 to 3808105168 Sequence Number 32765
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 3 to 3808105168 Sequence Number 21943
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 3 to 3808105168 Sequence Number 21943
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 3 to 3808105168 Sequence Number 21943
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 3 to 3808105168 Sequence Number 21943
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 3 to 3808105168 Sequence Number 21943
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 5 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 5 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 3 to 1121780432 Sequence Number 32624
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 5 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 3 to 1121780432 Sequence Number 32624
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 5 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 3 to 1121780432 Sequence Number 32624
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 5 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 3 to 1121780432 Sequence Number 32624
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 5 to 3863884496 Sequence Number 32693
+[2024-09-02 11:47:10] ID Process: 0 INFO received packet from 3 to 1121780432 Sequence Number 32624
+[2024-09-02 11:47:10] ID Process: 0 INFO sending packet succeed: Success from 4 to 3863884496 Sequence Number 32693
+[2024-09-02 12:05:47] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:05:47] ID Process: 0 INFO create a server socket: 3
+[2024-09-02 12:05:47] ID Process: 0 INFO server running on port 8080
+[2024-09-02 12:06:31] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:06:31] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 12:06:31] ID Process: 0 INFO sending packet succeed: Success from 3 to 1670935248 Sequence Number 32766
+[2024-09-02 12:06:31] ID Process: 0 INFO sending packet succeed: Success from 3 to 1670935248 Sequence Number 22046
+[2024-09-02 12:06:31] ID Process: 0 INFO sending packet succeed: Success from 3 to 1670935248 Sequence Number 22046
+[2024-09-02 12:06:31] ID Process: 0 INFO sending packet succeed: Success from 3 to 1670935248 Sequence Number 22046
+[2024-09-02 12:06:31] ID Process: 0 INFO sending packet succeed: Success from 3 to 1670935248 Sequence Number 22046
+[2024-09-02 12:06:31] ID Process: 0 INFO sending packet succeed: Success from 3 to 1670935248 Sequence Number 22046
+[2024-09-02 12:06:31] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 12:06:31] ID Process: 0 INFO received packet from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:06:31] ID Process: 0 INFO received packet from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:06:31] ID Process: 0 INFO received packet from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:06:31] ID Process: 0 INFO received packet from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:06:31] ID Process: 0 INFO received packet from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:06:31] ID Process: 0 INFO received packet from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:07:14] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:07:14] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 12:07:14] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 3 to 91075280 Sequence Number 32765
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 3 to 91075280 Sequence Number 22015
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 3 to 91075280 Sequence Number 22015
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 3 to 91075280 Sequence Number 22015
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 3 to 91075280 Sequence Number 22015
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 3 to 91075280 Sequence Number 22015
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 8 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 8 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 8 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 8 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 8 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 8 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO sending packet succeed: Success from 4 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 12:07:14] ID Process: 0 INFO received packet from 3 to 468988624 Sequence Number 32724
+[2024-09-02 12:07:54] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:07:54] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 12:07:54] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 3 to 3791131344 Sequence Number 32767
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 3 to 3791131344 Sequence Number 21959
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 3 to 3791131344 Sequence Number 21959
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 3 to 3791131344 Sequence Number 21959
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 3 to 3791131344 Sequence Number 21959
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 3 to 3791131344 Sequence Number 21959
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 9 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 9 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 9 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 9 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 9 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 9 to 3134849744 Sequence Number 32625
+[2024-09-02 12:07:54] ID Process: 0 INFO received packet from 3 to 4152144592 Sequence Number 32556
+[2024-09-02 12:07:54] ID Process: 0 INFO sending packet succeed: Success from 5 to 3134849744 Sequence Number 32625
+[2024-09-02 12:09:37] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:09:37] ID Process: 0 INFO create a server socket: 3
+[2024-09-02 12:09:37] ID Process: 0 INFO server running on port 8080
+[2024-09-02 12:10:45] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:10:45] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 12:10:45] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 12:10:45] ID Process: 0 INFO sending packet succeed: Success from 3 to 1018589904 Sequence Number 32766
+[2024-09-02 12:10:45] ID Process: 0 INFO sending packet succeed: Success from 3 to 1018589904 Sequence Number 22038
+[2024-09-02 12:10:45] ID Process: 0 INFO sending packet succeed: Success from 3 to 1018589904 Sequence Number 22038
+[2024-09-02 12:10:45] ID Process: 0 INFO sending packet succeed: Success from 3 to 1018589904 Sequence Number 22038
+[2024-09-02 12:10:45] ID Process: 0 INFO sending packet succeed: Success from 3 to 1018589904 Sequence Number 22038
+[2024-09-02 12:10:45] ID Process: 0 INFO received packet from 4 to 1468654288 Sequence Number 32584
+[2024-09-02 12:10:45] ID Process: 0 INFO received packet from 4 to 1468654288 Sequence Number 32584
+[2024-09-02 12:10:45] ID Process: 0 INFO received packet from 4 to 1468654288 Sequence Number 32584
+[2024-09-02 12:10:45] ID Process: 0 INFO received packet from 4 to 1468654288 Sequence Number 32584
+[2024-09-02 12:10:45] ID Process: 0 INFO received packet from 4 to 1468654288 Sequence Number 32584
+[2024-09-02 12:10:45] ID Process: 0 INFO sending packet succeed: Success from 3 to 1018589904 Sequence Number 22038
+[2024-09-02 12:10:45] ID Process: 0 INFO received packet from 4 to 1468654288 Sequence Number 32584
+[2024-09-02 12:11:35] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:11:35] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 12:11:35] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1780081360 Sequence Number 32767
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1780081360 Sequence Number 21994
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1780081360 Sequence Number 21994
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1780081360 Sequence Number 21994
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1780081360 Sequence Number 21994
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 3 to 1780081360 Sequence Number 21994
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 3 to 1670935248 Sequence Number 32524
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 3 to 1670935248 Sequence Number 32524
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 3 to 1670935248 Sequence Number 32524
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 3 to 1670935248 Sequence Number 32524
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:11:35] ID Process: 0 INFO received packet from 3 to 1670935248 Sequence Number 32524
+[2024-09-02 12:11:35] ID Process: 0 INFO sending packet succeed: Success from 4 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO create a client socket: 3Success
+[2024-09-02 12:12:12] ID Process: 0 INFO connection succeed to client socket number: 3
+[2024-09-02 12:12:12] ID Process: 0 INFO connection succeed to server socketSuccess
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 3 to 326587088 Sequence Number 32765
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 3 to 326587088 Sequence Number 21904
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 3 to 326587088 Sequence Number 21904
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 3 to 326587088 Sequence Number 21904
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 3 to 326587088 Sequence Number 21904
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 3 to 326587088 Sequence Number 21904
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 6 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 6 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 3 to 1780081360 Sequence Number 32575
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 6 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 3 to 1780081360 Sequence Number 32575
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 6 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 3 to 1780081360 Sequence Number 32575
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 6 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 3 to 1780081360 Sequence Number 32575
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 5 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 6 to 107606736 Sequence Number 32585
+[2024-09-02 12:12:12] ID Process: 0 INFO received packet from 3 to 1780081360 Sequence Number 32575
+[2024-09-02 12:12:12] ID Process: 0 INFO sending packet succeed: Success from 5 to 107606736 Sequence Number 32585
