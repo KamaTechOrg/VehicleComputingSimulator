@@ -1,50 +1,48 @@
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
-
-#include <cstddef>
-#include <iostream>
-#include <mutex>
-#include <vector>
+#pragma once
 #include <unordered_map>
-#include <functional>
-#include "ISocket.h"
+#include "client.h"
 
-enum class AckType {
-    ACK,
-    NACK
-};
-
-class communication {
-public:
-    communication(ISocket* socketInterface);
-
-    virtual int initConnection();
-    virtual void sendMessage(int socketFd, void* data, size_t dataLen);
-    virtual void receiveMessages(int socketFd);
-    virtual void setDataHandler(std::function<void(const std::vector<uint8_t>&)> callback);
-    virtual void setAckCallback(std::function<void(AckType)> callback);
-    static constexpr size_t PACKET_SIZE = 16;
-    friend class CommunicationTest;
-
-    virtual int setupSocket(int portNumber, int& sockFd, struct sockaddr_in& address);
-    virtual int waitForConnection(int sockFd, struct sockaddr_in& address);
-    virtual int connectToPeer(int portNumber, struct sockaddr_in& peerAddr);
-    virtual void initializeState(int& portNumber, int& peerPort);
-    virtual void sendAck(int socketFd, AckType ackType);
-    static void logMessage(const std::string& src, const std::string& dst, const std::string& message);
-    static std::string getLogFileName();
-
-    const int PORT1 = 8080;
-    const int PORT2 = 8081;
-    static const char* STATE_FILE;
-    static const char* LOCK_FILE;
-    static std::mutex state_file_mutex;
-    std::vector<uint8_t> dataReceived; 
-    std::function<void(const std::vector<uint8_t>&)> dataHandler;
-    std::function<void(AckType)> ackCallback;
-
+class Communication
+{
 private:
-    ISocket* socketInterface;
-};
+    Client client;
+    std::unordered_map<std::string, Message> receivedMessages;
+    void (*passData)(void *); 
+    uint32_t id;
+public:
+    // Constructor
+    Communication(uint32_t id, void (*passDataCallback)(void *));
+    
+    // Sends the client to connect to server
+    void startConnection();
+    
+    // Sends a message to manager
+    int sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);
+    
+    // Sends a message to manager - Async
+    void sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(int)> passSend, bool isBroadcast);
 
-#endif // COMMUNICATION_H
+    // Accepts the packet from the client and checks..
+    void receivePacket(Packet &p);
+    
+    // Checks if the packet is intended for him
+    bool checkDestId(Packet &p);
+    
+    // Checks if the Packet is currect
+    bool validCRC(Packet &p);
+    
+    // Receives the packet and adds it to the message
+    void handlePacket(Packet &p);
+    
+    // Implement error handling according to CAN bus
+    void handleError();
+    
+    // Implement arrival confirmation according to the CAN bus
+    Packet hadArrived();
+    
+    // Adding the packet to the complete message
+    void addPacketToMessage(Packet &p);
+    
+    //Destructor
+    ~Communication();
+};
