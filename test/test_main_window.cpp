@@ -7,32 +7,47 @@ class TestMainWindow : public QObject
 
 private slots:
 
-    //void testCreateNewProcess();
-    //void testAddProcessSquare();
-     void testIsUniqueId();
-    //void testStartProcesses();
-    //void testEndProcesses();
-     //void testTimerTimeout();
-     void testOpenImageDialog();
-     void testDeleteSquare();
+    void testCreateNewProcess();
+    void testAddProcessSquare();
+    void testIsUniqueId();
+    void testStartProcesses();
+    void testEndProcesses();
+    void testDeleteSquare();
+    void testShowTimerInput();
+    void addId(int id);
 };
-/*showTimerInput, editSquare,addId,compileBoxes,getExecutableName*/
 
-// void TestMainWindow::testCreateNewProcess()
-// {
-//     MainWindow window;
-//     QSignalSpy spy(&window, SIGNAL(createNewProcess()));
-//     window.createNewProcess();
-//     QCOMPARE(spy.count(), 1); // Check if the signal was emitted once
-// }
 
-// void TestMainWindow::testAddProcessSquare()
-// {
-//     MainWindow window;
-//     Process process(5, "Test Process", "../src/dummy_program1", "QEMUPlatform");
-//     window.addProcessSquare(process);
-//     QCOMPARE(window.squares.size(), 1); // Check if square is added
-// }
+void TestMainWindow::testCreateNewProcess()
+{
+    MainWindow window;
+    int newProcessId = 6; // Ensure this is greater than 5 and unique
+    QString processName = "NewProcess";
+    QString cmakeProject = "../src/dummy_program3";
+    QString qemuPlatform = "QEMUPlatform";
+    // Create a new Process object with the provided data
+    Process* newProcess = new Process(newProcessId, processName, cmakeProject, qemuPlatform);
+    // Simulate adding the process square to the main window
+    window.addProcessSquare(newProcess);
+    window.addId(newProcessId);
+    // Verify that the process was added correctly
+    Process* retrievedProcess = window.getProcessById(newProcessId);
+    QVERIFY(retrievedProcess != nullptr);
+    QCOMPARE(retrievedProcess->getName(), processName);
+    QCOMPARE(retrievedProcess->getCMakeProject(), cmakeProject);
+    QCOMPARE(retrievedProcess->getQEMUPlatform(), qemuPlatform);
+    // Clean up
+    delete newProcess;
+}
+
+void TestMainWindow::testAddProcessSquare()
+{
+    MainWindow window;
+    Process *newProcess = new Process(5, "Test Process", "../src/dummy_program1", "QEMUPlatform");
+    window.addProcessSquare(newProcess);
+    QCOMPARE(window.squares.size(), 5); // Check if square is added
+   
+}
 
 void TestMainWindow::testIsUniqueId()
 {
@@ -42,58 +57,30 @@ void TestMainWindow::testIsUniqueId()
     QCOMPARE(window.isUniqueId(10), true); // Check if a different ID is unique
 }
 
-// // void TestMainWindow::testStartProcesses()
-// // {
-// //     MainWindow window;
-// //     window.startProcesses();
-// //     QVERIFY(!window.runningProcesses.isEmpty()); // Ensure processes are started
-// // }
-
-
-// void testStartProcesses() {
-//     MainWindow mainWindow;
-
-//     // Set up a mock environment if needed
-//     mainWindow.timeInput->setText("5");  // Set a timer of 5 seconds
-
-//     // Simulate clicking the start button
-//     QTest::mouseClick(mainWindow.startButton, Qt::LeftButton);
-
-//     // Verify that the timer started and processes were added
-//     QVERIFY(mainWindow.timer->isActive());
-//     QCOMPARE(mainWindow.logOutput->toPlainText().contains("Timer started for 5 seconds."), true);
-// }
-
-// void TestMainWindow::testEndProcesses()
-// {
-//     MainWindow window;
-//     window.startProcesses();
-//     window.endProcesses();
-//     QVERIFY(window.runningProcesses.isEmpty()); // Ensure processes are stopped
-// }
-
-// void TestMainWindow::testTimerTimeout()
-// {
-//     MainWindow window;
-//     window.startProcesses();
-//     QSignalSpy spy(&window, SIGNAL(timerTimeout()));
-//     window.timerTimeout();
-//     QCOMPARE(spy.count(), 1); // Check if the signal was emitted once
-// }
-
-void TestMainWindow::testOpenImageDialog()
+void TestMainWindow::testStartProcesses()
 {
     MainWindow window;
-    window.openImageDialog();
-    QVERIFY(!window.currentImagePath.isEmpty()); // Ensure image path is set
+    window.startProcesses();
+    QVERIFY(!window.runningProcesses.isEmpty()); // Ensure processes are started
 }
+
+void TestMainWindow::testEndProcesses()
+{
+    MainWindow window;
+    window.startProcesses();
+    window.endProcesses();
+    QVERIFY(window.runningProcesses.isEmpty()); // Ensure processes are stopped
+}
+
+
 
 
 void TestMainWindow::testDeleteSquare()
 {
     MainWindow window;
-    Process process(5, "Test Process", "../src/dummy_program1", "QEMUPlatform");
+    Process *process = new Process(5, "Test Process", "../src/dummy_program1", "QEMUPlatform");
     window.addProcessSquare(process);
+   
 
     window.deleteSquare(5);
     
@@ -104,5 +91,30 @@ void TestMainWindow::testDeleteSquare()
 }
 
 
+void TestMainWindow::addId(int id){
+    MainWindow window;
+    window.addId(77);
+    QVERIFY(window.usedIds.contains(77));
+}
+
+void TestMainWindow::testShowTimerInput() {
+    MainWindow mainWindow;
+
+    // Initially, the time input and label should be hidden
+    QVERIFY(!mainWindow.timeInput->isVisible());
+    QVERIFY(!mainWindow.timeLabel->isVisible());
+
+    mainWindow.show();
+    // Trigger the showTimerInput function
+    mainWindow.showTimerInput();
+
+    // Now, the time input and label should be visible
+    QVERIFY(mainWindow.timeInput->isVisible());
+    QVERIFY(mainWindow.timeLabel->isVisible());
+}
+
+
 QTEST_MAIN(TestMainWindow)
 #include "test_main_window.moc"
+
+

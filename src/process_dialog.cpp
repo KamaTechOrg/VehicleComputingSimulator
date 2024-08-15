@@ -82,13 +82,15 @@ bool ProcessDialog::isValid() const
            !cmakeProjectEdit->text().isEmpty() && !qemuPlatformCombo->currentText().isEmpty();
 }
 
-void ProcessDialog::validateAndAccept()
+bool ProcessDialog::validateAndAccept()
 {
     if (isValid()) {
         accept();
+        return true;
     }
     else {
         QMessageBox::warning(this, "Input Error", "Please fill in all fields correctly.");
+        return false;
     }
 }
 void ProcessDialog::setId(int id)
@@ -113,3 +115,4 @@ void ProcessDialog::setQEMUPlatform(const QString &qemuPlatform)
         qemuPlatformCombo->setCurrentIndex(index);
     }
 }
+

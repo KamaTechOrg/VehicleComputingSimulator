@@ -7,39 +7,45 @@
 #include <QPushButton>
 #include "process.h"
 
-
-class DraggableSquare : public QWidget
-{
+class DraggableSquare : public QWidget {
     Q_OBJECT
 
-public:
+   public:
+   friend class DraggableSquareTest;
     explicit DraggableSquare(QWidget *parent = nullptr,
                              const QString &color = "background-color: green;",
                              int width = 100, int height = 100);
-    
-    void setProcess(const Process &process);
-    const Process getProcess() const;
+
+    void setProcess(Process *process);
+    Process *getProcess() const;
     const QPoint getDragStartPosition() const;
-    int getId() const { return id; }
-    void setId(int _id) { id = _id; }
+    int getId() const
+    {
+        return id;
+    }
+    void setId(int _id)
+    {
+        id = _id;
+    }
     ~DraggableSquare() override;
 
-protected:
+   protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-private:
+   private:
+   
     QPoint dragStartPosition;
     QPoint initialPosition;
     QLabel *label;
-    Process process;
+    Process *process;
     int id;
     bool dragging;
 
-private slots:
+   private slots:
     void editSquare(int id);
     void deleteSquare(int id);
 };
 
-#endif // __DRAGGABLE_SQUARE_H__
+#endif  // __DRAGGABLE_SQUARE_H__

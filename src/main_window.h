@@ -25,45 +25,56 @@
 #include "process_dialog.h"
 #include "simulation_data_manager.h"
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+   public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
     void startProcesses();
     void endProcesses();
     void showTimerInput();
     void timerTimeout();
     void openImageDialog();
-    QLineEdit* getTimeInput() const { return timeInput; }
-    QPushButton* getStartButton() const { return startButton; }
-    QTimer* getTimer() const { return timer; }
-    QTextEdit* getLogOutput() const { return logOutput; }
-
-
-
-public slots:
+    QLineEdit *getTimeInput() const
+    {
+        return timeInput;
+    }
+    QPushButton *getStartButton() const
+    {
+        return startButton;
+    }
+    QTimer *getTimer() const
+    {
+        return timer;
+    }
+    QTextEdit *getLogOutput() const
+    {
+        return logOutput;
+    }
+    QString getCurrentImagePath() const { return currentImagePath; }
+   public slots:
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
 
-private:
+   private:
     friend class TestMainWindow;
-
-    void addProcessSquare(const Process &process);
+    friend class DraggableSquareTest;
+    friend class UserInteractionTests;
+    void addProcessSquare(Process *&process);
     bool isUniqueId(int id);
     void addId(int id);
-    void addProcessSquare(const Process &process, int index, const QString &color = "background-color: green;");
+    void addProcessSquare(Process *&process, int index,
+                          const QString &color = "background-color: green;");
     void compileBoxes();
     QString getExecutableName(const QString &buildDirPath);
+    Process *getProcessById(int id);
 
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
-    QVector<DraggableSquare*> squares;
-    QMap<int, QPoint> squarePositions; 
+    QVector<DraggableSquare *> squares;
+    QMap<int, QPoint> squarePositions;
     QSet<int> usedIds;
     QPushButton *startButton;
     QPushButton *endButton;
@@ -73,9 +84,9 @@ private:
     QTextEdit *logOutput;
     QTimer *timer;
     QLabel *imageLabel;
-    QVector<QProcess*> runningProcesses;
+    QVector<QProcess *> runningProcesses;
     QString currentImagePath;
     SimulationDataManager *dataManager;
 };
 
-#endif // MAIN_WINDOW_H
+#endif  // MAIN_WINDOW_H
