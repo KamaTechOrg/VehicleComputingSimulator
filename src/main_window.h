@@ -36,6 +36,7 @@ class MainWindow : public QMainWindow {
     void showTimerInput();
     void timerTimeout();
     void openImageDialog();
+    void createProcessConfigFile(int id, const QString &processPath);
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -67,7 +68,7 @@ class MainWindow : public QMainWindow {
     void addId(int id);
     void addProcessSquare(Process *&process, int index,
                           const QString &color = "background-color: green;");
-    void compileBoxes();
+    void compileAndRunProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
 
