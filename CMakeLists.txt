@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.10)
 project(DPCPPExample)
 
@@ -55,6 +56,26 @@ else()
     remove_definitions(-DDEBUG_MODE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
     message(STATUS "Compiling with Release build type and optimization level -O3")
+endif()
+
+# Check if SYCL is enabled
+option(USE_SYCL "Enable SYCL support" OFF)
+
+if(USE_SYCL)
+    # Set the icpx compiler with SYCL support
+    set(CMAKE_CXX_COMPILER icpx)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl")
+
+    # Add oneAPI include directories
+    include_directories(${CMAKE_SOURCE_DIR}/include /opt/intel/oneapi/compiler/latest/linux/include)
+
+    # Add oneAPI library directories
+    link_directories(/opt/intel/oneapi/compiler/latest/linux/lib)
+    message(STATUS "Compiling with SYCL support")
+    add_definitions(-DUSE_SYCL)
+    else()
+    message(STATUS "Compiling without SYCL support")
+    remove_definitions(-DUSE_SYCL)
 endif()
 
 # Add source files from the src directory
