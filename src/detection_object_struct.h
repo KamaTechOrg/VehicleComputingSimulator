@@ -10,4 +10,4 @@ struct DetectionObject {
     cv::Rect position;
 };
 
-#endif //__DETECTION_OBJECT_STRUCT_H__
+#endif  //__DETECTION_OBJECT_STRUCT_H__

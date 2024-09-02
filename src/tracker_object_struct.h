@@ -6,8 +6,8 @@
 struct TrackerObject {
     int id;
     ObjectType type;
-    cv::Rect prePosition;
+    cv::Rect prevPosition;
     cv::Rect currentPosition;
 };
 
-#endif //__TRACKER_OBJECT_STRUCT_H__
+#endif  //__TRACKER_OBJECT_STRUCT_H__

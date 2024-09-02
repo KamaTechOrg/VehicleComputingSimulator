@@ -2,7 +2,7 @@
 using namespace std;
 using namespace cv;
 
-Manager::Manager(const Mat& Frame)
+Manager::Manager(const Mat &Frame)
 {
     // Constructor implementation
 }
@@ -14,7 +14,7 @@ void Manager::init()
     dynamicTracker.init();
 }
 
-void Manager::processing(const Mat& newFrame)
+void Manager::processing(const Mat &newFrame)
 {
     currentFrame = make_shared<Mat>(newFrame);
     // Use CUDA if existing
