@@ -24,6 +24,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(SOURCES
     src/Packet.cpp
     src/communication.cpp
+    src/syncCommunication.cpp
     test/testCommunication.cpp
 )
 
