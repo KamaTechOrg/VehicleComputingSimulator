@@ -21,7 +21,7 @@ QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
 }
 // Reading data from a file
 void LogHandler::readLogFile(const QString &fileName)
-{
+{ 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open file:" << fileName;
