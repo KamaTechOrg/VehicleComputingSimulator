@@ -1,13 +1,25 @@
 #include "manager.h"
 
 Manager* Manager::instance = nullptr;
+std::mutex Manager::managerMutex;
 
-// constructor
+//Private constructor
 Manager::Manager() : server(8080, std::bind(&Manager::receiveData, this, std::placeholders::_1))
 {
-    instance = this;
     // Setup the signal handler for SIGINT
     signal(SIGINT, Manager::signalHandler);
+}
+
+// Static function to return a singleton instance
+Manager* Manager::getInstance() {
+    if (instance == nullptr) {
+        // Lock the mutex to prevent multiple threads from creating instances simultaneously
+        std::lock_guard<std::mutex> lock(managerMutex);
+        if (instance == nullptr) {
+            instance = new Manager();
+        }
+    }
+    return instance;
 }
 
 // Sends to the server to listen for requests
@@ -56,4 +68,7 @@ void Manager::signalHandler(int signum)
     }
     exit(signum);
 }
-Manager::~Manager() {}
+
+Manager::~Manager() {
+    instance = nullptr;
+}

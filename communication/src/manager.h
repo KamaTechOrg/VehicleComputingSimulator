@@ -8,15 +8,21 @@ class Manager
 {
 private:
     Server server;
-    // A static variable that holds an instance of the class
+    
+    // Singleton instance
     static Manager* instance;
+    static std::mutex managerMutex;
    
     // Sending according to broadcast variable
     int sendToClients(const Packet &packet);
 
-public:
-    // constructor
+    // Private constructor
     Manager();
+
+public:
+    
+    //Static function to return a singleton instance
+    static Manager* getInstance();
 
     // Sends to the server to listen for requests
     int startConnection();
