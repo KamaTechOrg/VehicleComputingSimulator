@@ -1,7 +1,9 @@
+#include <csignal>
+#include <iostream>
 #include "server.h"
 
 // Constructor
-Server::Server(int port, std::function<void(void *)> callback, ISocket *socketInterface)
+Server::Server(int port, std::function<void(void *)> callback, ISocket* socketInterface)
     : port(port), receiveDataCallback(callback), running(false), socketInterface(socketInterface) {}
 
 // Initializes the listening socket
@@ -39,6 +41,7 @@ int Server::startConnection()
     running = true;
     mainThread = std::thread(&Server::startThread, this);
     mainThread.detach();
+
     return 0;
 }
 
