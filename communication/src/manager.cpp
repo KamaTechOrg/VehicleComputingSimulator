@@ -1,7 +1,14 @@
 #include "manager.h"
 
+Manager* Manager::instance = nullptr;
+
 // constructor
-Manager::Manager() : server(8080, std::bind(&Manager::receiveData, this, std::placeholders::_1)) {}
+Manager::Manager() : server(8080, std::bind(&Manager::receiveData, this, std::placeholders::_1))
+{
+    instance = this;
+    // Setup the signal handler for SIGINT
+    signal(SIGINT, Manager::signalHandler);
+}
 
 // Sends to the server to listen for requests
 int Manager::startConnection()
@@ -40,4 +47,13 @@ Packet Manager::packetPriority(Packet &a, Packet &b)
     return (a.header.SrcID < b.header.SrcID) ? a : b;
 }
 
-Manager::~Manager(){}
+// Static method to handle SIGINT signal
+void Manager::signalHandler(int signum)
+{
+    std::cout << "Interrupt signal (" << signum << ") received.\n";
+    if (instance) {
+        instance->server.stopServer();  // Call the stopServer method
+    }
+    exit(signum);
+}
+Manager::~Manager() {}
