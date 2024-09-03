@@ -3,7 +3,7 @@
 std::string logger::logFileName;
 bool logger::isInitialized = false;
 std::mutex logger::logMutex;
-std::chrono::system_clock::time_point logger::initTime;
+std::chrono::system_clock::time_point logger::initTime=std::chrono::system_clock::now();
 
 logger::logger(std::string componentName)
 {
@@ -15,8 +15,6 @@ void logger::initializeLogFile()
     std::lock_guard<std::mutex> guard(logMutex);
 
     if (isInitialized) return;
-
-    initTime = std::chrono::system_clock::now();
 
     auto time = std::chrono::system_clock::to_time_t(initTime);
     std::tm tm = *std::localtime(&time);
