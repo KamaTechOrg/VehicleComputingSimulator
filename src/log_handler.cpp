@@ -4,7 +4,6 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
-#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -14,12 +13,15 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QFile>
+#include <QVector>
+#include <bson/bson.h>
 
 QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
 {
     return logEntries;
 }
-// Reading data from a file
+
 void LogHandler::readLogFile(const QString &fileName)
 { 
     QFile file(fileName);
@@ -85,7 +87,7 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
             return;
         }
 
-        // עדכון מפת התהליכים לפי מידע מהקובץ JSON
+        // Update the process map according to information from the JSON file
         QJsonArray processesArray = jsonObject["processes"].toArray();
         for (const QJsonValue &value : processesArray) {
             QJsonObject processObject = value.toObject();
@@ -145,35 +147,57 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
     }
 }
 
-QVector<int> LogHandler::findProcessCoordinatesById(int processId,
-                                                    const QString &fileName)
+QVector<int> LogHandler::findProcessCoordinatesById(int processId, const QString &fileName)
 {
     QVector<int> coordinates;
 
-    // Load JSON from file
+    // Load BSON from file
     QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("Could not open file");
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Could not open file";
         return coordinates;
     }
-    QByteArray jsonData = file.readAll();
+    QByteArray bsonData = file.readAll();
     file.close();
 
-    QJsonDocument document = QJsonDocument::fromJson(jsonData);
-    QJsonObject rootObject = document.object();
-    QJsonArray processesArray = rootObject["processes"].toArray();
+    // Convert BSON to QJsonObject
+    bson_t *document;
+    const uint8_t *data = reinterpret_cast<const uint8_t *>(bsonData.data());
+    document = bson_new_from_data(data, bsonData.size());
 
-    // Searching for the process ID and finding its coordinatesFi
+    if (!document) {
+        qDebug() << "Failed to parse BSON document";
+        return coordinates;
+    }
+
+    QJsonObject rootObject = bsonToJsonObject(document);
+    bson_destroy(document);  // Clean up BSON document
+
+    QJsonArray processesArray = rootObject["processes"].toArray();
+    // Searching for the process ID and finding its coordinates
     for (const QJsonValue &value : processesArray) {
         QJsonObject processObject = value.toObject();
         if (processObject["id"].toInt() == processId) {
-            coordinates.append(processObject["x"].toInt());
-            coordinates.append(processObject["y"].toInt());
+            QJsonObject coordinateObj = processObject["coordinate"].toObject();
+            coordinates.append(coordinateObj["x"].toInt());
+            coordinates.append(coordinateObj["y"].toInt());
+            qDebug() << "coordinates[0]" << coordinates[0];
+            qDebug() << "coordinates[1]" << coordinates[1];
             break;
         }
     }
-
+    if(coordinates.isEmpty())
+{
+    coordinates = {-1,-1};
+}
     return coordinates;
+}
+
+QJsonObject LogHandler::bsonToJsonObject(const bson_t *document) {
+    char *json = bson_as_json(document, nullptr);
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(QByteArray::fromRawData(json, strlen(json)));
+    bson_free(json);
+    return jsonDoc.object();
 }
 
 const QMap<int, DraggableSquare *> &LogHandler::getProcessSquares() const
