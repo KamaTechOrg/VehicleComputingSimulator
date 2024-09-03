@@ -28,28 +28,15 @@ set(SOURCES
 )
 
 # Include directories
-include_directories(${gtest_SOURCE_DIR}/include ${gmock_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/logger)
+include_directories(${gtest_SOURCE_DIR}/include ${gmock_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sockets)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/test)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../googletest/googletest/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../googletest/googlemock/include)
 
-# Add the logger source files
-set(LOGGER_SOURCES
-    ${CMAKE_SOURCE_DIR}/logger/logger.cpp
-)
-
-# Add the test source files
-set(TEST_SOURCES
-    ${CMAKE_SOURCE_DIR}/test/loggerTest.cpp
-)
-
-# Find and link pthread
-find_package(Threads REQUIRED)
-
-# Add GTest and GMock
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../googletest googletest-build)
+# Add the external_logger subdirectory
+add_subdirectory(external_logger)
 
 # Define LOG_LEVEL for compilation (default: INFO)
 set(DEFAULT_LOG_LEVEL "logger::LogLevel::INFO")
@@ -60,7 +47,7 @@ add_definitions(-DLOG_LEVEL=${LOG_LEVEL})
 add_executable(testCommunication ${SOURCES})
 
 # Create the test executable
-add_executable(LoggerTests ${LOGGER_SOURCES} ${TEST_SOURCES})
+add_executable(LoggerTests ${TEST_SOURCES})
 
 # Link the GTest and GMock libraries
 target_link_libraries(LoggerTests
@@ -68,7 +55,7 @@ target_link_libraries(LoggerTests
     gmock
     pthread
 )
-target_link_libraries(testCommunication gtest gmock gtest_main gmock_main Threads::Threads)
+target_link_libraries(testCommunication gtest gmock gtest_main gmock_main Threads::Threads logger)
 
 # Enable testing
 enable_testing()
