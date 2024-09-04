@@ -147,59 +147,6 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
     }
 }
 
-QVector<int> LogHandler::findProcessCoordinatesById(int processId, const QString &fileName)
-{
-    QVector<int> coordinates;
-
-    // Load BSON from file
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Could not open file";
-        return coordinates;
-    }
-    QByteArray bsonData = file.readAll();
-    file.close();
-
-    // Convert BSON to QJsonObject
-    bson_t *document;
-    const uint8_t *data = reinterpret_cast<const uint8_t *>(bsonData.data());
-    document = bson_new_from_data(data, bsonData.size());
-
-    if (!document) {
-        qDebug() << "Failed to parse BSON document";
-        return coordinates;
-    }
-
-    QJsonObject rootObject = bsonToJsonObject(document);
-    bson_destroy(document);  // Clean up BSON document
-
-    QJsonArray processesArray = rootObject["processes"].toArray();
-    // Searching for the process ID and finding its coordinates
-    for (const QJsonValue &value : processesArray) {
-        QJsonObject processObject = value.toObject();
-        if (processObject["id"].toInt() == processId) {
-            QJsonObject coordinateObj = processObject["coordinate"].toObject();
-            coordinates.append(coordinateObj["x"].toInt());
-            coordinates.append(coordinateObj["y"].toInt());
-            qDebug() << "coordinates[0]" << coordinates[0];
-            qDebug() << "coordinates[1]" << coordinates[1];
-            break;
-        }
-    }
-    if(coordinates.isEmpty())
-{
-    coordinates = {-1,-1};
-}
-    return coordinates;
-}
-
-QJsonObject LogHandler::bsonToJsonObject(const bson_t *document) {
-    char *json = bson_as_json(document, nullptr);
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(QByteArray::fromRawData(json, strlen(json)));
-    bson_free(json);
-    return jsonDoc.object();
-}
-
 const QMap<int, DraggableSquare *> &LogHandler::getProcessSquares() const
 {
     return processSquares;

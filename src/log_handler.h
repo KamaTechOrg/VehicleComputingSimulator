@@ -30,8 +30,6 @@ public:
     void sortLogEntries();
     void analyzeLogEntries(QMainWindow *mainWindow, const QString &jsonFileName,
                            bool realTime = false);
-    QJsonObject bsonToJsonObject(const bson_t *document);
-    QVector<int> findProcessCoordinatesById(int processId, const QString &fileName);
     QVector<LogHandler::LogEntry> getLogEntries();
     const QMap<int, DraggableSquare *> &getProcessSquares() const;
 

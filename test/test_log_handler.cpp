@@ -16,9 +16,7 @@ class LogHandlerTests : public QObject {
 private slots:
     void testReadLogFile();
     void testSortLogEntries();
-    void testFindProcessCoordinatesById();
     void testGetProcessSquares();
-    void testBsonToJsonObject();
 };
 
 void LogHandlerTests::testReadLogFile() {
@@ -40,53 +38,6 @@ void LogHandlerTests::testSortLogEntries() {
     }
 }
 
-void LogHandlerTests::testFindProcessCoordinatesById()
-{
-    LogHandler logHandler;
-    
-     // Create some sample processes
-    Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1");
-    Process process2(2, "Process2", "CMakeProject2", "QEMUPlatform2");
-
-    // Create some draggable squares with the processes
-    DraggableSquare square1;
-    square1.setProcess(&process1);
-    square1.setDragStartPosition(QPoint(10, 20));
-    
-    DraggableSquare square2;
-    square2.setProcess(&process2);
-    square2.setDragStartPosition(QPoint(30, 40));
-
-    QVector<DraggableSquare *> squares;
-    squares.append(&square1);
-    squares.append(&square2);
-
-    QString img = "path/to/image.png";
-
-    // Create a SimulationDataManager instance
-    SimulationDataManager dataManager;
-
-    // Save the simulation data
-    QString fileName = "simulation_data.bson";
-    dataManager.saveSimulationData(fileName.toStdString(), squares, img);
-
-    QVector<int> result1 = logHandler.findProcessCoordinatesById(1, fileName);
-    QVector<int> v1 = {10, 20};
-    if (result1.size() >= 2 && v1.size() >= 2) {
-    QCOMPARE(result1[0], v1[0]);
-    QCOMPARE(result1[1], v1[1]);
-    } else {
-         QFAIL("Vectors do not contain enough elements for comparison");
-    }
-    QVector<int> result2 = logHandler.findProcessCoordinatesById(2, fileName);
-    QVector<int> v2 = {30, 40};
-    QCOMPARE(result2, v2);
-    // Check coordinate lookup for non-existent ID
-    QVector<int> resultNotFound = logHandler.findProcessCoordinatesById(3, fileName);
-    QVector<int> v3 = {-1, -1};
-    QCOMPARE(resultNotFound, v3);
-}
-
 void LogHandlerTests::testGetProcessSquares() {
     LogHandler logHandler;
 
@@ -103,22 +54,6 @@ void LogHandlerTests::testGetProcessSquares() {
     const QMap<int, DraggableSquare *> &squares = logHandler.getProcessSquares();
     QVERIFY(squares.contains(1));
     QCOMPARE(squares[1]->getProcess()->getId(), 1);
-}
-
-void LogHandlerTests::testBsonToJsonObject() {
-    LogHandler logHandler;
-
-    // Create a dummy BSON
-    bson_t bson;
-    bson_init(&bson);
-    BSON_APPEND_INT32(&bson, "test", 123);
-
-    // Get a JSON object from BSON
-    QJsonObject jsonObject = logHandler.bsonToJsonObject(&bson);
-    QVERIFY(jsonObject.contains("test"));
-    QCOMPARE(jsonObject.value("test").toInt(), 123);
-
-    bson_destroy(&bson);
 }
 
 QTEST_MAIN(LogHandlerTests)
