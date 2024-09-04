@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "frames.h"
+#include <QDebug>
 
 // Constructor to initialize Frames with a LogHandler reference
 Frames::Frames(LogHandler &logHandler, QWidget *parent)
@@ -20,7 +21,7 @@ Frames::Frames(LogHandler &logHandler, QWidget *parent)
     timer->start(1000);
 }
 
-void Frames::initialFramesMat(int size)
+ void Frames:: initialFramesMat(int size)
 {
     framesMat.resize(size);
     for (int i = 0; i < size; ++i) {

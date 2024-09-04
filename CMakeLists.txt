@@ -22,7 +22,8 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(BSON REQUIRED libbson-1.0)
 
 # Add the main application files
-add_executable(DraggableSquares
+
+add_executable(DraggableSquares  
     src/main.cpp
     src/draggable_square.cpp
     src/process.cpp
@@ -44,3 +45,7 @@ enable_testing()
 
 # Add test directory
 add_subdirectory(test)
+#//////////////////
+
+
+
