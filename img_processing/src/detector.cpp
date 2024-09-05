@@ -157,11 +157,6 @@ vector<Rect> Detector::unionOverlappingRectangels(vector<Rect> allChanges)
             i--;
         }
     }
-    for (Rect r : allChanges) {
-        rectangle(*currentFrame, r, Scalar(0, 0, 255), 2);
-    }
-    imshow("win", *currentFrame);
-    waitKey();
     return allChanges;
 }
 
@@ -180,29 +175,35 @@ Mat Detector::formatYolov5(const shared_ptr<Mat> &frame)
     return result;
 }
 
-void Detector::init(bool isCuda) { loadNet(isCuda); }
-
-void Detector::loadNet(bool isCuda) {
-  // Loading yolov5s onnx model
-  auto result = readNet("../yolov5s.onnx");
-  if (isCuda) {
-    cout << "Using CUDA\n";
-    result.setPreferableBackend(DNN_BACKEND_CUDA);
-    result.setPreferableTarget(DNN_TARGET_CUDA_FP16);
-  } else {
-    cout << "CPU Mode\n";
-    result.setPreferableBackend(DNN_BACKEND_OPENCV);
-    result.setPreferableTarget(DNN_TARGET_CPU);
-  }
-  net = result;
+void Detector::init(bool isCuda)
+{
+    loadNet(isCuda);
 }
 
-bool Detector::isValidObjectType(int value) const {
-  switch (value) {
-  case PEOPLE:
-  case CAR:
-    return true;
-  default:
-    return false;
-  }
+void Detector::loadNet(bool isCuda)
+{
+    // Loading yolov5s onnx model
+    auto result = readNet("../yolov5s.onnx");
+    if (isCuda) {
+        cout << "Using CUDA\n";
+        result.setPreferableBackend(DNN_BACKEND_CUDA);
+        result.setPreferableTarget(DNN_TARGET_CUDA_FP16);
+    }
+    else {
+        cout << "CPU Mode\n";
+        result.setPreferableBackend(DNN_BACKEND_OPENCV);
+        result.setPreferableTarget(DNN_TARGET_CPU);
+    }
+    net = result;
+}
+
+bool Detector::isValidObjectType(int value) const
+{
+    switch (value) {
+        case PEOPLE:
+        case CAR:
+            return true;
+        default:
+            return false;
+    }
 }

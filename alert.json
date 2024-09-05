@@ -1,0 +1,35 @@
+{
+    "endianness": "little",
+    "fields": [
+        {
+            "name": "MessageType",
+            "size": 1,
+            "type": "uint"
+        },
+        {
+            "name": "Level",
+            "size": 3,
+            "type": "uint"
+        },
+        {
+            "name": "ObjectType",
+            "size": 4,
+            "type": "uint"
+        },
+        {
+            "name": "ObjectDistance",
+            "size": 64,
+            "type": "float_fixed"
+        },
+        {
+            "name": "CarSpeed",
+            "size": 32,
+            "type": "uint"
+        },
+        {
+            "name": "ObjectSpeed",
+            "size": 32,
+            "type": "uint"
+        }
+    ]
+}

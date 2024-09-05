@@ -3,8 +3,11 @@
 #include <iostream>
 #include "../include/alerter.h"
 #include "../include/alert.h"
+#include "../include/distance.h"
 using json = nlohmann::json;
 using namespace std;
+#define MIN_LEGAL_DISTANCE 1000
+#define MIN_LEGAL_HEIGHT 3200
 
 char *Alerter::makeAlertBuffer(const DetectionObject &detectionObject)
 {
@@ -15,16 +18,20 @@ char *Alerter::makeAlertBuffer(const DetectionObject &detectionObject)
     return buffer;
 }
 
-void Alerter::destroyAlertBuffer(char *buffer) { delete[] buffer; }
+void Alerter::destroyAlertBuffer(char *buffer)
+{
+    delete[] buffer;
+}
 
-void Alerter::sendAlerts(const vector<DetectionObject> &output) {
-  for (DetectionObject detectionObject : output) {
-    // TODO : send to function that check if send alert...
-    // if the function return true:
-    char *alertBuffer = makeAlertBuffer(detectionObject);
-    // TODO : use send comunication function.
-    destroyAlertBuffer(alertBuffer);
-  }
+void Alerter::sendAlerts(const vector<DetectionObject> &output)
+{
+    for (DetectionObject detectionObject : output) {
+        // TODO : send to function that check if send alert...
+        // if the function return true:
+        char *alertBuffer = makeAlertBuffer(detectionObject);
+        // TODO : use send comunication function.
+        destroyAlertBuffer(alertBuffer);
+    }
 }
 
 void Alerter::makeFileJSON()
@@ -53,7 +60,7 @@ void Alerter::makeFileJSON()
                            {"type", "uint"},
                            {"name", "ObjectSpeed"}});
 
-    ofstream output_file("../alert.json");
+    ofstream output_file("../../alert.json");
     if (!output_file) {
         cerr << "Error opening file for writing" << endl;
         return;

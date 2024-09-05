@@ -4,7 +4,6 @@
 #include "detection_object_struct.h"
 #include "object_type_enum.h"
 
-
 class Detector {
    public:
     // loading the moodle
@@ -36,4 +35,4 @@ class Detector {
         std::vector<cv::Rect> allChanges);
 };
 
-#endif // __DETECTOR_H__
+#endif  // __DETECTOR_H__

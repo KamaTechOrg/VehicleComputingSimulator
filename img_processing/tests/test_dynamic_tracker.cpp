@@ -83,4 +83,3 @@ TEST(Track, twoCars)
     }
     waitKey(0);
 }
-
