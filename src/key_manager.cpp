@@ -1,6 +1,6 @@
 #include "key_manager.h"
 
-Point getECCPrivateKey(int id)
+ getECCPrivateKey(int id)
 {
     //TODO
     return Point();

@@ -9,6 +9,10 @@ std::map<int,std::pair<StreamAES*,size_t>> mapToInMiddleDecryptions;
 
 constexpr size_t BITS_IN_BYTE = 8;
 constexpr size_t ECC_CIPHER_LENGTH = 512;
+constexpr size_t IV_LENGTH = 128;
+const unsigned int BLOCK_BYTES_LENGTH = 16 * sizeof(unsigned char);
+const unsigned int RSA_KEY_LENGTH = 1024;
+
 
 void printBufferHex(const uint8_t *buffer, size_t len, std::string message)
 {
@@ -48,7 +52,7 @@ int encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
     signature = new uint8_t[signatureLen];
     sign(senderId, in, inLen, signature, signatureLen, func);
     //printBufferHex(signature, signatureLen, "digital signature=encrypted hash");
-    if (func == SIGNATURE_ECC || func == SIGNATURE_RSA) {
+    if (isSignatureOnly(func)) {
         outLen = inLen + signatureLen;
         // copy data
         std::memcpy(static_cast<uint8_t *>(out), in, inLen);
@@ -61,7 +65,7 @@ int encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
     encryptedKeyAndDataLen = getSymmEncLen(inLen) + getAsymmEncLen(func);
     encryptedKeyAndData = new uint8_t[encryptedKeyAndDataLen];
     performEncryption(receiverId, reinterpret_cast<uint8_t *>(in), inLen,
-                      encryptedKeyAndData, encryptedKeyAndDataLen, func,senderId);
+                      encryptedKeyAndData, encryptedKeyAndDataLen, func, senderId, counter);
     outLen = encryptedKeyAndDataLen + signatureLen;
     // Copy encrypted symmetric key and encrypted data
     std::memcpy(static_cast<uint8_t *>(out), encryptedKeyAndData,
@@ -94,7 +98,7 @@ int decrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
     signatureLen = getAsymmSignLen(func);
     signature = new uint8_t[signatureLen];
     memcpy(signature, uin + inLen - signatureLen, signatureLen);
-    if (func == SIGNATURE_ECC || func == SIGNATURE_RSA) {
+    if (isSignatureOnly(func)) {
         try {
             verify(senderId, in, inLen - signatureLen, signature, signatureLen,
                    func);
@@ -115,7 +119,7 @@ int decrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
         extractFromPointer(in, encryptedKeyAndDataLen);
 
     performDecryption(receiverId, encryptedKeyAndData, encryptedKeyAndDataLen,
-                      decryptedData, decryptedDataLen, func, senderId);
+                      decryptedData, decryptedDataLen, func, senderId, counter);
     try {
         verify(senderId, decryptedData, decryptedDataLen, signature,
                signatureLen, func);
@@ -172,7 +176,7 @@ void performEncryption(int recieverId, uint8_t *in, size_t inLen, uint8_t *out,
         rsaEncrypt(symmetricKey, symmetricKeyLen,
                    ((RsaKeys *)Hsm::getKey(recieverId))->n,
                    ((RsaKeys *)Hsm::getKey(recieverId))->pubKey, encryptedKey,
-                   encryptedKeyLen, getAsymmKeyBitsEnc(func));
+                   encryptedKeyLen, RSA_KEY_LENGTH);
     }
     else {
         encryptedKeyLen = 512;
@@ -218,7 +222,7 @@ void performDecryption(int recieverId, uint8_t *encryptedKeyAndData,
         rsaDecrypt(encryptedKey, encryptedKeyLen,
                    ((RsaKeys *)Hsm::getKey(recieverId))->n,
                    ((RsaKeys *)Hsm::getKey(recieverId))->priKey, decryptedKey,
-                   &decryptedKeyLen, getAsymmKeyBitsEnc(func));
+                   &decryptedKeyLen, RSA_KEY_LENGTH);
         //printBufferHex(decryptedKey, decryptedKeyLen, "decrypted key");
     }
     else {
@@ -259,26 +263,17 @@ void sign(int senderId, void *data, size_t dataLen, void *signature,
           size_t &signatureLen, encryptionFunction func)
 {
     //1. hash the in
-    uint8_t *hash = new uint8_t[hashLength];
+    uint8_t *hash = new uint8_t[(getHashedSize(func)/BITS_IN_BYTE)];
     std::vector<uint8_t> hashVec = sha256_compute(std::vector<uint8_t>(
         static_cast<uint8_t *>(data), static_cast<uint8_t *>(data) + dataLen));
-    memcpy(hash, hashVec.data(), hashLength);
+    memcpy(hash, hashVec.data(), (getHashedSize(func)/BITS_IN_BYTE));
     //printBufferHex(hash, hashLength, "hashed message");
 
     //2. encrypt the hash with sender's private key
-    if (Hsm::isRsaEncryption(func)) {
-        rsaEncrypt(hash, hashLength, ((RsaKeys *)Hsm::getKey(senderId))->n,
-                   ((RsaKeys *)Hsm::getKey(senderId))->priKey,
-                   static_cast<uint8_t *>(signature), signatureLen,
-                   getAsymmKeyBitsSign(func));
-    }
-    // else {
-    //     auto signWithECC =
-    //         signMessageECC(std::vector<uint8_t>(hash, hash + hashLength),
-    //                        ((EccKeys *)Hsm::getKey(senderId))->privateKey);
-    //     signature = static_cast<void *>(&signWithECC);
-    //     //TODO: signatureLen=???
-    // }
+    rsaEncrypt(hash, getHashedSize(func)/BITS_IN_BYTE, ((RsaKeys *)Hsm::getKey(senderId))->n,
+                ((RsaKeys *)Hsm::getKey(senderId))->priKey,
+                static_cast<uint8_t *>(signature), signatureLen,
+                RSA_KEY_LENGTH); 
 }
 
 //function to verify data, throws error if the hashed message != decrypted signature
@@ -286,38 +281,27 @@ void verify(int senderId, void *data, size_t dataLen, void *signature,
             size_t signatureLen, encryptionFunction func)
 {
     //1. hash the data
-    uint8_t *hash = new uint8_t[hashLength];
+    uint8_t *hash = new uint8_t[(getHashedSize(func)/BITS_IN_BYTE)];
     std::vector<uint8_t> hashVec = sha256_compute(std::vector<uint8_t>(
         static_cast<uint8_t *>(data), static_cast<uint8_t *>(data) + dataLen));
-    memcpy(hash, hashVec.data(), hashLength);
+    memcpy(hash, hashVec.data(), (getHashedSize(func)/BITS_IN_BYTE));
     bool res = false;
     //2. decrypt digital signature with the sender public key and compare the 2 hashes
     if (Hsm::isRsaEncryption(func)) {
-        size_t decryptedHahLen = rsaGetDecryptedLen(getAsymmKeyBitsSign(func));
+        size_t decryptedHahLen = rsaGetDecryptedLen(RSA_KEY_LENGTH);
         uint8_t *decryptedHash = new uint8_t[decryptedHahLen];
         rsaDecrypt(reinterpret_cast<const uint8_t *>(signature), signatureLen,
                    ((RsaKeys *)Hsm::getKey(senderId))->n,
                    ((RsaKeys *)Hsm::getKey(senderId))->pubKey, decryptedHash,
-                   &decryptedHahLen, getAsymmKeyBitsSign(func));
+                   &decryptedHahLen, RSA_KEY_LENGTH);
         //printBufferHex(hash, hashLength, "hash on the original message");
         //printBufferHex(decryptedHash, hashLength, "decrypted signature");
 
-        if (memcmp(hash, decryptedHash, hashLength) == 0) {
+        if (memcmp(hash, decryptedHash, getHashedSize(func)/BITS_IN_BYTE) == 0) {
             res = true;
         }
         delete[] decryptedHash;
     }
-    // else {
-    //     if (verifySignatureECC(
-    //             std::vector<uint8_t>(hash, hash + hashLength),
-    //             static_cast<std::pair<mpz_class, mpz_class> *>(signature)
-    //                 ->first,
-    //             static_cast<std::pair<mpz_class, mpz_class> *>(signature)
-    //                 ->second,
-    //             ((EccKeys *)Hsm::getKey(senderId))->publicKey)) {
-    //         res = true;
-    //     }
-    // }
     delete[] hash;
     if (!res)
         throw std::runtime_error(
@@ -335,8 +319,8 @@ uint8_t *extractFromPointer(const void *in, int length)
 
 size_t getSymmEncLen(size_t inLen)
 {
-    return ivLength +
-           (((inLen + blockBytesLen - 1) / blockBytesLen) * blockBytesLen);
+    return (IV_LENGTH/BITS_IN_BYTE) +
+           (((inLen + BLOCK_BYTES_LEN - 1) / BLOCK_BYTES_LEN) * BLOCK_BYTES_LEN);
 }
 
 //get the size required to allocate for encryptaed message with encrypted symmetric key and digital signature
@@ -344,7 +328,7 @@ size_t getSymmEncLen(size_t inLen)
 size_t getEncryptedLen(int senderId, size_t inLen)
 {
     encryptionFunction func = Hsm::getEncryptionFunctionType(senderId);
-    if (func == SIGNATURE_RSA || func == SIGNATURE_ECC)
+    if (isSignatureOnly(func))
         //data + signature
         return inLen + getAsymmSignLen(func);
     else
@@ -353,33 +337,97 @@ size_t getEncryptedLen(int senderId, size_t inLen)
                getAsymmSignLen(func);
 }
 
-//get the size required to allocate for decryptaed message (includes the aes padding...)
-// in is encrypted data
+// Function to get the size required to allocate for decrypted message (includes the AES padding...)
+// 'inLen' is the length of the encrypted data
 size_t getDecryptedLen(int senderId, size_t inLen)
 {
+    // Retrieve the encryption function type for the given sender ID
     encryptionFunction func = Hsm::getEncryptionFunctionType(senderId);
-    if (func == SIGNATURE_RSA || func == SIGNATURE_ECC)
-        //data + signature
+
+    // Check if the function corresponds to a signature-only mode
+    if (isSignatureOnly(func))
+        // Data + signature: Remove the signature length from the input length
         return inLen - getAsymmSignLen(func);
     else
-        //encrypted symmetric key +encrypted data(+IV)+ digital signature
-        //remove  and digital signature and ecrypted key- leave padded encrypted data
-        return inLen - getAsymmEncLen(func) - getAsymmSignLen(func);
+            return inLen - getAsymmEncLen(func) - getAsymmSignLen(func);
 }
 
-//Function to map EncryptionFunc to AESKeyLength
+// Function to check if the encryption function is for signature only or includes encryption with signing
+bool isSignatureOnly(encryptionFunction func)
+{
+    switch (func) {
+        case SIGNATURE_SHA3_512_CFB:
+        case SIGNATURE_SHA3_512_CTR:
+        case SIGNATURE_SHA3_512_ECB:
+        case SIGNATURE_SHA3_512_OFB:
+        case SIGNATURE_SHA3_512_CBC:
+        case SIGNATURE_SHA256_CFB:
+        case SIGNATURE_SHA256_CTR:
+        case SIGNATURE_SHA256_ECB:
+        case SIGNATURE_SHA256_OFB:
+        case SIGNATURE_SHA256_CBC:
+            return true;  // These are signature-only functions
+        default:
+            return false; // These include both encryption and signing
+    }
+}
+
+// Function to map EncryptionFunc to AESKeyLength
 AESKeyLength mapToAESKeyLength(encryptionFunction func)
 {
     switch (func) {
-        case ENCRYPT_128_AND_SIGN_RSA:
-        case ENCRYPT_128_AND_SIGN_ECC:
+        case SIGNATURE_SHA3_512_CBC:
+        case SIGNATURE_SHA3_512_CFB:
+        case SIGNATURE_SHA3_512_CTR:
+        case SIGNATURE_SHA3_512_ECB:
+        case SIGNATURE_SHA3_512_OFB:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_CBC:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_CFB:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_CTR:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_ECB:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_OFB:
             return AESKeyLength::AES_128;
-        case ENCRYPT_192_AND_SIGN_RSA:
-        case ENCRYPT_192_AND_SIGN_ECC:
+        
+        case ENCRYPT_192_AND_SIGN_SHA3_512_CBC:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_CFB:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_CTR:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_ECB:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_OFB:
             return AESKeyLength::AES_192;
-        case ENCRYPT_256_AND_SIGN_RSA:
-        case ENCRYPT_256_AND_SIGN_ECC:
+
+        case ENCRYPT_256_AND_SIGN_SHA3_512_CBC:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_CFB:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_CTR:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_ECB:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_OFB:
             return AESKeyLength::AES_256;
+
+        case SIGNATURE_SHA256_CBC:
+        case SIGNATURE_SHA256_CFB:
+        case SIGNATURE_SHA256_CTR:
+        case SIGNATURE_SHA256_ECB:
+        case SIGNATURE_SHA256_OFB:
+        case ENCRYPT_128_AND_SIGN_SHA256_CBC:
+        case ENCRYPT_128_AND_SIGN_SHA256_CFB:
+        case ENCRYPT_128_AND_SIGN_SHA256_CTR:
+        case ENCRYPT_128_AND_SIGN_SHA256_ECB:
+        case ENCRYPT_128_AND_SIGN_SHA256_OFB:
+            return AESKeyLength::AES_128;
+        
+        case ENCRYPT_192_AND_SIGN_SHA256_CBC:
+        case ENCRYPT_192_AND_SIGN_SHA256_CFB:
+        case ENCRYPT_192_AND_SIGN_SHA256_CTR:
+        case ENCRYPT_192_AND_SIGN_SHA256_ECB:
+        case ENCRYPT_192_AND_SIGN_SHA256_OFB:
+            return AESKeyLength::AES_192;
+
+        case ENCRYPT_256_AND_SIGN_SHA256_CBC:
+        case ENCRYPT_256_AND_SIGN_SHA256_CFB:
+        case ENCRYPT_256_AND_SIGN_SHA256_CTR:
+        case ENCRYPT_256_AND_SIGN_SHA256_ECB:
+        case ENCRYPT_256_AND_SIGN_SHA256_OFB:
+            return AESKeyLength::AES_256;
+
         default:
             throw std::invalid_argument("Invalid EncryptionFunction");
     }
@@ -400,23 +448,70 @@ size_t convertAESKeyLengthToInt(AESKeyLength keyLength)
     }
 }
 
-size_t getAsymmKeyBitsEnc(encryptionFunction func)
+//Function to map hash function to length in int
+size_t getHashedSize(hashFunction hashFunc)
 {
-    if (Hsm::isRsaEncryption(func)) {
-        return 1024;
-    }
-    else {
-        return 512;
+    switch (hashFunc) {
+        case hashFunction::SHA_256:
+            return 256;
+        case hashFunction::SHA3_512:
+            return 512;
+        default:
+            throw std::invalid_argument("Invalid hash function");
     }
 }
-
-size_t getAsymmKeyBitsSign(encryptionFunction func)
+// Function to map encryptionFunction to hash size in bits
+size_t getHashedSize(encryptionFunction func)
 {
-    if (Hsm::isRsaEncryption(func)) {
-        return 1024;
-    }
-    else {
-        return 256;
+    switch (func) {
+        // SHA256-related functions
+        case SIGNATURE_SHA256_CFB:
+        case SIGNATURE_SHA256_CTR:
+        case SIGNATURE_SHA256_ECB:
+        case SIGNATURE_SHA256_OFB:
+        case SIGNATURE_SHA256_CBC:
+        case ENCRYPT_128_AND_SIGN_SHA256_CBC:
+        case ENCRYPT_128_AND_SIGN_SHA256_CFB:
+        case ENCRYPT_128_AND_SIGN_SHA256_CTR:
+        case ENCRYPT_128_AND_SIGN_SHA256_ECB:
+        case ENCRYPT_128_AND_SIGN_SHA256_OFB:
+        case ENCRYPT_192_AND_SIGN_SHA256_CBC:
+        case ENCRYPT_192_AND_SIGN_SHA256_CFB:
+        case ENCRYPT_192_AND_SIGN_SHA256_CTR:
+        case ENCRYPT_192_AND_SIGN_SHA256_ECB:
+        case ENCRYPT_192_AND_SIGN_SHA256_OFB:
+        case ENCRYPT_256_AND_SIGN_SHA256_CBC:
+        case ENCRYPT_256_AND_SIGN_SHA256_CFB:
+        case ENCRYPT_256_AND_SIGN_SHA256_CTR:
+        case ENCRYPT_256_AND_SIGN_SHA256_ECB:
+        case ENCRYPT_256_AND_SIGN_SHA256_OFB:
+            return 256; // SHA256 has a hash size of 256 bits
+
+        // SHA3-512-related functions
+        case SIGNATURE_SHA3_512_CFB:
+        case SIGNATURE_SHA3_512_CTR:
+        case SIGNATURE_SHA3_512_ECB:
+        case SIGNATURE_SHA3_512_OFB:
+        case SIGNATURE_SHA3_512_CBC:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_CBC:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_CFB:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_CTR:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_ECB:
+        case ENCRYPT_128_AND_SIGN_SHA3_512_OFB:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_CBC:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_CFB:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_CTR:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_ECB:
+        case ENCRYPT_192_AND_SIGN_SHA3_512_OFB:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_CBC:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_CFB:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_CTR:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_ECB:
+        case ENCRYPT_256_AND_SIGN_SHA3_512_OFB:
+            return 512; // SHA3-512 has a hash size of 512 bits
+
+        default:
+            throw std::invalid_argument("Invalid hash function");
     }
 }
 
@@ -439,42 +534,111 @@ size_t getAsymmSignLen(encryptionFunction func)
 void ECCencrypt(int receiverId, void *in, size_t inLen, void *out,
             size_t &outLen)
 {
+    std::vector<uint8_t> inVec(static_cast<uint8_t*>(in), static_cast<uint8_t*>(in) + inLen);
     // Encrypt the message
-    out = encryptECC(in, getECCPublicKey(receiverId));
-    outLen=ECC_CIPHER_LENGTH;    
+    auto cipher = encryptECC(inVec, getECCPublicKey(receiverId));
+    out=static_cast<void *>(&cipher);
+    outLen=ECC_CIPHER_LENGTH;
 }
 
 void ECCdecrypt(int receiverId, void *in, size_t inLen, void *out,
             size_t &outLen)
 {
     // Decrypt the message
-    out = decryptECC(in, getECCPrivateKey(receiverId));
+    out = reinterpret_cast<uint8_t *>(decryptECC(*(reinterpret_cast<EncryptedMessage *>(in)), getECCPrivateKey(receiverId)).data());
     outLen=ECC_CIPHER_LENGTH;
 }
 
 //function to sign data, creates signature rsa
 void sign1(int senderId, void *data, size_t dataLen, void *signature,
-          size_t &signatureLen, encryptionFunction func)
+          size_t &signatureLen, hashFunction hashFunc)
 {
     //1. hash the in
-    uint8_t *hash = new uint8_t[hashLength];
+    uint8_t *hash = new uint8_t[(getHashedSize(hashFunc)/BITS_IN_BYTE)];
     std::vector<uint8_t> hashVec = sha256_compute(std::vector<uint8_t>(
         static_cast<uint8_t *>(data), static_cast<uint8_t *>(data) + dataLen));
-    memcpy(hash, hashVec.data(), hashLength);
+    memcpy(hash, hashVec.data(), (getHashedSize(hashFunc)/BITS_IN_BYTE));
     //printBufferHex(hash, hashLength, "hashed message");
 
     //2. encrypt the hash with sender's private key
-    if (Hsm::isRsaEncryption(func)) {
-        rsaEncrypt(hash, hashLength, ((RsaKeys *)Hsm::getKey(senderId))->n,
-                   ((RsaKeys *)Hsm::getKey(senderId))->priKey,
-                   static_cast<uint8_t *>(signature), signatureLen,
-                   getAsymmKeyBitsSign(func));
-    }
-    // else {
-    //     auto signWithECC =
-    //         signMessageECC(std::vector<uint8_t>(hash, hash + hashLength),
-    //                        ((EccKeys *)Hsm::getKey(senderId))->privateKey);
-    //     signature = static_cast<void *>(&signWithECC);
-    //     //TODO: signatureLen=???
-    // }
+    rsaEncrypt(hash, getHashedSize(hashFunc)/BITS_IN_BYTE, ((RsaKeys *)Hsm::getKey(senderId))->n,
+                ((RsaKeys *)Hsm::getKey(senderId))->priKey,
+                static_cast<uint8_t *>(signature), signatureLen,
+                RSA_KEY_LENGTH);   
+}
+
+//function to verify data, throws error if the hashed message != decrypted signature
+void verify1(int senderId, void *data, size_t dataLen, void *signature,
+            size_t &signatureLen, hashFunction hashFunc)
+{
+    //1. hash the data
+    uint8_t *hash = new uint8_t[(getHashedSize(hashFunc)/BITS_IN_BYTE)];
+    std::vector<uint8_t> hashVec = sha256_compute(std::vector<uint8_t>(
+        static_cast<uint8_t *>(data), static_cast<uint8_t *>(data) + dataLen));
+    memcpy(hash, hashVec.data(), (getHashedSize(hashFunc)/BITS_IN_BYTE));
+    bool res = false;
+    //2. decrypt digital signature with the sender public key and compare the 2 hashes
+        size_t decryptedHahLen = rsaGetDecryptedLen(RSA_KEY_LENGTH);
+        uint8_t *decryptedHash = new uint8_t[decryptedHahLen];
+        rsaDecrypt(reinterpret_cast<const uint8_t *>(signature), signatureLen,
+                   ((RsaKeys *)Hsm::getKey(senderId))->n,
+                   ((RsaKeys *)Hsm::getKey(senderId))->pubKey, decryptedHash,
+                   &decryptedHahLen, RSA_KEY_LENGTH);
+        //printBufferHex(hash, hashLength, "hash on the original message");
+        //printBufferHex(decryptedHash, hashLength, "decrypted signature");
+        if (memcmp(hash, decryptedHash, (getHashedSize(hashFunc)/8)) == 0) {
+            res = true;
+        }
+        delete[] decryptedHash;
+    delete[] hash;
+    if (!res)
+        throw std::runtime_error(
+            "oh no!!!! message not accurate, some thing went wrong :( "
+            "verifying failed...");
+}
+
+unsigned char* generateKeyAES(AESKeyLength keyLength)
+{
+    return generateKey(keyLength);
+}
+
+//encrypts block of size BLOCK_BYTES_LENGTH
+void AESencrypt(AESChainingMode mode, AESKeyLength keyLength, size_t countBlocks, unsigned char* key, int senderID,
+                void *in, void *out, size_t &outLen)
+{
+    // Create a factory instance
+    StreamAES* streamAES = FactoryManager::getInstance().create(mode);
+    //TODO: check if streamAES is nullptr and return code
+
+    unsigned char* encrypted = nullptr;
+    unsigned int outLenEncrypted = 0;
+
+    //if senderID  not in map:
+        streamAES->encryptStart(static_cast<unsigned char*>(in), BLOCK_BYTES_LENGTH, encrypted, outLenEncrypted, key, keyLength);
+    //else 
+        streamAES->encryptContinue(static_cast<unsigned char*>(in), BLOCK_BYTES_LENGTH, encrypted, outLenEncrypted);
+
+    std::memcpy(out, encrypted, outLenEncrypted);
+    delete[] encrypted;
+   // delete streamAES;
+}
+
+void AESdecrypt(AESChainingMode mode, AESKeyLength keyLength, unsigned char* key, int receiverId,
+             void *in, size_t inLen, void *out, size_t &outLen) {
+
+    // Create a factory instance
+    StreamAES* streamAES = FactoryManager::getInstance().create(mode);
+    //TODO: check if streamAES is nullptr and return code
+
+    unsigned char* decrypted = nullptr;
+    unsigned int outLenDecrypted = 0;
+
+    //if senderID  not in map:
+        streamAES->decryptStart(static_cast<unsigned char*>(in), inLen, decrypted, outLenDecrypted, key, keyLength);
+    //else 
+        streamAES->decryptContinue(static_cast<unsigned char*>(in), inLen, decrypted, outLenDecrypted);
+
+    std::memcpy(out, decrypted, outLenDecrypted);
+    delete[] decrypted;
+    // delete streamAES;
 }

@@ -65,10 +65,18 @@ void printBufferHex(const uint8_t *buffer, size_t len, std::string message);
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
-void ECCencrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
+void ECCencrypt(int receiverId, void *in, size_t inLen, void *out,
             size_t &outLen);
             
-void ECCdecrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
+void ECCdecrypt(int receiverId, void *in, size_t inLen, void *out,
             size_t &outLen);
+
+unsigned char* generateKeyAES(AESKeyLength keyLength);
+
+void AESencrypt(AESChainingMode mode, AESKeyLength keyLength, size_t countBlocks,
+                unsigned char* key, int senderID, void *in, void *out, size_t &outLen);
+
+void AESdecrypt(AESChainingMode mode, AESKeyLength keyLength, unsigned char* key, int receiverId,
+             void *in, size_t inLen, void *out, size_t &outLen);
 
 #endif  // __CRYPTO_API_H__

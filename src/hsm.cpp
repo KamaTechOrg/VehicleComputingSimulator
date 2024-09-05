@@ -39,12 +39,3 @@ AsymmetricKeys *Hsm::getKey(int keyId)
 {
     return keys[keyId];
 }
-
-// Function to determine if RSA should be used or ECC
-bool Hsm::isRsaEncryption(encryptionFunction func)
-{
-    return func == ENCRYPT_256_AND_SIGN_RSA ||
-           func == ENCRYPT_192_AND_SIGN_RSA ||
-           func == ENCRYPT_128_AND_SIGN_RSA ||
-           func == SIGNATURE_RSA;
-}

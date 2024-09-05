@@ -115,8 +115,7 @@ class FactoryManager
      */
     static FactoryManager& getInstance() 
     {
-        static FactoryManager instance;
-        return instance;
+       return instance;
     }
 
     /**
@@ -143,6 +142,7 @@ class FactoryManager
       {AESChainingMode::OFB, new AESOfbFactory()},
       {AESChainingMode::CTR, new AESCtrFactory()}
     };
+    static FactoryManager instance;
 
     /**
      * @brief Private constructor for singleton pattern.
