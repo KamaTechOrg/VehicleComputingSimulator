@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/alert.h"
 #include "object_type_enum.h"
+#include "alerter.h"
 using namespace std;
 
 TEST(DetectionAlert, simpleAlert)
@@ -31,4 +32,10 @@ TEST(DetectionAlert, smartAlert)
                     afterDeserialization.getObjectDistance() &&
                 da.getCarSpeed() == afterDeserialization.getCarSpeed() &&
                 da.getObjectSpeed() == afterDeserialization.getObjectSpeed());
+}
+
+TEST(DetectionAlert, create_file_json)
+{
+    Alerter alerter;
+    alerter.makeFileJSON();
 }

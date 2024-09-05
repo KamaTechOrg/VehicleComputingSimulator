@@ -14,6 +14,7 @@ class Manager {
     void processing(const cv::Mat& newFrame);
     void findDifference();
     void init();
+
    private:
     std::shared_ptr<cv::Mat> prevFrame;
     std::shared_ptr<cv::Mat> currentFrame;

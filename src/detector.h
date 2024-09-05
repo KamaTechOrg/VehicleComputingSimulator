@@ -20,7 +20,7 @@ class Detector {
     const float INPUT_HEIGHT = 640.0;
     const float SCORE_THRESHOLD = 0.2;
     // This threshold used for non-maximum suppression to remove overlapping bounding boxes
-    const float NMS_THRESHOLD = 0.4;  
+    const float NMS_THRESHOLD = 0.4;
     const float CONFIDENCE_THRESHOLD = 0.4;
     cv::Mat formatYolov5();
     void loadNet(bool isCuda);
