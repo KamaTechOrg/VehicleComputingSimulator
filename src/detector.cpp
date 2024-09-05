@@ -19,6 +19,20 @@ void Detector::detect(const shared_ptr<Mat>& frame)
 
 void Detector::detectObjects(const shared_ptr<Mat>& frame, const Point& position)
 {
+    //intialize variables
+    output.clear();
+    this->prevFrame = this->currentFrame;
+    this->currentFrame = frame;
+    if (!prevFrame) {
+        detectObjects(currentFrame, Point(0, 0));
+    }
+    else {
+        detectChanges();
+    }
+}
+
+void Detector::detectObjects(const shared_ptr<Mat>& frame, const Point& position)
+{
     /*
     Performs object detection on a video media using the YOLOv5 model
     Converts the input images to a blob suitable for model input
@@ -156,11 +170,6 @@ vector<Rect> Detector::unionOverlappingRectangels(vector<Rect> allChanges)
             i--;
         }
     }
-    for (Rect r : allChanges) {
-        rectangle(*currentFrame, r, Scalar(0, 0, 255), 2);
-    }
-    imshow("win", *currentFrame);
-    waitKey();
     return allChanges;
 }
 
