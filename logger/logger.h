@@ -9,8 +9,18 @@
 #include <iostream>
 #include <mutex>
 
-#ifndef LOG_LEVEL
-#define LOG_LEVEL logger::LogLevel::INFO
+#ifndef LOG_LVL
+    #define LOG_LVL 1
+#endif
+
+#if LOG_LVL == 0
+    #define LOG_LEVEL logger::LogLevel::ERROR
+#elif LOG_LVL == 1
+    #define LOG_LEVEL logger::LogLevel::INFO
+#elif LOG_LVL == 2
+    #define LOG_LEVEL logger::LogLevel::DEBUG
+#else
+    #define LOG_LEVEL logger::LogLevel::INFO
 #endif
 
 class logger {
