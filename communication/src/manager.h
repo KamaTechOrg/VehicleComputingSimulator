@@ -8,11 +8,11 @@ class Manager
 {
 private:
     Server server;
-    
+
     // Singleton instance
     static Manager* instance;
     static std::mutex managerMutex;
-   
+    
     // Sending according to broadcast variable
     int sendToClients(const Packet &packet);
 
