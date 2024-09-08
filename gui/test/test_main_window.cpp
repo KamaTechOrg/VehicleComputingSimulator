@@ -19,7 +19,11 @@ private slots:
 void TestMainWindow::testCreateNewProcess()
 {
     MainWindow window;
+<<<<<<< HEAD
     int newProcessId = 6;  // Ensure this is greater than 5 and unique
+=======
+    int newProcessId = 6;// Ensure this is greater than 5 and unique
+>>>>>>> 27e499e (GUI : Insertion of error debug sentences and information throughout the project)
     QString processName = "NewProcess";
     QString cmakeProject = "../src/dummy_program3";
     QString qemuPlatform = "QEMUPlatform";

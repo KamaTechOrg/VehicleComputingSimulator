@@ -21,12 +21,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
     setCentralWidget(centralWidget);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 27e499e (GUI : Insertion of error debug sentences and information throughout the project)
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
         "MainWindow::MainWindow()  Log file successfully read");
 
+<<<<<<< HEAD
 =======
 >>>>>>> 547b329 (GUI : Insertion of error debug sentences and information throughout the project)
+=======
+>>>>>>> 904f2b0 (GUI : Insertion of error debug sentences and information throughout the project)
+>>>>>>> 27e499e (GUI : Insertion of error debug sentences and information throughout the project)
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
 
     QWidget *toolbox = new QWidget(this);
