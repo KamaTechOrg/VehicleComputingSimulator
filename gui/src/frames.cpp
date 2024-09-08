@@ -101,7 +101,6 @@ void Frames::updateFrames()
         }
     }
 
-    // Log the number of remaining active log entries
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO, "Active log entries remaining: " +
                                     std::to_string(activeLogEntries.size()));

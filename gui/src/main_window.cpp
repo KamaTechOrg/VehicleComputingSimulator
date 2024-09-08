@@ -20,10 +20,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
+<<<<<<< HEAD
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
         "MainWindow::MainWindow()  Log file successfully read");
 
+=======
+>>>>>>> 547b329 (GUI : Insertion of error debug sentences and information throughout the project)
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
 
     QWidget *toolbox = new QWidget(this);
