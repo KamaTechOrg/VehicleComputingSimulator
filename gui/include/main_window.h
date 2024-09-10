@@ -50,6 +50,8 @@ class MainWindow : public QMainWindow {
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
+    static void fillProcessMap(QVector<DraggableSquare *> squares);
+    static const std::vector<uint32_t>& getProcessIds();
 
    private:
     friend class TestMainWindow;
@@ -63,6 +65,8 @@ class MainWindow : public QMainWindow {
     void compileAndRunProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
+
+    static std::vector<uint32_t> processIds;
 
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;

@@ -5,11 +5,13 @@
 #include <arpa/inet.h>
 #include <functional>
 #include <iostream>
+#include <string>
+#include <atomic>
 #include "message.h"
 #include "../sockets/Isocket.h"
 #include "../sockets/mock_socket.h"
 #include "../sockets/real_socket.h"
-#include <string>
+
 
 #define PORT 8080
 #define IP "127.0.0.1"

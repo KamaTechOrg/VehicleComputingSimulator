@@ -1,0 +1,3 @@
+/home/tamar/Integration/VehicleComputingSimulator/main_bus/build/CMakeFiles/main_bus.dir
+/home/tamar/Integration/VehicleComputingSimulator/main_bus/build/CMakeFiles/edit_cache.dir
+/home/tamar/Integration/VehicleComputingSimulator/main_bus/build/CMakeFiles/rebuild_cache.dir

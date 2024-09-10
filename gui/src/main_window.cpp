@@ -14,6 +14,20 @@
 #include "log_handler.h"
 
 int sizeSquare = 120;
+std::vector<uint32_t> MainWindow::processIds;
+
+const std::vector<uint32_t>& MainWindow::getProcessIds() {
+    return processIds;
+}
+
+void MainWindow::fillProcessMap(QVector<DraggableSquare *> squares) {
+    processIds.clear();
+    for (const DraggableSquare* square : squares) {
+        const Process* process = square->getProcess();
+        uint32_t processId = static_cast<uint32_t>(process->getId());
+        processIds.push_back(processId);
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
 {
@@ -74,25 +88,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
 
     int id = 0;
     Process *mainProcess =
-        new Process(id, "Main", "../src/dummy_program1", "QEMUPlatform");
+        new Process(id, "Main", "../../main_bus", "QEMUPlatform");
     addProcessSquare(mainProcess, id,
                      "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, "
                      "stop: 0 #0000FF, stop: 1 #800080);");
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "../src/dummy_program2", "QEMUPlatform");
+        new Process(id, "HSM", "../../user1", "QEMUPlatform");
     addProcessSquare(hsmProcess, id,
                      "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, "
                      "stop: 0 #0000FF, stop: 1 #800080);");
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "../src/dummy_program1", "QEMUPlatform");
+        new Process(id, "LogsDb", "../../user2", "QEMUPlatform");
     addProcessSquare(logsDbProcess, id,
                      "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, "
                      "stop: 0 #0000FF, stop: 1 #800080);");
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Bus_Manager", "../src/dummy_program2", "QEMUPlatform");
+        new Process(id, "Bus_Manager", "../../user3", "QEMUPlatform");
     addProcessSquare(busManagerProcess, id,
                      "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, "
                      "stop: 0 #0000FF, stop: 1 #800080);");
@@ -358,7 +372,13 @@ QString MainWindow::getExecutableName(const QString &buildDirPath)
 
 void MainWindow::compileAndRunProjects()
 {
-    // Clear previous running processes
+    fillProcessMap(squares);
+    
+    for (uint32_t id : processIds) {
+        logOutput->append("id: " + QString::number(id));
+    }
+    
+    //Clear previous running processes
     for (QProcess *process : runningProcesses) {
         process->terminate();
         process->waitForFinished();

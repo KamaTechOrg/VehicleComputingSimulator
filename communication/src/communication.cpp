@@ -1,5 +1,6 @@
 #include "communication.h"
 #include <future>
+#include <csignal>
 
 Communication* Communication::instance = nullptr;
 

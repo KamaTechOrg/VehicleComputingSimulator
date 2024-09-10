@@ -1,0 +1,4 @@
+[208551ns] [INFO] create a client socket: 3 Success
+[377441ns] [ERROR] SRC process DST server Connection Failed: Connection refused
+[389462ns] [INFO] SRC process DST server connection succeed: Connection refused
+[2727199832ns] [INFO] close socket number: 3
