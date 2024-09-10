@@ -50,5 +50,5 @@ alert.json
 # Models
 *.caffemodel
 *.prototxt
-*.onnx
+*.model
 json.hpp

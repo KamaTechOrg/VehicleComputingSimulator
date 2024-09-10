@@ -1,4 +1,4 @@
-#include "alert.h"
+#include "../include/alert.h"
 using namespace std;
 
 Alert::Alert(){};

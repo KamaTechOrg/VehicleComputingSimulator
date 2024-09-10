@@ -1,6 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <gtest/gtest.h>
-#include "detector.h"
+#include "../include/detector.h"
 
 bool is_cuda = false;  // or true
 
