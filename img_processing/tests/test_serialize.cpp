@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../src/alert.h"
-#include "object_type_enum.h"
-#include "alerter.h"
+#include "../include/alert.h"
+#include "../include/object_type_enum.h"
+#include "../include/alerter.h"
 using namespace std;
 
 TEST(DetectionAlert, simpleAlert) {
