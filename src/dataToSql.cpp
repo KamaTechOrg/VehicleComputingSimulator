@@ -1,4 +1,5 @@
 #include "dataToSql.h"
+
 dataToSql::dataToSql(QObject *parent) : QObject(parent)
 {
     // אתחול בסיס הנתונים
@@ -8,6 +9,31 @@ dataToSql::dataToSql(QObject *parent) : QObject(parent)
     if (!db.open()) {
         qWarning() << "Cannot open database:" << db.lastError().text();
     }
+}
+QString dataToSql::readLogFile(const QString &filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open log file:" << filePath;
+        return QString();
+    }
+
+    QTextStream in(&file);
+    QString logData = in.readAll();
+    file.close();
+    return logData;
+}
+
+// פונקציה לקריאת קובץ בינארי לקובץ QByteArray
+QByteArray dataToSql::readBsonFile(const QString &filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open BSON file:" << filePath;
+        return QByteArray();
+    }
+
+    QByteArray bsonData = file.readAll();
+    file.close();
+    return bsonData;
 }
 
 bool dataToSql::insertDataToDatabase(const QString &inputString, const QByteArray &bsonData, const QString &logData)

@@ -221,31 +221,7 @@ void MainWindow::startProcesses()
 }
 /// ////
 
-QString MainWindow::readLogFile(const QString &filePath) {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Failed to open log file:" << filePath;
-        return QString();
-    }
 
-    QTextStream in(&file);
-    QString logData = in.readAll();
-    file.close();
-    return logData;
-}
-
-// פונקציה לקריאת קובץ בינארי לקובץ QByteArray
-QByteArray MainWindow::readBsonFile(const QString &filePath) {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open BSON file:" << filePath;
-        return QByteArray();
-    }
-
-    QByteArray bsonData = file.readAll();
-    file.close();
-    return bsonData;
-}
 void MainWindow::endProcesses()
 {
 
@@ -267,13 +243,13 @@ void MainWindow::endProcesses()
     QString bsonFilePath = "simulation_data.bson";     // קובץ BSON
 
     // קריאת קובץ לוג
-    QString logData = readLogFile(logFilePath);
+    QString logData =sqlDataManager->readLogFile(logFilePath);
     if (logData.isEmpty()) {
         qWarning() << "Log data is empty!";
     }
 
     // קריאת קובץ BSON
-    QByteArray bsonData = readBsonFile(bsonFilePath);
+    QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
     if (bsonData.isEmpty()) {
         qWarning() << "BSON data is empty!";
     }

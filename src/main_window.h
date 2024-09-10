@@ -53,8 +53,7 @@ class MainWindow : public QMainWindow {
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
-QString readLogFile(const QString &filePath);
-QByteArray readBsonFile(const QString &filePath) ;
+
 
 
    private:
