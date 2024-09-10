@@ -24,9 +24,9 @@ COPY . .
 RUN mkdir -p build && \
     rm -rf build/*
 
-# Run CMake with SYCL and build the project
+# Run CMake and build the project
 RUN cd build && \
-    cmake -DCMAKE_CXX_COMPILER=clang++ .. && \
+    cmake .. && \
     make
 
 # Run the tests
