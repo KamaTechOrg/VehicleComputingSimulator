@@ -10,10 +10,11 @@
 #include "main_window.h"
 #include "draggable_square.h"
 #include "process_dialog.h"
+#include "dataToSql.h"
 
 int sizeSquare = 120;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new dataToSql(this))
 {
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -67,9 +68,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
 
     mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
-
     dataManager = new SimulationDataManager(this);
-
     int id = 0;
     Process *mainProcess =
         new Process(id, "Main", "../src/dummy_program1", "QEMUPlatform");
@@ -220,9 +219,36 @@ void MainWindow::startProcesses()
 
     compileAndRunProjects();
 }
+/// ////
 
+QString MainWindow::readLogFile(const QString &filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open log file:" << filePath;
+        return QString();
+    }
+
+    QTextStream in(&file);
+    QString logData = in.readAll();
+    file.close();
+    return logData;
+}
+
+// פונקציה לקריאת קובץ בינארי לקובץ QByteArray
+QByteArray MainWindow::readBsonFile(const QString &filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open BSON file:" << filePath;
+        return QByteArray();
+    }
+
+    QByteArray bsonData = file.readAll();
+    file.close();
+    return bsonData;
+}
 void MainWindow::endProcesses()
 {
+
     logOutput->append("Ending processes...");
 
     if (timer) {
@@ -236,6 +262,33 @@ void MainWindow::endProcesses()
     timeInput->clear();
 
     dataManager->saveSimulationData("simulation_data.bson", squares, currentImagePath);
+    ///
+    QString logFilePath = "../log_file.log";        // קובץ לוג
+    QString bsonFilePath = "simulation_data.bson";     // קובץ BSON
+
+    // קריאת קובץ לוג
+    QString logData = readLogFile(logFilePath);
+    if (logData.isEmpty()) {
+        qWarning() << "Log data is empty!";
+    }
+
+    // קריאת קובץ BSON
+    QByteArray bsonData = readBsonFile(bsonFilePath);
+    if (bsonData.isEmpty()) {
+        qWarning() << "BSON data is empty!";
+    }
+
+    // הכנסת נתונים לדוגמה
+    QString inputString = "Some input data";  // נתונים כלשהם שתרצה להוסיף
+
+    if (!sqlDataManager->insertDataToDatabase(inputString, bsonData, logData)) {
+        qWarning() << "Failed to insert data into the database.";
+    } else {
+        logOutput->append("Data successfully inserted into the database.");
+                qDebug()<<"Data successfully inserted into the database";
+
+    }
+
 
     for (QProcess* process : runningProcesses) {
         if (process->state() != QProcess::NotRunning) {

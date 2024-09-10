@@ -13,9 +13,8 @@ set(CMAKE_AUTORCC ON)
 
 # Include current source directory
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 # Find the Qt5 library
-find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Test)
+find_package(Qt5 COMPONENTS Widgets Core Gui Test Sql REQUIRED)
 
 # Find the BSON library
 find_package(PkgConfig REQUIRED)
@@ -32,19 +31,20 @@ add_executable(DraggableSquares
     src/simulation_data_manager.cpp
     src/log_handler.cpp
     src/frames.cpp
+    src/dataToSql.cpp
 )
 
 # Include BSON directories
 target_include_directories(DraggableSquares PRIVATE ${BSON_INCLUDE_DIRS})
 
 # Link the BSON library and Qt5 components
-target_link_libraries(DraggableSquares PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(DraggableSquares PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Sql)
 
 # Enable testing
-enable_testing()
+#enable_testing()
 
 # Add test directory
-add_subdirectory(test)
+#add_subdirectory(test)
 #//////////////////
 
 

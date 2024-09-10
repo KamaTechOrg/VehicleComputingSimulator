@@ -4,6 +4,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    qDebug() << QDir::currentPath();
 
     MainWindow window;
     window.setFixedSize(600, 600);

@@ -9,6 +9,10 @@
 #include <QJsonObject>
 #include <QDebug>
 #include "simulation_data_manager.h"
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
+#include <QDateTime>
 
 SimulationDataManager::SimulationDataManager(QWidget *parent) : QWidget(parent)
 {
@@ -140,31 +144,4 @@ void SimulationDataManager::printJson(QJsonObject jsonObject)
     QJsonDocument jsonDoc(jsonObject);
     QByteArray jsonBytes = jsonDoc.toJson();
     std::cout << jsonBytes.toStdString() << std::endl;
-}
-bool SimulationDataManager::insertDataToDatabase( const QString &inputString, const QByteArray &bsonData, const QString &logData) {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("simulation_data");
-    if (!db.open()) {
-        qWarning() << "Cannot open database:" << db.lastError().text();
-        return false;
-    }
-
-    QSqlQuery query;
-    if (!query.exec("CREATE TABLE IF NOT EXISTS records (id INTEGER PRIMARY KEY AUTOINCREMENT,input_string TEXT, datetime TEXT, bson_data BLOB, log_data TEXT)")) {
-        qWarning() << "Failed to create table:" << query.lastError().text();
-        return false;
-    }
-
-    query.prepare("INSERT INTO records (input_string,datetime,bson_data, log_data) VALUES (:input_string,:datetime, :bson_data, :log_data)");
-    query.bindValue(":input_string", inputString);
-    query.bindValue(":datetime", QDateTime::currentDateTime().toString(Qt::ISODate));
-    query.bindValue(":bson_data", bsonData);
-    query.bindValue(":log_data", logData);
-
-    if (!query.exec()) {
-        qWarning() << "Failed to insert data:" << query.lastError().text();
-        return false;
-    }
-
-    return true;
 }

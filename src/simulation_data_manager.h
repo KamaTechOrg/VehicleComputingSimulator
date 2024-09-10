@@ -9,6 +9,8 @@
 #include <bson/bson.h>
 #include "draggable_square.h"
 
+
+
 class SimulationDataManager : public QWidget {
     Q_OBJECT
 
@@ -18,7 +20,7 @@ public:
     void saveSimulationData(const std::string &fileName,
                             QVector<DraggableSquare *> squares, QString img);
     QJsonObject loadSimulationData(const std::string &fileName);
-    bool SimulationDataManager::insertDataToDatabase( const QString &inputString, const QByteArray &bsonData, const QString &logData) ; 
+    // bool insertDataToDatabase( const QString &inputString, const QByteArray &bsonData, const QString &logData) ; 
 
     void printJson(QJsonObject jsonObject);
 

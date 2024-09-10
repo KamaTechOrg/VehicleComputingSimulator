@@ -1,7 +1,5 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
-
-#include <QDebug>
 #include <vector>
 #include <QSet>
 #include <QWidget>
@@ -27,6 +25,12 @@
 #include "process.h"
 #include "process_dialog.h"
 #include "simulation_data_manager.h"
+#include <QCoreApplication>
+#include <QDebug>
+#include <QByteArray>
+#include <QFile>
+#include <QTextStream>
+#include "dataToSql.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -49,6 +53,9 @@ class MainWindow : public QMainWindow {
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
+QString readLogFile(const QString &filePath);
+QByteArray readBsonFile(const QString &filePath) ;
+
 
    private:
     friend class TestMainWindow;
@@ -81,6 +88,7 @@ class MainWindow : public QMainWindow {
     SimulationDataManager *dataManager;
     LogHandler logHandler;
     Frames *frames;
+    dataToSql *sqlDataManager;
 };
 
 #endif  // MAIN_WINDOW_H
