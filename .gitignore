@@ -8,6 +8,7 @@
 # gtest files
 /gtest/
 
+
 #clangd
 .cache
 .clang-format
@@ -58,4 +59,3 @@ Thumbs.db
 Desktop.ini
 
 # linux operating system files
-*~

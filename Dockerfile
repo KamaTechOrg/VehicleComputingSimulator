@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y cmake g++ git wget libgtest-dev
+    apt-get install -y cmake g++ git wget libgtest-dev lsb-release gnupg ca-certificates
 
 # Install Google Test
 RUN cd /usr/src/gtest && \
