@@ -15,6 +15,8 @@ class dataToSql : public QObject
 public:
     explicit dataToSql(QObject *parent = nullptr);
     bool insertDataToDatabase(const QString &inputString, const QByteArray &bsonData, const QString &logData);
+    QList<QVariantMap> getAllDataSimulation() ;
+    QVariantMap getRecordById(int id) ;
 
 private:
     QSqlDatabase db;
