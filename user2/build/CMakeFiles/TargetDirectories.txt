@@ -1,0 +1,3 @@
+/home/tamar/Integration/VehicleComputingSimulator/user2/build/CMakeFiles/user_2.dir
+/home/tamar/Integration/VehicleComputingSimulator/user2/build/CMakeFiles/edit_cache.dir
+/home/tamar/Integration/VehicleComputingSimulator/user2/build/CMakeFiles/rebuild_cache.dir
