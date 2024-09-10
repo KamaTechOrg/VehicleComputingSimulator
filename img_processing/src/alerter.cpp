@@ -1,8 +1,8 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
-#include "alerter.h"
-#include "alert.h"
+#include "../include/alerter.h"
+#include "../include/alert.h"
 using json = nlohmann::json;
 using namespace std;
 

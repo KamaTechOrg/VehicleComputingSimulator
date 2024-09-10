@@ -1,8 +1,8 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
-#include "dynamic_tracker.h"
-#include "detector.h"
+#include "../include/dynamic_tracker.h"
+#include "../include/detector.h"
 #include <gtest/gtest.h>
 
 using namespace std;
