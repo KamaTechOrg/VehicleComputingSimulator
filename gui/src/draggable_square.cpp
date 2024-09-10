@@ -37,7 +37,15 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
 {
     setFixedSize(width, height);
     setStyleSheet(color);
+    label->setStyleSheet("QLabel {"
+                     "  color: black;"            // Black text color
+                     "  font-size: 11px;"         // Larger font size
+                     "  font-family: 'Segoe UI', sans-serif;"  // Modern and nice font
+                     "  font-weight: bold;"       // Bold text
+                     "  text-align: center;"      // Centered text
+                     "}");
 
+    label->setAlignment(Qt::AlignCenter);  // Center the label inside the square
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(label);
     setLayout(layout);
