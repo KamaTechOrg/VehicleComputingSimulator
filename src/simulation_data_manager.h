@@ -20,7 +20,6 @@ public:
     void saveSimulationData(const std::string &fileName,
                             QVector<DraggableSquare *> squares, QString img);
     QJsonObject loadSimulationData(const std::string &fileName);
-    // bool insertDataToDatabase( const QString &inputString, const QByteArray &bsonData, const QString &logData) ; 
 
     void printJson(QJsonObject jsonObject);
 
