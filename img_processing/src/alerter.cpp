@@ -21,7 +21,8 @@ void Alerter::sendAlerts(const vector<DetectionObject> &output)
         // TODO : send to function that check if send alert...
         // if the function return true:
         char *alertBuffer = makeAlertBuffer(detectionObject);
-        // TODO : use send comunication function.
+        // Sending the message (buffer,size,dest,src,isbrodcast)
+        comm.sendMessage((void *)alertBuffer, sizeof(*alertBuffer), 1, 10, false);
     }
 }
 
@@ -61,4 +62,13 @@ void Alerter::makeFileJSON()
     output_file.close();
 
     cout << "JSON file created and written successfully." << endl;
+}
+Alerter::Alerter():comm(10,processData){
+    // Starting communication with the server
+    comm.startConnection();
+}
+void processData(void *data)
+{
+    std::cout << "Received data: " << static_cast<char *>(data) << std::endl;
+    free(data); 
 }

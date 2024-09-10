@@ -8,7 +8,7 @@
 class Manager {
    public:
     // Gets a first image and initializes the class's members
-    Manager(const cv::Mat &Frame);
+    Manager();
     // Gets the currentFrame and sends it for detection and then tracking,
     // finally if necessary sends a alert
     void processing(const cv::Mat &newFrame);
@@ -17,8 +17,8 @@ class Manager {
    private:
     std::shared_ptr<cv::Mat> prevFrame;
     std::shared_ptr<cv::Mat> currentFrame;
-    std::vector<DetectionObject> prevOutput;
-    std::vector<DetectionObject> currentOutput;
+    std::vector<DetectionObject> prevDetectionOutput;
+    std::vector<DetectionObject> currentDetectionOutput;
     Detector detector;
     DynamicTracker dynamicTracker;
     Alerter alerter;
