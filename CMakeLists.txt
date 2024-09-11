@@ -41,11 +41,8 @@ target_include_directories(DraggableSquares PRIVATE ${BSON_INCLUDE_DIRS})
 target_link_libraries(DraggableSquares PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Sql)
 
 # Enable testing
-#enable_testing()
+enable_testing()
 
 # Add test directory
-#add_subdirectory(test)
-#//////////////////
-
-
+add_subdirectory(test)
 
