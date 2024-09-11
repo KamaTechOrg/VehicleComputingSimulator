@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "client.h"
-
+#include "error_code.h"
 class Communication
 {
 private:
@@ -12,19 +12,6 @@ private:
     //SyncCommunication syncCommunication;
     // A static variable that holds an instance of the class
     static Communication* instance;
-
-public:
-    // Constructor
-    Communication(uint32_t id, void (*passDataCallback)(void *));
-    
-    // Sends the client to connect to server
-    void startConnection();
-    
-    // Sends a message to manager
-    int sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);
-    
-    // Sends a message to manager - Async
-    void sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(int)> passSend, bool isBroadcast);
 
     // Accepts the packet from the client and checks..
     void receivePacket(Packet &p);
@@ -49,7 +36,24 @@ public:
 
     // Static method to handle SIGINT signal
     static void signalHandler(int signum);
+
+    void setId(uint32_t newId);
+
+    void setPassDataCallback(void (*callback)(void *));
+
+public:
+    // Constructor
+    Communication(uint32_t id, void (*passDataCallback)(void *));
     
+    // Sends the client to connect to server
+    ErrorCode startConnection();
+    
+    // Sends a message to manager
+    ErrorCode sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);
+    
+    // Sends a message to manager - Async
+    void sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(ErrorCode)> passSend, bool isBroadcast);
+
     //Destructor
     ~Communication();
 };

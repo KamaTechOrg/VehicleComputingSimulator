@@ -1,15 +1,17 @@
 #include "client.h"
 
 // Constructor
-Client::Client(uint32_t id, std::function<void(Packet &)> callback, ISocket* socketInterface)
-    : id(id), passPacketCom(callback), connected(false), socketInterface(socketInterface) {}
+Client::Client(std::function<void(Packet &)> callback, ISocket* socketInterface): connected(false){
+        setCallback(callback);
+        setSocketInterface(socketInterface);
+}
 
 // Requesting a connection to the server
-int Client::connectToServer()
+ErrorCode Client::connectToServer(int id)
 {
     clientSocket = socketInterface->socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0) {
-        return -1;
+        return ErrorCode::SOCKET_FAILED;
     }
 
     servAddress.sin_family = AF_INET;
@@ -18,61 +20,88 @@ int Client::connectToServer()
 
     int connectRes = socketInterface->connect(clientSocket, (struct sockaddr *)&servAddress, sizeof(servAddress));
     if (connectRes < 0) {
-        return -1;
+        socketInterface->close(clientSocket);
+        return ErrorCode::CONNECTION_FAILED;
     }
 
     Packet packet(id);
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent < sizeof(Packet)) {
-        return -1;
+        socketInterface->close(clientSocket);
+        return ErrorCode::SEND_FAILED;
     }
     
     connected = true;
     receiveThread = std::thread(&Client::receivePacket, this);
     receiveThread.detach();
 
-    return 0;
+    return ErrorCode::SUCCESS;
 }
 
 // Sends the packet to the manager-sync
-int Client::sendPacket(Packet &packet)
+ErrorCode Client::sendPacket(Packet &packet)
 {
     //If send executed before start
     if (!connected)
-        return -1;
+        return ErrorCode::CONNECTION_FAILED;
         
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
-    if (bytesSent < sizeof(Packet)) {
-        return -1;
+    if (!bytesSent)
+        return ErrorCode::SEND_FAILED;
+
+    if (bytesSent<0){
+        closeConnection();
+        return ErrorCode::CONNECTION_FAILED;
     }
-    
-    return 0;
+        
+    return ErrorCode::SUCCESS;
 }
 
 // Waits for a message and forwards it to Communication
 void Client::receivePacket()
 {
-    Packet packet;
     while (connected) {
+        Packet packet;
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
-        if (valread <= 0) {
+        if (!valread)
+            continue;
+
+        if(valread<0)
             break;
-        }
+
         passPacketCom(packet);
     }
+
+    closeConnection();
 }
 
 // Closes the connection
-void Client::closeConnection()
+ErrorCode Client::closeConnection()
 {
-    //implement - Notify the manager about disconnection
     connected = false;
-    socketInterface->close(clientSocket);
-    if(receiveThread.joinable())
-        receiveThread.join();
+    int socketInterfaceRes = socketInterface->close(clientSocket);
+    if(socketInterfaceRes < 0)
+        return ErrorCode::CLOSE_FAILED;
+    return ErrorCode::SUCCESS;
 }
 
-//For testing
+// Setter for passPacketCom
+void Client::setCallback(std::function<void(Packet&)> callback) {
+    if (!callback)
+        throw std::invalid_argument("Callback function cannot be null");
+    
+    passPacketCom = callback;
+}
+
+// Setter for socketInterface
+void Client::setSocketInterface(ISocket* socketInterface) {
+    if (!socketInterface)
+        throw std::invalid_argument("Socket interface cannot be null");
+    
+    this->socketInterface = socketInterface;
+}
+
+// For testing
 int Client::getClientSocket()
 {
     return clientSocket;
