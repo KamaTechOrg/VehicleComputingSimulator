@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "../include/packet.h"
+#include <bitset>
 
 class RealSocket : public ISocket
 {
