@@ -3,17 +3,21 @@ using namespace std;
 using namespace cv;
 using namespace dnn;
 
-void Detector::detect(const shared_ptr<Mat> &frame)
+void Detector::detect(const shared_ptr<Mat> &frame, bool isTravel)
 {
     //intialize variables
     output.clear();
     this->prevFrame = this->currentFrame;
     this->currentFrame = frame;
-    if (!prevFrame) {
+    if (isTravel)  // alwais detect regulary
         detectObjects(currentFrame, Point(0, 0));
-    }
-    else {
-        detectChanges();
+    else {  // detect just the first frame
+        if (!prevFrame) {
+            detectObjects(currentFrame, Point(0, 0));
+        }
+        else {
+            detectChanges();
+        }
     }
 }
 
@@ -24,6 +28,7 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
     Mat blob;
     // Custom function to format the input image
     auto inputImage = formatYolov5(frame);
+
     // Convert the image to a blob suitable for YOLOv5
     blobFromImage(inputImage, blob, 1. / 255., Size(INPUT_WIDTH, INPUT_HEIGHT),
                   Scalar(), true, false);
@@ -33,17 +38,17 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
     // Perform a forward pass to get the output from the YOLOv5 model
     vector<Mat> outputs;
     // Obtain the detections
-    net.forward(outputs, net.getUnconnectedOutLayersNames());  
-
+    net.forward(outputs, net.getUnconnectedOutLayersNames());
     // Calculate scaling factors for bounding box adjustments
     float xFactor = inputImage.cols / INPUT_WIDTH;
     float yFactor = inputImage.rows / INPUT_HEIGHT;
     // Pointer to the output data; YOLOv5 outputs 85 values per detection:
     // 0-3 = bounding box position, 4 = confidence, 5-84 = class scores
-    
     float *data = (float *)outputs[0].data;
-    const int dimensions = 85;  // Number of elements per detection
-    const int rows = 25200;  // Number of detections in the output
+    // Number of elements per detection
+    const int dimensions = 85;
+    // Number of detections in the output
+    const int rows = 25200;
 
     // Vectors to hold detection results:
     // class IDs, confidences, and bounding boxes
@@ -54,7 +59,6 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
     for (int i = 0; i < rows; ++i) {
         // Extract confidence score
         float confidence = data[4];
-        // Check if the confidence is above the threshold to consider the detection
         if (confidence >= CONFIDENCE_THRESHOLD) {
             // Extract class scores starting from the 5th element
             float *classesScores = data + 5;
@@ -64,7 +68,8 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
             double maxClassScore;
             minMaxLoc(scores, 0, &maxClassScore, 0, &classId);
             // Save detections that meet the score threshold and are valid object types
-            if (maxClassScore > SCORE_THRESHOLD && isValidObjectType(classId.x)) {
+            if (maxClassScore > SCORE_THRESHOLD &&
+                isValidObjectType(classId.x)) {
                 confidences.push_back(confidence);
                 classIds.push_back(classId.x);
                 // Extract bounding box coordinates (x, y, width, height)
@@ -84,20 +89,20 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
         // Move to the next detection (next 85 elements)
         data += dimensions;
     }
-
     // Perform non-maximum suppression to filter overlapping boxes
     vector<int> nmsResult;
     NMSBoxes(boxes, confidences, SCORE_THRESHOLD, NMS_THRESHOLD, nmsResult);
-
     // Loop through the results of NMS to create the final list of detections
     for (int i = 0; i < nmsResult.size(); i++) {
         int idx = nmsResult[i];
         // Create a DetectionObject for each valid detection
         DetectionObject result;
-        result.type = static_cast<ObjectType>(classIds[idx]);  // Set the object type
-        result.confidence = confidences[idx];  // Set the confidence score
-        result.position = boxes[idx];  // Set the bounding box position
-        // Add the detection result to the output list
+        // The conversion may fail because the model is trained to identify different objects
+        // A model may be identified with a number greater than 2
+        // While ObjectType Only keeps 3 organs
+        result.type = static_cast<ObjectType>(classIds[idx]);
+        result.confidence = confidences[idx];
+        result.position = boxes[idx];
         output.push_back(result);
     }
 }
@@ -146,6 +151,8 @@ vector<Rect> Detector::findDifference()
     return unionRects;
 }
 
+// function that goes through all the rectangles
+// and unites rectangles that have overlapping parts
 vector<Rect> Detector::unionOverlappingRectangels(vector<Rect> allChanges)
 {
     vector<bool> isValid(allChanges.size(), true);
@@ -187,6 +194,7 @@ vector<DetectionObject> Detector::getOutput() const
     return output;
 }
 
+// A function that changes the image to fit the model
 Mat Detector::formatYolov5(const shared_ptr<Mat> &frame)
 {
     int col = frame->cols;
@@ -197,13 +205,19 @@ Mat Detector::formatYolov5(const shared_ptr<Mat> &frame)
     return result;
 }
 
-void Detector::init(bool isCuda) { loadNet(isCuda); }
+void Detector::init(bool isCuda)
+{
+    loadNet(isCuda);
+}
 
-
+// Loading yolov5s onnx model
 void Detector::loadNet(bool isCuda)
 {
-    // Loading yolov5s onnx model
     auto result = readNet("../yolov5s.onnx");
+    if (result.empty()) {
+        cerr << "failed to load yolov5 model";
+    }
+
     if (result.empty()) {
         cerr << "failed to load yolov5 model";
     }
@@ -221,12 +235,13 @@ void Detector::loadNet(bool isCuda)
     net = result;
 }
 
-bool Detector::isValidObjectType(int value) const {
-  switch (value) {
-  case PEOPLE:
-  case CAR:
-    return true;
-  default:
-    return false;
-  }
+bool Detector::isValidObjectType(int value) const
+{
+    switch (value) {
+        case PEOPLE:
+        case CAR:
+            return true;
+        default:
+            return false;
+    }
 }
