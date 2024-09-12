@@ -11,7 +11,7 @@ class Manager {
     Manager(const cv::Mat &Frame);
     // Gets the currentFrame and sends it for detection and then tracking,
     // finally if necessary sends a alert
-    void processing(const cv::Mat &newFrame);
+    void processing(const cv::Mat &newFrame, bool isTravel);
     void init();
 
    private:
@@ -26,4 +26,4 @@ class Manager {
     void prepareForTheNext();
 };
 
-#endif //__MANAGER_H__
+#endif  //__MANAGER_H__
