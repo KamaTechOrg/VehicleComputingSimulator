@@ -1,0 +1,42 @@
+#include <iostream>
+#include <gtest/gtest.h>
+#include "big_int10.h"
+#include "big_int64.h"
+using namespace std;
+
+TEST(BigInt10, Multiply) {
+  BigInt10 a("-654365436534654365436543654365436436543654363");
+  BigInt10 b("-654365436534654365436543654365436436543654363");
+  BigInt10 expected("428194124531188770182229727924097400087983594578544803219044791427849125956700602408935769");
+
+  EXPECT_EQ(expected, a * b);
+}
+TEST(BigInt10, Division) {
+  BigInt10 a(
+      "-67896789678968666666666666666666666666666666666666666666666679867896");
+  BigInt10 b("6543654365436536543654365436536436543654365436543653");
+
+  BigInt10 expectedQuotient("-10375974323704851");
+  BigInt10 expectedRemainder(
+      "3480525494090974591903481958475999714137731530507193");
+
+  BigInt10 quotient = a / b;
+  BigInt10 remainder = a % b;
+
+  EXPECT_EQ(expectedQuotient, quotient);
+  EXPECT_EQ(expectedRemainder, remainder);
+}
+TEST(BigInt10, GCD) {
+  BigInt10 a("58349054854737865786576953765376537896378965478653278964378956378"
+             "95326879");
+  BigInt10 b("-5834905485473786578657695376537653789637896547865327896437895637"
+             "895326879000");
+  BigInt10 expected("5834905485473786578657695376537653789637896547865327896437"
+                    "895637895326879");
+
+  EXPECT_EQ(expected, gcd(a, b));
+}
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
