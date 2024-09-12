@@ -23,15 +23,15 @@ pkg_check_modules(BSON REQUIRED libbson-1.0)
 # Add the main application files
 
 add_executable(DraggableSquares  
-    src/main.cpp
-    src/draggable_square.cpp
-    src/process.cpp
-    src/process_dialog.cpp
-    src/main_window.cpp
-    src/simulation_data_manager.cpp
-    src/log_handler.cpp
-    src/frames.cpp
-    src/dataToSql.cpp
+    gui/src/main.cpp
+    gui/src/draggable_square.cpp
+    gui/src/process.cpp
+    gui/src/process_dialog.cpp
+    gui/src/main_window.cpp
+    gui/src/simulation_data_manager.cpp
+    gui/src/log_handler.cpp
+    gui/src/frames.cpp
+    gui/src/dataToSql.cpp
 )
 
 # Include BSON directories
@@ -44,5 +44,5 @@ target_link_libraries(DraggableSquares PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::
 enable_testing()
 
 # Add test directory
-add_subdirectory(test)
+add_subdirectory(gui/test)
 
