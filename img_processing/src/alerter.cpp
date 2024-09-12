@@ -5,28 +5,46 @@
 #include "../include/alert.h"
 using json = nlohmann::json;
 using namespace std;
+#define MIN_LEGAL_DISTANCE 5000
 
-char *Alerter::makeAlertBuffer(const DetectionObject &detectionObject)
+// create buffer from alert object
+char *Alerter::makeAlertBuffer(int type, double distance)
 {
-    Alert alert(false, 1, detectionObject.type, 0);
+    Alert alert(false, (int)distance, type, distance);
     vector<char> serialized = alert.serialize();
     char *buffer = new char[serialized.size()];
     copy(serialized.begin(), serialized.end(), buffer);
     return buffer;
 }
 
-void Alerter::destroyAlertBuffer(char *buffer) { delete[] buffer; }
-
-void Alerter::sendAlerts(const vector<DetectionObject> &output) {
-  for (DetectionObject detectionObject : output) {
-    // TODO : send to function that check if send alert...
-    // if the function return true:
-    char *alertBuffer = makeAlertBuffer(detectionObject);
-    // TODO : use send comunication function.
-    destroyAlertBuffer(alertBuffer);
-  }
+void Alerter::destroyAlertBuffer(char *buffer)
+{
+    delete[] buffer;
 }
 
+// create alerts buffer to send
+vector<unique_ptr<char>> Alerter::sendAlerts(
+    const vector<DetectionObject> &output)
+{
+    vector<unique_ptr<char>> alerts;
+    for (const DetectionObject &detectionObject : output) {
+        if (isSendAlert(detectionObject)) {
+            char *alertBuffer =
+                makeAlertBuffer(static_cast<int>(detectionObject.type),
+                                detectionObject.distance);
+            alerts.push_back(unique_ptr<char>(alertBuffer));
+        }
+    }
+    return alerts;
+}
+
+// Check whether to send alert
+bool Alerter::isSendAlert(const DetectionObject &detectionObject)
+{
+    return detectionObject.distance < MIN_LEGAL_DISTANCE;
+}
+
+// create json file form the alert buffer
 void Alerter::makeFileJSON()
 {
     json j;
@@ -37,11 +55,10 @@ void Alerter::makeFileJSON()
     alertDetailsJson["name"] = "AlertDetails";
     alertDetailsJson["size"] = 8;
     alertDetailsJson["type"] = "bit_field";
-    alertDetailsJson["fields"] = json::array({
-        { {"name", "MessageType"}, {"size", 1}, {"type", "unsigned_int"} },
-        { {"name", "Level"}, {"size", 3}, {"type", "unsigned_int"} },
-        { {"name", "ObjectType"}, {"size", 4}, {"type", "unsigned_int"} }
-    });
+    alertDetailsJson["fields"] = json::array(
+        {{{"name", "MessageType"}, {"size", 1}, {"type", "unsigned_int"}},
+         {{"name", "Level"}, {"size", 3}, {"type", "unsigned_int"}},
+         {{"name", "ObjectType"}, {"size", 4}, {"type", "unsigned_int"}}});
     // add AlertDetails to JSON
     j["fields"].push_back(alertDetailsJson);
     // add ObjectDistance
@@ -63,11 +80,12 @@ void Alerter::makeFileJSON()
     objectSpeedJson["type"] = "unsigned_int";
     j["fields"].push_back(objectSpeedJson);
     // Write the JSON to the file
-    ofstream output_file("../../alert.json");
+    ofstream output_file("../alert.json");
     if (output_file.is_open()) {
-        output_file << j.dump(4); // 4 = Indent level for easier reading
+        output_file << j.dump(4);  // 4 = Indent level for easier reading
         output_file.close();
-    } else {
+    }
+    else {
         std::cerr << "Error: Could not open file for writing" << std::endl;
     }
 }
