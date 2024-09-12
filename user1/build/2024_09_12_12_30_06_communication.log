@@ -1,0 +1,14 @@
+[153197ns] [INFO] create a client socket: 3 Success
+[382738ns] [INFO] SRC process DST server connection succeed: No such file or directory
+[412286ns] [INFO] SRC 1 DST 0 sending packet number: 0, of messageId: 0 No such file or directory
+[498786ns] [INFO] SRC 1 DST 2 sending packet number: 0, of messageId: 3 No such file or directory
+[519687ns] [INFO] SRC 1 DST 2 sending packet number: 1, of messageId: 3 No such file or directory
+[534879ns] [INFO] SRC 1 DST 2 sending packet number: 2, of messageId: 3 No such file or directory
+[549155ns] [INFO] SRC 1 DST 2 sending packet number: 3, of messageId: 3 No such file or directory
+[565726ns] [INFO] SRC 1 DST 2 sending packet number: 4, of messageId: 3 No such file or directory
+[3436295129ns] [INFO] SRC 2 DST 1 received packet number: 0, of messageId: 3 Success
+[3436330806ns] [INFO] SRC 2 DST 1 received packet number: 1, of messageId: 3 Success
+[3436340726ns] [INFO] SRC 2 DST 1 received packet number: 2, of messageId: 3 Success
+[3436353209ns] [INFO] SRC 2 DST 1 received packet number: 3, of messageId: 3 Success
+[3436360971ns] [INFO] SRC 2 DST 1 received packet number: 4, of messageId: 3 Success
+[36419633967ns] [INFO] SRC 2 DST 1  connection closed: in socket3 Success

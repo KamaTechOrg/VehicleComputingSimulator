@@ -1,0 +1,34 @@
+[105518ns] [INFO] create a client socket: 3 Success
+[115565ns] [INFO] create a server socket: 3
+[127510ns] [INFO] server running on port 8080
+[3506599890ns] [INFO] connection succeed to client socket number: 3
+[3506666069ns] [INFO] SRC 1 DST 0 received packet number: 0, of messageId: 0 Success
+[3506681554ns] [INFO] SRC 1 DST 2 received packet number: 0, of messageId: 3 Success
+[3506691295ns] [INFO] SRC 1 DST 2 received packet number: 1, of messageId: 3 Success
+[3506700137ns] [INFO] SRC 1 DST 2 received packet number: 2, of messageId: 3 Success
+[3506708445ns] [INFO] SRC 1 DST 2 received packet number: 3, of messageId: 3 Success
+[3506738036ns] [INFO] SRC 1 DST 2 received packet number: 4, of messageId: 3 Success
+[6942046381ns] [INFO] connection succeed to client socket number: 3
+[6942297941ns] [INFO] SRC 2 DST 0 received packet number: 0, of messageId: 0 Success
+[6942319204ns] [INFO] SRC 2 DST 1 received packet number: 0, of messageId: 3 Success
+[6942383585ns] [INFO] SRC 2 DST 1 sending packet number: 0, of messageId: 3 Success
+[6942395169ns] [INFO] SRC 2 DST 1 received packet number: 1, of messageId: 3 Success
+[6942412555ns] [INFO] SRC 2 DST 1 sending packet number: 1, of messageId: 3 Success
+[6942420389ns] [INFO] SRC 2 DST 1 received packet number: 2, of messageId: 3 Success
+[6942433884ns] [INFO] SRC 2 DST 1 sending packet number: 2, of messageId: 3 Success
+[6942440692ns] [INFO] SRC 2 DST 1 received packet number: 3, of messageId: 3 Success
+[6942452024ns] [INFO] SRC 2 DST 1 sending packet number: 3, of messageId: 3 Success
+[6942459180ns] [INFO] SRC 2 DST 1 received packet number: 4, of messageId: 3 Success
+[6942472943ns] [INFO] SRC 2 DST 1 sending packet number: 4, of messageId: 3 Success
+[10510225522ns] [INFO] connection succeed to client socket number: 3
+[10510342632ns] [INFO] SRC 3 DST 0 received packet number: 0, of messageId: 0 Success
+[10510359602ns] [INFO] SRC 3 DST 2 received packet number: 0, of messageId: 5 Success
+[10510402411ns] [INFO] SRC 3 DST 2 sending packet number: 0, of messageId: 5 Success
+[10510414097ns] [INFO] SRC 3 DST 2 received packet number: 1, of messageId: 5 Success
+[10510430112ns] [INFO] SRC 3 DST 2 sending packet number: 1, of messageId: 5 Success
+[10510436875ns] [INFO] SRC 3 DST 2 received packet number: 2, of messageId: 5 Success
+[10510445969ns] [INFO] SRC 3 DST 2 sending packet number: 2, of messageId: 5 Success
+[10510450622ns] [INFO] SRC 3 DST 2 received packet number: 3, of messageId: 5 Success
+[10510462215ns] [INFO] SRC 3 DST 2 sending packet number: 3, of messageId: 5 Success
+[10510469110ns] [INFO] SRC 3 DST 2 received packet number: 4, of messageId: 5 Success
+[10510480635ns] [INFO] SRC 3 DST 2 sending packet number: 4, of messageId: 5 Success
