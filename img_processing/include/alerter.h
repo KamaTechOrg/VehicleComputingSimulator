@@ -1,7 +1,7 @@
 #ifndef __ALERTER_H__
 #define __ALERTER_H__
 #include "detection_object_struct.h"
-#include"communication.h"
+#include "../../communication/src/communication.h"
 
 class Alerter {
    private:

@@ -63,12 +63,14 @@ void Alerter::makeFileJSON()
 
     cout << "JSON file created and written successfully." << endl;
 }
-Alerter::Alerter():comm(10,processData){
-    // Starting communication with the server
-    comm.startConnection();
-}
+
 void processData(void *data)
 {
     std::cout << "Received data: " << static_cast<char *>(data) << std::endl;
     free(data); 
+}
+
+Alerter::Alerter() : comm(10, processData) { // pass srcID and processData to the constructor
+    // Starting communication with the server
+    comm.startConnection();
 }

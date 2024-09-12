@@ -1,3 +1,0 @@
-[206390ns] [INFO] create a client socket: 3 Success
-[296903ns] [ERROR] SRC process DST server Connection Failed: Connection refused
-[304523ns] [INFO] SRC process DST server connection succeed: Connection refused
