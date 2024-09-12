@@ -2,7 +2,7 @@
 #include <QFile>
 #include <QTemporaryFile>
 #include <QVariantMap>
-#include "../src/dataToSql.h"
+#include "../include/dataToSql.h"
 
 class dataToSqlTest : public QObject
 {

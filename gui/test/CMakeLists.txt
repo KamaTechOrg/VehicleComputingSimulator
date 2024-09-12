@@ -9,14 +9,14 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets Test Sql)
 pkg_check_modules(BSON REQUIRED libbson-1.0)
 # Define the list of source files
 set(src_files
-    ../src/draggable_square.cpp
-    ../src/process.cpp
-    ../src/process_dialog.cpp
-    ../src/main_window.cpp
-    ../src/simulation_data_manager.cpp
-    ../src/frames.cpp
-    ../src/log_handler.cpp
-    ../src/dataToSql.cpp
+    ../gui/src/draggable_square.cpp
+    ../gui/src/process.cpp
+    ../gui/src/process_dialog.cpp
+    ../gui/src/main_window.cpp
+    ../gui/src/simulation_data_manager.cpp
+    ../gui/src/frames.cpp
+    ../gui/src/log_handler.cpp
+    ../gui/src/dataToSql.cpp
 )
 # Set the test executable name for MainWindowTests
 add_executable(MainWindowTests

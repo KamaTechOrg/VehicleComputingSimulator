@@ -1,5 +1,5 @@
 #include <QtTest/QtTest>
-#include "../src/process_dialog.h"
+#include "../include/process_dialog.h"
 
 class ProcessDialogTests : public QObject {
     Q_OBJECT

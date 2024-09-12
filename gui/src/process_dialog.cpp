@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include "process_dialog.h"
+#include "../include/process_dialog.h"
 
 ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
 {

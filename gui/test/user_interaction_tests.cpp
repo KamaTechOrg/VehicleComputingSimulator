@@ -1,6 +1,6 @@
 #include <QTest>
 #include <QFileDialog>
-#include "../src/main_window.h"
+#include "../include/main_window.h"
 
 class UserInteractionTests : public QObject
 {

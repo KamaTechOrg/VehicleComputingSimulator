@@ -1,9 +1,9 @@
 #include <QTest>
 #include <QMouseEvent>
 #include <QWidget>
-#include "../src/draggable_square.h"
-#include "../src/process.h"
-#include "../src/main_window.h"
+#include "../include/draggable_square.h"
+#include "../include/process.h"
+#include "../include/main_window.h"
 class DraggableSquareTest : public QObject
 {
     Q_OBJECT

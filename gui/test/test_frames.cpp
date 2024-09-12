@@ -1,7 +1,7 @@
 
 #include <QtTest/QtTest>
-#include "../src/frames.h"
-#include "../src/log_handler.h"
+#include "../include/frames.h"
+#include "../include/log_handler.h"
 // Mocking necessary components
 class MockLogHandler : public LogHandler {
     // Implement mock methods as needed

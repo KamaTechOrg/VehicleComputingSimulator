@@ -1,6 +1,6 @@
-#include "log_handler.h"
-#include "draggable_square.h"
-#include "simulation_data_manager.h"
+#include "../include/log_handler.h"
+#include "../include/draggable_square.h"
+#include "../include/simulation_data_manager.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>

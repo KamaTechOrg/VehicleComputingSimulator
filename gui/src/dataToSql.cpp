@@ -1,4 +1,4 @@
-#include "dataToSql.h"
+#include "../include/dataToSql.h"
 
 dataToSql::dataToSql(QObject *parent) : QObject(parent)
 {

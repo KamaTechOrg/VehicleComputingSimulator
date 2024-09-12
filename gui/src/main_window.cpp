@@ -6,11 +6,11 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QJsonDocument>
-#include "process.h"
-#include "main_window.h"
-#include "draggable_square.h"
-#include "process_dialog.h"
-#include "dataToSql.h"
+#include "../include/process.h"
+#include "../include/main_window.h"
+#include "../include/draggable_square.h"
+#include "../include/process_dialog.h"
+#include "../include/dataToSql.h"
 
 int sizeSquare = 120;
 

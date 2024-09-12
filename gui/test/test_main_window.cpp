@@ -1,5 +1,5 @@
 #include <QtTest/QtTest>
-#include "../src/main_window.h"
+#include "../include/main_window.h"
 
 class TestMainWindow : public QObject
 {

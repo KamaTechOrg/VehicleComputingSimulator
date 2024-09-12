@@ -9,8 +9,8 @@
 #include <iostream>
 #include <QDebug>
 #include <QMenu>
-#include "main_window.h"
-#include "draggable_square.h"
+#include "../include/main_window.h"
+#include "../include/draggable_square.h"
 
 // Add this function to your DraggableSquare class
 void DraggableSquare::print() const

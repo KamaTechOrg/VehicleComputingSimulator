@@ -1,4 +1,4 @@
-#include "process.h"
+#include "../include/process.h"
 
 Process::Process(int id, const QString &name, const QString &cmakeProject,
                  const QString &qemuPlatform)
