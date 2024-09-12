@@ -1,5 +1,5 @@
 #include <QtTest/QtTest>
-#include "../src/process.h"
+#include "process.h"
 
 class ProcessTests : public QObject {
     Q_OBJECT

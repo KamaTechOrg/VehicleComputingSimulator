@@ -10,6 +10,7 @@
 #include <QSet>
 #include <QString>
 #include <vector>
+#include <QDebug>
 
 class Frames : public QWidget {
     Q_OBJECT
@@ -36,12 +37,15 @@ public:
     void setActiveLogEntries(
         const std::multimap<QDateTime, LogHandler::LogEntry> &logEntriesVector);
     void setIdMapping(const QMap<int, int> &idMapping);
+    void initialFramesMat(int size);
+    void createSequentialIds();
+    void updateFrames();
+    void fillFramesMat();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private slots:
-    void updateFrames();
 
 private:
     LogHandler &logHandler;
@@ -50,10 +54,8 @@ private:
     QMap<int, int> idMapping;
     qint64 differenceTime;
 
-    void initialFramesMat(int size);
-    void createSequentialIds();
+    
     QString generateRandomColor();
-    void fillFramesMat();
 };
 
 #endif  // __FRAMES_H__

@@ -15,7 +15,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Find the Qt5 library
-find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Test)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Test Sql)
 
 # Find the BSON library
 find_package(PkgConfig REQUIRED)
@@ -41,13 +41,14 @@ target_sources(DraggableSquares PRIVATE
     include/simulation_data_manager.h
     include/log_handler.h
     include/frames.h
+    include/process.h
 )
 
 # Include BSON directories
 target_include_directories(DraggableSquares PRIVATE ${BSON_INCLUDE_DIRS})
 
 # Link the BSON library and Qt5 components
-target_link_libraries(DraggableSquares PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(DraggableSquares PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Sql)
 
 
 # Add the include directory
@@ -55,7 +56,7 @@ target_include_directories(DraggableSquares PRIVATE ${BSON_INCLUDE_DIRS} include
 
 
 # # Enable testing
-# enable_testing()
+enable_testing()
 
 # # Add test directory
-# add_subdirectory(test)
+add_subdirectory(test)
