@@ -39,7 +39,6 @@ add_executable(ProcessDialogTests
     test_process_dialog.cpp
     ${src_files}
 )
-
 add_executable(LogHandlerTests
     test_log_handler.cpp
     ${src_files}

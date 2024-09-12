@@ -20,6 +20,9 @@ public:
             "  border-radius: 10px;"       // Rounded corners
             "}",
                          int width = 120, int height = 120);
+                             const QString &color = "background-color: green;",
+                             int width = 100, int height = 100);
+
     DraggableSquare(const DraggableSquare &other);  // Copy constructor
     DraggableSquare &operator=(
         const DraggableSquare &other);  // Copy assignment operator
