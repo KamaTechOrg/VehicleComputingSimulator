@@ -7,8 +7,10 @@ class Alerter {
     // TODO : pass all structs to external file
     void sendAlerts(const std::vector<DetectionObject> &output);
     void makeFileJSON();
+
    private:
-    char *makeAlertBuffer(const DetectionObject &detectionObject);
+    char *makeAlertBuffer(int type, double distance);
+    double findDistanceToAlert(const DetectionObject &detectionObject);
     void destroyAlertBuffer(char *buffer);
 };
 

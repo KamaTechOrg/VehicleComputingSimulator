@@ -3,9 +3,9 @@ using namespace std;
 
 Alert::Alert(){};
 
-Alert::Alert(bool messageType, int level, ObjectType objectType,
-             double distance, int carSpeed, int objectSpeed)
-    : alertDetails{messageType, level, (int)objectType},
+Alert::Alert(bool messageType, int level, int type, double distance,
+             int carSpeed, int objectSpeed)
+    : alertDetails{messageType, level, type},
       objectDistance(distance),
       carSpeed(carSpeed),
       objectSpeed(objectSpeed){};

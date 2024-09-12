@@ -9,9 +9,9 @@ using namespace std;
 #define MIN_LEGAL_DISTANCE 1000
 #define MIN_LEGAL_HEIGHT 3200
 
-char *Alerter::makeAlertBuffer(const DetectionObject &detectionObject)
+char *Alerter::makeAlertBuffer(int type, double distance)
 {
-    Alert alert(false, 1, detectionObject.type, 0);
+    Alert alert(false, 1, type, distance);
     vector<char> serialized = alert.serialize();
     char *buffer = new char[serialized.size()];
     copy(serialized.begin(), serialized.end(), buffer);
@@ -26,12 +26,33 @@ void Alerter::destroyAlertBuffer(char *buffer)
 void Alerter::sendAlerts(const vector<DetectionObject> &output)
 {
     for (DetectionObject detectionObject : output) {
-        // TODO : send to function that check if send alert...
-        // if the function return true:
-        char *alertBuffer = makeAlertBuffer(detectionObject);
-        // TODO : use send comunication function.
-        destroyAlertBuffer(alertBuffer);
+        double distance = findDistanceToAlert(detectionObject);
+        if (distance >= 0) {
+            char *alertBuffer =
+                makeAlertBuffer((int)detectionObject.type, distance);
+            // TODO : use send comunication function.
+            destroyAlertBuffer(alertBuffer);
+        }
     }
+}
+
+double Alerter::findDistanceToAlert(const DetectionObject &detectionObject)
+{
+    int knowWidth;
+    switch ((int)detectionObject.type) {
+        case 0:
+            if (detectionObject.position.y + detectionObject.position.height >
+                MIN_LEGAL_HEIGHT)
+                return 0;
+            return -1;
+        case 2:
+            Distance distance;
+            double distanceFromCar = distance.findDistance(detectionObject);
+            if (distanceFromCar < MIN_LEGAL_DISTANCE)
+                return distanceFromCar;
+            return -1;
+    }
+    return -1;
 }
 
 void Alerter::makeFileJSON()

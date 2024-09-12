@@ -18,7 +18,7 @@ struct AlertDetails {
 
 class Alert {
    public:
-    Alert(bool messageType, int level, ObjectType objectType, double distance,
+    Alert(bool messageType, int level, int type, double distance,
           int carSpeed = 0, int objectSpeed = 0);
     Alert();
     int getMessageType() const;
