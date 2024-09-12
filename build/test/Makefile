@@ -78,17 +78,6 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-
-.PHONY : test/fast
-
 # The main all target
 all: cmake_check_build_system
 	cd /root/VehicleComputingSimulator/build && $(CMAKE_COMMAND) -E cmake_progress_start /root/VehicleComputingSimulator/build/CMakeFiles /root/VehicleComputingSimulator/build/test/CMakeFiles/progress.marks
@@ -182,6 +171,21 @@ UserInteractionTests/fast:
 .PHONY : UserInteractionTests/fast
 
 # Convenience name for target.
+test/CMakeFiles/DataToSql.dir/rule:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/DataToSql.dir/rule
+.PHONY : test/CMakeFiles/DataToSql.dir/rule
+
+# Convenience name for target.
+DataToSql: test/CMakeFiles/DataToSql.dir/rule
+
+.PHONY : DataToSql
+
+# fast build rule for target.
+DataToSql/fast:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/build
+.PHONY : DataToSql/fast
+
+# Convenience name for target.
 test/CMakeFiles/DraggableSquareTests.dir/rule:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/DraggableSquareTests.dir/rule
 .PHONY : test/CMakeFiles/DraggableSquareTests.dir/rule
@@ -272,6 +276,21 @@ UserInteractionTests_autogen/fast:
 .PHONY : UserInteractionTests_autogen/fast
 
 # Convenience name for target.
+test/CMakeFiles/DataToSql_autogen.dir/rule:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/DataToSql_autogen.dir/rule
+.PHONY : test/CMakeFiles/DataToSql_autogen.dir/rule
+
+# Convenience name for target.
+DataToSql_autogen: test/CMakeFiles/DataToSql_autogen.dir/rule
+
+.PHONY : DataToSql_autogen
+
+# fast build rule for target.
+DataToSql_autogen/fast:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql_autogen.dir/build.make test/CMakeFiles/DataToSql_autogen.dir/build
+.PHONY : DataToSql_autogen/fast
+
+# Convenience name for target.
 test/CMakeFiles/DraggableSquareTests_autogen.dir/rule:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/DraggableSquareTests_autogen.dir/rule
 .PHONY : test/CMakeFiles/DraggableSquareTests_autogen.dir/rule
@@ -300,6 +319,33 @@ MainWindowTests_autogen: test/CMakeFiles/MainWindowTests_autogen.dir/rule
 MainWindowTests_autogen/fast:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests_autogen.dir/build.make test/CMakeFiles/MainWindowTests_autogen.dir/build
 .PHONY : MainWindowTests_autogen/fast
+
+DataToSql_autogen/mocs_compilation.o: DataToSql_autogen/mocs_compilation.cpp.o
+
+.PHONY : DataToSql_autogen/mocs_compilation.o
+
+# target to build an object file
+DataToSql_autogen/mocs_compilation.cpp.o:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/DataToSql_autogen/mocs_compilation.cpp.o
+.PHONY : DataToSql_autogen/mocs_compilation.cpp.o
+
+DataToSql_autogen/mocs_compilation.i: DataToSql_autogen/mocs_compilation.cpp.i
+
+.PHONY : DataToSql_autogen/mocs_compilation.i
+
+# target to preprocess a source file
+DataToSql_autogen/mocs_compilation.cpp.i:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/DataToSql_autogen/mocs_compilation.cpp.i
+.PHONY : DataToSql_autogen/mocs_compilation.cpp.i
+
+DataToSql_autogen/mocs_compilation.s: DataToSql_autogen/mocs_compilation.cpp.s
+
+.PHONY : DataToSql_autogen/mocs_compilation.s
+
+# target to generate assembly for a file
+DataToSql_autogen/mocs_compilation.cpp.s:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/DataToSql_autogen/mocs_compilation.cpp.s
+.PHONY : DataToSql_autogen/mocs_compilation.cpp.s
 
 DraggableSquareTests_autogen/mocs_compilation.o: DraggableSquareTests_autogen/mocs_compilation.cpp.o
 
@@ -463,6 +509,51 @@ UserInteractionTests_autogen/mocs_compilation.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/UserInteractionTests_autogen/mocs_compilation.cpp.s
 .PHONY : UserInteractionTests_autogen/mocs_compilation.cpp.s
 
+__/src/dataToSql.o: __/src/dataToSql.cpp.o
+
+.PHONY : __/src/dataToSql.o
+
+# target to build an object file
+__/src/dataToSql.cpp.o:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/FrameTests.dir/build.make test/CMakeFiles/FrameTests.dir/__/src/dataToSql.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/dataToSql.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/dataToSql.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/dataToSql.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/dataToSql.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/dataToSql.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/dataToSql.cpp.o
+.PHONY : __/src/dataToSql.cpp.o
+
+__/src/dataToSql.i: __/src/dataToSql.cpp.i
+
+.PHONY : __/src/dataToSql.i
+
+# target to preprocess a source file
+__/src/dataToSql.cpp.i:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/FrameTests.dir/build.make test/CMakeFiles/FrameTests.dir/__/src/dataToSql.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/dataToSql.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/dataToSql.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/dataToSql.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/dataToSql.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/dataToSql.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/dataToSql.cpp.i
+.PHONY : __/src/dataToSql.cpp.i
+
+__/src/dataToSql.s: __/src/dataToSql.cpp.s
+
+.PHONY : __/src/dataToSql.s
+
+# target to generate assembly for a file
+__/src/dataToSql.cpp.s:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/FrameTests.dir/build.make test/CMakeFiles/FrameTests.dir/__/src/dataToSql.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/dataToSql.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/dataToSql.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/dataToSql.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/dataToSql.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/dataToSql.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/dataToSql.cpp.s
+.PHONY : __/src/dataToSql.cpp.s
+
 __/src/draggable_square.o: __/src/draggable_square.cpp.o
 
 .PHONY : __/src/draggable_square.o
@@ -473,6 +564,7 @@ __/src/draggable_square.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/draggable_square.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/draggable_square.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/draggable_square.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/draggable_square.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/draggable_square.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/draggable_square.cpp.o
 .PHONY : __/src/draggable_square.cpp.o
@@ -487,6 +579,7 @@ __/src/draggable_square.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/draggable_square.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/draggable_square.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/draggable_square.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/draggable_square.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/draggable_square.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/draggable_square.cpp.i
 .PHONY : __/src/draggable_square.cpp.i
@@ -501,6 +594,7 @@ __/src/draggable_square.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/draggable_square.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/draggable_square.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/draggable_square.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/draggable_square.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/draggable_square.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/draggable_square.cpp.s
 .PHONY : __/src/draggable_square.cpp.s
@@ -515,6 +609,7 @@ __/src/frames.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/frames.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/frames.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/frames.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/frames.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/frames.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/frames.cpp.o
 .PHONY : __/src/frames.cpp.o
@@ -529,6 +624,7 @@ __/src/frames.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/frames.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/frames.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/frames.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/frames.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/frames.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/frames.cpp.i
 .PHONY : __/src/frames.cpp.i
@@ -543,6 +639,7 @@ __/src/frames.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/frames.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/frames.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/frames.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/frames.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/frames.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/frames.cpp.s
 .PHONY : __/src/frames.cpp.s
@@ -557,6 +654,7 @@ __/src/log_handler.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/log_handler.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/log_handler.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/log_handler.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/log_handler.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/log_handler.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/log_handler.cpp.o
 .PHONY : __/src/log_handler.cpp.o
@@ -571,6 +669,7 @@ __/src/log_handler.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/log_handler.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/log_handler.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/log_handler.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/log_handler.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/log_handler.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/log_handler.cpp.i
 .PHONY : __/src/log_handler.cpp.i
@@ -585,6 +684,7 @@ __/src/log_handler.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/log_handler.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/log_handler.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/log_handler.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/log_handler.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/log_handler.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/log_handler.cpp.s
 .PHONY : __/src/log_handler.cpp.s
@@ -599,6 +699,7 @@ __/src/main_window.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/main_window.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/main_window.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/main_window.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/main_window.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/main_window.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/main_window.cpp.o
 .PHONY : __/src/main_window.cpp.o
@@ -613,6 +714,7 @@ __/src/main_window.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/main_window.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/main_window.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/main_window.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/main_window.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/main_window.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/main_window.cpp.i
 .PHONY : __/src/main_window.cpp.i
@@ -627,6 +729,7 @@ __/src/main_window.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/main_window.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/main_window.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/main_window.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/main_window.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/main_window.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/main_window.cpp.s
 .PHONY : __/src/main_window.cpp.s
@@ -641,6 +744,7 @@ __/src/process.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/process.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/process.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/process.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/process.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/process.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/process.cpp.o
 .PHONY : __/src/process.cpp.o
@@ -655,6 +759,7 @@ __/src/process.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/process.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/process.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/process.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/process.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/process.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/process.cpp.i
 .PHONY : __/src/process.cpp.i
@@ -669,6 +774,7 @@ __/src/process.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/process.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/process.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/process.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/process.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/process.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/process.cpp.s
 .PHONY : __/src/process.cpp.s
@@ -683,6 +789,7 @@ __/src/process_dialog.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/process_dialog.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/process_dialog.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/process_dialog.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/process_dialog.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/process_dialog.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/process_dialog.cpp.o
 .PHONY : __/src/process_dialog.cpp.o
@@ -697,6 +804,7 @@ __/src/process_dialog.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/process_dialog.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/process_dialog.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/process_dialog.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/process_dialog.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/process_dialog.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/process_dialog.cpp.i
 .PHONY : __/src/process_dialog.cpp.i
@@ -711,6 +819,7 @@ __/src/process_dialog.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/process_dialog.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/process_dialog.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/process_dialog.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/process_dialog.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/process_dialog.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/process_dialog.cpp.s
 .PHONY : __/src/process_dialog.cpp.s
@@ -725,6 +834,7 @@ __/src/simulation_data_manager.cpp.o:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/simulation_data_manager.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/simulation_data_manager.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/simulation_data_manager.cpp.o
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/simulation_data_manager.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/simulation_data_manager.cpp.o
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/simulation_data_manager.cpp.o
 .PHONY : __/src/simulation_data_manager.cpp.o
@@ -739,6 +849,7 @@ __/src/simulation_data_manager.cpp.i:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/simulation_data_manager.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/simulation_data_manager.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/simulation_data_manager.cpp.i
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/simulation_data_manager.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/simulation_data_manager.cpp.i
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/simulation_data_manager.cpp.i
 .PHONY : __/src/simulation_data_manager.cpp.i
@@ -753,9 +864,37 @@ __/src/simulation_data_manager.cpp.s:
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/__/src/simulation_data_manager.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/__/src/simulation_data_manager.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/__/src/simulation_data_manager.cpp.s
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/__/src/simulation_data_manager.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/__/src/simulation_data_manager.cpp.s
 	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/__/src/simulation_data_manager.cpp.s
 .PHONY : __/src/simulation_data_manager.cpp.s
+
+test_dataToSql.o: test_dataToSql.cpp.o
+
+.PHONY : test_dataToSql.o
+
+# target to build an object file
+test_dataToSql.cpp.o:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/test_dataToSql.cpp.o
+.PHONY : test_dataToSql.cpp.o
+
+test_dataToSql.i: test_dataToSql.cpp.i
+
+.PHONY : test_dataToSql.i
+
+# target to preprocess a source file
+test_dataToSql.cpp.i:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/test_dataToSql.cpp.i
+.PHONY : test_dataToSql.cpp.i
+
+test_dataToSql.s: test_dataToSql.cpp.s
+
+.PHONY : test_dataToSql.s
+
+# target to generate assembly for a file
+test_dataToSql.cpp.s:
+	cd /root/VehicleComputingSimulator/build && $(MAKE) -f test/CMakeFiles/DataToSql.dir/build.make test/CMakeFiles/DataToSql.dir/test_dataToSql.cpp.s
+.PHONY : test_dataToSql.cpp.s
 
 test_draggable_square.o: test_draggable_square.cpp.o
 
@@ -927,19 +1066,23 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... test"
 	@echo "... FrameTests"
 	@echo "... ProcessDialogTests"
 	@echo "... ProcessTests"
 	@echo "... UserInteractionTests"
+	@echo "... DataToSql"
 	@echo "... DraggableSquareTests"
 	@echo "... MainWindowTests"
 	@echo "... FrameTests_autogen"
 	@echo "... ProcessDialogTests_autogen"
 	@echo "... ProcessTests_autogen"
 	@echo "... UserInteractionTests_autogen"
+	@echo "... DataToSql_autogen"
 	@echo "... DraggableSquareTests_autogen"
 	@echo "... MainWindowTests_autogen"
+	@echo "... DataToSql_autogen/mocs_compilation.o"
+	@echo "... DataToSql_autogen/mocs_compilation.i"
+	@echo "... DataToSql_autogen/mocs_compilation.s"
 	@echo "... DraggableSquareTests_autogen/mocs_compilation.o"
 	@echo "... DraggableSquareTests_autogen/mocs_compilation.i"
 	@echo "... DraggableSquareTests_autogen/mocs_compilation.s"
@@ -958,6 +1101,9 @@ help:
 	@echo "... UserInteractionTests_autogen/mocs_compilation.o"
 	@echo "... UserInteractionTests_autogen/mocs_compilation.i"
 	@echo "... UserInteractionTests_autogen/mocs_compilation.s"
+	@echo "... __/src/dataToSql.o"
+	@echo "... __/src/dataToSql.i"
+	@echo "... __/src/dataToSql.s"
 	@echo "... __/src/draggable_square.o"
 	@echo "... __/src/draggable_square.i"
 	@echo "... __/src/draggable_square.s"
@@ -979,6 +1125,9 @@ help:
 	@echo "... __/src/simulation_data_manager.o"
 	@echo "... __/src/simulation_data_manager.i"
 	@echo "... __/src/simulation_data_manager.s"
+	@echo "... test_dataToSql.o"
+	@echo "... test_dataToSql.i"
+	@echo "... test_dataToSql.s"
 	@echo "... test_draggable_square.o"
 	@echo "... test_draggable_square.i"
 	@echo "... test_draggable_square.s"

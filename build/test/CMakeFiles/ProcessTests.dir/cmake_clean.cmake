@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ProcessTests_autogen.dir/ParseCache.txt"
   "ProcessTests_autogen"
   "CMakeFiles/ProcessTests.dir/ProcessTests_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/ProcessTests.dir/__/src/dataToSql.cpp.o"
   "CMakeFiles/ProcessTests.dir/__/src/draggable_square.cpp.o"
   "CMakeFiles/ProcessTests.dir/__/src/frames.cpp.o"
   "CMakeFiles/ProcessTests.dir/__/src/log_handler.cpp.o"

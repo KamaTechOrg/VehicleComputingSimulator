@@ -29,7 +29,6 @@
 	[
 		"/root/VehicleComputingSimulator/build/test",
 		"/root/VehicleComputingSimulator/gui/test",
-		"/root/VehicleComputingSimulator/gui/include",
 		"/usr/include/libbson-1.0",
 		"/usr/include/x86_64-linux-gnu/qt5",
 		"/usr/include/x86_64-linux-gnu/qt5/QtTest",
@@ -69,6 +68,7 @@
 	"SETTINGS_FILE" : "/root/VehicleComputingSimulator/build/test/CMakeFiles/FrameTests_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[ "/root/VehicleComputingSimulator/gui/src/dataToSql.cpp", "MU" ],
 		[ "/root/VehicleComputingSimulator/gui/src/draggable_square.cpp", "MU" ],
 		[ "/root/VehicleComputingSimulator/gui/src/frames.cpp", "MU" ],
 		[ "/root/VehicleComputingSimulator/gui/src/log_handler.cpp", "MU" ],

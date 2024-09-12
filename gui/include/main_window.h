@@ -28,6 +28,12 @@
 #include "process.h"
 #include "process_dialog.h"
 #include "simulation_data_manager.h"
+#include <QCoreApplication>
+#include <QDebug>
+#include <QByteArray>
+#include <QFile>
+#include <QTextStream>
+#include "dataToSql.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -84,6 +90,7 @@ class MainWindow : public QMainWindow {
     SimulationDataManager *dataManager;
     LogHandler logHandler;
     Frames *frames;
+    dataToSql *sqlDataManager;
 };
 
 #endif  // MAIN_WINDOW_H

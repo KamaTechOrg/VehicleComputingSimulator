@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/DraggableSquares_autogen.dir/ParseCache.txt"
   "DraggableSquares_autogen"
   "CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/DraggableSquares.dir/src/dataToSql.cpp.o"
   "CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o"
   "CMakeFiles/DraggableSquares.dir/src/frames.cpp.o"
   "CMakeFiles/DraggableSquares.dir/src/log_handler.cpp.o"

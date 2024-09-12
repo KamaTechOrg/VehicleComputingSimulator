@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/UserInteractionTests_autogen.dir/ParseCache.txt"
   "UserInteractionTests_autogen"
   "CMakeFiles/UserInteractionTests.dir/UserInteractionTests_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/UserInteractionTests.dir/__/src/dataToSql.cpp.o"
   "CMakeFiles/UserInteractionTests.dir/__/src/draggable_square.cpp.o"
   "CMakeFiles/UserInteractionTests.dir/__/src/frames.cpp.o"
   "CMakeFiles/UserInteractionTests.dir/__/src/log_handler.cpp.o"

@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/DraggableSquareTests_autogen.dir/ParseCache.txt"
   "DraggableSquareTests_autogen"
   "CMakeFiles/DraggableSquareTests.dir/DraggableSquareTests_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/DraggableSquareTests.dir/__/src/dataToSql.cpp.o"
   "CMakeFiles/DraggableSquareTests.dir/__/src/draggable_square.cpp.o"
   "CMakeFiles/DraggableSquareTests.dir/__/src/frames.cpp.o"
   "CMakeFiles/DraggableSquareTests.dir/__/src/log_handler.cpp.o"

@@ -19,7 +19,6 @@ QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
 {
     return logEntries;
 }
-
 void LogHandler::readLogFile(const QString &fileName)
 {
     QFile file(fileName);

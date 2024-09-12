@@ -9,6 +9,10 @@
 #include <QJsonObject>
 #include <QDebug>
 #include "simulation_data_manager.h"
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
+#include <QDateTime>
 
 SimulationDataManager::SimulationDataManager(QWidget *parent) : QWidget(parent)
 {

@@ -1,8 +1,8 @@
 #include <QTimer>
 #include <cstdlib>
 #include <ctime>
-#include <ctime>
 #include "frames.h"
+#include <QDebug>
 
 // Constructor to initialize Frames with a LogHandler reference
 Frames::Frames(LogHandler &logHandler, QWidget *parent)

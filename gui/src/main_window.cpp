@@ -12,6 +12,7 @@
 #include "process_dialog.h"
 #include "frames.h"
 #include "log_handler.h"
+#include "dataToSql.h"
 
 int sizeSquare = 120;
 
@@ -102,7 +103,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
                      "stop: 0 #0000FF, stop: 1 #800080);");
     addId(id++);
 }
-
 
 MainWindow::~MainWindow()
 {
@@ -240,15 +240,30 @@ void MainWindow::endProcesses()
     timeInput->clear();
 
     dataManager->saveSimulationData("simulation_data.bson", squares, currentImagePath);
+    QString logFilePath = "../log_file.log";       
+    QString bsonFilePath = "simulation_data.bson";     //  BSON
 
-    QString filePath = "../log_file.log";
-    logHandler.readLogFile(filePath);
-    logHandler.analyzeLogEntries(this, "simulation_data.bson");
+    QString logData =sqlDataManager->readLogFile(logFilePath);
+    if (logData.isEmpty()) {
+        qWarning() << "Log data is empty!";
+    }
 
-    frames = new Frames(logHandler);  // Initialize Frames
-    QVBoxLayout *framesLayout = new QVBoxLayout(workspace);
-    framesLayout->addWidget(frames);
-    workspace->setLayout(framesLayout);
+    // BSON
+    QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
+    if (bsonData.isEmpty()) {
+        qWarning() << "BSON data is empty!";
+    }
+
+    QString inputString = "Some input data";  
+
+    if (!sqlDataManager->insertDataToDatabase(inputString, bsonData, logData)) {
+        qWarning() << "Failed to insert data into the database.";
+    } else {
+        logOutput->append("Data successfully inserted into the database.");
+                qDebug()<<"Data successfully inserted into the database";
+
+    }
+
 
     for (QProcess* process : runningProcesses) {
         if (process->state() != QProcess::NotRunning) {
@@ -321,7 +336,6 @@ QString MainWindow::getExecutableName(const QString &buildDirPath)
                               "The specified build directory does not exist.");
         return QString();
     }
-
 
     QStringList files = buildDir.entryList(QDir::Files | QDir::NoSymLinks);
 

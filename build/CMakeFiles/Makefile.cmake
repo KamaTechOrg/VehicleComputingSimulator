@@ -11,7 +11,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.16.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.16.3/CMakeSystem.cmake"
   "/root/VehicleComputingSimulator/gui/CMakeLists.txt"
-  "/root/VehicleComputingSimulator/gui/test/CMakeLists.txt"
   "/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5Config.cmake"
   "/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5ConfigVersion.cmake"
   "/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5ModuleLocation.cmake"
@@ -91,23 +90,10 @@ set(CMAKE_MAKEFILE_OUTPUTS
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/DraggableSquares_autogen.dir/AutogenInfo.json"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/DraggableSquares.dir/DependInfo.cmake"
   "CMakeFiles/DraggableSquares_autogen.dir/DependInfo.cmake"
-  "test/CMakeFiles/FrameTests.dir/DependInfo.cmake"
-  "test/CMakeFiles/ProcessDialogTests.dir/DependInfo.cmake"
-  "test/CMakeFiles/ProcessTests.dir/DependInfo.cmake"
-  "test/CMakeFiles/UserInteractionTests.dir/DependInfo.cmake"
-  "test/CMakeFiles/DraggableSquareTests.dir/DependInfo.cmake"
-  "test/CMakeFiles/MainWindowTests.dir/DependInfo.cmake"
-  "test/CMakeFiles/FrameTests_autogen.dir/DependInfo.cmake"
-  "test/CMakeFiles/ProcessDialogTests_autogen.dir/DependInfo.cmake"
-  "test/CMakeFiles/ProcessTests_autogen.dir/DependInfo.cmake"
-  "test/CMakeFiles/UserInteractionTests_autogen.dir/DependInfo.cmake"
-  "test/CMakeFiles/DraggableSquareTests_autogen.dir/DependInfo.cmake"
-  "test/CMakeFiles/MainWindowTests_autogen.dir/DependInfo.cmake"
   )

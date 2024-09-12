@@ -78,17 +78,6 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-
-.PHONY : test/fast
-
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/VehicleComputingSimulator/build/CMakeFiles /root/VehicleComputingSimulator/build/CMakeFiles/progress.marks
@@ -147,162 +136,6 @@ DraggableSquares_autogen/fast:
 	$(MAKE) -f CMakeFiles/DraggableSquares_autogen.dir/build.make CMakeFiles/DraggableSquares_autogen.dir/build
 .PHONY : DraggableSquares_autogen/fast
 
-#=============================================================================
-# Target rules for targets named FrameTests
-
-# Build rule for target.
-FrameTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 FrameTests
-.PHONY : FrameTests
-
-# fast build rule for target.
-FrameTests/fast:
-	$(MAKE) -f test/CMakeFiles/FrameTests.dir/build.make test/CMakeFiles/FrameTests.dir/build
-.PHONY : FrameTests/fast
-
-#=============================================================================
-# Target rules for targets named ProcessDialogTests
-
-# Build rule for target.
-ProcessDialogTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ProcessDialogTests
-.PHONY : ProcessDialogTests
-
-# fast build rule for target.
-ProcessDialogTests/fast:
-	$(MAKE) -f test/CMakeFiles/ProcessDialogTests.dir/build.make test/CMakeFiles/ProcessDialogTests.dir/build
-.PHONY : ProcessDialogTests/fast
-
-#=============================================================================
-# Target rules for targets named ProcessTests
-
-# Build rule for target.
-ProcessTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ProcessTests
-.PHONY : ProcessTests
-
-# fast build rule for target.
-ProcessTests/fast:
-	$(MAKE) -f test/CMakeFiles/ProcessTests.dir/build.make test/CMakeFiles/ProcessTests.dir/build
-.PHONY : ProcessTests/fast
-
-#=============================================================================
-# Target rules for targets named UserInteractionTests
-
-# Build rule for target.
-UserInteractionTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 UserInteractionTests
-.PHONY : UserInteractionTests
-
-# fast build rule for target.
-UserInteractionTests/fast:
-	$(MAKE) -f test/CMakeFiles/UserInteractionTests.dir/build.make test/CMakeFiles/UserInteractionTests.dir/build
-.PHONY : UserInteractionTests/fast
-
-#=============================================================================
-# Target rules for targets named DraggableSquareTests
-
-# Build rule for target.
-DraggableSquareTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 DraggableSquareTests
-.PHONY : DraggableSquareTests
-
-# fast build rule for target.
-DraggableSquareTests/fast:
-	$(MAKE) -f test/CMakeFiles/DraggableSquareTests.dir/build.make test/CMakeFiles/DraggableSquareTests.dir/build
-.PHONY : DraggableSquareTests/fast
-
-#=============================================================================
-# Target rules for targets named MainWindowTests
-
-# Build rule for target.
-MainWindowTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 MainWindowTests
-.PHONY : MainWindowTests
-
-# fast build rule for target.
-MainWindowTests/fast:
-	$(MAKE) -f test/CMakeFiles/MainWindowTests.dir/build.make test/CMakeFiles/MainWindowTests.dir/build
-.PHONY : MainWindowTests/fast
-
-#=============================================================================
-# Target rules for targets named FrameTests_autogen
-
-# Build rule for target.
-FrameTests_autogen: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 FrameTests_autogen
-.PHONY : FrameTests_autogen
-
-# fast build rule for target.
-FrameTests_autogen/fast:
-	$(MAKE) -f test/CMakeFiles/FrameTests_autogen.dir/build.make test/CMakeFiles/FrameTests_autogen.dir/build
-.PHONY : FrameTests_autogen/fast
-
-#=============================================================================
-# Target rules for targets named ProcessDialogTests_autogen
-
-# Build rule for target.
-ProcessDialogTests_autogen: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ProcessDialogTests_autogen
-.PHONY : ProcessDialogTests_autogen
-
-# fast build rule for target.
-ProcessDialogTests_autogen/fast:
-	$(MAKE) -f test/CMakeFiles/ProcessDialogTests_autogen.dir/build.make test/CMakeFiles/ProcessDialogTests_autogen.dir/build
-.PHONY : ProcessDialogTests_autogen/fast
-
-#=============================================================================
-# Target rules for targets named ProcessTests_autogen
-
-# Build rule for target.
-ProcessTests_autogen: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ProcessTests_autogen
-.PHONY : ProcessTests_autogen
-
-# fast build rule for target.
-ProcessTests_autogen/fast:
-	$(MAKE) -f test/CMakeFiles/ProcessTests_autogen.dir/build.make test/CMakeFiles/ProcessTests_autogen.dir/build
-.PHONY : ProcessTests_autogen/fast
-
-#=============================================================================
-# Target rules for targets named UserInteractionTests_autogen
-
-# Build rule for target.
-UserInteractionTests_autogen: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 UserInteractionTests_autogen
-.PHONY : UserInteractionTests_autogen
-
-# fast build rule for target.
-UserInteractionTests_autogen/fast:
-	$(MAKE) -f test/CMakeFiles/UserInteractionTests_autogen.dir/build.make test/CMakeFiles/UserInteractionTests_autogen.dir/build
-.PHONY : UserInteractionTests_autogen/fast
-
-#=============================================================================
-# Target rules for targets named DraggableSquareTests_autogen
-
-# Build rule for target.
-DraggableSquareTests_autogen: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 DraggableSquareTests_autogen
-.PHONY : DraggableSquareTests_autogen
-
-# fast build rule for target.
-DraggableSquareTests_autogen/fast:
-	$(MAKE) -f test/CMakeFiles/DraggableSquareTests_autogen.dir/build.make test/CMakeFiles/DraggableSquareTests_autogen.dir/build
-.PHONY : DraggableSquareTests_autogen/fast
-
-#=============================================================================
-# Target rules for targets named MainWindowTests_autogen
-
-# Build rule for target.
-MainWindowTests_autogen: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 MainWindowTests_autogen
-.PHONY : MainWindowTests_autogen
-
-# fast build rule for target.
-MainWindowTests_autogen/fast:
-	$(MAKE) -f test/CMakeFiles/MainWindowTests_autogen.dir/build.make test/CMakeFiles/MainWindowTests_autogen.dir/build
-.PHONY : MainWindowTests_autogen/fast
-
 DraggableSquares_autogen/mocs_compilation.o: DraggableSquares_autogen/mocs_compilation.cpp.o
 
 .PHONY : DraggableSquares_autogen/mocs_compilation.o
@@ -329,6 +162,33 @@ DraggableSquares_autogen/mocs_compilation.s: DraggableSquares_autogen/mocs_compi
 DraggableSquares_autogen/mocs_compilation.cpp.s:
 	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s
 .PHONY : DraggableSquares_autogen/mocs_compilation.cpp.s
+
+src/dataToSql.o: src/dataToSql.cpp.o
+
+.PHONY : src/dataToSql.o
+
+# target to build an object file
+src/dataToSql.cpp.o:
+	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/dataToSql.cpp.o
+.PHONY : src/dataToSql.cpp.o
+
+src/dataToSql.i: src/dataToSql.cpp.i
+
+.PHONY : src/dataToSql.i
+
+# target to preprocess a source file
+src/dataToSql.cpp.i:
+	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/dataToSql.cpp.i
+.PHONY : src/dataToSql.cpp.i
+
+src/dataToSql.s: src/dataToSql.cpp.s
+
+.PHONY : src/dataToSql.s
+
+# target to generate assembly for a file
+src/dataToSql.cpp.s:
+	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/dataToSql.cpp.s
+.PHONY : src/dataToSql.cpp.s
 
 src/draggable_square.o: src/draggable_square.cpp.o
 
@@ -554,24 +414,14 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... test"
 	@echo "... DraggableSquares"
 	@echo "... DraggableSquares_autogen"
-	@echo "... FrameTests"
-	@echo "... ProcessDialogTests"
-	@echo "... ProcessTests"
-	@echo "... UserInteractionTests"
-	@echo "... DraggableSquareTests"
-	@echo "... MainWindowTests"
-	@echo "... FrameTests_autogen"
-	@echo "... ProcessDialogTests_autogen"
-	@echo "... ProcessTests_autogen"
-	@echo "... UserInteractionTests_autogen"
-	@echo "... DraggableSquareTests_autogen"
-	@echo "... MainWindowTests_autogen"
 	@echo "... DraggableSquares_autogen/mocs_compilation.o"
 	@echo "... DraggableSquares_autogen/mocs_compilation.i"
 	@echo "... DraggableSquares_autogen/mocs_compilation.s"
+	@echo "... src/dataToSql.o"
+	@echo "... src/dataToSql.i"
+	@echo "... src/dataToSql.s"
 	@echo "... src/draggable_square.o"
 	@echo "... src/draggable_square.i"
 	@echo "... src/draggable_square.s"

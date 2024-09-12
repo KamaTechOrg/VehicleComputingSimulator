@@ -8,6 +8,11 @@
 	"HEADERS" : 
 	[
 		[
+			"/root/VehicleComputingSimulator/gui/include/dataToSql.h",
+			"MU",
+			"6YEA5652QU/moc_dataToSql.cpp"
+		],
+		[
 			"/root/VehicleComputingSimulator/gui/include/draggable_square.h",
 			"MU",
 			"6YEA5652QU/moc_draggable_square.cpp"
@@ -97,6 +102,7 @@
 	"SETTINGS_FILE" : "/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[ "/root/VehicleComputingSimulator/gui/src/dataToSql.cpp", "MU" ],
 		[ "/root/VehicleComputingSimulator/gui/src/draggable_square.cpp", "MU" ],
 		[ "/root/VehicleComputingSimulator/gui/src/frames.cpp", "MU" ],
 		[ "/root/VehicleComputingSimulator/gui/src/log_handler.cpp", "MU" ],
