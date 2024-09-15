@@ -17,6 +17,13 @@ void Detector::detect(const shared_ptr<Mat> &frame)
     }
 }
 
+void Detector::regularDetect(const shared_ptr<Mat> &frame)
+{
+    //intialize variables
+    output.clear();
+    detectObjects(frame, Point(0, 0));
+}
+
 void Detector::detectObjects(const shared_ptr<Mat> &frame,
                              const Point &position)
 {
@@ -200,8 +207,8 @@ void Detector::loadNet(bool isCuda)
 bool Detector::isValidObjectType(int value) const
 {
     switch (value) {
-        case PEOPLE:
         case CAR:
+        case PEOPLE:
             return true;
         default:
             return false;
