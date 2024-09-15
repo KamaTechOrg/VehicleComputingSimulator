@@ -1,13 +1,13 @@
-#include "client.h"
+#include "clientConnection.h"
 
 // Constructor
-Client::Client(std::function<void(Packet &)> callback, ISocket* socketInterface): connected(false){
+ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface): connected(false){
         setCallback(callback);
         setSocketInterface(socketInterface);
 }
 
 // Requesting a connection to the server
-ErrorCode Client::connectToServer(int id)
+ErrorCode ClientConnection::connectToServer(int id)
 {
     clientSocket = socketInterface->socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0) {
@@ -32,14 +32,14 @@ ErrorCode Client::connectToServer(int id)
     }
     
     connected = true;
-    receiveThread = std::thread(&Client::receivePacket, this);
+    receiveThread = std::thread(&ClientConnection::receivePacket, this);
     receiveThread.detach();
 
     return ErrorCode::SUCCESS;
 }
 
 // Sends the packet to the manager-sync
-ErrorCode Client::sendPacket(Packet &packet)
+ErrorCode ClientConnection::sendPacket(Packet &packet)
 {
     //If send executed before start
     if (!connected)
@@ -58,7 +58,7 @@ ErrorCode Client::sendPacket(Packet &packet)
 }
 
 // Waits for a message and forwards it to Communication
-void Client::receivePacket()
+void ClientConnection::receivePacket()
 {
     while (connected) {
         Packet packet;
@@ -76,7 +76,7 @@ void Client::receivePacket()
 }
 
 // Closes the connection
-ErrorCode Client::closeConnection()
+ErrorCode ClientConnection::closeConnection()
 {
     connected = false;
     int socketInterfaceRes = socketInterface->close(clientSocket);
@@ -86,7 +86,7 @@ ErrorCode Client::closeConnection()
 }
 
 // Setter for passPacketCom
-void Client::setCallback(std::function<void(Packet&)> callback) {
+void ClientConnection::setCallback(std::function<void(Packet&)> callback) {
     if (!callback)
         throw std::invalid_argument("Callback function cannot be null");
     
@@ -94,7 +94,7 @@ void Client::setCallback(std::function<void(Packet&)> callback) {
 }
 
 // Setter for socketInterface
-void Client::setSocketInterface(ISocket* socketInterface) {
+void ClientConnection::setSocketInterface(ISocket* socketInterface) {
     if (!socketInterface)
         throw std::invalid_argument("Socket interface cannot be null");
     
@@ -102,23 +102,23 @@ void Client::setSocketInterface(ISocket* socketInterface) {
 }
 
 // For testing
-int Client::getClientSocket()
+int ClientConnection::getClientSocket()
 {
     return clientSocket;
 }
 
-int Client::isConnected()
+int ClientConnection::isConnected()
 {
     return connected;
 }
 
-bool Client::isReceiveThreadRunning()
+bool ClientConnection::isReceiveThreadRunning()
 {
     return false;
 }
 
 //Destructor
-Client::~Client()
+ClientConnection::~ClientConnection()
 {
     closeConnection();
     delete socketInterface;

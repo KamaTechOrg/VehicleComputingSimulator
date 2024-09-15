@@ -1,13 +1,13 @@
 #pragma once
 #include <mutex>
 #include <utility>
-#include "server.h"
+#include "serverConnection.h"
 #include <iostream>
 
 class BusManager
 {
 private:
-    Server server;
+    ServerConnection server;
 
     // Singleton instance
     static BusManager* instance;

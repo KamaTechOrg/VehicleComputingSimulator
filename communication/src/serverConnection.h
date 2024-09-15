@@ -13,7 +13,7 @@
 #include "../sockets/real_socket.h"
 #include "error_code.h"
 
-class Server
+class ServerConnection
 {
 private:
     int serverSocket;
@@ -45,7 +45,7 @@ private:
 public:
 
     // Constructor
-    Server(int port, std::function<void(Packet&)> callback, ISocket* socketInterface = new RealSocket());
+    ServerConnection(int port, std::function<void(Packet&)> callback, ISocket* socketInterface = new RealSocket());
     
     // Initializes the listening socket
     ErrorCode startConnection();
@@ -86,5 +86,5 @@ public:
     int testGetClientSocketByID(uint32_t destID);
 
     // Destructor
-     ~Server();
+     ~ServerConnection();
 };

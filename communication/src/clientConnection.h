@@ -15,7 +15,7 @@
 #define PORT 8080
 #define IP "127.0.0.1"
 
-class Client
+class ClientConnection
 {
 private:
     int clientSocket;
@@ -27,7 +27,7 @@ private:
 
 public:
     // Constructor
-    Client(std::function<void(Packet &)> callback, ISocket* socketInterface = new RealSocket());
+    ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface = new RealSocket());
 
     // Requesting a connection to the server
     ErrorCode connectToServer(int id);
@@ -55,6 +55,6 @@ public:
     bool isReceiveThreadRunning();
 
     //Destructor
-    ~Client();
+    ~ClientConnection();
 };
 

@@ -1,11 +1,11 @@
 #pragma once
 #include <unordered_map>
-#include "client.h"
+#include "clientConnection.h"
 #include "error_code.h"
 class Communication
 {
 private:
-    Client client;
+    ClientConnection client;
     std::unordered_map<std::string, Message> receivedMessages;
     void (*passData)(void *); 
     uint32_t id;

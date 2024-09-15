@@ -1,9 +1,9 @@
 #include <csignal>
 #include <iostream>
-#include "server.h"
+#include "serverConnection.h"
 
 // Constructor
-Server::Server(int port, std::function<void(Packet&)> callback, ISocket* socketInterface) {
+ServerConnection::ServerConnection(int port, std::function<void(Packet&)> callback, ISocket* socketInterface) {
     setPort(port);
     setReceiveDataCallback(callback);
     setSocketInterface(socketInterface);
@@ -11,7 +11,7 @@ Server::Server(int port, std::function<void(Packet&)> callback, ISocket* socketI
 }
 
 // Initializes the listening socket
-ErrorCode Server::startConnection()
+ErrorCode ServerConnection::startConnection()
 {
     // Create socket TCP
     serverSocket = socketInterface->socket(AF_INET, SOCK_STREAM, 0);
@@ -43,14 +43,14 @@ ErrorCode Server::startConnection()
     }
     
     running = true;
-    mainThread = std::thread(&Server::startThread, this);
+    mainThread = std::thread(&ServerConnection::startThread, this);
     mainThread.detach();
 
     return ErrorCode::SUCCESS;
 }
 
 // Starts listening for connection requests
-void Server::startThread()
+void ServerConnection::startThread()
 {
     while (running) {
         int clientSocket = socketInterface->accept(serverSocket, nullptr, nullptr);
@@ -64,13 +64,13 @@ void Server::startThread()
         // Opens a new thread for handleClient - listening to messages from the process
         {
             std::lock_guard<std::mutex> lock(threadMutex);
-            clientThreads.emplace_back(&Server::handleClient, this, clientSocket);
+            clientThreads.emplace_back(&ServerConnection::handleClient, this, clientSocket);
         } 
     }
 }
 
 // Closes the sockets and the threads
-void Server::stopServer()
+void ServerConnection::stopServer()
 {
     if(!running)
         return;
@@ -92,7 +92,7 @@ void Server::stopServer()
 }
 
 // Runs in a thread for each process - waits for a message and forwards it to the manager
-void Server::handleClient(int clientSocket)
+void ServerConnection::handleClient(int clientSocket)
 {
     Packet packet;
     int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
@@ -141,7 +141,7 @@ void Server::handleClient(int clientSocket)
 }
 
 // Implementation according to the CAN BUS
-bool Server::isValidId(uint32_t id)
+bool ServerConnection::isValidId(uint32_t id)
 {
     if(id==0)
         return false;
@@ -151,7 +151,7 @@ bool Server::isValidId(uint32_t id)
 }
 
 // Returns the sockets ID
-int Server::getClientSocketByID(uint32_t destID)
+int ServerConnection::getClientSocketByID(uint32_t destID)
 {
     std::lock_guard<std::mutex> lock(IDMapMutex);
     for (const auto &client : clientIDMap)
@@ -162,7 +162,7 @@ int Server::getClientSocketByID(uint32_t destID)
 }
 
 // Sends the message to destination
-ErrorCode Server::sendDestination(const Packet &packet)
+ErrorCode ServerConnection::sendDestination(const Packet &packet)
 {
     int targetSocket = getClientSocketByID(packet.header.DestID);
     if (targetSocket == -1)
@@ -181,7 +181,7 @@ ErrorCode Server::sendDestination(const Packet &packet)
 }
 
 // Sends the message to all connected processes - broadcast
-ErrorCode Server::sendBroadcast(const Packet &packet)
+ErrorCode ServerConnection::sendBroadcast(const Packet &packet)
 {
     std::lock_guard<std::mutex> lock(socketMutex);
     for (int sock : sockets) {
@@ -198,7 +198,7 @@ ErrorCode Server::sendBroadcast(const Packet &packet)
 }
 
 // Sets the server's port number, throws an exception if the port is invalid.
-void Server::setPort(int port) {
+void ServerConnection::setPort(int port) {
     if (port <= 0 || port > 65535)
         throw std::invalid_argument("Invalid port number: Port must be between 1 and 65535.");
 
@@ -206,7 +206,7 @@ void Server::setPort(int port) {
 }
 
 // Sets the callback for receiving data, throws an exception if the callback is null.
-void Server::setReceiveDataCallback(std::function<void(Packet&)> callback) {
+void ServerConnection::setReceiveDataCallback(std::function<void(Packet&)> callback) {
     if (!callback) {
         throw std::invalid_argument("Invalid callback function: callback cannot be null.");
     }
@@ -214,7 +214,7 @@ void Server::setReceiveDataCallback(std::function<void(Packet&)> callback) {
 }
 
 // Sets the socket interface, throws an exception if the socketInterface is null.
-void Server::setSocketInterface(ISocket* socketInterface) {
+void ServerConnection::setSocketInterface(ISocket* socketInterface) {
     if (socketInterface == nullptr) {
         throw std::invalid_argument("Invalid socket interface: socketInterface cannot be null.");
     }
@@ -222,48 +222,48 @@ void Server::setSocketInterface(ISocket* socketInterface) {
 }
 
 // For testing
-int Server::getServerSocket()
+int ServerConnection::getServerSocket()
 {
     return serverSocket;
 }
 
-int Server::isRunning()
+int ServerConnection::isRunning()
 {
     return running;
 }
 
-std::vector<int>* Server::getSockets()
+std::vector<int>* ServerConnection::getSockets()
 {
     return &sockets;
 }
 
-std::mutex* Server::getSocketMutex()
+std::mutex* ServerConnection::getSocketMutex()
 {
     return &socketMutex;
 }
 
-std::mutex* Server::getIDMapMutex()
+std::mutex* ServerConnection::getIDMapMutex()
 {
     return &IDMapMutex;
 }
 
-std::map<int, uint32_t>* Server::getClientIDMap()
+std::map<int, uint32_t>* ServerConnection::getClientIDMap()
 {
     return &clientIDMap;
 }
 
-void Server::testHandleClient(int clientSocket)
+void ServerConnection::testHandleClient(int clientSocket)
 {
     handleClient(clientSocket);
 }
 
-int Server::testGetClientSocketByID(uint32_t destID)
+int ServerConnection::testGetClientSocketByID(uint32_t destID)
 {
     return getClientSocketByID(destID);
 }
 
 // Destructor
-Server::~Server()
+ServerConnection::~ServerConnection()
 {
     stopServer();
     delete socketInterface;
