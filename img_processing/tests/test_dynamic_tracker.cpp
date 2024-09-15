@@ -1,3 +1,5 @@
+#include <string>
+#include <vector>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
@@ -62,7 +64,8 @@ TEST(Track, twoCars)
     *currentOutput = detector.getOutput();
     //check time - start
     auto start = std::chrono::high_resolution_clock::now();
-    tracker.track(prevFrame, currentFrame, *prevOutput, *currentOutput);
+    tracker.startTracking(prevFrame, *prevOutput);
+    tracker.tracking(currentFrame);
     //check time - end
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
@@ -71,15 +74,10 @@ TEST(Track, twoCars)
     float result;
     for (const auto &tracktion : tracker.getOutput()) {
         std::cout << " ID: " << tracktion.id << ", Type: " << tracktion.type
-                  << ", PrevPosition: " << tracktion.prevPosition
-                  << ", currentPosition: " << tracktion.currentPosition
-                  << ", current detection: " << (*currentOutput)[i].position
-                  << std::endl;
-        result = calculateIoU(tracktion.currentPosition,
-                              (*currentOutput)[i].position);
+                  << ", position: " << tracktion.position << std::endl;
+        result = calculateIoU(tracktion.position, (*currentOutput)[i].position);
 
         cout << "calculateIoU " << result << endl;
         i++;
     }
-    waitKey(0);
 }

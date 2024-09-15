@@ -3,23 +3,21 @@
 #include <opencv2/opencv.hpp>
 #include "detection_object_struct.h"
 #include "object_type_enum.h"
-#include "tracker_object_struct.h"
-
 class DynamicTracker {
    public:
     // loading the moodle
     void init();
-    void track(const std::shared_ptr<cv::Mat> &prevFrame,
-               const std::shared_ptr<cv::Mat> &currentFrame,
-               const std::vector<DetectionObject> &prevOutput,
-               const std::vector<DetectionObject> &currentOutput);
-    std::vector<TrackerObject> getOutput() const;
+    void startTracking(const std::shared_ptr<cv::Mat> &Frame,
+                       const std::vector<DetectionObject> &DetectionOutput);
+    std::vector<DetectionObject> getOutput() const;
+    void tracking(const std::shared_ptr<cv::Mat> &frame);
 
-    //--maybe--:--pre and after process
    private:
-    std::shared_ptr<cv::Mat> prevFrame;
-    std::shared_ptr<cv::Mat> currentFrame;
-    std::vector<TrackerObject> output;
+    std::shared_ptr<cv::Mat> frame;
+    std::vector<DetectionObject> output;
+    std::vector<cv::Ptr<cv::Tracker>> trackers;
+    std::vector<int> failedCount;
+    int maxFailures = 1;
 };
 
 #endif  // __DYNAMIC_TRACKER_H__
