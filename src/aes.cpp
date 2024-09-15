@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <random>
 #include <iostream>
-
+#include "../include/crypto_api.h"
 #ifdef USE_SYCL
 #include <cstring>
 #include <stdexcept>
@@ -26,11 +26,13 @@ using namespace cl::sycl;
  */
 void generateRandomIV(unsigned char* iv) 
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Generating random IV...");
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, 255);
     for (unsigned int i = 0; i < 16; i++) 
         iv[i] = static_cast<unsigned char>(dis(gen));
+    logger.logMessage(logger::LogLevel::DEBUG, "Random IV generated successfully.");
 }
 
 /** 
@@ -42,6 +44,7 @@ void generateRandomIV(unsigned char* iv)
 void padMessage(unsigned char *&message, unsigned int &length,
                 unsigned int &paddedLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Padding the message...");
     size_t originalLength = length;
 
     paddedLength =
@@ -59,6 +62,7 @@ void padMessage(unsigned char *&message, unsigned int &length,
 
     message = paddedMessage;
     length = paddedLength;
+    logger.logMessage(logger::LogLevel::DEBUG, "Message padded successfully.");
 }
 
 /**
@@ -68,6 +72,7 @@ void padMessage(unsigned char *&message, unsigned int &length,
  */
 void unpadMessage(unsigned char *message, unsigned int &length)
 {
+    logger.logMessage(logger::LogLevel::DEBUG,"removing padding from message");
     size_t originalLength = length;
     unsigned char paddingValue = message[originalLength - 1];
     length = originalLength - paddingValue;
@@ -80,6 +85,7 @@ void unpadMessage(unsigned char *message, unsigned int &length)
  */
 unsigned char *generateKey(AESKeyLength keyLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "generating AES key");
     // Allocate memory for the key
     unsigned char *key = new unsigned char[aesKeyLengthData[keyLength].keySize];
 
@@ -102,8 +108,9 @@ unsigned char *generateKey(AESKeyLength keyLength)
  */
 void checkLength(unsigned int len)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "checking input length");
     if (len % BLOCK_BYTES_LEN != 0)
-        throw std::length_error("Plaintext length must be divisible by " +
+       logger.logMessage(logger::LogLevel::ERROR,"Plaintext length must be divisible by " +
                                 std::to_string(BLOCK_BYTES_LEN));
 }
 
@@ -117,7 +124,8 @@ void checkLength(unsigned int len)
  */
 void encryptBlock(const unsigned char in[], unsigned char out[],
                   unsigned char *roundKeys, AESKeyLength keyLength)
-{    
+{        
+    logger.logMessage(logger::LogLevel::DEBUG, "encrypting block with SYCL");
     queue queue;
     // State array initialization
     unsigned char state[AES_STATE_ROWS][NUM_BLOCKS];
@@ -182,6 +190,7 @@ void encryptBlock(const unsigned char in[], unsigned char out[],
 void decryptBlock(const unsigned char in[], unsigned char out[],
                   unsigned char *roundKeys, AESKeyLength keyLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "decrypting block with SYCL");
     unsigned char state[AES_STATE_ROWS][NUM_BLOCKS];
     unsigned int i, j, round;
 
@@ -220,6 +229,7 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
  */
  unsigned char xtime(unsigned char b)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "performing xtime operation");
     return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 }
 
@@ -232,6 +242,7 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
  */
  unsigned char multiply(unsigned char x, unsigned char y)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "multiplying on GF");
     unsigned char result = 0;
     unsigned char temp = y;
     for (int i = 0; i < 8; i++) {
@@ -254,6 +265,7 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
  */
 void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform sub bytes transformation");
     queue queue;
     buffer<unsigned char, 2> stateBuffer(state[0],
                                                range<2>(AES_STATE_ROWS, NUM_BLOCKS));
@@ -278,6 +290,7 @@ void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
  */
 void shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform shift rows transformation");
     queue queue;
     queue.submit([&](handler &handler) {
          handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> i) {
@@ -297,6 +310,7 @@ void shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
  */
 void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform mix columns transformation");
     queue queue;
 
     queue.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
@@ -324,6 +338,7 @@ void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
  */
 void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char *roundKey)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform key adding");
     queue queue;
     buffer<unsigned char, 2> stateBuffer(state[0],
                                                range<2>(AES_STATE_ROWS, NUM_BLOCKS));
@@ -351,7 +366,8 @@ void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char 
  @param a Array representing the word to be transformed.
  */
 void subWord(unsigned char a[AES_STATE_ROWS])
-{
+{    
+    logger.logMessage(logger::LogLevel::DEBUG, "perform sub word transformation");
     queue queue;
     buffer<unsigned char, 1> aBuffer(a, range<1>(AES_STATE_ROWS));
     buffer<unsigned char, 2> sBoxBuffer(sBox[0], range<2>(16, 16));
@@ -375,6 +391,7 @@ void subWord(unsigned char a[AES_STATE_ROWS])
  */
 void rotWord(unsigned char *word)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform rot word transformation");
     queue queue;
     buffer<unsigned char, 1> wordBuffer(word, range<1>(AES_STATE_ROWS));
 
@@ -400,6 +417,7 @@ void rotWord(unsigned char *word)
  */
 void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform rcon word transformation");
     queue queue;
     unsigned char strong = 1;
     for (size_t i = 0; i < n - 1; i++)
@@ -424,6 +442,7 @@ void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
  */
 void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform key expansion");
     queue queue;
     unsigned int numWordLocal = aesKeyLengthData[keyLength].numWord;
 
@@ -482,6 +501,7 @@ void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyL
  */
 void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform inv sub bytes transformation");
     queue queue;
     buffer<unsigned char, 2> stateBuffer(state[0],
                                                range<2>(AES_STATE_ROWS, NUM_BLOCKS));
@@ -507,6 +527,7 @@ void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 /*Applies the InvMixColumns transformation*/
 void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform inv mix columns transformation");
     queue queue;
     queue.parallel_for(range<1>(NUM_BLOCKS), [=](id<1> idx) {
          size_t i = idx[0];
@@ -537,6 +558,7 @@ void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
  */
 void invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform inv shift rows transformation");
     queue queue;
     queue.submit([&](handler &handler) {
          handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> i) {
@@ -553,6 +575,7 @@ void invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 void xorBlocks(const unsigned char *a, const unsigned char *b, unsigned char *c,
                unsigned int len)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform xor blocks transformation");
     queue queue;
 
     buffer<unsigned char, 1> bufA(a, range<1>(len));
@@ -580,6 +603,7 @@ void xorBlocks(const unsigned char *a, const unsigned char *b, unsigned char *c,
 void encryptBlock(const unsigned char in[], unsigned char out[],
                   unsigned char *roundKeys, AESKeyLength keyLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "encrypting a single block (16 bytes) of data");
     unsigned char state[AES_STATE_ROWS][NUM_BLOCKS];
     unsigned int i, j, round;
 
@@ -619,6 +643,7 @@ void encryptBlock(const unsigned char in[], unsigned char out[],
 void decryptBlock(const unsigned char in[], unsigned char out[],
                   unsigned char *roundKeys, AESKeyLength keyLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "decrypting a single block (16 bytes) of data");
     unsigned char state[AES_STATE_ROWS][NUM_BLOCKS];
     unsigned int i, j, round;
     for(int i =0; i< 4 * NUM_BLOCKS; i++)
@@ -653,12 +678,14 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
 /*Multiplies a byte by x in GF(2^8)*/
 unsigned char xtime(unsigned char b)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "performing xtime operation");
     return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 }
 
 /*Multiplies two bytes in GF(2^8)*/
 unsigned char multiply(unsigned char x, unsigned char y)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "multiplying on GF");
     unsigned char result = 0;
     unsigned char temp = y;
     for (int i = 0; i < 8; i++) {
@@ -677,6 +704,7 @@ unsigned char multiply(unsigned char x, unsigned char y)
 /*Apply SubBytes transformation using the S-box*/
 void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform sub bytes transformation");
     for (size_t i = 0; i < AES_STATE_ROWS; i++)
         for (size_t j = 0; j < NUM_BLOCKS; j++)
             state[i][j] = sBox[state[i][j] / 16][state[i][j] % 16];
@@ -685,6 +713,7 @@ void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 /*ShiftRows transformation*/
 void shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform shift rows transformation");
     for (size_t i = 0; i < AES_STATE_ROWS; i++) {
         unsigned char tmp[NUM_BLOCKS];
         for (size_t k = 0; k < NUM_BLOCKS; k++)
@@ -696,6 +725,7 @@ void shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 /*MixColumns transformation*/
 void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform mix columns transformation");
     for (size_t i = 0; i < AES_STATE_ROWS; i++) {
         unsigned char a[AES_STATE_ROWS];
         unsigned char b[AES_STATE_ROWS];
@@ -713,6 +743,7 @@ void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 /*AddRoundKey transformation*/
 void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char *key)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform key adding");
     unsigned int i, j;
     for (i = 0; i < AES_STATE_ROWS; i++)
         for (j = 0; j < NUM_BLOCKS; j++)
@@ -722,6 +753,7 @@ void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char 
 /*Applies the SubWord transformation using the S-box*/
 void subWord(unsigned char a[AES_STATE_ROWS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform sub word transformation");
     for (size_t i = 0; i < AES_STATE_ROWS; i++)
         a[i] = sBox[a[i] / 16][a[i] % 16];
 }
@@ -729,6 +761,7 @@ void subWord(unsigned char a[AES_STATE_ROWS])
 /*Rotates a word (4 bytes)*/
 void rotWord(unsigned char a[AES_STATE_ROWS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform rot word transformation");
     unsigned char first = a[0];
     for (size_t i = 0; i < 3; i++)
         a[i] = a[i + 1];
@@ -738,6 +771,7 @@ void rotWord(unsigned char a[AES_STATE_ROWS])
 /*Applies the Rcon transformation*/
 void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform rcon word transformation");
     unsigned char strong = 1;
     for (size_t i = 0; i < n - 1; i++)
         strong = xtime(strong);
@@ -749,6 +783,7 @@ void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
 /*Expands the key for AES encryption/decryption*/
 void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyLength)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform key expansion");
     unsigned char temp[AES_STATE_ROWS], rcon[AES_STATE_ROWS];
     unsigned int i = 0;
 
@@ -785,6 +820,7 @@ void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyL
 /*Applies the InvSubBytes transformation using the inverse S-box*/
 void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform inv sub bytes transformation");
     unsigned int i, j;
     unsigned char t;
     for (i = 0; i < AES_STATE_ROWS; i++)
@@ -797,6 +833,7 @@ void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 /*Applies the InvMixColumns transformation*/
 void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform inv mix columns transformation");
     for (size_t i = 0; i < NUM_BLOCKS; i++) {
         unsigned char a[AES_STATE_ROWS];
         unsigned char b[AES_STATE_ROWS];
@@ -818,6 +855,7 @@ void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 /*Applies the InvShiftRows transformation*/
 void invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform inv shift rows transformation");
     for (size_t i = 0; i < AES_STATE_ROWS; i++) {
         unsigned char tmp[NUM_BLOCKS];
         for (size_t k = 0; k < NUM_BLOCKS; k++)
@@ -830,6 +868,7 @@ void invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 void xorBlocks(const unsigned char *a, const unsigned char *b, unsigned char *c,
                unsigned int len)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "perform xor blocks transformation");
     for (unsigned int i = 0; i < len; i++) {
         c[i] = a[i] ^ b[i];
     }

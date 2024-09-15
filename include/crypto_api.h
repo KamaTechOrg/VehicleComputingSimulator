@@ -6,13 +6,14 @@
 #include <stdexcept>
 #include <thread>
 #include <future>
-
+#include "../logger/logger.h"
 #include "aes_stream_factory.h"
 #include "sha256.h"
 //#include "rsa.h"
 #include "hsm.h"
 #include "ecc.h"
 #include "key_manager.h"
+static logger logger("hsm");
 
 int encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
             size_t &outLen, size_t counter);

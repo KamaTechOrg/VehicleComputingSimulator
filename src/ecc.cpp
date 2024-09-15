@@ -1,12 +1,11 @@
 #include "../include/ecc.h"
+#include "../include/crypto_api.h"
 #include <gmpxx.h>
 #include <gmp.h>
 #include <cstdint>
 #include <iostream>
 #include <string>
 #include <bitset>
-
-
 
 unsigned int added = 0;
 
@@ -31,6 +30,7 @@ using namespace cl::sycl;
  */
 Point convertMessageToPoint(const std::string &text)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Converts a message string to a point on the elliptic curve using SYCL");
     std::string binaryStr(text.size() * 8, '0');
     queue queue;
     buffer<char, 1> textBuf(text.data(), range<1>(text.size()));
@@ -73,6 +73,7 @@ Point convertMessageToPoint(const std::string &text)
  */
 std::string convertPointToMessage(const Point &point)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Converts a point on the elliptic curve to a message string");
     sycl::queue queue;
 
     mpz_class x = point.x - mpz_class(added);
@@ -118,6 +119,7 @@ std::string convertPointToMessage(const Point &point)
  */
 Point convertMessageToPoint(const std::string &text)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Converts a message string to a point on the elliptic curve");
     std::string binaryStr;
     for (char c : text)
         for (int i = 7; i >= 0; --i)
@@ -144,6 +146,7 @@ Point convertMessageToPoint(const std::string &text)
  */
 std::string convertPointToMessage(const Point &point)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Converts a point on the elliptic curve to a message string");
     mpz_class x = point.x - mpz_class(added);
     std::string binaryStr = x.get_str(2);
 
@@ -173,6 +176,7 @@ std::string convertPointToMessage(const Point &point)
  */
 bool modularSqrt(mpz_t result, const mpz_t a, const mpz_t p)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Computes the modular square root using the Tonelli-Shanks algorithm");
     mpz_t q, s, z, m, c, t, r, b, temp;
     mpz_inits(q, s, z, m, c, t, r, b, temp, NULL);
 
@@ -242,6 +246,7 @@ bool modularSqrt(mpz_t result, const mpz_t a, const mpz_t p)
  */
 mpz_class generatePrivateKey()
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Generates a private key for ECC");
     gmp_randclass rng(gmp_randinit_default);
     rng.seed(time(nullptr));
     return rng.get_z_range(prime - 1) + 1;
@@ -253,6 +258,7 @@ mpz_class generatePrivateKey()
  */
 mpz_class generateK()
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Generates a random value k for ECC");
     gmp_randclass rng(gmp_randinit_default);
     rng.seed(time(nullptr));
     return rng.get_z_range(prime - 1) + 1;
@@ -264,6 +270,7 @@ mpz_class generateK()
  */
 Point generatePublicKey(mpz_class privateKey)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Generates a public key for ECC");
     return multiply(basicPoint, privateKey);
 }
 
@@ -274,6 +281,7 @@ Point generatePublicKey(mpz_class privateKey)
  */
 mpz_class calculateY(mpz_class x)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Calculates the y-coordinate for a given x-coordinate on the elliptic curve");
     mpz_class rhs = mod(x * x * x + a * x + b);
     mpz_class y;
     if (modularSqrt(y.get_mpz_t(), rhs.get_mpz_t(), prime.get_mpz_t()))
@@ -289,6 +297,7 @@ mpz_class calculateY(mpz_class x)
  */
 bool isOnCurve(Point P)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Checks if a point is on the elliptic curve");
     return mod(P.y * P.y) == mod(P.x * P.x * P.x + a * P.x + b);
 }
 
@@ -299,6 +308,7 @@ bool isOnCurve(Point P)
  */
 mpz_class mod(mpz_class x)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Computes the modular reduction of a value by the curve's prime");
     mpz_class result;
     mpz_mod(result.get_mpz_t(), x.get_mpz_t(), prime.get_mpz_t());
     return result;
@@ -311,6 +321,7 @@ mpz_class mod(mpz_class x)
  */
 mpz_class inverse(mpz_class base)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Computes the modular inverse of a value");
     mpz_class result;
     mpz_invert(result.get_mpz_t(), base.get_mpz_t(), prime.get_mpz_t());
     return result;
@@ -324,6 +335,7 @@ mpz_class inverse(mpz_class base)
  */
 Point add(Point P, Point Q)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Adds two points on the elliptic curve");
     mpz_class incline;
     if (P.x == 0 && P.y == 0)
         return Q;
@@ -352,6 +364,7 @@ Point add(Point P, Point Q)
  */
 Point multiply(Point P, mpz_class times)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Multiplies a point by a scalar on the elliptic curve");
     Point R(0, 0);
     Point N = P;
     while (times > 0) {
@@ -372,6 +385,7 @@ Point multiply(Point P, mpz_class times)
  */
 EncryptedMessage encryptECC(std::vector<uint8_t> message, Point publicKey)
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Encrypts a message using ECC");
     std::string text = uint8ToString(message);
     mpz_class k = generateK();
     Point meesagePoint = convertMessageToPoint(text);
@@ -392,6 +406,7 @@ EncryptedMessage encryptECC(std::vector<uint8_t> message, Point publicKey)
  */
 std::string uint8ToString(const std::vector<uint8_t>& uint8Vec) 
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Converts a vector of uint8_t to a string");
     return std::string(uint8Vec.begin(), uint8Vec.end());
 }
 
@@ -407,6 +422,7 @@ std::string uint8ToString(const std::vector<uint8_t>& uint8Vec)
  */
 std::vector<uint8_t> stringToUint8(const std::string& str) 
 {
+    logger.logMessage(logger::LogLevel::DEBUG, "Converts a string to a vector of uint8_t");
     std::vector<uint8_t> uint8Vec(str.begin(), str.end());
     return uint8Vec;
 }
@@ -418,7 +434,7 @@ std::vector<uint8_t> stringToUint8(const std::string& str)
  */
 std::vector<uint8_t> decryptECC(EncryptedMessage ciphertext, mpz_class privateKey)
 {
-
+    logger.logMessage(logger::LogLevel::DEBUG, "Decrypts a ciphertext using ECC");
     Point temp = multiply(Point(ciphertext.c1X, calculateY(ciphertext.c1X) *
                                                     (ciphertext.c1Y ? -1 : 1)),
                           privateKey);
@@ -426,6 +442,6 @@ std::vector<uint8_t> decryptECC(EncryptedMessage ciphertext, mpz_class privateKe
     Point decrypted = add(Point(ciphertext.c2X, calculateY(ciphertext.c2X) *
                                                     (ciphertext.c1Y ? -1 : 1)),
                           negTemp);
-    std::string text=convertPointToMessage(decrypted);
+    std::string text = convertPointToMessage(decrypted);
     return stringToUint8(text);
 }

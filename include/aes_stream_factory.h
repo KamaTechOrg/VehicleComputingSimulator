@@ -1,4 +1,3 @@
-#include "aes.h"
 #include "aes_stream.h"
 #include <map>
 #include <string>
@@ -28,10 +27,7 @@ class AESEcbFactory : public StreamAESFactory
       * 
       * @return A pointer to the newly created AESEcb object.
       */
-     StreamAES* create() const override 
-     {
-        return new AESEcb();
-     }
+     StreamAES* create() const override;
 };
 
 /**
@@ -45,10 +41,7 @@ class AESCbcFactory : public StreamAESFactory
        * 
        * @return A pointer to the newly created AESCbc object.
        */
-      StreamAES* create() const override 
-      {
-        return new AESCbc();
-      }
+      StreamAES* create() const override;
 };
 
 /**
@@ -62,10 +55,7 @@ class AESCfbFactory : public StreamAESFactory
        * 
        * @return A pointer to the newly created AESCfb object.
        */
-      StreamAES* create() const override 
-      {
-        return new AESCfb();
-      }
+      StreamAES* create() const override;
 };
 
 /**
@@ -79,10 +69,7 @@ class AESOfbFactory : public StreamAESFactory
        * 
        * @return A pointer to the newly created AESOfb object.
        */
-      StreamAES* create() const override 
-      {
-        return new AESOfb();
-      }
+      StreamAES* create() const override;
 };
 
 /**
@@ -96,10 +83,7 @@ class AESCtrFactory : public StreamAESFactory
        * 
        * @return A pointer to the newly created AESCtr object.
        */
-      StreamAES* create() const override 
-      {
-        return new AESCtr();
-      }
+      StreamAES* create() const override;
 };
 
 /**

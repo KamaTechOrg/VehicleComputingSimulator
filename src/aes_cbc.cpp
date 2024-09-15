@@ -1,4 +1,4 @@
-#include "../include/aes_stream.h"
+#include "../include/aes_stream_factory.h"
 
 void AESCbc::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength)
 {

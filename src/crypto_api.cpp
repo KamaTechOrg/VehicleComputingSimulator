@@ -3,9 +3,7 @@
 #include <iomanip>
 #include <map>
 std::map<int,std::pair<StreamAES*,size_t>> mapToInMiddleEncryptions;
-std::map<int,std::pair<StreamAES*,size_t>> mapToInMiddleDecryptions;
-
-#define DEBUG
+std::map<int,std::pair<StreamAES*,size_t>> mapToInMiddleDecryptions;#define DEBUG
 
 constexpr size_t BITS_IN_BYTE = 8;
 constexpr size_t ECC_CIPHER_LENGTH = 512;
