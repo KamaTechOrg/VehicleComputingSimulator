@@ -657,13 +657,16 @@ CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDockWidget
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow
+CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMessageBox
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h
+CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdockwidget.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qframe.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlabel.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h
+CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmessagebox.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qsizepolicy.h
 CMakeFiles/DraggableSquares.dir/src/frames.cpp.o: /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtabwidget.h
