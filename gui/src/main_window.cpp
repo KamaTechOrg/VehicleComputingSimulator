@@ -72,6 +72,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
+    setDefaultBackgroundImage();
+
     mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
 
@@ -288,38 +290,53 @@ void MainWindow::timerTimeout()
     endProcesses();
 }
 
-void MainWindow::openImageDialog()
-{
+void MainWindow::setDefaultBackgroundImage() {
+    // Set default image path
+    QString defaultImagePath = "../aa.jpg"; // Assuming default image is in resources
+    currentImagePath = defaultImagePath;
+
+    // Load and set the default image
+    QPixmap pixmap(defaultImagePath);
+    if (!pixmap.isNull()) {
+        // Clear any existing layout in the workspace (if necessary)
+        QLayout *layout = workspace->layout();
+        if (layout) {
+            QLayoutItem *item;
+            while ((item = layout->takeAt(0)) != nullptr) {
+                delete item->widget();
+                delete item;
+            }
+        }
+
+        // Add imageLabel to workspace and set the pixmap
+        imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setAlignment(Qt::AlignCenter);
+        imageLabel->setGeometry(workspace->rect());
+        imageLabel->setScaledContents(true);
+
+        // Add imageLabel to the workspace layout
+        QVBoxLayout *newLayout = new QVBoxLayout(workspace);
+        newLayout->addWidget(imageLabel);
+        workspace->setLayout(newLayout);
+    }
+}
+
+
+void MainWindow::openImageDialog() {
+    // Open file dialog to select a new image
     QString imagePath = QFileDialog::getOpenFileName(
         this, tr("Select Image"), "", tr("Image Files (*.png *.jpg *.jpeg)"));
+
     if (!imagePath.isEmpty()) {
         currentImagePath = imagePath;
+
+        // Load and set the new image
         QPixmap pixmap(imagePath);
         if (!pixmap.isNull()) {
-            // Clear the workspace before adding the new image
-            QLayout *layout = workspace->layout();
-            if (layout) {
-                QLayoutItem *item;
-                while ((item = layout->takeAt(0)) != nullptr) {
-                    delete item->widget();
-                    delete item;
-                }
-            }
-
-            // Create a new QLabel to display the image as background
-            QLabel *backgroundLabel = new QLabel(workspace);
-            backgroundLabel->setPixmap(pixmap.scaled(workspace->size(),
-                                                     Qt::IgnoreAspectRatio,
-                                                     Qt::SmoothTransformation));
-            backgroundLabel->setGeometry(workspace->rect());
-            backgroundLabel->setScaledContents(true);
-            backgroundLabel->setAttribute(Qt::WA_TranslucentBackground);
-            backgroundLabel->lower();
-            backgroundLabel->show();
-
-            // Add a new layout to the workspace
-            QVBoxLayout *newLayout = new QVBoxLayout(workspace);
-            workspace->setLayout(newLayout);
+            imageLabel->clear(); // Clear previous image
+            imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+            imageLabel->setGeometry(workspace->rect());
+            imageLabel->setScaledContents(true);
         }
     }
 }

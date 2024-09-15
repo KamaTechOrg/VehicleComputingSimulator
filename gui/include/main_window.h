@@ -70,6 +70,8 @@ class MainWindow : public QMainWindow {
     void runProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
+    //void setBackgroundImage(const QString &imagePath);
+    void setDefaultBackgroundImage();
 
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
