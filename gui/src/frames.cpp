@@ -3,7 +3,8 @@
 #include <ctime>
 #include "frames.h"
 #include <QDebug>
-
+#include <QMouseEvent>
+#include <QMessageBox>
 // Constructor to initialize Frames with a LogHandler reference
 Frames::Frames(LogHandler &logHandler, QWidget *parent)
     : logHandler(logHandler), QWidget(parent), differenceTime(0)
@@ -195,4 +196,34 @@ void Frames::setActiveLogEntries(
 void Frames::setIdMapping(const QMap<int, int> &idMapping)
 {
     this->idMapping = idMapping;
+}
+
+// Override mousePressEvent to detect user interaction with frames
+void Frames::mousePressEvent(QMouseEvent *event)
+{
+    // Check if the mouse is clicking within the frame area
+    QPoint clickPos = event->pos();
+
+    // Iterate over the frames to check if the click is within any frame
+    for (const auto &log : logHandler.getLogEntries()) {
+        auto square1 = logHandler.getProcessSquares()[log.srcId];
+        auto square2 = logHandler.getProcessSquares()[log.dstId];
+
+        QRect rect1(square1->getDragStartPosition().x(),
+                    square1->getDragStartPosition().y(),
+                    square1->width(), square1->height());
+        QRect rect2(square2->getDragStartPosition().x(),
+                    square2->getDragStartPosition().y(),
+                    square2->width(), square2->height());
+
+        // Check if the click position is inside one of the frames
+        if (rect1.contains(clickPos) || rect2.contains(clickPos)) {
+            // Display the message in Hebrew
+            QMessageBox::information(this, "Frame Clicked", "נגעת בי שים לב");
+            return;  // Stop checking further since one frame was clicked
+        }
+    }
+
+    // If no frame was clicked, pass the event to the base class
+    QWidget::mousePressEvent(event);
 }
