@@ -1,8 +1,9 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
-#include "../include/dynamic_tracker.h"
-#include "../include/detector.h"
+#include "detector.h"
+#include "dynamic_tracker.h"
+#include "manager.h"
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -42,7 +43,8 @@ float calculateIoU(const Rect &rect1, const Rect &rect2)
 
 TEST(Track, twoCars)
 {
-    cout << "TEST Twocars" << endl;
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: Track, twoCars");
     Detector detector;
     DynamicTracker tracker;
     detector.init(false);
@@ -50,6 +52,8 @@ TEST(Track, twoCars)
     Mat img1 = imread("../tests/images/track_2_cars_first_frame.jpg");
     Mat img2 = imread("../tests/images/track_2_cars_second_frame.jpg");
     if (img1.empty() || img2.empty()) {
+        Manager::imgLogger.logMessage(logger::LogLevel::ERROR,
+                                      "Error: Could not load images!");
         cerr << "Error: Could not load images!" << endl;
     }
     shared_ptr<Mat> prevFrame = make_shared<Mat>(img1);
@@ -60,10 +64,10 @@ TEST(Track, twoCars)
     *prevOutput = detector.getOutput();
     detector.detect(currentFrame);
     *currentOutput = detector.getOutput();
-    //check time - start
+    // check time - start
     auto start = std::chrono::high_resolution_clock::now();
     tracker.track(prevFrame, currentFrame, *prevOutput, *currentOutput);
-    //check time - end
+    // check time - end
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
     std::cout << "Execution time: " << elapsed.count() << " ms" << std::endl;
@@ -78,9 +82,10 @@ TEST(Track, twoCars)
         result = calculateIoU(tracktion.currentPosition,
                               (*currentOutput)[i].position);
 
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                      "calculateIoU " + result);
         cout << "calculateIoU " << result << endl;
         i++;
     }
     waitKey(0);
 }
-

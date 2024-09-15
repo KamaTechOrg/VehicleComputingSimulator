@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <gtest/gtest.h>
-#include "../include/detector.h"
+#include "detector.h"
+#include "manager.h"
 
 bool is_cuda = false;  // or true
 
@@ -9,6 +10,9 @@ cv::Mat loadImage(const std::string &filename)
 {
     cv::Mat img = cv::imread(filename);
     if (img.empty()) {
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "runtime_error: Could not open or find the image");
         throw std::runtime_error("Could not open or find the image");
     }
     return img;
@@ -17,6 +21,8 @@ cv::Mat loadImage(const std::string &filename)
 // Test case for Detector::detect with a real image containing 2 cars
 TEST(DetectorTest, DetectTwoCars)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectorTest, DetectTwoCars");
     // Load a real image from file
     std::string imagePath = "../tests/images/two_cars_image.png";
     cv::Mat testImage;
@@ -24,6 +30,7 @@ TEST(DetectorTest, DetectTwoCars)
         testImage = loadImage(imagePath);
     }
     catch (const std::runtime_error &e) {
+        Manager::imgLogger.logMessage(logger::LogLevel::ERROR, e.what());
         FAIL() << e.what();
     }
 
@@ -68,6 +75,8 @@ TEST(DetectorTest, DetectTwoCars)
 // Test case for Detector::detect with a real image containing 3 cars
 TEST(DetectorTest, DetectThreeCars)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectorTest, DetectThreeCars");
     // Load a real image from file
     std::string imagePath = "../tests/images/three_cars_image.png";
     cv::Mat testImage;
@@ -75,6 +84,7 @@ TEST(DetectorTest, DetectThreeCars)
         testImage = loadImage(imagePath);
     }
     catch (const std::runtime_error &e) {
+        Manager::imgLogger.logMessage(logger::LogLevel::ERROR, e.what());
         FAIL() << e.what();
     }
 
@@ -118,6 +128,8 @@ TEST(DetectorTest, DetectThreeCars)
 // Test case for Detector::detect with a real image containing 2 cars
 TEST(DetectorTest, DetectTwoPeoples)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectorTest, DetectTwoPeoples");
     // Load a real image from file
     std::string imagePath = "../tests/images/two_peoples_image.jpg";
     cv::Mat testImage;
@@ -125,6 +137,7 @@ TEST(DetectorTest, DetectTwoPeoples)
         testImage = loadImage(imagePath);
     }
     catch (const std::runtime_error &e) {
+        Manager::imgLogger.logMessage(logger::LogLevel::ERROR, e.what());
         FAIL() << e.what();
     }
 
@@ -167,18 +180,25 @@ TEST(DetectorTest, DetectTwoPeoples)
 
 TEST(DetectChangesTest, detect)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectChangesTest, detect");
     cv::Mat first, second;
-    //load video
+    // load video
     cv::VideoCapture capture("../tests/images/cars4.mp4");
     if (!capture.isOpened()) {
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "runtime_error: Error while opening video media");
         throw std::runtime_error("Error while opening video media\n");
     }
-    //load first frame from video
+    // load first frame from video
     capture.read(first);
     if (first.empty()) {
+        Manager::imgLogger.logMessage(logger::LogLevel::ERROR,
+                                      "runtime_error: CMedia finished");
         throw std::runtime_error("CMedia finished\n");
     }
-    //load second frame from video
+    // load second frame from video
     capture.read(second);
     if (second.empty()) {
         throw std::runtime_error("CMedia finished\n");
@@ -186,7 +206,7 @@ TEST(DetectChangesTest, detect)
     // Wrap it in a shared_ptr
     std::shared_ptr<cv::Mat> firstFrame = std::make_shared<cv::Mat>(first);
     std::shared_ptr<cv::Mat> secondFrame = std::make_shared<cv::Mat>(second);
-    //preper detectAll and detectChanges
+    // preper detectAll and detectChanges
     // Create Detector instance
     Detector detectAll;
     Detector detectChanges;
@@ -203,6 +223,6 @@ TEST(DetectChangesTest, detect)
     // Check if output is not empty
     ASSERT_FALSE(detectAllOutput.empty());
     ASSERT_FALSE(detectChangesOutput.empty());
-    //check if two ouptputs have the same length
+    // check if two ouptputs have the same length
     ASSERT_EQ(detectAllOutput.size(), detectChangesOutput.size());
 }

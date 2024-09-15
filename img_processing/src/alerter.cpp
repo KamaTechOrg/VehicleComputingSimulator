@@ -1,8 +1,9 @@
-#include <nlohmann/json.hpp>
+#include "alerter.h"
+#include "alert.h"
+#include "manager.h"
 #include <fstream>
 #include <iostream>
-#include "../include/alerter.h"
-#include "../include/alert.h"
+#include <nlohmann/json.hpp>
 using json = nlohmann::json;
 using namespace std;
 
@@ -22,7 +23,8 @@ void Alerter::sendAlerts(const vector<DetectionObject> &output)
         // if the function return true:
         char *alertBuffer = makeAlertBuffer(detectionObject);
         // Sending the message (buffer,size,dest,src,isbrodcast)
-        comm.sendMessage((void *)alertBuffer, sizeof(*alertBuffer), 1, 10, false);
+        // comm.sendMessage((void *)alertBuffer, sizeof(*alertBuffer), 1, 10,
+        // false);
     }
 }
 
@@ -60,15 +62,18 @@ void Alerter::makeFileJSON()
     // Serialize JSON to the file
     output_file << j.dump(4);  // 4 is the indentation level
     output_file.close();
-
-    cout << "JSON file created and written successfully." << endl;
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "JSON file created and written successfully");
 }
-Alerter::Alerter():comm(10,processData){
+Alerter::Alerter() /*:comm(10,processData)*/
+{
     // Starting communication with the server
-    comm.startConnection();
+    // comm.startConnection();
 }
 void processData(void *data)
 {
-    std::cout << "Received data: " << static_cast<char *>(data) << std::endl;
-    free(data); 
+    Manager::imgLogger.logMessage(
+        logger::LogLevel::INFO,
+        "Received data: " + string(static_cast<char *>(data)));
+    free(data);
 }

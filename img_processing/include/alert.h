@@ -1,9 +1,9 @@
 #ifndef __ALERT_H__
 #define __ALERT_H__
-#include <vector>
-#include <string>
-#include <cstring>
 #include "object_type_enum.h"
+#include <cstring>
+#include <string>
+#include <vector>
 
 struct AlertDetails {
     // 1 bit to type of the message:
@@ -17,7 +17,7 @@ struct AlertDetails {
 };
 
 class Alert {
-   public:
+public:
     Alert(bool messageType, int level, ObjectType objectType, double distance,
           int carSpeed = 0, int objectSpeed = 0);
     Alert();
@@ -30,7 +30,7 @@ class Alert {
     std::vector<char> serialize();
     void deserialize(const char *buffer);
 
-   private:
+private:
     AlertDetails alertDetails;
     double objectDistance;
     int carSpeed;

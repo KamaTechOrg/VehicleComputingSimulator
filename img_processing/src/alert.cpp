@@ -1,4 +1,5 @@
-#include "../include/alert.h"
+#include "alert.h"
+#include "manager.h"
 using namespace std;
 
 Alert::Alert(){};
@@ -49,9 +50,11 @@ vector<char> Alert::serialize()
     vector<char> buffer;
     // determine the size of the buffer
     if (alertDetails.messageType) {  // it smart allert
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO, "smart alert");
         buffer.reserve(sizeof(AlertDetails) + sizeof(double) + sizeof(int) * 2);
     }
     else {  // it simple alert
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO, "simple alert");
         buffer.reserve(sizeof(AlertDetails) + sizeof(double));
     }
     // serialize alertDetails

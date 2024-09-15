@@ -1,11 +1,15 @@
 #include <gtest/gtest.h>
-#include "../include/alert.h"
-#include "../include/object_type_enum.h"
-#include "../include/alerter.h"
+#include "alert.h"
+#include "object_type_enum.h"
+#include "alerter.h"
+#include "manager.h"
+
 using namespace std;
 
 TEST(DetectionAlert, simpleAlert)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectionAlert, simpleAlert");
     Alert da(false, 1, ObjectType::CAR, 100.0);
     vector<char> v = da.serialize();
     Alert afterDeserialization;
@@ -21,6 +25,8 @@ TEST(DetectionAlert, simpleAlert)
 
 TEST(DetectionAlert, smartAlert)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectionAlert, smartAlert");
     Alert da(true, 1, ObjectType::CAR, 100.0, 2, 2);
     vector<char> v = da.serialize();
     Alert afterDeserialization;
@@ -36,6 +42,8 @@ TEST(DetectionAlert, smartAlert)
 
 TEST(DetectionAlert, create_file_json)
 {
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Test: DetectionAlert, create_file_json");
     Alerter alerter;
     alerter.makeFileJSON();
 }

@@ -1,18 +1,26 @@
-#include "../include/detector.h"
+#include "detector.h"
+#include "manager.h"
+
 using namespace std;
 using namespace cv;
 using namespace dnn;
 
 void Detector::detect(const shared_ptr<Mat> &frame)
 {
-    //intialize variables
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "Detector::detect start");
+    // intialize variables
     output.clear();
     this->prevFrame = this->currentFrame;
     this->currentFrame = frame;
     if (!prevFrame) {
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                      "Detector::detect first frame");
         detectObjects(currentFrame, Point(0, 0));
     }
     else {
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                      "Detector::detect not first frame");
         detectChanges();
     }
 }
@@ -21,13 +29,13 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
                              const Point &position)
 {
     /*
-    Performs object detection on a video media using the YOLOv5 model
-    Converts the input images to a blob suitable for model input
-    Processes the model outputs to extract class IDs,
-    confidences, and bounding box coordinates
-    Applies confidence and threshold filtering and performs
-    non-maximum suppression to eliminate redundant detections
-    */
+  Performs object detection on a video media using the YOLOv5 model
+  Converts the input images to a blob suitable for model input
+  Processes the model outputs to extract class IDs,
+  confidences, and bounding box coordinates
+  Applies confidence and threshold filtering and performs
+  non-maximum suppression to eliminate redundant detections
+  */
     Mat blob;
     auto inputImage = formatYolov5(frame);
     blobFromImage(inputImage, blob, 1. / 255., Size(INPUT_WIDTH, INPUT_HEIGHT),
@@ -75,8 +83,8 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
     for (int i = 0; i < nmsResult.size(); i++) {
         int idx = nmsResult[i];
         DetectionObject result;
-        // The conversion may fail because the model is trained to identify different objects
-        // A model may be identified with a number greater than 2
+        // The conversion may fail because the model is trained to identify
+        // different objects A model may be identified with a number greater than 2
         // While ObjectType Only keeps 3 organs
         result.type = static_cast<ObjectType>(classIds[idx]);
         result.confidence = confidences[idx];
@@ -88,8 +96,10 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
 void Detector::detectChanges()
 {
     const vector<Rect> changedAreas = findDifference();
-    cout << "changedAreas:" << changedAreas.size() << endl;
-    //TODO : delete all rects that contained in another rect
+    Manager::imgLogger.logMessage(
+        logger::LogLevel::INFO,
+        "Detector::detectChanges changedAreas" + changedAreas.size());
+    // TODO : delete all rects that contained in another rect
     for (Rect oneChange : changedAreas) {
         int x = oneChange.x;
         int y = oneChange.y;
@@ -123,9 +133,12 @@ vector<Rect> Detector::findDifference()
         Rect boundingBox = boundingRect(contour);
         differencesRects.push_back(boundingBox);
     }
-    cout << "num of difference:" << differencesRects.size() << endl;
+    Manager::imgLogger.logMessage(
+        logger::LogLevel::INFO,
+        "num of difference: " + differencesRects.size());
     vector<Rect> unionRects = unionOverlappingRectangels(differencesRects);
-    cout << "after union:" << unionRects.size() << endl;
+    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
+                                  "after union: " + unionRects.size());
     return unionRects;
 }
 
@@ -190,12 +203,12 @@ void Detector::loadNet(bool isCuda)
     // Loading yolov5s onnx model
     auto result = readNet("../yolov5s.onnx");
     if (isCuda) {
-        cout << "Using CUDA\n";
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO, "Using CUDA");
         result.setPreferableBackend(DNN_BACKEND_CUDA);
         result.setPreferableTarget(DNN_TARGET_CUDA_FP16);
     }
     else {
-        cout << "CPU Mode\n";
+        Manager::imgLogger.logMessage(logger::LogLevel::INFO, "CPU mode");
         result.setPreferableBackend(DNN_BACKEND_OPENCV);
         result.setPreferableTarget(DNN_TARGET_CPU);
     }

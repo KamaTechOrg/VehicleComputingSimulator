@@ -1,13 +1,13 @@
 #ifndef __ALERTER_H__
 #define __ALERTER_H__
 #include "detection_object_struct.h"
-#include"communication.h"
+// #include "communication.h"
 
 class Alerter {
-   private:
+private:
     /* data */
-    Communication comm;
-   public:
+    // Communication comm;
+public:
     Alerter();
     // TODO : pass all structs to external file
     char *makeAlertBuffer(const DetectionObject &detectionObject);

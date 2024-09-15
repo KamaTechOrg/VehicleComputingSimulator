@@ -1,7 +1,9 @@
-#include <opencv2/tracking.hpp>
+#include "dynamic_tracker.h"
+#include "manager.h"
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/opencv.hpp>
-#include "../include/dynamic_tracker.h"
+#include <opencv2/tracking.hpp>
+
 using namespace std;
 using namespace cv;
 using namespace chrono;
@@ -36,8 +38,9 @@ void DynamicTracker::track(const std::shared_ptr<cv::Mat> &prevFrame,
             this->output.push_back(trackerObject);
         }
         else {
-            cout << "Tracking failed for object ID: " << (prevOutput)[i].id
-                 << endl;
+            Manager::imgLogger.logMessage(
+                logger::LogLevel::INFO,
+                "Tracking failed for object ID: " + (prevOutput)[i].id);
         }
     }
 }
