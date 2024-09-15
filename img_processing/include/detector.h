@@ -11,7 +11,8 @@ class Detector {
     std::vector<DetectionObject> getOutput() const;
     // detect cars and peoples in the frame
     void detect(const std::shared_ptr<cv::Mat> &frame);
-    //--maybe--:--pre and after process
+    void regularDetect(const std::shared_ptr<cv::Mat> &frame);
+
    private:
     int helperForDetect;
     std::shared_ptr<cv::Mat> prevFrame;
@@ -27,9 +28,9 @@ class Detector {
     cv::Mat formatYolov5(const std::shared_ptr<cv::Mat> &frame);
     void loadNet(bool isCuda);
     bool isValidObjectType(int value) const;
+    void detectChanges();
     void detectObjects(const std::shared_ptr<cv::Mat> &frame,
                        const cv::Point &position);
-    void detectChanges();
     std::vector<cv::Rect> findDifference();
     std::vector<cv::Rect> unionOverlappingRectangels(
         std::vector<cv::Rect> allChanges);

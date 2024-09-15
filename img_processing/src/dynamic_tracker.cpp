@@ -1,4 +1,3 @@
-
 #include <opencv2/tracking.hpp>
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/opencv.hpp>
@@ -8,6 +7,7 @@ using namespace cv;
 using namespace chrono;
 
 void DynamicTracker::init() {}
+
 void DynamicTracker::startTracking(
     const shared_ptr<Mat> &frame,
     const vector<DetectionObject> &DetectionOutput)
@@ -25,6 +25,7 @@ void DynamicTracker::startTracking(
         failedCount.push_back(0);
     }
 }
+
 void DynamicTracker::tracking(const shared_ptr<Mat> &frame)
 {
     this->frame = frame;

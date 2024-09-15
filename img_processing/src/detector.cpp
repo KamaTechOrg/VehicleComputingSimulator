@@ -17,6 +17,13 @@ void Detector::detect(const shared_ptr<Mat> &frame)
     }
 }
 
+void Detector::regularDetect(const shared_ptr<Mat> &frame)
+{
+    //intialize variables
+    output.clear();
+    detectObjects(frame, Point(0, 0));
+}
+
 void Detector::detectObjects(const shared_ptr<Mat> &frame,
                              const Point &position)
 {
@@ -78,7 +85,8 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
         // The conversion may fail because the model is trained to identify different objects
         // A model may be identified with a number greater than 2
         // While ObjectType Only keeps 3 organs
-        result.type = static_cast<ObjectType>(classIds[idx]);
+        result.type = static_cast<ObjectType>(
+            classIds[idx] > 0 ? (ObjectType::CAR) : (ObjectType::PEOPLE));
         result.confidence = confidences[idx];
         result.position = boxes[idx];
         output.push_back(result);
@@ -202,6 +210,11 @@ bool Detector::isValidObjectType(int value) const
     switch (value) {
         case PEOPLE:
         case CAR:
+        case BICYCLE:
+        case MOTORBIKE:
+        case BUS:
+        case TRAIN:
+        case TRUCK:
             return true;
         default:
             return false;
