@@ -5,7 +5,7 @@
 #include <thread>
 #include <chrono>
 
-using json = nlohmann::json;
+ using json = nlohmann::json;
 
 int main() {
     // Read JSON file

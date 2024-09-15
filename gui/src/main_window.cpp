@@ -16,7 +16,7 @@
 
 int sizeSquare = 120;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new dataToSql(this))
 {
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -240,7 +240,7 @@ void MainWindow::endProcesses()
     timeInput->clear();
 
     dataManager->saveSimulationData("simulation_data.bson", squares, currentImagePath);
-    QString logFilePath = "../log_file.log";       
+    QString logFilePath = "../gui/log_file.log";       
     QString bsonFilePath = "simulation_data.bson";     //  BSON
 
     QString logData =sqlDataManager->readLogFile(logFilePath);

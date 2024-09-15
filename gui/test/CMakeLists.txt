@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(DraggableSquaresTests)
-# Find the Qt5 package
-find_package(Qt5 REQUIRED COMPONENTS Test Widgets Core Gui Sql)
 # Find the BSON library
 find_package(PkgConfig REQUIRED)
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Test Sql)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Test Sql Gui)
 
 pkg_check_modules(BSON REQUIRED libbson-1.0)
 # Define the list of source files

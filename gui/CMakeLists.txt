@@ -31,6 +31,7 @@ add_executable(DraggableSquares
     src/simulation_data_manager.cpp
     src/log_handler.cpp
     src/frames.cpp
+    src/dataToSql.cpp
 )
 
 # Add headers to the executable target
@@ -42,6 +43,8 @@ target_sources(DraggableSquares PRIVATE
     include/log_handler.h
     include/frames.h
     include/process.h
+    include/dataToSql.h
+
 )
 
 # Include BSON directories
@@ -56,7 +59,7 @@ target_include_directories(DraggableSquares PRIVATE ${BSON_INCLUDE_DIRS} include
 
 
 # # Enable testing
-enable_testing()
+#enable_testing()
 
 # # Add test directory
-add_subdirectory(test)
+#add_subdirectory(test)

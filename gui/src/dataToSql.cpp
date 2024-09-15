@@ -1,8 +1,8 @@
-#include "../include/dataToSql.h"
+#include "dataToSql.h"
+#include "QDebug"
 
 dataToSql::dataToSql(QObject *parent) : QObject(parent)
 {
-    // אתחול בסיס הנתונים
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("database.db");
     
@@ -16,7 +16,9 @@ QString dataToSql::readLogFile(const QString &filePath) {
         qWarning() << "Failed to open log file:" << filePath;
         return QString();
     }
-
+    else{
+        qDebug()<<"i sucess log";
+    }
     QTextStream in(&file);
     QString logData = in.readAll();
     file.close();
@@ -29,7 +31,9 @@ QByteArray dataToSql::readBsonFile(const QString &filePath) {
         qWarning() << "Failed to open BSON file:" << filePath;
         return QByteArray();
     }
-
+    else{
+        qDebug()<<"i sucess bson";
+    }
     QByteArray bsonData = file.readAll();
     file.close();
     return bsonData;

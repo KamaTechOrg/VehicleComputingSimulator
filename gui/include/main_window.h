@@ -91,6 +91,7 @@ class MainWindow : public QMainWindow {
     LogHandler logHandler;
     Frames *frames;
     dataToSql *sqlDataManager;
+    
 };
 
 #endif  // MAIN_WINDOW_H
