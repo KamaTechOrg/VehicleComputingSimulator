@@ -1,9 +1,9 @@
 #include <QTest>
 #include <QMouseEvent>
 #include <QWidget>
-#include "../src/draggable_square.h"
-#include "../src/process.h"
-#include "../src/main_window.h"
+#include "draggable_square.h"
+#include "process.h"
+#include "main_window.h"
 class DraggableSquareTest : public QObject
 {
     Q_OBJECT
@@ -28,7 +28,7 @@ void DraggableSquareTest::initTestCase()
     mainWindow = new MainWindow(parentWidget);
     mainWindow->resize(800, 600);
     parentWidget->show();
-    testProcess = new Process(1, "Test Process", "Test CMake", "Test QEMU");
+    testProcess = new Process(1, "Test Process", "../../src/dummy_program1", "QEMUPlatform");
     draggableSquare = new DraggableSquare(parentWidget, "background-color: red;", 100, 100);
     draggableSquare->setProcess(testProcess);
     draggableSquare->show();

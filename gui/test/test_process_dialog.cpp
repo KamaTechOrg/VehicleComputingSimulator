@@ -1,5 +1,5 @@
 #include <QtTest/QtTest>
-#include "../src/process_dialog.h"
+#include "process_dialog.h"
 
 class ProcessDialogTests : public QObject {
     Q_OBJECT
@@ -48,8 +48,6 @@ private slots:
     }
 };
 
-// הוסף את המאקרו QTEST_MAIN כדי ליצור את פונקציית main
 QTEST_MAIN(ProcessDialogTests)
 
-// הקובץ שכולל את Q_OBJECT צריך להיות מחובר למאקרו
 #include "test_process_dialog.moc"
