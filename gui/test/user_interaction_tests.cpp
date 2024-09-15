@@ -34,7 +34,8 @@ void UserInteractionTests::testOpenImageDialog()
     QVERIFY(!window.getCurrentImagePath().isEmpty()); // Ensure image path is set
 }
 
-void UserInteractionTests::testGetExecutableName() {
+void UserInteractionTests::testGetExecutableName() 
+{
     MainWindow window;
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());

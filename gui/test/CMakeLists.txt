@@ -18,7 +18,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Find the Qt5 library
 find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Test)
 
-# Link BSON library (assumed to be linked from the main CMakeLists.txt)
+# Link BSON library
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(BSON REQUIRED libbson-1.0)
 
@@ -49,3 +49,8 @@ add_test(NAME ProcessTests COMMAND ProcessTests)
 add_executable(UserInteractionTests user_interaction_tests.cpp)
 target_link_libraries(UserInteractionTests PRIVATE DraggableSquaresLib Qt5::Test Qt5::Gui Qt5::Widgets)
 add_test(NAME UserInteractionTests COMMAND UserInteractionTests)
+
+# Test for LogHandler
+add_executable(LogHandlerTests test_log_handler.cpp)
+target_link_libraries(LogHandlerTests PRIVATE DraggableSquaresLib Qt5::Test Qt5::Gui Qt5::Widgets)
+add_test(NAME LogHandlerTests COMMAND LogHandlerTests)

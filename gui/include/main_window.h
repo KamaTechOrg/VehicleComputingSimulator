@@ -28,30 +28,50 @@
 #include "process.h"
 #include "process_dialog.h"
 #include "simulation_data_manager.h"
+#include "../../logger/logger.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
-   public:
+public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void updateTimer();
     void endProcesses();
+    void stopProcess(int deleteId);
     void showTimerInput();
     void timerTimeout();
     void openImageDialog();
     void createProcessConfigFile(int id, const QString &processPath);
-    QLineEdit *getTimeInput() const { return timeInput; }
-    QPushButton *getStartButton() const { return runButton; }
-    QTimer *getTimer() const { return timer; }
-    QTextEdit *getLogOutput() const { return logOutput; }
-    QString getCurrentImagePath() const { return currentImagePath; }
-   public slots:
+    QLineEdit *getTimeInput() const
+    {
+        return timeInput;
+    }
+    QPushButton *getStartButton() const
+    {
+        return runButton;
+    }
+    QTimer *getTimer() const
+    {
+        return timer;
+    }
+    QTextEdit *getLogOutput() const
+    {
+        return logOutput;
+    }
+    QString getCurrentImagePath() const
+    {
+        return currentImagePath;
+    }
+    static logger guiLogger;
+
+public slots:
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
-
-   private:
+    
+private:
+    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
     friend class TestMainWindow;
     friend class DraggableSquareTest;
     friend class UserInteractionTests;
@@ -79,7 +99,7 @@ class MainWindow : public QMainWindow {
     QTextEdit *logOutput;
     QTimer *timer;
     QLabel *imageLabel;
-    QVector<QProcess *> runningProcesses;
+    QVector<QPair<QProcess*, int>> runningProcesses;
     QString currentImagePath;
     SimulationDataManager *dataManager;
     LogHandler logHandler;

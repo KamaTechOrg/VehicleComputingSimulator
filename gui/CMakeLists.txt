@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.5)
 
 # Set the project name and version
@@ -37,6 +38,7 @@ add_library(DraggableSquaresLib
     src/simulation_data_manager.cpp
     src/log_handler.cpp
     src/frames.cpp
+    ../logger/logger.cpp   # Updated logger source file path
 )
 
 # Add headers to the library target
@@ -47,12 +49,14 @@ target_sources(DraggableSquaresLib PRIVATE
     include/simulation_data_manager.h
     include/log_handler.h
     include/frames.h
+    ../logger/logger.h     
 )
 
 # Include BSON directories and project include directory
 target_include_directories(DraggableSquaresLib PRIVATE
     ${BSON_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/../logger   
 )
 
 # Link the BSON library and Qt5 components to the library
