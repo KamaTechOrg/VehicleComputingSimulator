@@ -1,3 +1,7 @@
 {
-    "cmake.sourceDirectory": "/root/VehicleComputingSimulator/gui"
+    "cmake.sourceDirectory": "/root/VehicleComputingSimulator/gui",
+    "C_Cpp.errorSquiggles": "enabled",
+    "files.associations": {
+        "qmessagebox": "cpp"
+    }
 }

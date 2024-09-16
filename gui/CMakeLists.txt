@@ -32,6 +32,7 @@ add_executable(DraggableSquares
     src/log_handler.cpp
     src/frames.cpp
     src/dataToSql.cpp
+    src/HistoryWindow.cpp
 )
 
 # Add headers to the executable target
@@ -44,6 +45,7 @@ target_sources(DraggableSquares PRIVATE
     include/frames.h
     include/process.h
     include/dataToSql.h
+    include/HistoryWindow.h
 
 )
 

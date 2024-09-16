@@ -48,5 +48,10 @@
   "directory": "/root/VehicleComputingSimulator/build",
   "command": "/usr/bin/g++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/root/VehicleComputingSimulator/build -I/root/VehicleComputingSimulator/gui -I/root/VehicleComputingSimulator/build/DraggableSquares_autogen/include -I/usr/include/libbson-1.0 -I/root/VehicleComputingSimulator/gui/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql  -g   -fPIC -std=gnu++11 -o CMakeFiles/DraggableSquares.dir/src/dataToSql.cpp.o -c /root/VehicleComputingSimulator/gui/src/dataToSql.cpp",
   "file": "/root/VehicleComputingSimulator/gui/src/dataToSql.cpp"
+},
+{
+  "directory": "/root/VehicleComputingSimulator/build",
+  "command": "/usr/bin/g++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/root/VehicleComputingSimulator/build -I/root/VehicleComputingSimulator/gui -I/root/VehicleComputingSimulator/build/DraggableSquares_autogen/include -I/usr/include/libbson-1.0 -I/root/VehicleComputingSimulator/gui/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql  -g   -fPIC -std=gnu++11 -o CMakeFiles/DraggableSquares.dir/src/HistoryWindow.cpp.o -c /root/VehicleComputingSimulator/gui/src/HistoryWindow.cpp",
+  "file": "/root/VehicleComputingSimulator/gui/src/HistoryWindow.cpp"
 }
 ]

@@ -39,19 +39,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     logOutput->setReadOnly(true);
 
     mainLayout->addWidget(toolbox);
-
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->addStretch();
-
+    ////
+    dataHandler = new dataToSql(this);
+    QPushButton *historyButton = new QPushButton("Show Simulation History", this);
+    connect(historyButton, &QPushButton::clicked, this, &MainWindow::openHistoryWindow);
+    ////
     connect(addProcessButton, &QPushButton::clicked, this, &MainWindow::createNewProcess);
     connect(compileButton, &QPushButton::clicked, this, &MainWindow::compileProjects);
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
-    connect(timerButton, &QPushButton::clicked, this,
-            &MainWindow::showTimerInput);
-    connect(chooseButton, &QPushButton::clicked, this,
-            &MainWindow::openImageDialog);
+    connect(timerButton, &QPushButton::clicked, this,&MainWindow::showTimerInput);
+    connect(chooseButton, &QPushButton::clicked, this,&MainWindow::openImageDialog);
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
@@ -64,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     toolboxLayout->addWidget(timeInput);
     toolboxLayout->addWidget(logOutput);
     toolboxLayout->addWidget(chooseButton);
+    toolboxLayout->addWidget(historyButton);
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
@@ -76,9 +78,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
 
     mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
-
     dataManager = new SimulationDataManager(this);
-
     int id = 0;
     Process *mainProcess =
         new Process(id, "Main", "../src/dummy_program1", "QEMUPlatform");
@@ -137,7 +137,10 @@ void MainWindow::createNewProcess()
         addId(id);
     }
 }
-
+void MainWindow::openHistoryWindow() {
+    historyWindow = new HistoryWindow(dataHandler, this);
+    historyWindow->show();
+}
 Process *MainWindow::getProcessById(int id)
 {
     for (DraggableSquare *square : squares) {
@@ -289,10 +292,19 @@ void MainWindow::timerTimeout()
     logOutput->append("Timer timeout reached.");
     endProcesses();
 }
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);  // Call the base class implementation
+
+    if (!currentImagePath.isEmpty()) {
+        QPixmap pixmap(currentImagePath);
+        imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setGeometry(workspace->rect());
+    }
+}
 
 void MainWindow::setDefaultBackgroundImage() {
     // Set default image path
-    QString defaultImagePath = "../aa.jpg"; // Assuming default image is in resources
+    QString defaultImagePath = "../4.jpg"; // Assuming default image is in resources
     currentImagePath = defaultImagePath;
 
     // Load and set the default image
@@ -309,6 +321,8 @@ void MainWindow::setDefaultBackgroundImage() {
         }
 
         // Add imageLabel to workspace and set the pixmap
+        //imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
         imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
         imageLabel->setAlignment(Qt::AlignCenter);
         imageLabel->setGeometry(workspace->rect());
@@ -318,6 +332,9 @@ void MainWindow::setDefaultBackgroundImage() {
         QVBoxLayout *newLayout = new QVBoxLayout(workspace);
         newLayout->addWidget(imageLabel);
         workspace->setLayout(newLayout);
+    }
+    else{
+        qDebug()<<"i dont have defult img";
     }
 }
 

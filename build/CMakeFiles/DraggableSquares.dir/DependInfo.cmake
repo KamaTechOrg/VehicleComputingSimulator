@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/root/VehicleComputingSimulator/build/DraggableSquares_autogen/mocs_compilation.cpp" "/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.o"
+  "/root/VehicleComputingSimulator/gui/src/HistoryWindow.cpp" "/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/src/HistoryWindow.cpp.o"
   "/root/VehicleComputingSimulator/gui/src/dataToSql.cpp" "/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/src/dataToSql.cpp.o"
   "/root/VehicleComputingSimulator/gui/src/draggable_square.cpp" "/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/src/draggable_square.cpp.o"
   "/root/VehicleComputingSimulator/gui/src/frames.cpp" "/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir/src/frames.cpp.o"

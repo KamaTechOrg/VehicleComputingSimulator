@@ -15,6 +15,8 @@ set(src_files
     ../src/frames.cpp
     ../src/log_handler.cpp
     ../src/dataToSql.cpp
+    ../src/history_window.cpp
+
 )
 # Set the test executable name for MainWindowTests
 add_executable(MainWindowTests

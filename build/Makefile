@@ -163,6 +163,33 @@ DraggableSquares_autogen/mocs_compilation.cpp.s:
 	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/DraggableSquares_autogen/mocs_compilation.cpp.s
 .PHONY : DraggableSquares_autogen/mocs_compilation.cpp.s
 
+src/HistoryWindow.o: src/HistoryWindow.cpp.o
+
+.PHONY : src/HistoryWindow.o
+
+# target to build an object file
+src/HistoryWindow.cpp.o:
+	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/HistoryWindow.cpp.o
+.PHONY : src/HistoryWindow.cpp.o
+
+src/HistoryWindow.i: src/HistoryWindow.cpp.i
+
+.PHONY : src/HistoryWindow.i
+
+# target to preprocess a source file
+src/HistoryWindow.cpp.i:
+	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/HistoryWindow.cpp.i
+.PHONY : src/HistoryWindow.cpp.i
+
+src/HistoryWindow.s: src/HistoryWindow.cpp.s
+
+.PHONY : src/HistoryWindow.s
+
+# target to generate assembly for a file
+src/HistoryWindow.cpp.s:
+	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/src/HistoryWindow.cpp.s
+.PHONY : src/HistoryWindow.cpp.s
+
 src/dataToSql.o: src/dataToSql.cpp.o
 
 .PHONY : src/dataToSql.o
@@ -419,6 +446,9 @@ help:
 	@echo "... DraggableSquares_autogen/mocs_compilation.o"
 	@echo "... DraggableSquares_autogen/mocs_compilation.i"
 	@echo "... DraggableSquares_autogen/mocs_compilation.s"
+	@echo "... src/HistoryWindow.o"
+	@echo "... src/HistoryWindow.i"
+	@echo "... src/HistoryWindow.s"
 	@echo "... src/dataToSql.o"
 	@echo "... src/dataToSql.i"
 	@echo "... src/dataToSql.s"

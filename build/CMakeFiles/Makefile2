@@ -75,12 +75,12 @@ clean: CMakeFiles/DraggableSquares_autogen.dir/clean
 CMakeFiles/DraggableSquares.dir/all: CMakeFiles/DraggableSquares_autogen.dir/all
 	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/depend
 	$(MAKE) -f CMakeFiles/DraggableSquares.dir/build.make CMakeFiles/DraggableSquares.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/VehicleComputingSimulator/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target DraggableSquares"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/VehicleComputingSimulator/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12 "Built target DraggableSquares"
 .PHONY : CMakeFiles/DraggableSquares.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/DraggableSquares.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/VehicleComputingSimulator/build/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/VehicleComputingSimulator/build/CMakeFiles 13
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/DraggableSquares.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/VehicleComputingSimulator/build/CMakeFiles 0
 .PHONY : CMakeFiles/DraggableSquares.dir/rule
@@ -102,7 +102,7 @@ CMakeFiles/DraggableSquares.dir/clean:
 CMakeFiles/DraggableSquares_autogen.dir/all:
 	$(MAKE) -f CMakeFiles/DraggableSquares_autogen.dir/build.make CMakeFiles/DraggableSquares_autogen.dir/depend
 	$(MAKE) -f CMakeFiles/DraggableSquares_autogen.dir/build.make CMakeFiles/DraggableSquares_autogen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/VehicleComputingSimulator/build/CMakeFiles --progress-num=12 "Built target DraggableSquares_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/VehicleComputingSimulator/build/CMakeFiles --progress-num=13 "Built target DraggableSquares_autogen"
 .PHONY : CMakeFiles/DraggableSquares_autogen.dir/all
 
 # Build rule for subdir invocation for target.

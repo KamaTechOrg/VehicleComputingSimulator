@@ -9,7 +9,8 @@
                 "/usr/include/x86_64-linux-gnu/qt5",
                 "/usr/include/x86_64-linux-gnu/qt5/QtGui",
                 "/usr/include/libbson-1.0",
-                "/usr/include/x86_64-linux-gnu/qt5/QtTest"
+                "/usr/include/x86_64-linux-gnu/qt5/QtTest",
+                "${workspaceFolder}/gui/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

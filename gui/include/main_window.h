@@ -34,6 +34,7 @@
 #include <QFile>
 #include <QTextStream>
 #include "dataToSql.h"
+#include "HistoryWindow.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -56,7 +57,10 @@ class MainWindow : public QMainWindow {
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
+    void openHistoryWindow();  // Function to open history window
 
+   protected:
+    void resizeEvent(QResizeEvent *event) override;
    private:
     friend class TestMainWindow;
     friend class DraggableSquareTest;
@@ -70,7 +74,6 @@ class MainWindow : public QMainWindow {
     void runProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
-    //void setBackgroundImage(const QString &imagePath);
     void setDefaultBackgroundImage();
 
     QVBoxLayout *toolboxLayout;
@@ -93,7 +96,8 @@ class MainWindow : public QMainWindow {
     LogHandler logHandler;
     Frames *frames;
     dataToSql *sqlDataManager;
-    
+    dataToSql *dataHandler;   // Pointer to dataToSql
+    HistoryWindow *historyWindow; // Pointer to history window
 };
 
 #endif  // MAIN_WINDOW_H
