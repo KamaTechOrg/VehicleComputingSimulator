@@ -279,6 +279,12 @@ void MainWindow::updateTimer()
     font.setPointSize(10);  // Increase font size for better visibility
     timeInput->setFont(font);
 
+    // Set the text to be centered and styled for better clarity
+    timeInput->setAlignment(Qt::AlignCenter);
+    QFont font = timeInput->font();
+    font.setPointSize(10);  // Increase font size for better visibility
+    timeInput->setFont(font);
+
     if (time > 0) {
         logOutput->append("Timer started for " + QString::number(time) +
                           " seconds.");
@@ -299,13 +305,17 @@ void MainWindow::updateTimer()
                 timeInput->setText(QString::number(time));
                 timeInput->setAlignment(Qt::AlignCenter);  // Keep text centered
             } else {
-                timerTimeout();
+                timer->stop();
+                logOutput->append("Timer finished.");
+                MainWindow::guiLogger.logMessage(
+                    logger::LogLevel::INFO, "MainWindow", "updateTimer",
+                    "Timer finished");
             }
         });
 
-        timer->start(1000);
+        timer->start(1000);  
         timeLabel->hide();
-        timeInput->setEnabled(false);
+        timeInput->setEnabled(false);  
     }
 }
 
@@ -388,8 +398,24 @@ void MainWindow::showTimerInput()
     QIntValidator* validator = new QIntValidator(0, 999999, this);
     timeInput->setValidator(validator);
 
+    // Center the text and set the style
+    timeInput->setAlignment(Qt::AlignCenter);
+    QFont font = timeInput->font();
+    font.setPointSize(10);  // Increase font size for better visibility
+    timeInput->setFont(font);
+
+    // Connect to textChanged signal to ensure text stays centered
+    connect(timeInput, &QLineEdit::textChanged, this, [this]() {
+        timeInput->setAlignment(Qt::AlignCenter);
+    });
+
+    // Set input validator to ensure only numbers are entered
+    QIntValidator* validator = new QIntValidator(0, 999999, this);
+    timeInput->setValidator(validator);
+
     guiLogger.logMessage(
         logger::LogLevel::DEBUG,
+        "showTimerInput() called: Timer input elements are shown and centered.");
         "showTimerInput() called: Timer input elements are shown and centered.");
 }
 
