@@ -245,8 +245,8 @@ void MainWindow::endProcesses()
     timeInput->clear();
 
     dataManager->saveSimulationData("simulation_data.bson", squares, currentImagePath);
-    QString logFilePath = "../gui/log_file.log";       
-    QString bsonFilePath = "simulation_data.bson";     //  BSON
+    QString logFilePath = "../log_file.log";       
+    QString bsonFilePath = "../../simulation_data.bson";     //  BSON
 
     QString logData =sqlDataManager->readLogFile(logFilePath);
     if (logData.isEmpty()) {
@@ -304,7 +304,7 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 
 void MainWindow::setDefaultBackgroundImage() {
     // Set default image path
-    QString defaultImagePath = "../4.jpg"; // Assuming default image is in resources
+    QString defaultImagePath = "../../4.jpg"; // Assuming default image is in resources
     currentImagePath = defaultImagePath;
 
     // Load and set the default image

@@ -9,6 +9,9 @@ dataToSql::dataToSql(QObject *parent) : QObject(parent)
     if (!db.open()) {
         qWarning() << "Cannot open database:" << db.lastError().text();
     }
+    else{
+        qWarning() << "i suceeses open database:";
+    }
 }
 QString dataToSql::readLogFile(const QString &filePath) {
     QFile file(filePath);
@@ -17,7 +20,7 @@ QString dataToSql::readLogFile(const QString &filePath) {
         return QString();
     }
     else{
-        qDebug()<<"i sucess log";
+        qDebug()<<"i sucess open log file";
     }
     QTextStream in(&file);
     QString logData = in.readAll();
@@ -32,7 +35,7 @@ QByteArray dataToSql::readBsonFile(const QString &filePath) {
         return QByteArray();
     }
     else{
-        qDebug()<<"i sucess bson";
+        qDebug()<<"i sucess open bson file";
     }
     QByteArray bsonData = file.readAll();
     file.close();
@@ -44,7 +47,7 @@ bool dataToSql::insertDataToDatabase(const QString &inputString, const QByteArra
     qDebug() << "Available SQL Drivers:" << QSqlDatabase::drivers();
 
     if (!db.isOpen()) {
-        qWarning() << "Database is not open.";
+        qWarning() << "Database is not open."<<db.lastError().text();
         return false;
     }
 
