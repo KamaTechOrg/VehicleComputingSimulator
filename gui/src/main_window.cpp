@@ -306,9 +306,9 @@ void MainWindow::updateTimer()
             }
         });
 
-        timer->start(1000);  
+        timer->start(1000);
         timeLabel->hide();
-        timeInput->setEnabled(false);  
+        timeInput->setEnabled(false);
     }
 }
 
@@ -547,7 +547,6 @@ void MainWindow::compileProjects()
 {
     guiLogger.logMessage(logger::LogLevel::INFO,
                          "Compiling and running projects started.");
-    updateTimer();
 
     // Disable the run button until compilation finishes
     runButton->setEnabled(false);
