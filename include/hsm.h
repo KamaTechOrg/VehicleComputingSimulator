@@ -164,9 +164,11 @@ enum encryptionFunction {
 };
 
 enum KeyPermission {
-    READ, 
-    WRITE, 
-    EXECUTE
+    VERIFY, 
+    SIGN, 
+    ENCRYPT,
+    DECRYPT,
+    EXPORTABLE
 };
 
 struct KeyMetaData {
@@ -182,7 +184,18 @@ class Hsm {
     // static AsymmetricKeys *getKey(int keyId);
     // static bool isRsaEncryption(encryptionFunction func);
     // static void saveKeyWithPermissionToFile(int keyID, const std::string& fileName);
-    static void generateKey(int userId, KeyPermission permission, std::string (*func)(int));
+    // static void generateKey(int userId, KeyPermission permission, std::string (*func)(int));
+    std::string encryptData(const std::string& key, const std::string& data);
+    void processKeyRequest(int keyId, int userId,KeyPermission permission);
+    bool isPermission(int keyId, int userId, KeyPermission permission);
+    void sendError(const std::string& errorMsg);
+    std::string generateAESKey(int userId, std::vector<KeyPermission> permissions);
+    // std::pair<std::string, std::string> generateRSAKeyPair(int userId, std::vector<KeyPermission> permissions);
+    void updateACL(int userId, const std::string& fileName, const std::vector<KeyPermission>& permissions, const std::string& keyId, const std::string& keyType);
+    std::pair<std::string, std::string> generateECCKeyPair(int userId, std::vector<KeyPermission> permissions);
+    std::string generateKeyId();
+    std::string getAuthorizedKey(int userId,std::string& keyId, std::string& permission);
+    std::string readFileContent(const std::string& filePath);
    private:
     static std::map<int, AsymmetricKeys *> keys;
     static std::map<int, encryptionFunction> encryptionFunctions;

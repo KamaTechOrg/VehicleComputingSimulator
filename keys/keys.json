@@ -1,0 +1,400 @@
+{
+    "keys": [
+        {
+            "file_name": "../keys/key_1726486851107.key",
+            "key_id": "key_1726486851107",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726486851108.key",
+            "key_id": "key_1726486851108",
+            "key_type": "ECC-Private",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726486851108.pub",
+            "key_id": "key_1726486851108",
+            "key_type": "ECC-Public",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726487054139.key",
+            "key_id": "key_1726487054139",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726487054140.key",
+            "key_id": "key_1726487054140",
+            "key_type": "ECC-Private",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726487054140.pub",
+            "key_id": "key_1726487054140",
+            "key_type": "ECC-Public",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490916062.key",
+            "key_id": "key_1726490916062",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490916065.key",
+            "key_id": "key_1726490916065",
+            "key_type": "ECC-Private",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490916065.pub",
+            "key_id": "key_1726490916065",
+            "key_type": "ECC-Public",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490916068.key",
+            "key_id": "key_1726490916068",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                },
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490958461.key",
+            "key_id": "key_1726490958461",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490958462.key",
+            "key_id": "key_1726490958462",
+            "key_type": "ECC-Private",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490958462.pub",
+            "key_id": "key_1726490958462",
+            "key_type": "ECC-Public",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490958465.key",
+            "key_id": "key_1726490958465",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                },
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490993095.key",
+            "key_id": "key_1726490993095",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490993097.key",
+            "key_id": "key_1726490993097",
+            "key_type": "ECC-Private",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490993097.pub",
+            "key_id": "key_1726490993097",
+            "key_type": "ECC-Public",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726490993100.key",
+            "key_id": "key_1726490993100",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                },
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726491073532.key",
+            "key_id": "key_1726491073532",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726491073534.key",
+            "key_id": "key_1726491073534",
+            "key_type": "ECC-Private",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726491073534.pub",
+            "key_id": "key_1726491073534",
+            "key_type": "ECC-Public",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                },
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                }
+            ],
+            "user": 1
+        },
+        {
+            "file_name": "../keys/key_1726491073537.key",
+            "key_id": "key_1726491073537",
+            "key_type": "AES",
+            "permissions": [
+                {
+                    "encrypt": false,
+                    "sign": false,
+                    "verify": true
+                },
+                {
+                    "encrypt": false,
+                    "sign": true,
+                    "verify": false
+                }
+            ],
+            "user": 1
+        }
+    ]
+}

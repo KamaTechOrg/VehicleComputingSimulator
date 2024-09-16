@@ -164,6 +164,302 @@ std::map<int, AsymmetricKeys *> Hsm::keys;
 std::map<int, encryptionFunction> Hsm::encryptionFunctions;
 std::map<int, KeyMetaData> Hsm::keyMetaData;
 
+std::string Hsm::generateKeyId() {
+    // יצירת ID ייחודי המבוסס על הזמן הנוכחי (או כל שיטה אחרת ליצירת מזהה ייחודי)
+    auto now = std::chrono::system_clock::now();
+    auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    return "key_" + std::to_string(nowMs);
+}
+
+void Hsm::updateACL(int userId, const std::string& fileName, const std::vector<KeyPermission>& permissions, const std::string& keyId, const std::string& keyType) {
+    std::string aclFile = "../keys/keys.json";
+    nlohmann::json aclData;
+
+    // קריאת קובץ ה-ACL הקיים
+    std::ifstream aclInput(aclFile);
+    if (aclInput.is_open()) {
+        aclInput >> aclData;
+        aclInput.close();
+    }
+
+    // יצירת אובייקט ACL חדש
+    nlohmann::json newACL;
+    newACL["user"] = userId;
+    newACL["key_type"] = keyType;
+    newACL["file_name"] = fileName;
+    newACL["key_id"] = keyId;
+
+    // הוספת הרשאות למערך ה-ACL
+    nlohmann::json permissionsArray = nlohmann::json::array();
+    for (const auto& permission : permissions) {
+        nlohmann::json permissionEntry;
+        permissionEntry["encrypt"] = (permission == KeyPermission::ENCRYPT);
+        permissionEntry["sign"] = (permission == KeyPermission::SIGN);
+        permissionEntry["verify"] = (permission == KeyPermission::VERIFY);
+        permissionsArray.push_back(permissionEntry);
+    }
+
+    newACL["permissions"] = permissionsArray;
+
+    // הוספת ה-ACL החדש לקובץ
+    aclData["keys"].push_back(newACL);
+
+    // שמירת ה-ACL לקובץ
+    std::ofstream aclOutput(aclFile);
+    if (aclOutput.is_open()) {
+        aclOutput << aclData.dump(4); // שמירה עם הזחות
+        aclOutput.close();
+    } else {
+        std::cerr << "Error: Could not open ACL file to write." << std::endl;
+    }
+}
+
+
+std::pair<std::string, std::string> Hsm::generateECCKeyPair(int userId, std::vector<KeyPermission> permissions) {
+    // יצירת מזהים ייחודיים למפתחות
+    std::string privateKeyId = generateKeyId();
+    std::string publicKeyId = generateKeyId();
+
+    std::string privateKeyFile = "../keys/" + privateKeyId + ".key";
+    std::string publicKeyFile = "../keys/" + publicKeyId + ".pub";
+
+    // יצירת מפתח פרטי
+    mpz_class privateKey = generatePrivateKey();
+
+    // שמירת מפתח פרטי בקובץ
+    std::ofstream privFile(privateKeyFile);
+    if (privFile.is_open()) {
+        privFile << privateKey.get_str(16);
+        privFile.close();
+        std::cout << "ECC private key saved to file: " << privateKeyFile << std::endl;
+    } else {
+        std::cerr << "Error: Could not open file " << privateKeyFile << " to write." << std::endl;
+        return {"", ""};
+    }
+
+    // יצירת מפתח ציבורי ושמירתו בקובץ
+    Point publicKey = generatePublicKey(privateKey);
+    std::ofstream pubFile(publicKeyFile);
+    if (pubFile.is_open()) {
+        pubFile << "x: " << publicKey.x.get_str(16) << std::endl;
+        pubFile << "y: " << publicKey.y.get_str(16) << std::endl;
+        pubFile.close();
+        std::cout << "ECC public key saved to file: " << publicKeyFile << std::endl;
+    } else {
+        std::cerr << "Error: Could not open file " << publicKeyFile << " to write." << std::endl;
+        return {"", ""};
+    }
+
+    // עדכון ה-ACL עם ההרשאות
+    updateACL(userId, privateKeyFile, permissions, privateKeyId, "ECC-Private");
+    updateACL(userId, publicKeyFile, permissions, publicKeyId, "ECC-Public");
+
+    // החזרת ה-IDs שנוצרו למפתחות
+    return {privateKeyId, publicKeyId};
+}
+
+
+std::string Hsm::generateAESKey(int userId, std::vector<KeyPermission> permissions) {
+    // יצירת מזהה ייחודי למפתח
+    std::string keyId = generateKeyId();
+    std::string keyFileName = "../keys/" + keyId + ".key";
+
+    // יצירת המפתח באמצעות הפונקציה
+    unsigned char * generatedKey = generateKey(AESKeyLength::AES_128);
+
+    // שמירת המפתח בקובץ
+    std::ofstream keyFile(keyFileName);
+    if (keyFile.is_open()) {
+        keyFile << generatedKey;
+        keyFile.close();
+        std::cout << "AES key saved to file: " << keyFileName << std::endl;
+    } else {
+        std::cerr << "Error: Could not open file " << keyFileName << " to write." << std::endl;
+        return "";
+    }
+
+    // עדכון ה-ACL עם ההרשאות
+    updateACL(userId, keyFileName, permissions, keyId, "AES");
+
+    // החזרת ה-ID שנוצר למפתח
+    return keyId;
+}
+
+
+// std::pair<std::string, std::string> Hsm::generateRSAKeyPair(int userId, std::vector<KeyPermission> permissions) {
+//     // יצירת מזהים ייחודיים למפתחות
+//     std::string privateKeyId = generateKeyId();
+//     std::string publicKeyId = generateKeyId();
+    
+//     std::string privateKeyFile = "../keys/" + privateKeyId + ".key";
+//     std::string publicKeyFile = "../keys/" + publicKeyId + ".pub";
+
+//     // יצירת מפתח פרטי
+//     mpz_class privateKey = generatePrivateKey();
+
+//     // שמירת מפתח פרטי בקובץ
+//     std::ofstream privFile(privateKeyFile);
+//     if (privFile.is_open()) {
+//         privFile << privateKey.get_str(16);
+//         privFile.close();
+//         std::cout << "RSA private key saved to file: " << privateKeyFile << std::endl;
+//     } else {
+//         std::cerr << "Error: Could not open file " << privateKeyFile << " to write." << std::endl;
+//         return {"", ""};
+//     }
+
+//     // יצירת מפתח ציבורי ושמירתו בקובץ
+//     Point publicKey = generatePublicKey(privateKey);
+//     std::ofstream pubFile(publicKeyFile);
+//     if (pubFile.is_open()) {
+//         pubFile << "x: " << publicKey.x.get_str(16) << std::endl;
+//         pubFile << "y: " << publicKey.y.get_str(16) << std::endl;
+//         pubFile.close();
+//         std::cout << "RSA public key saved to file: " << publicKeyFile << std::endl;
+//     } else {
+//         std::cerr << "Error: Could not open file " << publicKeyFile << " to write." << std::endl;
+//         return {"", ""};
+//     }
+
+//     // עדכון ה-ACL עם ההרשאות
+//     updateACL(userId, privateKeyFile, permissions, privateKeyId, "RSA-Private");
+//     updateACL(userId, publicKeyFile, permissions, publicKeyId, "RSA-Public");
+
+//     // החזרת ה-IDs שנוצרו למפתחות
+//     return {privateKeyId, publicKeyId};
+// }
+
+
+
+bool Hsm::isPermission(int keyId, int userId, KeyPermission permission) {
+    std::string aclFileName = "../keys/keys.json";
+    std::ifstream aclFile(aclFileName);
+    if (!aclFile.is_open()) {
+        std::cerr << "ACL file does not exist" << std::endl;
+        return false;
+    }
+
+    nlohmann::json aclJson;
+    try {
+        aclFile >> aclJson;
+    } catch (const std::exception &e) {
+        std::cerr << "Error reading ACL JSON: " << e.what() << std::endl;
+        return false;
+    }
+
+    std::string keyIdStr = std::to_string(keyId);
+    auto keys = aclJson["keys"];
+    
+    // חיפוש המפתח לפי keyId
+    for (const auto& keyEntry : keys) {
+        if (keyEntry["key_id"] == keyIdStr) {
+            auto aclArray = keyEntry["ACL"];
+            // חיפוש המשתמש בהרשאות של המפתח
+            for (const auto& userEntry : aclArray) {
+                if (userEntry["user"] == std::to_string(userId)) {
+                    // בדיקת ההרשאה
+                    std::string permissionStr;
+                    switch (permission) {
+                        case KeyPermission::ENCRYPT: permissionStr = "encrypt"; break;
+                        case KeyPermission::SIGN: permissionStr = "sign"; break;
+                        case KeyPermission::VERIFY: permissionStr = "verify"; break;
+                        case KeyPermission::EXPORTABLE: permissionStr = "exportable"; break;
+                        case KeyPermission::DECRYPT: permissionStr = "decrypt"; break;
+                    }
+
+                    if (userEntry[permissionStr] == true) {
+                        return true; // ההרשאה קיימת
+                    }
+                }
+            }
+        }
+    }
+
+    std::cerr << "Permission not found" << std::endl;
+    return false;
+}
+
+std::string Hsm::readFileContent(const std::string& filePath) {
+    std::ifstream file(filePath, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file: " + filePath);
+    }
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    return content;
+}
+
+// הפונקציה בודקת אם למשתמש יש הרשאה למפתח ושולפת את המפתח אם כן
+std::string Hsm::getAuthorizedKey(int userId,std::string& keyId, std::string& permission) {
+    // קריאת קובץ ה-ACL
+    std::ifstream aclFile("../keys/acl.json");
+    if (!aclFile.is_open()) {
+        throw std::runtime_error("Failed to open ACL file.");
+    }
+    
+    nlohmann::json aclData;
+    aclFile >> aclData;
+
+    // חיפוש המפתח והרשאה עבור המשתמש
+    for (const auto& entry : aclData["keys"]) {
+        if (entry["user"] == userId && entry["key_id"] == keyId) {
+            for (const auto& perm : entry["permissions"]) {
+                if (perm.contains(permission) && perm[permission].get<bool>() == true) {
+                    // הרשאה קיימת - שליפת המפתח
+                    std::string keyFilePath = "../keys/" + keyId + ".key";
+                    if (std::filesystem::exists(keyFilePath)) {
+                        return readFileContent(keyFilePath);
+                    } else {
+                        throw std::runtime_error("Key file does not exist: " + keyFilePath);
+                    }
+                }
+            }
+        }
+    }
+
+    // אם ההרשאה לא נמצאה
+    throw std::runtime_error("Permission not found or not granted for this user and key.");
+}
+// void Hsm::saveKey(int keyId, const std::string& keyData, bool isPublic) {
+//     std::string fileName = "../keys/key_" + std::to_string(keyId);
+//     fileName += isPublic ? ".pub" : ".key";
+
+//     std::ofstream keyFile(fileName);
+//     if (!keyFile.is_open()) {
+//         std::cerr << "Error opening key file for writing: " << fileName << std::endl;
+//         return;
+//     }
+
+//     keyFile << keyData;
+//     keyFile.close();
+// }
+// void Hsm::addKeyToAcl(int keyId, const std::string& fileName, const nlohmann::json& acl) {
+//     std::string aclFileName = "../keys/keys.json";
+//     std::ifstream aclFile(aclFileName);
+//     nlohmann::json aclJson;
+
+//     if (aclFile.is_open()) {
+//         aclFile >> aclJson;
+//         aclFile.close();
+//     }
+
+//     nlohmann::json newKeyEntry = {
+//         {"key_id", std::to_string(keyId)},
+//         {"file_name", fileName},
+//         {"ACL", acl}
+//     };
+
+//     aclJson["keys"].push_back(newKeyEntry);
+
+//     std::ofstream outFile(aclFileName);
+//     if (!outFile.is_open()) {
+//         std::cerr << "Error opening ACL file for writing: " << aclFileName << std::endl;
+//         return;
+//     }
+
+//     outFile << aclJson.dump(4);  // שמירת הקובץ עם פיסוק
+//     outFile.close();
+// }
+
 // encryptionFunction Hsm::getEncryptionFunctionType(int id)
 // {
 //     auto it = encryptionFunctions.find(id);
