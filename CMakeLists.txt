@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(VehicleComputingSimulator)
+project(MyTest)
 
 # Include directories
 include_directories(src)
@@ -18,6 +18,11 @@ include_directories(${GMP_INCLUDE_DIR})
 # Find Google Test
 find_package(GTest REQUIRED)
 
+# Add source files
+file(GLOB SOURCES "src/*.cpp")
+list(APPEND SOURCES logger/logger.cpp)
+
+
 # Check if SYCL is enabled
 option(USE_SYCL "Enable SYCL support" OFF)
 
@@ -31,9 +36,25 @@ if(USE_SYCL)
     link_directories(/opt/intel/oneapi/compiler/latest/linux/lib)
     message(STATUS "Compiling with SYCL support")
     add_definitions(-DUSE_SYCL)
+    list(APPEND SOURCES src/sycl-version/big_int64.cpp)
+    include_directories(${CMAKE_SOURCE_DIR}/include/sycl-version)
 else()
     message(STATUS "Compiling without SYCL support")
     remove_definitions(-DUSE_SYCL)
+    list(APPEND SOURCES src/threads-version/big_int64.cpp)
+    include_directories(${CMAKE_SOURCE_DIR}/include/threads-version)
+endif()
+
+# Set build type and output message
+if(USE_DEBUG)
+    set(CMAKE_BUILD_TYPE Debug)
+    add_definitions(-DDEBUG_MODE)
+    message(STATUS "Compiling with Debug build type")
+else()
+    set(CMAKE_BUILD_TYPE Release)
+    remove_definitions(-DDEBUG_MODE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    message(STATUS "Compiling with Release build type and optimization level -O3")
 endif()
 
 # Add source files from the src directory
@@ -50,8 +71,8 @@ add_executable(runTests
 
 # Link libraries
 target_link_libraries(runTests
-    ${GMP_LIBRARY} 
-    ${GMPXX_LIBRARY} 
+    ${GMP_LIBRARY}
+    ${GMPXX_LIBRARY}
     gtest gtest_main pthread
 )
 
