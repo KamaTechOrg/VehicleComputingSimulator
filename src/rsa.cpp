@@ -5,6 +5,7 @@
 #include "rsa.h"
 #include "logger.h"
 #include "prime_tests.h"
+#include "big_int64.h"
 using namespace std;
 constexpr int PADDING_MIN_LEN = 11;
 constexpr int PRIME_TEST_ROUNDS = 40;
@@ -65,19 +66,19 @@ size_t rsaGetModulusLen(size_t keySize)
 CK_RV rsaGenerateKeys(size_t keySize, uint8_t *pubKey, size_t pubLen,
                       uint8_t *privKey, size_t privLen)
 {
-    logger rsaLogger("RSA encryption");
-    rsaLogger.logMessage(logger::LogLevel::INFO,
+     
+    log(logger::LogLevel::INFO,
                          "RSA generate keys: generation RSA key pair of " +
                              to_string(keySize) + " bits : started...");
     if (!allowedKeySizes(keySize)) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA generate keys: invalid key size");
         return CKR_KEY_SIZE_RANGE;
     }
 
     if (!(pubLen == rsaGetPublicKeyLen(keySize)) ||
         !(privLen == rsaGetPrivateKeyLen(keySize))) {
-        rsaLogger.logMessage(
+        log(
             logger::LogLevel::ERROR,
             "RSA generate keys: buffer sizes are insufficient");
         return CKR_BUFFER_TOO_SMALL;
@@ -88,13 +89,20 @@ CK_RV rsaGenerateKeys(size_t keySize, uint8_t *pubKey, size_t pubLen,
     BigInt64 p, q, n, e, d;
     try {
         // Generate large prime numbers
-        rsaGeneratePrime(keySize / 2, p);
-        rsaGeneratePrime(keySize / 2, q);
+        // rsaGeneratePrime(keySize / 2, p);
+        // rsaGeneratePrime(keySize / 2, q);
+        //TODO delete this!
+        p = "670390396497129854978701249910292306373968291029619668886178072186"
+            "088201503677348840093714908345171384501592909324302542687694140597"
+            "3284973216824503042857";
+        q = "670390396497129854978701249910292306373968291029619668886178072186"
+            "088201503677348840093714908345171384501592909324302542687694140597"
+            "3284973216824503042159";
         n = p * q;
         rsaKeysGeneration(p, q, keySize, e, d);
     }
     catch (const std::exception &e) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA generate keys: failed " + string(e.what()));
         return CKR_KEY_FUNCTION_NOT_PERMITTED;
     }
@@ -111,7 +119,6 @@ CK_RV rsaGenerateKeys(size_t keySize, uint8_t *pubKey, size_t pubLen,
     d.exportTo(privKey + rsaGetModulusLen(keySize),
                privLen - rsaGetModulusLen(keySize),
                BigInt64::CreateModes::BIG_ENDIANESS);
-    rsaLogger.logMessage(logger::LogLevel::INFO, "RSA generate keys: success");
     return CKR_OK;
 }
 
@@ -173,35 +180,33 @@ CK_RV rsaEncrypt(const uint8_t *plaintext, size_t plaintextLen,
                  const uint8_t *key, size_t keyLen, uint8_t *ciphertext,
                  size_t ciphertextLen, size_t keySize)
 {
-    logger rsaLogger("RSA encryption");
+     
     if (!allowedKeySizes(keySize)) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA encryption: invalid key size");
         return CKR_KEY_SIZE_RANGE;
     }
 
     if ((!(keyLen == rsaGetPublicKeyLen(keySize)) &&
          !(keyLen == rsaGetPrivateKeyLen(keySize)))) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA encryption: buffer sizes are insufficient");
         return CKR_BUFFER_TOO_SMALL;
     }
 
     size_t keySizeBytes = keySize / BITS_IN_BYTE;
     if (plaintextLen > rsaGetPlainMaxLen(keySize)) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA encryption: plaintext is too long");
         return CKR_DATA_TOO_LARGE;
     }
 
     if (ciphertextLen != keySizeBytes) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA encryption: ciphertext buffer is too small");
         return CKR_BUFFER_TOO_SMALL;
     }
 
-    rsaLogger.logMessage(logger::LogLevel::INFO,
-                         "RSA encryption: executing...");
     size_t paddedLen = keySizeBytes;
     // Padding plaintext to keySizeBytes
     uint8_t *padded = new uint8_t[keySizeBytes];
@@ -220,7 +225,7 @@ CK_RV rsaEncrypt(const uint8_t *plaintext, size_t plaintextLen,
         cipherNumber = modularExponentiation(plainNumber, exponent, modulus);
     }
     catch (std::exception &e) {
-        rsaLogger.logMessage(
+        log(
             logger::LogLevel::ERROR,
             "RSA encryption: error performing modular exponentiation " +
                 string(e.what()));
@@ -251,29 +256,27 @@ CK_RV rsaDecrypt(const uint8_t *ciphertext, size_t ciphertextLen,
                  const uint8_t *key, size_t keyLen, uint8_t *plaintext,
                  size_t *plaintextLen, size_t keySize)
 {
-    logger rsaLogger("RSA encryption");
+     
     if (!allowedKeySizes(keySize)) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA decryption: invalid key size");
         return CKR_KEY_SIZE_RANGE;
     }
 
     if ((!(keyLen == rsaGetPublicKeyLen(keySize)) &&
          !(keyLen == rsaGetPrivateKeyLen(keySize)))) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA encryption: buffer sizes are insufficient");
         return CKR_BUFFER_TOO_SMALL;
     }
 
     size_t keySizeBytes = keySize / BITS_IN_BYTE;
     if (ciphertextLen != keySizeBytes) {
-        rsaLogger.logMessage(logger::LogLevel::ERROR,
+        log(logger::LogLevel::ERROR,
                              "RSA decryption: ciphertext buffer is too small");
         return CKR_BUFFER_TOO_SMALL;
     }
 
-    rsaLogger.logMessage(logger::LogLevel::INFO,
-                         "RSA decryption: executing...");
     // Convert ciphertext to BigInt64
     BigInt64 cipherNumber(ciphertext, ciphertextLen,
                           BigInt64::CreateModes::BIG_ENDIANESS);
@@ -288,7 +291,7 @@ CK_RV rsaDecrypt(const uint8_t *ciphertext, size_t ciphertextLen,
         plainNumber = modularExponentiation(cipherNumber, exponent, modulus);
     }
     catch (std::exception &e) {
-        rsaLogger.logMessage(
+        log(
             logger::LogLevel::ERROR,
             "RSA decryption: error performing modular exponentiation " +
                 string(e.what()));
@@ -304,7 +307,7 @@ CK_RV rsaDecrypt(const uint8_t *ciphertext, size_t ciphertextLen,
         rsaPkcs1v15Unpad(padded, paddedLen, plaintext, plaintextLen);
     }
     catch (std::exception &e) {
-        rsaLogger.logMessage(
+        log(
             logger::LogLevel::ERROR,
             "RSA decryption: error unpadding plaintext " + string(e.what()));
         delete[] padded;

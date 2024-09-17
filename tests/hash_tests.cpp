@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <vector>
-#include "../include/IHash.h"       // בהתאם למיקום שלך
-#include "../include/hash_factory.h" // בהתאם למיקום שלך
+#include "../include/IHash.h"
+#include "../include/hash_factory.h"
 
 // Helper function to convert vector to a hex string for comparison
 std::string to_hex_string(const std::vector<uint8_t>& data) {
@@ -12,20 +12,22 @@ std::string to_hex_string(const std::vector<uint8_t>& data) {
     }
     return oss.str();
 }
+
 // Test fixture class for SHA256
 class HashTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Get the FactoryManager instance
         factoryManager = &HashFactory::getInstance();
+        CK_RV result;
         // Create SHA256 object using FactoryManager
-        sha256 = std::unique_ptr<IHash>(factoryManager->create(IHash::SHA256));
-        sha512 = std::unique_ptr<IHash>(factoryManager->create(IHash::SHA3_512));
-        // sha256.reset(factoryManager->create(IHash::SHA256));
-        if (!sha256) {
+        result = factoryManager->create(SHA_256, sha256);
+        if (!sha256 || result != CKR_OK) {
             FAIL() << "Failed to create SHA256 instance";
         }
-        if(!sha512){
+
+        result = factoryManager->create(SHA_3_512, sha512);        
+        if(!sha512 || result != CKR_OK){
             FAIL() << "Failed to create SHA512 instance";
         }
     }
@@ -52,24 +54,28 @@ protected:
     std::unique_ptr<IHash> sha256;
     std::unique_ptr<IHash> sha512;
 };
+
 // Test hashing an empty string
 TEST_F(HashTest, HashEmptyString) {
     std::string expectedHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     std::string hash = hashStringSHA256("");
     EXPECT_EQ(hash, expectedHash);
 }
+
 // Test hashing "abc"
 TEST_F(HashTest, HashABC) {
     std::string expectedHash = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
     std::string hash = hashStringSHA256("abc");
     EXPECT_EQ(hash, expectedHash);
 }
+
 // Test hashing "hello world"
 TEST_F(HashTest, HashHelloWorld) {
     std::string expectedHash = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9";
     std::string hash = hashStringSHA256("hello world");
     EXPECT_EQ(hash, expectedHash);
 }
+
 // Test hashing a string with special characters
 TEST_F(HashTest, HashSpecialCharacters) {
     std::string specialChars = "!@#$%^&*()_+-={}[]|:;<>,.?/~`";

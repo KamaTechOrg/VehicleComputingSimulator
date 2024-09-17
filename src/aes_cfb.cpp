@@ -1,53 +1,65 @@
 #include "../include/aes_stream.h"
 
-void AESCfb::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength)
+void AESCfb::encryptStart(unsigned char block[], unsigned int inLen,
+                          unsigned char *out, unsigned int outLen,
+                          unsigned char *key, AESKeyLength keyLength)
 {
     generateRandomIV(iv);
-    encrypt(block, inLen, key, out, outLen, iv,nullptr, keyLength);
-    unsigned char *newOut = new unsigned char[outLen + 16];
-    memcpy(newOut, out, outLen);
-    memcpy(newOut + outLen, iv, 16);
-    out = newOut;
-    this -> lastBlock  = out;
-    this -> key = key;
-    this -> keyLength = keyLength;
-
-    outLen += 16;
+    encrypt(block, inLen, key, out, outLen-BLOCK_BYTES_LEN, iv, nullptr, keyLength);
+    memcpy(out + outLen-BLOCK_BYTES_LEN, iv, BLOCK_BYTES_LEN);
+    memcpy(lastBlock, out+outLen-BLOCK_BYTES_LEN*2, BLOCK_BYTES_LEN);
+    this->key = new unsigned char[keyLength];
+    memcpy(this->key, key, keyLength);
+    this->keyLength = keyLength;
 }
 
-void AESCfb::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
+void AESCfb::encryptContinue(unsigned char block[], unsigned int inLen,
+                             unsigned char *out, unsigned int outLen)
 {
-  encrypt(block, inLen, key,out, outLen, lastBlock, nullptr, keyLength);
+    encrypt(block, inLen, key, out, outLen, lastBlock, nullptr, keyLength);
+        memcpy(lastBlock, out + outLen - BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
+
 }
 
-void AESCfb::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
+void AESCfb::decryptStart(unsigned char block[], unsigned int inLen,
+                          unsigned char *out, unsigned int &outLen,
+                          unsigned char *key, AESKeyLength keyLength)
 {
-  this-> iv = block + inLen - 16;
-  decrypt(block,  inLen - 16, key, out, outLen, block + inLen - 16, nullptr, keyLength);
-  this-> lastBlock = out;
-}
+      memcpy(this->iv, block + inLen - BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
+    decrypt(block, inLen - BLOCK_BYTES_LEN, key, out, outLen,
+            block + inLen - BLOCK_BYTES_LEN, nullptr, keyLength);
+  memcpy(lastBlock, block + inLen - 2*BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);  }
 
-void AESCfb::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
+void AESCfb::decryptContinue(unsigned char block[], unsigned int inLen,
+                             unsigned char *out, unsigned int &outLen)
 {
-  decrypt(block,  inLen , key, out, outLen, lastBlock,nullptr, keyLength);
+    decrypt(block, inLen, key, out, outLen, lastBlock, nullptr, keyLength);
+        memcpy(lastBlock, block + inLen - BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
+
 }
 
 void AESCfb::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
-                unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
+                     unsigned char *out, unsigned int outLen,
+                     const unsigned char *iv, unsigned char *lastData,
+                     AESKeyLength keyLength)
 {
-    padMessage(in, inLen, outLen);
+    size_t paddedLength = getPaddedLength(inLen);
+    unsigned char *paddedIn = new unsigned char[paddedLength];
+    padMessage(in, inLen, paddedIn);
     unsigned char block[BLOCK_BYTES_LEN];
-    out = new unsigned char[outLen];
     unsigned char feedback[BLOCK_BYTES_LEN];
-    unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
+    unsigned char *roundKeys =
+        new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) *
+                          NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
     memcpy(feedback, iv, BLOCK_BYTES_LEN);
     for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
         encryptBlock(feedback, block, roundKeys, keyLength);
-        xorBlocks(in + i, block, out + i, BLOCK_BYTES_LEN);
+        xorBlocks(paddedIn + i, block, out + i, BLOCK_BYTES_LEN);
         memcpy(feedback, out + i, BLOCK_BYTES_LEN);
     }
     delete[] roundKeys;
+    delete[] paddedIn;
 }
 
 /**
@@ -61,14 +73,17 @@ void AESCfb::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
  @param keyLength AES key length (128, 192, 256 bits).
  */
 void AESCfb::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
-                unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
+                     unsigned char *out, unsigned int &outLen,
+                     const unsigned char *iv, unsigned char *lastData,
+                     AESKeyLength keyLength)
 {
     checkLength(inLen);
     unsigned char block[BLOCK_BYTES_LEN];
     outLen = inLen;
-    out = new unsigned char[outLen];
     unsigned char feedback[BLOCK_BYTES_LEN];
-    unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
+    unsigned char *roundKeys =
+        new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) *
+                          NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
     memcpy(feedback, iv, BLOCK_BYTES_LEN);
     for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
@@ -76,6 +91,6 @@ void AESCfb::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
         xorBlocks(in + i, block, out + i, BLOCK_BYTES_LEN);
         memcpy(feedback, in + i, BLOCK_BYTES_LEN);
     }
-    unpadMessage(out, outLen);
+    outLen = getUnpadMessageLength(out, inLen);
     delete[] roundKeys;
 }

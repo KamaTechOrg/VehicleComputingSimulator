@@ -1,9 +1,9 @@
 #include "../include/aes_stream.h"
 #include <thread>
 #include <vector>
-#include <mutex>
 #include <cstring>
-
+#include "debug_utils.h"
+#include "aes_stream.h"
 /**
  Encrypts a single block of data using AES in ECB mode.
  This function wraps the `encryptBlock` function to allow it to be used
@@ -14,7 +14,8 @@
  @param roundKeys Pointer to the array of round keys used for AES encryption.
  @param keyLength The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  */
-void encryptBlockThreadedECB(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, AESKeyLength keyLength) 
+void encryptBlockThreadedECB(const unsigned char in[], unsigned char out[],
+                             unsigned char *roundKeys, AESKeyLength keyLength)
 {
     encryptBlock(in, out, roundKeys, keyLength);
 }
@@ -30,16 +31,20 @@ void encryptBlockThreadedECB(const unsigned char in[], unsigned char out[], unsi
  @param roundKeys Pointer to the array of round keys used for AES encryption.
  @param keyLength The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  */
-void encryptECBMultithreaded(const unsigned char* plaintext, unsigned char* ciphertext, unsigned int length, unsigned char* roundKeys, AESKeyLength keyLength)
+void encryptECBMultithreaded(const unsigned char *plaintext,
+                             unsigned char *ciphertext, unsigned int length,
+                             unsigned char *roundKeys, AESKeyLength keyLength)
 {
     unsigned int numBlocks = length / BLOCK_BYTES_LEN;
     std::vector<std::thread> threads;
 
     for (unsigned int i = 0; i < numBlocks; ++i) {
-        threads.push_back(std::thread(encryptBlockThreadedECB, &plaintext[i * BLOCK_BYTES_LEN], &ciphertext[i * BLOCK_BYTES_LEN], roundKeys, keyLength));
+        threads.push_back(std::thread(
+            encryptBlockThreadedECB, &plaintext[i * BLOCK_BYTES_LEN],
+            &ciphertext[i * BLOCK_BYTES_LEN], roundKeys, keyLength));
     }
 
-    for (auto& th : threads) {
+    for (auto &th : threads) {
         th.join();
     }
 }
@@ -54,8 +59,8 @@ void encryptECBMultithreaded(const unsigned char* plaintext, unsigned char* ciph
  @param roundKeys Pointer to the array of round keys used for AES decryption.
  @param keyLength The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  */
-void decryptBlockThreadedECB(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
-                             AESKeyLength keyLength) 
+void decryptBlockThreadedECB(const unsigned char *input, unsigned char *output,
+                             unsigned char *roundKeys, AESKeyLength keyLength)
 {
     decryptBlock(input, output, roundKeys, keyLength);
 }
@@ -72,69 +77,86 @@ void decryptBlockThreadedECB(const unsigned char* input, unsigned char* output, 
  @param roundKeys  Pointer to the array of round keys used for AES decryption.
  @param keyLength  The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  */
-void decryptECBMultithreaded(const unsigned char* ciphertext, unsigned char* plaintext, unsigned int length, 
-                             unsigned char* roundKeys, AESKeyLength keyLength) 
+void decryptECBMultithreaded(const unsigned char *ciphertext,
+                             unsigned char *plaintext, unsigned int length,
+                             unsigned char *roundKeys, AESKeyLength keyLength)
 {
     unsigned int numBlocks = length / BLOCK_BYTES_LEN;
-    std::vector<std::thread> threads; 
+    std::vector<std::thread> threads;
 
-    for (unsigned int i = 0; i < numBlocks; ++i) {
-        threads.push_back(std::thread(decryptBlockThreadedECB, &ciphertext[i * BLOCK_BYTES_LEN], 
-                                      &plaintext[i * BLOCK_BYTES_LEN], roundKeys, keyLength));
-    }
+    for (unsigned int i = 0; i < numBlocks; i++)
+        threads.push_back(std::thread(
+            decryptBlockThreadedECB, &ciphertext[i * BLOCK_BYTES_LEN],
+            &plaintext[i * BLOCK_BYTES_LEN], roundKeys, keyLength));
 
-    for (auto& th : threads) {
+    for (auto &th : threads)
         th.join();
-    }
 }
 
-void AESEcb::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength) 
+void AESEcb::encryptStart(unsigned char block[], unsigned int inLen,
+                          unsigned char *out, unsigned int outLen,
+                          unsigned char *key, AESKeyLength keyLength)
 {
-    encrypt(block, inLen, key, out, outLen, nullptr,nullptr, keyLength);
-    this -> key = key;
-    this -> keyLength = keyLength;
+    encrypt(block, inLen, key, out, outLen, nullptr, nullptr, keyLength);
+    this->key = new unsigned char[keyLength];
+    memcpy(this->key, key, keyLength);
+    this->keyLength = keyLength;
 }
 
-void AESEcb::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
+void AESEcb::encryptContinue(unsigned char block[], unsigned int inLen,
+                             unsigned char *out, unsigned int outLen)
 {
-    encrypt(block, inLen, key,out, outLen, nullptr, nullptr, keyLength);
+    encrypt(block, inLen, key, out, outLen, nullptr, nullptr, keyLength);
 }
 
-void AESEcb::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
+void AESEcb::decryptStart(unsigned char block[], unsigned int inLen,
+                          unsigned char *out, unsigned int &outLen,
+                          unsigned char *key, AESKeyLength keyLength)
 {
-  decrypt(block,  inLen , key, out, outLen, nullptr, nullptr, keyLength);
+    decrypt(block, inLen, key, out, outLen, nullptr, nullptr, keyLength);
 }
 
-void AESEcb::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
+void AESEcb::decryptContinue(unsigned char block[], unsigned int inLen,
+                             unsigned char *out, unsigned int &outLen)
 {
-  decrypt(block, inLen, key, out, outLen, nullptr, nullptr, keyLength);
+    decrypt(block, inLen, key, out, outLen, nullptr, nullptr, keyLength);
 }
 
 void AESEcb::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
-                unsigned char *&out, unsigned int &outLen,const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
+                     unsigned char *out, unsigned int outLen,
+                     const unsigned char *iv, unsigned char *lastData,
+                     AESKeyLength keyLength)
 {
-    padMessage(in, inLen, outLen);
+    size_t paddedLength = getPaddedLength(inLen);
+    unsigned char *paddedIn = new unsigned char[paddedLength];
+    padMessage(in, inLen, paddedIn);
     unsigned char block[BLOCK_BYTES_LEN];
-    out = new unsigned char[outLen];
-    unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
+    unsigned char *roundKeys =
+        new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) *
+                          NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
     for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
-        memcpy(block, in + i, BLOCK_BYTES_LEN);
-        encryptECBMultithreaded(block, out + i, BLOCK_BYTES_LEN, roundKeys, keyLength);
+        memcpy(block, paddedIn + i, BLOCK_BYTES_LEN);
+        encryptECBMultithreaded(block, out + i, BLOCK_BYTES_LEN, roundKeys,
+                                keyLength);
     }
+    delete[] paddedIn;
     delete[] roundKeys;
 }
 
 void AESEcb::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
-                unsigned char *&out, unsigned int &outLen,const unsigned char *iv, unsigned char *lastData,AESKeyLength keyLength) 
+                     unsigned char *out, unsigned int &outLen,
+                     const unsigned char *iv, unsigned char *lastData,
+                     AESKeyLength keyLength)
 {
     checkLength(inLen);
     outLen = inLen;
-    out = new unsigned char[outLen];
-    unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
+    unsigned char *roundKeys =
+        new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) *
+                          NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
-    for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) 
+    for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN)
         decryptECBMultithreaded(in, out, outLen, roundKeys, keyLength);
-        unpadMessage(out, outLen);
+    outLen = getUnpadMessageLength(out, inLen);
     delete[] roundKeys;
 }

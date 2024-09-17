@@ -2,6 +2,7 @@
 #include "big_int_utils.h"
 #include "prime_tests.h"
 #include "logger.h"
+#include "general.h"
 using namespace std;
 
 constexpr size_t smallPrimesSize = 2000;
@@ -413,7 +414,7 @@ bool millerRabinPrimalityTest1Round(const BigInt64 &number, std::uint32_t seed)
     for (BigInt64 i = 0; i < s - 1; i++) {
         x = modularExponentiation(x, 2, number);
         if (x == number - 1)  // x^2 mod n=n-1
-            return true;         
+            return true;
     }
 
     return false;
@@ -581,11 +582,8 @@ BigInt64 nextPrimeSequential(const BigInt64 &number, size_t k)
 
 BigInt64 nextPrimeDivideToChunks(const BigInt64 &number, size_t k)
 {
-    logger rsaLogger("RSA encryption");
-    rsaLogger.logMessage(
-        logger::LogLevel::DEBUG,
-        "RSA next prime: finding next prime after random number " +
-            number.toString());
+    log(logger::LogLevel::DEBUG,
+        "RSA next prime: finding next prime after random number ");
     size_t numChunks;
     size_t chunkSize;
     size_t bits = number.bitsCount();
@@ -632,19 +630,18 @@ BigInt64 nextPrimeDivideToChunks(const BigInt64 &number, size_t k)
                     sycl::free(numberShared, q);
                     sycl::free(maxShared, q);
                     sycl::free(resultsShared, q);
-                    rsaLogger.logMessage(logger::LogLevel::DEBUG,
-                                         "RSA next prime: found prime number " +
-                                             candidate.toString() + "\nat gap " +
-                                             (candidate - number).toString());
+                    log(logger::LogLevel::DEBUG,
+                        "RSA next prime: found prime number at gap " +
+                            (candidate - number).toString());
                     return candidate;
                 }
             }
         }
 
-        rsaLogger.logMessage(logger::LogLevel::DEBUG,
-                             "RSA next prime: didnt find primes in range of " +
-                                 (currentStart - number).toString() +
-                                 " numbers, continue searching...");
+        log(logger::LogLevel::DEBUG,
+            "RSA next prime: didnt find primes in range of " +
+                (currentStart - number).toString() +
+                " numbers, continue searching...");
     }
 }
 
@@ -734,11 +731,8 @@ bool nextPrimeChunk(BigInt64 &number, const BigInt64 &end,
 
 BigInt64 nextPrimeDivideToChunks(const BigInt64 &number, size_t k)
 {
-    logger rsaLogger("RSA encryption");
-    rsaLogger.logMessage(
-        logger::LogLevel::DEBUG,
-        "RSA next prime: finding next prime after random number " +
-            number.toString());
+    log(logger::LogLevel::DEBUG,
+        "RSA next prime: finding next prime after random number");
     size_t numChunks;
     size_t chunkSize;
     size_t bits = number.bitsCount();
@@ -769,17 +763,16 @@ BigInt64 nextPrimeDivideToChunks(const BigInt64 &number, size_t k)
         for (int i = 0; i < numChunks; i++)
             if (futures[i].get() &&
                 millerRabinPrimalityTestThreads(numbers[i], k)) {
-                rsaLogger.logMessage(logger::LogLevel::DEBUG,
-                                         "RSA next prime: found prime number " +
-                                             numbers[i].toString() + "\nat gap " +
-                                             (numbers[i] - number).toString());
+                log(logger::LogLevel::DEBUG,
+                    "RSA next prime: found prime number at gap " +
+                        (numbers[i] - number).toString());
                 return numbers[i];
             }
 
-        rsaLogger.logMessage(logger::LogLevel::DEBUG,
-                             "RSA next prime: didnt find primes in range of " +
-                                 (currentStart - number).toString() +
-                                 " numbers, continue searching...");
+        log(logger::LogLevel::DEBUG,
+            "RSA next prime: didnt find primes in range of " +
+                (currentStart - number).toString() +
+                " numbers, continue searching...");
         futures.clear();
     }
 }

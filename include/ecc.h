@@ -5,6 +5,7 @@
 #include <string>
 #include <gmpxx.h>
 #include <vector>
+#include <cstdint>
 
 // Structure for representing a point
 struct Point {

@@ -1,7 +1,6 @@
 #ifndef __RSA_H__
 #define __RSA_H__
-#include "big_int64.h"
-#include "return_codes.h"
+#include "general.h"
 
 CK_RV rsaGenerateKeys(size_t keySize, uint8_t *pubKey, size_t pubLen,
                       uint8_t *privKey, size_t privLen);

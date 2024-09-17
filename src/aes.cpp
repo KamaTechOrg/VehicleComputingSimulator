@@ -2,8 +2,6 @@
 #include <cstddef>
 #include <stdexcept>
 #include <random>
-#include <iostream>
-
 #ifdef USE_SYCL
 #include <cstring>
 #include <stdexcept>
@@ -16,61 +14,63 @@ using namespace cl::sycl;
 
 /**
  @brief Generates a random Initialization Vector (IV) for cryptographic purposes.
- This function generates a 16-byte random IV, which is commonly used in cryptographic algorithms
+ This function generates a BLOCK_BYTES_LEN-byte random IV, which is commonly used in cryptographic algorithms
  such as AES (Advanced Encryption Standard) in CBC (Cipher Block Chaining) mode.
  The IV ensures that the same plaintext block will result in a different ciphertext block
  when encrypted with the same key. 
- @param iv Pointer to an array of 16 unsigned char (bytes) where the generated IV will be stored.
+ @param iv Pointer to an array of BLOCK_BYTES_LEN unsigned char (bytes) where the generated IV will be stored.
  @note The function uses the C++ standard library's random number generator to produce
        a uniformly distributed sequence of bytes.
  */
-void generateRandomIV(unsigned char* iv) 
+void generateRandomIV(unsigned char *iv)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, 255);
-    for (unsigned int i = 0; i < 16; i++) 
+    for (unsigned int i = 0; i < BLOCK_BYTES_LEN; i++)
         iv[i] = static_cast<unsigned char>(dis(gen));
+    //TODO delete this!
+   // std::memset(iv, 01, BLOCK_BYTES_LEN);
+}
+
+unsigned int getPaddedLength(unsigned int originalLength)
+{
+    unsigned int paddedLength =
+        ((originalLength + BLOCK_BYTES_LEN - 1) / BLOCK_BYTES_LEN) *
+        BLOCK_BYTES_LEN;
+    if (paddedLength == originalLength) {
+        paddedLength += BLOCK_BYTES_LEN;
+    }
+
+    return paddedLength;
 }
 
 /** 
  @brief Pads the input message to ensure it is a multiple of the block size.
  @param message The message to be padded.
- @param length The original length of the message.
- @param paddedLength The length of the padded message.
+ @param originalLength The original length of the message.
  */
-void padMessage(unsigned char *&message, unsigned int &length,
-                unsigned int &paddedLength)
+void padMessage(unsigned char *originalMessage, unsigned int originalLength,
+                unsigned char *paddedMessage)
 {
-    size_t originalLength = length;
-
-    paddedLength =
-        ((originalLength + BLOCK_BYTES_LEN - 1) / BLOCK_BYTES_LEN) * BLOCK_BYTES_LEN;
-     if(paddedLength == originalLength)
-        paddedLength += BLOCK_BYTES_LEN;
-    unsigned char *paddedMessage = new unsigned char[paddedLength];
-
-    memcpy(paddedMessage, message, originalLength);
-
+    size_t paddedLength = getPaddedLength(originalLength);
     unsigned char paddingValue =
         static_cast<unsigned char>(paddedLength - originalLength);
+    memcpy(paddedMessage, originalMessage, originalLength);
     for (size_t i = originalLength; i < paddedLength; i++)
         paddedMessage[i] = paddingValue;
-
-    message = paddedMessage;
-    length = paddedLength;
 }
 
 /**
  @brief Removes padding from the message.
  @param message The padded message.
- @param length The length of the padded message, which will be updated to the unpadded length.
+ @param paddedLength The length of the padded message
  */
-void unpadMessage(unsigned char *message, unsigned int &length)
+unsigned int getUnpadMessageLength(unsigned char *message,
+                                   unsigned int paddedLength)
 {
-    size_t originalLength = length;
-    unsigned char paddingValue = message[originalLength - 1];
-    length = originalLength - paddingValue;
+    unsigned char paddingValue = message[paddedLength - 1];
+    return paddedLength - paddingValue;
 }
 
 /**
@@ -78,10 +78,9 @@ void unpadMessage(unsigned char *message, unsigned int &length)
  @param keyLength The length of the key (128, 192, or 256 bits).
  @return A pointer to the generated key.
  */
-unsigned char *generateKey(AESKeyLength keyLength)
+void generateKey(unsigned char *key, AESKeyLength keyLength)
 {
     // Allocate memory for the key
-    unsigned char *key = new unsigned char[aesKeyLengthData[keyLength].keySize];
 
     // Initialize a random device and a random number generator
     std::random_device rd;
@@ -91,8 +90,9 @@ unsigned char *generateKey(AESKeyLength keyLength)
     // Fill the key with random bytes
     for (int i = 0; i < aesKeyLengthData[keyLength].keySize; i++)
         key[i] = dis(gen);
+    //TODO delete this!
 
-    return key;
+   // std::memset(key, 1, keyLength);
 }
 
 /**
@@ -117,38 +117,45 @@ void checkLength(unsigned int len)
  */
 void encryptBlock(const unsigned char in[], unsigned char out[],
                   unsigned char *roundKeys, AESKeyLength keyLength)
-{    
+{
     queue queue;
     // State array initialization
     unsigned char state[AES_STATE_ROWS][NUM_BLOCKS];
 
     // Buffers for SYCL
     buffer<unsigned char, 1> in_buf(in, range<1>(AES_STATE_ROWS * NUM_BLOCKS));
-    buffer<unsigned char, 1> state_buf(
-        reinterpret_cast<unsigned char *>(state),
-        range<1>(AES_STATE_ROWS * NUM_BLOCKS));
+    buffer<unsigned char, 1> state_buf(reinterpret_cast<unsigned char *>(state),
+                                       range<1>(AES_STATE_ROWS * NUM_BLOCKS));
     buffer<unsigned char, 1> roundKeys_buf(
-        roundKeys, range<1>(AES_STATE_ROWS * (aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS));
-    buffer<unsigned char, 1> out_buf(out, range<1>(AES_STATE_ROWS * NUM_BLOCKS));
+        roundKeys,
+        range<1>(AES_STATE_ROWS * (aesKeyLengthData[keyLength].numRound + 1) *
+                 NUM_BLOCKS));
+    buffer<unsigned char, 1> out_buf(out,
+                                     range<1>(AES_STATE_ROWS * NUM_BLOCKS));
 
     // Initialize state array with input block
-    queue.submit([&](handler &handler) {
-         auto in_acc = in_buf.get_access<access::mode::read>(handler);
-         auto state_acc = state_buf.get_access<access::mode::write>(handler);
-         handler.parallel_for(range<1>(AES_STATE_ROWS * NUM_BLOCKS), [=](id<1> idx) {
-             // Row
-             unsigned int i = idx % AES_STATE_ROWS;
-             // Column  
-             unsigned int j = idx / AES_STATE_ROWS;  
-             state_acc[i * NUM_BLOCKS + j] = in_acc[i + AES_STATE_ROWS * j];
-         });
-     }).wait();
+    queue
+        .submit([&](handler &handler) {
+            auto in_acc = in_buf.get_access<access::mode::read>(handler);
+            auto state_acc = state_buf.get_access<access::mode::write>(handler);
+            handler.parallel_for(range<1>(AES_STATE_ROWS * NUM_BLOCKS),
+                                 [=](id<1> idx) {
+                                     // Row
+                                     unsigned int i = idx % AES_STATE_ROWS;
+                                     // Column
+                                     unsigned int j = idx / AES_STATE_ROWS;
+                                     state_acc[i * NUM_BLOCKS + j] =
+                                         in_acc[i + AES_STATE_ROWS * j];
+                                 });
+        })
+        .wait();
 
     // Initial round key addition
     addRoundKey(state, roundKeys);
 
     // Main rounds
-    for (unsigned int round = 1; round < aesKeyLengthData[keyLength].numRound; round++) {
+    for (unsigned int round = 1; round < aesKeyLengthData[keyLength].numRound;
+         round++) {
         subBytes(state);
         shiftRows(state);
         mixColumns(state);
@@ -158,18 +165,23 @@ void encryptBlock(const unsigned char in[], unsigned char out[],
     // Final round
     subBytes(state);
     shiftRows(state);
-    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound * AES_STATE_ROWS * NUM_BLOCKS);
+    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound *
+                                       AES_STATE_ROWS * NUM_BLOCKS);
 
     // Copy state array to output block
-    queue.submit([&](handler &handler) {
-         auto state_acc = state_buf.get_access<access::mode::read>(handler);
-         auto out_acc = out_buf.get_access<access::mode::write>(handler);
-         handler.parallel_for(range<1>(AES_STATE_ROWS * NUM_BLOCKS), [=](id<1> idx) {
-             unsigned int i = idx % AES_STATE_ROWS;  // Row
-             unsigned int j = idx / AES_STATE_ROWS;  // Column
-             out_acc[i + AES_STATE_ROWS * j] = state_acc[i * NUM_BLOCKS + j];
-         });
-     }).wait();
+    queue
+        .submit([&](handler &handler) {
+            auto state_acc = state_buf.get_access<access::mode::read>(handler);
+            auto out_acc = out_buf.get_access<access::mode::write>(handler);
+            handler.parallel_for(
+                range<1>(AES_STATE_ROWS * NUM_BLOCKS), [=](id<1> idx) {
+                    unsigned int i = idx % AES_STATE_ROWS;  // Row
+                    unsigned int j = idx / AES_STATE_ROWS;  // Column
+                    out_acc[i + AES_STATE_ROWS * j] =
+                        state_acc[i * NUM_BLOCKS + j];
+                });
+        })
+        .wait();
 }
 
 /**
@@ -191,10 +203,12 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
             state[i][j] = in[i + AES_STATE_ROWS * j];
 
     // Initial round key addition
-    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound * AES_STATE_ROWS * NUM_BLOCKS);
+    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound *
+                                       AES_STATE_ROWS * NUM_BLOCKS);
 
     // Main rounds
-    for (round = aesKeyLengthData[keyLength].numRound - 1; round >= 1; round--) {
+    for (round = aesKeyLengthData[keyLength].numRound - 1; round >= 1;
+         round--) {
         invSubBytes(state);
         invShiftRows(state);
         addRoundKey(state, roundKeys + round * AES_STATE_ROWS * NUM_BLOCKS);
@@ -218,7 +232,7 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
  @param b Input byte.
  @return Result of the multiplication.
  */
- unsigned char xtime(unsigned char b)
+unsigned char xtime(unsigned char b)
 {
     return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 }
@@ -230,7 +244,7 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
  @param y Second byte.
  @return Result of the multiplication.
  */
- unsigned char multiply(unsigned char x, unsigned char y)
+unsigned char multiply(unsigned char x, unsigned char y)
 {
     unsigned char result = 0;
     unsigned char temp = y;
@@ -256,19 +270,23 @@ void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     queue queue;
     buffer<unsigned char, 2> stateBuffer(state[0],
-                                               range<2>(AES_STATE_ROWS, NUM_BLOCKS));
-    buffer<unsigned char, 2> sBoxBuffer(sBox[0], range<2>(16, 16));
-    queue.submit([&](handler &handler) {
-         auto stateAcc =
-             stateBuffer.get_access<access::mode::read_write>(handler);
-         auto sBoxAcc = sBoxBuffer.get_access<access::mode::read>(handler);
-         handler.parallel_for<class SubBytes>(
-             range<2>(AES_STATE_ROWS, NUM_BLOCKS), [=](id<2> id) {
-                 size_t i = id[0];
-                 size_t j = id[1];
-                 stateAcc[i][j] = sBoxAcc[state[i][j] / 16][state[i][j] % 16];
-             });
-     }).wait();
+                                         range<2>(AES_STATE_ROWS, NUM_BLOCKS));
+    buffer<unsigned char, 2> sBoxBuffer(
+        sBox[0], range<2>(BLOCK_BYTES_LEN, BLOCK_BYTES_LEN));
+    queue
+        .submit([&](handler &handler) {
+            auto stateAcc =
+                stateBuffer.get_access<access::mode::read_write>(handler);
+            auto sBoxAcc = sBoxBuffer.get_access<access::mode::read>(handler);
+            handler.parallel_for<class SubBytes>(
+                range<2>(AES_STATE_ROWS, NUM_BLOCKS), [=](id<2> id) {
+                    size_t i = id[0];
+                    size_t j = id[1];
+                    stateAcc[i][j] = sBoxAcc[state[i][j] / BLOCK_BYTES_LEN]
+                                            [state[i][j] % BLOCK_BYTES_LEN];
+                });
+        })
+        .wait();
 }
 
 /**
@@ -279,15 +297,17 @@ void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 void shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     queue queue;
-    queue.submit([&](handler &handler) {
-         handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> i) {
-             unsigned char tmp[NUM_BLOCKS];
-             for (size_t k = 0; k < NUM_BLOCKS; k++)
-                 tmp[k] = state[i][(k + i) % NUM_BLOCKS];
-             for (size_t k = 0; k < NUM_BLOCKS; k++)
-                 state[i][k] = tmp[k];
-         });
-     }).wait();
+    queue
+        .submit([&](handler &handler) {
+            handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> i) {
+                unsigned char tmp[NUM_BLOCKS];
+                for (size_t k = 0; k < NUM_BLOCKS; k++)
+                    tmp[k] = state[i][(k + i) % NUM_BLOCKS];
+                for (size_t k = 0; k < NUM_BLOCKS; k++)
+                    state[i][k] = tmp[k];
+            });
+        })
+        .wait();
 }
 
 /**
@@ -299,21 +319,24 @@ void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     queue queue;
 
-    queue.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
-         size_t i = idx[0];
-         unsigned char a[AES_STATE_ROWS];
-         unsigned char b[AES_STATE_ROWS];
+    queue
+        .parallel_for(range<1>(AES_STATE_ROWS),
+                      [=](id<1> idx) {
+                          size_t i = idx[0];
+                          unsigned char a[AES_STATE_ROWS];
+                          unsigned char b[AES_STATE_ROWS];
 
-         for (size_t j = 0; j < AES_STATE_ROWS; j++) {
-             a[j] = state[j][i];
-             b[j] = xtime(state[j][i]);
-         }
+                          for (size_t j = 0; j < AES_STATE_ROWS; j++) {
+                              a[j] = state[j][i];
+                              b[j] = xtime(state[j][i]);
+                          }
 
-         state[0][i] = b[0] ^ a[1] ^ b[1] ^ a[2] ^ a[3];
-         state[1][i] = a[0] ^ b[1] ^ a[2] ^ b[2] ^ a[3];
-         state[2][i] = a[0] ^ a[1] ^ b[2] ^ a[3] ^ b[3];
-         state[3][i] = b[0] ^ a[0] ^ a[1] ^ a[2] ^ b[3];
-     }).wait();
+                          state[0][i] = b[0] ^ a[1] ^ b[1] ^ a[2] ^ a[3];
+                          state[1][i] = a[0] ^ b[1] ^ a[2] ^ b[2] ^ a[3];
+                          state[2][i] = a[0] ^ a[1] ^ b[2] ^ a[3] ^ b[3];
+                          state[3][i] = b[0] ^ a[0] ^ a[1] ^ a[2] ^ b[3];
+                      })
+        .wait();
 }
 
 /**
@@ -322,27 +345,30 @@ void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
  @param state 2D array representing the state of the AES block.
  @param roundKey Round key to be XORed with the state array.
  */
-void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char *roundKey)
+void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS],
+                 unsigned char *roundKey)
 {
     queue queue;
     buffer<unsigned char, 2> stateBuffer(state[0],
-                                               range<2>(AES_STATE_ROWS, NUM_BLOCKS));
+                                         range<2>(AES_STATE_ROWS, NUM_BLOCKS));
     buffer<unsigned char, 1> roundKeyBuffer(
         roundKey, range<1>(AES_STATE_ROWS * NUM_BLOCKS));
 
-    queue.submit([&](handler &handler) {
-         auto stateAcc =
-             stateBuffer.get_access<access::mode::read_write>(handler);
-         auto roundKeyAcc =
-             roundKeyBuffer.get_access<access::mode::read>(handler);
+    queue
+        .submit([&](handler &handler) {
+            auto stateAcc =
+                stateBuffer.get_access<access::mode::read_write>(handler);
+            auto roundKeyAcc =
+                roundKeyBuffer.get_access<access::mode::read>(handler);
 
-         handler.parallel_for<class AddRoundKey>(
-             range<2>(AES_STATE_ROWS, NUM_BLOCKS), [=](id<2> id) {
-                 size_t i = id[0];
-                 size_t j = id[1];
-                 stateAcc[i][j] ^= roundKeyAcc[i + AES_STATE_ROWS * j];
-             });
-     }).wait();
+            handler.parallel_for<class AddRoundKey>(
+                range<2>(AES_STATE_ROWS, NUM_BLOCKS), [=](id<2> id) {
+                    size_t i = id[0];
+                    size_t j = id[1];
+                    stateAcc[i][j] ^= roundKeyAcc[i + AES_STATE_ROWS * j];
+                });
+        })
+        .wait();
 }
 
 /**
@@ -354,18 +380,22 @@ void subWord(unsigned char a[AES_STATE_ROWS])
 {
     queue queue;
     buffer<unsigned char, 1> aBuffer(a, range<1>(AES_STATE_ROWS));
-    buffer<unsigned char, 2> sBoxBuffer(sBox[0], range<2>(16, 16));
+    buffer<unsigned char, 2> sBoxBuffer(
+        sBox[0], range<2>(BLOCK_BYTES_LEN, BLOCK_BYTES_LEN));
 
-    queue.submit([&](handler &handler) {
-         auto aAcc = aBuffer.get_access<access::mode::read_write>(handler);
-         auto sBoxAcc = sBoxBuffer.get_access<access::mode::read>(handler);
+    queue
+        .submit([&](handler &handler) {
+            auto aAcc = aBuffer.get_access<access::mode::read_write>(handler);
+            auto sBoxAcc = sBoxBuffer.get_access<access::mode::read>(handler);
 
-         handler.parallel_for<class SubWord>(
-             range<1>(AES_STATE_ROWS), [=](id<1> id) {
-                 size_t i = id[0];
-                 aAcc[i] = sBoxAcc[aAcc[i] / 16][aAcc[i] % 16];
-             });
-     }).wait();
+            handler.parallel_for<class SubWord>(
+                range<1>(AES_STATE_ROWS), [=](id<1> id) {
+                    size_t i = id[0];
+                    aAcc[i] = sBoxAcc[aAcc[i] / BLOCK_BYTES_LEN]
+                                     [aAcc[i] % BLOCK_BYTES_LEN];
+                });
+        })
+        .wait();
 }
 
 /**
@@ -378,18 +408,20 @@ void rotWord(unsigned char *word)
     queue queue;
     buffer<unsigned char, 1> wordBuffer(word, range<1>(AES_STATE_ROWS));
 
-    queue.submit([&](handler &handler) {
-         auto wordAcc =
-             wordBuffer.get_access<access::mode::read_write>(handler);
+    queue
+        .submit([&](handler &handler) {
+            auto wordAcc =
+                wordBuffer.get_access<access::mode::read_write>(handler);
 
-         handler.single_task<class RotWord>([=]() {
-             unsigned char temp = wordAcc[0];
-             wordAcc[0] = wordAcc[1];
-             wordAcc[1] = wordAcc[2];
-             wordAcc[2] = wordAcc[3];
-             wordAcc[3] = temp;
-         });
-     }).wait();
+            handler.single_task<class RotWord>([=]() {
+                unsigned char temp = wordAcc[0];
+                wordAcc[0] = wordAcc[1];
+                wordAcc[1] = wordAcc[2];
+                wordAcc[2] = wordAcc[3];
+                wordAcc[3] = temp;
+            });
+        })
+        .wait();
 }
 
 /**
@@ -405,15 +437,18 @@ void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
     for (size_t i = 0; i < n - 1; i++)
         strong = xtime(strong);
 
-    queue.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
-         size_t i = idx[0];
-         if (i == 0) {
-             a[i] = strong;
-         }
-         else {
-             a[i] = 0;
-         }
-     }).wait();
+    queue
+        .parallel_for(range<1>(AES_STATE_ROWS),
+                      [=](id<1> idx) {
+                          size_t i = idx[0];
+                          if (i == 0) {
+                              a[i] = strong;
+                          }
+                          else {
+                              a[i] = 0;
+                          }
+                      })
+        .wait();
 }
 
 /**
@@ -422,7 +457,8 @@ void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
  @param key Original AES key.
  @param w Output array to store the expanded key.
  */
-void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyLength)
+void keyExpansion(const unsigned char *key, unsigned char w[],
+                  AESKeyLength keyLength)
 {
     queue queue;
     unsigned int numWordLocal = aesKeyLengthData[keyLength].numWord;
@@ -430,10 +466,12 @@ void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyL
     unsigned int NUM_BLOCKSLocal = NUM_BLOCKS;
     unsigned int numRoundLocal = aesKeyLengthData[keyLength].numRound;
     // Copy the initial key to the output array
-    queue.submit([&](handler &handler) {
-         handler.parallel_for(range<1>(AES_STATE_ROWS * numWordLocal),
-                        [=](id<1> idx) { w[idx] = key[idx]; });
-     }).wait();
+    queue
+        .submit([&](handler &handler) {
+            handler.parallel_for(range<1>(AES_STATE_ROWS * numWordLocal),
+                                 [=](id<1> idx) { w[idx] = key[idx]; });
+        })
+        .wait();
 
     unsigned int i = AES_STATE_ROWS * numWordLocal;
 
@@ -441,34 +479,39 @@ void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyL
         unsigned char temp[AES_STATE_ROWS];
         buffer<unsigned char, 1> temp_buf(temp, range<1>(AES_STATE_ROWS));
 
-        queue.submit([&](handler &handler) {
-            auto temp_acc =
-                temp_buf.get_access<access::mode::write>(handler);
-            handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
-                temp_acc[idx] = w[i - AES_STATE_ROWS + idx];
-            });
-        }).wait();
+        queue
+            .submit([&](handler &handler) {
+                auto temp_acc =
+                    temp_buf.get_access<access::mode::write>(handler);
+                handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
+                    temp_acc[idx] = w[i - AES_STATE_ROWS + idx];
+                });
+            })
+            .wait();
 
         if (i / AES_STATE_ROWS % numWordLocal == 0) {
-        // Use SYCL to execute rotWord and subWord
+            // Use SYCL to execute rotWord and subWord
             rotWord(temp);
             subWord(temp);
             unsigned char rcon[AES_STATE_ROWS];
             rconWord(rcon, i / (numWordLocal * AES_STATE_ROWS));
-            
-            for (int k = 0; k < AES_STATE_ROWS; k++) 
+
+            for (int k = 0; k < AES_STATE_ROWS; k++)
                 temp[k] ^= rcon[k];
         }
-        else if (numWordLocal > 6 && i / AES_STATE_ROWS % numWordLocal == 4) 
+        else if (numWordLocal > 6 && i / AES_STATE_ROWS % numWordLocal == 4)
             subWord(temp);
 
-        queue.submit([&](handler &handler) {
-            auto temp_acc =
-                temp_buf.get_access<access::mode::read>(handler);
-            handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
-                w[i + idx] = w[i + idx - AES_STATE_ROWS * numWordLocal] ^ temp_acc[idx];
-            });
-        }).wait();
+        queue
+            .submit([&](handler &handler) {
+                auto temp_acc =
+                    temp_buf.get_access<access::mode::read>(handler);
+                handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> idx) {
+                    w[i + idx] = w[i + idx - AES_STATE_ROWS * numWordLocal] ^
+                                 temp_acc[idx];
+                });
+            })
+            .wait();
 
         i += 4;
     }
@@ -484,49 +527,55 @@ void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     queue queue;
     buffer<unsigned char, 2> stateBuffer(state[0],
-                                               range<2>(AES_STATE_ROWS, NUM_BLOCKS));
-    buffer<unsigned char, 2> invSBoxBuffer(invSBox[0],
-                                                 range<2>(16, 16));
+                                         range<2>(AES_STATE_ROWS, NUM_BLOCKS));
+    buffer<unsigned char, 2> invSBoxBuffer(
+        invSBox[0], range<2>(BLOCK_BYTES_LEN, BLOCK_BYTES_LEN));
 
-    queue.submit([&](handler &handler) {
-         auto stateAcc =
-             stateBuffer.get_access<access::mode::read_write>(handler);
-         auto invSBoxAcc =
-             invSBoxBuffer.get_access<access::mode::read>(handler);
+    queue
+        .submit([&](handler &handler) {
+            auto stateAcc =
+                stateBuffer.get_access<access::mode::read_write>(handler);
+            auto invSBoxAcc =
+                invSBoxBuffer.get_access<access::mode::read>(handler);
 
-         handler.parallel_for<class invSubBytes>(
-             range<2>(AES_STATE_ROWS, NUM_BLOCKS), [=](id<2> id) {
-                 size_t i = id[0];
-                 size_t j = id[1];
-                 stateAcc[i][j] =
-                     invSBoxAcc[state[i][j] / 16][state[i][j] % 16];
-             });
-     }).wait();
+            handler.parallel_for<class invSubBytes>(
+                range<2>(AES_STATE_ROWS, NUM_BLOCKS), [=](id<2> id) {
+                    size_t i = id[0];
+                    size_t j = id[1];
+                    stateAcc[i][j] = invSBoxAcc[state[i][j] / BLOCK_BYTES_LEN]
+                                               [state[i][j] % BLOCK_BYTES_LEN];
+                });
+        })
+        .wait();
 }
 
 /*Applies the InvMixColumns transformation*/
 void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     queue queue;
-    queue.parallel_for(range<1>(NUM_BLOCKS), [=](id<1> idx) {
-         size_t i = idx[0];
-         unsigned char a[AES_STATE_ROWS];
-         unsigned char b[AES_STATE_ROWS];
+    queue
+        .parallel_for(
+            range<1>(NUM_BLOCKS),
+            [=](id<1> idx) {
+                size_t i = idx[0];
+                unsigned char a[AES_STATE_ROWS];
+                unsigned char b[AES_STATE_ROWS];
 
-         for (size_t j = 0; j < AES_STATE_ROWS; j++) {
-             a[j] = state[j][i];
-             b[j] = xtime(a[j]);
-         }
+                for (size_t j = 0; j < AES_STATE_ROWS; j++) {
+                    a[j] = state[j][i];
+                    b[j] = xtime(a[j]);
+                }
 
-         state[0][i] = multiply(0x0e, a[0]) ^ multiply(0x0b, a[1]) ^
-                       multiply(0x0d, a[2]) ^ multiply(0x09, a[3]);
-         state[1][i] = multiply(0x09, a[0]) ^ multiply(0x0e, a[1]) ^
-                       multiply(0x0b, a[2]) ^ multiply(0x0d, a[3]);
-         state[2][i] = multiply(0x0d, a[0]) ^ multiply(0x09, a[1]) ^
-                       multiply(0x0e, a[2]) ^ multiply(0x0b, a[3]);
-         state[3][i] = multiply(0x0b, a[0]) ^ multiply(0x0d, a[1]) ^
-                       multiply(0x09, a[2]) ^ multiply(0x0e, a[3]);
-     }).wait();
+                state[0][i] = multiply(0x0e, a[0]) ^ multiply(0x0b, a[1]) ^
+                              multiply(0x0d, a[2]) ^ multiply(0x09, a[3]);
+                state[1][i] = multiply(0x09, a[0]) ^ multiply(0x0e, a[1]) ^
+                              multiply(0x0b, a[2]) ^ multiply(0x0d, a[3]);
+                state[2][i] = multiply(0x0d, a[0]) ^ multiply(0x09, a[1]) ^
+                              multiply(0x0e, a[2]) ^ multiply(0x0b, a[3]);
+                state[3][i] = multiply(0x0b, a[0]) ^ multiply(0x0d, a[1]) ^
+                              multiply(0x09, a[2]) ^ multiply(0x0e, a[3]);
+            })
+        .wait();
 }
 
 /**
@@ -538,15 +587,17 @@ void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 void invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     queue queue;
-    queue.submit([&](handler &handler) {
-         handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> i) {
-             unsigned char tmp[NUM_BLOCKS];
-             for (size_t k = 0; k < NUM_BLOCKS; k++)
-                 tmp[k] = state[i][(k - i + NUM_BLOCKS) % NUM_BLOCKS];
-             for (size_t k = 0; k < NUM_BLOCKS; k++)
-                 state[i][k] = tmp[k];
-         });
-     }).wait();
+    queue
+        .submit([&](handler &handler) {
+            handler.parallel_for(range<1>(AES_STATE_ROWS), [=](id<1> i) {
+                unsigned char tmp[NUM_BLOCKS];
+                for (size_t k = 0; k < NUM_BLOCKS; k++)
+                    tmp[k] = state[i][(k - i + NUM_BLOCKS) % NUM_BLOCKS];
+                for (size_t k = 0; k < NUM_BLOCKS; k++)
+                    state[i][k] = tmp[k];
+            });
+        })
+        .wait();
 }
 
 /** XORs two blocks of bytes a and b of length len, storing the result in c. */
@@ -559,14 +610,17 @@ void xorBlocks(const unsigned char *a, const unsigned char *b, unsigned char *c,
     buffer<unsigned char, 1> bufB(b, range<1>(len));
     buffer<unsigned char, 1> bufC(c, range<1>(len));
 
-    queue.submit([&](handler &handler) {
-         auto accA = bufA.get_access<access::mode::read>(handler);
-         auto accB = bufB.get_access<access::mode::read>(handler);
-         auto accC = bufC.get_access<access::mode::write>(handler);
+    queue
+        .submit([&](handler &handler) {
+            auto accA = bufA.get_access<access::mode::read>(handler);
+            auto accB = bufB.get_access<access::mode::read>(handler);
+            auto accC = bufC.get_access<access::mode::write>(handler);
 
-         handler.parallel_for(range<1>(len),
-                        [=](id<1> idx) { accC[idx] = accA[idx] ^ accB[idx]; });
-     }).wait();
+            handler.parallel_for(range<1>(len), [=](id<1> idx) {
+                accC[idx] = accA[idx] ^ accB[idx];
+            });
+        })
+        .wait();
 }
 
 #else
@@ -602,7 +656,8 @@ void encryptBlock(const unsigned char in[], unsigned char out[],
     // Final round
     subBytes(state);
     shiftRows(state);
-    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound * AES_STATE_ROWS * NUM_BLOCKS);
+    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound *
+                                       AES_STATE_ROWS * NUM_BLOCKS);
 
     // Copy state array to output block
     for (i = 0; i < AES_STATE_ROWS; i++)
@@ -621,18 +676,19 @@ void decryptBlock(const unsigned char in[], unsigned char out[],
 {
     unsigned char state[AES_STATE_ROWS][NUM_BLOCKS];
     unsigned int i, j, round;
-    for(int i =0; i< 4 * NUM_BLOCKS; i++)
-        std::cout<<in[i];
+
     // Initialize state array with input block
     for (i = 0; i < AES_STATE_ROWS; i++)
         for (j = 0; j < NUM_BLOCKS; j++)
             state[i][j] = in[i + AES_STATE_ROWS * j];
 
     // Initial round key addition
-    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound * AES_STATE_ROWS * NUM_BLOCKS);
+    addRoundKey(state, roundKeys + aesKeyLengthData[keyLength].numRound *
+                                       AES_STATE_ROWS * NUM_BLOCKS);
 
     // Main rounds
-    for (round = aesKeyLengthData[keyLength].numRound - 1; round >= 1; round--) {
+    for (round = aesKeyLengthData[keyLength].numRound - 1; round >= 1;
+         round--) {
         invSubBytes(state);
         invShiftRows(state);
         addRoundKey(state, roundKeys + round * AES_STATE_ROWS * NUM_BLOCKS);
@@ -679,7 +735,8 @@ void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 {
     for (size_t i = 0; i < AES_STATE_ROWS; i++)
         for (size_t j = 0; j < NUM_BLOCKS; j++)
-            state[i][j] = sBox[state[i][j] / 16][state[i][j] % 16];
+            state[i][j] = sBox[state[i][j] / BLOCK_BYTES_LEN]
+                              [state[i][j] % BLOCK_BYTES_LEN];
 }
 
 /*ShiftRows transformation*/
@@ -711,7 +768,8 @@ void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
 }
 
 /*AddRoundKey transformation*/
-void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char *key)
+void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS],
+                 unsigned char *key)
 {
     unsigned int i, j;
     for (i = 0; i < AES_STATE_ROWS; i++)
@@ -723,7 +781,7 @@ void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char 
 void subWord(unsigned char a[AES_STATE_ROWS])
 {
     for (size_t i = 0; i < AES_STATE_ROWS; i++)
-        a[i] = sBox[a[i] / 16][a[i] % 16];
+        a[i] = sBox[a[i] / BLOCK_BYTES_LEN][a[i] % BLOCK_BYTES_LEN];
 }
 
 /*Rotates a word (4 bytes)*/
@@ -747,7 +805,8 @@ void rconWord(unsigned char a[AES_STATE_ROWS], unsigned int n)
 }
 
 /*Expands the key for AES encryption/decryption*/
-void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyLength)
+void keyExpansion(const unsigned char *key, unsigned char w[],
+                  AESKeyLength keyLength)
 {
     unsigned char temp[AES_STATE_ROWS], rcon[AES_STATE_ROWS];
     unsigned int i = 0;
@@ -761,22 +820,27 @@ void keyExpansion(const unsigned char *key, unsigned char w[], AESKeyLength keyL
     i = AES_STATE_ROWS * aesKeyLengthData[keyLength].numWord;
 
     //main expansion loop
-    while (i < AES_STATE_ROWS * NUM_BLOCKS * (aesKeyLengthData[keyLength].numRound + 1)) {
+    while (i < AES_STATE_ROWS * NUM_BLOCKS *
+                   (aesKeyLengthData[keyLength].numRound + 1)) {
         for (size_t k = AES_STATE_ROWS, j = 0; k > 0; --k, ++j)
             temp[j] = w[i - k];
 
         if (i / AES_STATE_ROWS % aesKeyLengthData[keyLength].numWord == 0) {
             rotWord(temp);
             subWord(temp);
-            rconWord(rcon, i / (aesKeyLengthData[keyLength].numWord * AES_STATE_ROWS));
+            rconWord(rcon, i / (aesKeyLengthData[keyLength].numWord *
+                                AES_STATE_ROWS));
             for (int i = 0; i < AES_STATE_ROWS; i++)
                 temp[i] = temp[i] ^ rcon[i];
         }
-        else if (aesKeyLengthData[keyLength].numWord > 6 && i / AES_STATE_ROWS % aesKeyLengthData[keyLength].numWord == 4)
+        else if (aesKeyLengthData[keyLength].numWord > 6 &&
+                 i / AES_STATE_ROWS % aesKeyLengthData[keyLength].numWord == 4)
             subWord(temp);
 
         for (int k = 0; k < AES_STATE_ROWS; k++)
-            w[i + k] = w[i + k - AES_STATE_ROWS * aesKeyLengthData[keyLength].numWord] ^ temp[k];
+            w[i + k] = w[i + k -
+                         AES_STATE_ROWS * aesKeyLengthData[keyLength].numWord] ^
+                       temp[k];
 
         i += 4;
     }
@@ -790,7 +854,7 @@ void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS])
     for (i = 0; i < AES_STATE_ROWS; i++)
         for (j = 0; j < NUM_BLOCKS; j++) {
             t = state[i][j];
-            state[i][j] = invSBox[t / 16][t % 16];
+            state[i][j] = invSBox[t / BLOCK_BYTES_LEN][t % BLOCK_BYTES_LEN];
         }
 }
 
@@ -833,6 +897,24 @@ void xorBlocks(const unsigned char *a, const unsigned char *b, unsigned char *c,
     for (unsigned int i = 0; i < len; i++) {
         c[i] = a[i] ^ b[i];
     }
+}
+
+size_t calculatEncryptedLenAES(size_t inLen, bool isFirst,
+                               AESChainingMode chainingMode)
+{
+    if (inLen % BLOCK_BYTES_LEN == 0)  //padding
+        inLen += BLOCK_BYTES_LEN;
+    if (isFirst && chainingMode != ECB)  //iv
+        inLen += BLOCK_BYTES_LEN;
+    return (inLen + 15) & ~15;
+}
+
+size_t calculatDecryptedLenAES(size_t inLen, bool isFirst,
+                               AESChainingMode chainingMode)
+{
+    if (isFirst && chainingMode != ECB)  //iv
+        inLen -= BLOCK_BYTES_LEN;
+    return inLen;
 }
 
 #endif

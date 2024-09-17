@@ -1,7 +1,6 @@
 #include "../include/aes_stream.h"
 #include <thread>
 #include <vector>
-#include <mutex>
 #include <cstring>
 
 /**
@@ -17,8 +16,10 @@
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  @param blockIndex The index of the current block to be encrypted, used to compute the counter value.
  */
-void encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
-                             AESKeyLength keyLength, const unsigned char* lastData, unsigned int blockIndex) 
+void encryptBlockThreadedCTR(const unsigned char *input, unsigned char *output,
+                             unsigned char *roundKeys, AESKeyLength keyLength,
+                             const unsigned char *lastData,
+                             unsigned int blockIndex)
 {
     unsigned char block[BLOCK_BYTES_LEN];
     unsigned char counter[BLOCK_BYTES_LEN];
@@ -26,9 +27,10 @@ void encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
     memcpy(counter, lastData, BLOCK_BYTES_LEN);
 
     for (int j = BLOCK_BYTES_LEN - 1, k = blockIndex; j >= 0; --j) {
-        counter[j] += (k % 256); 
-        if (counter[j] != 0) break;  
-        k /= 256;  
+        counter[j] += (k % 256);
+        if (counter[j] != 0)
+            break;
+        k /= 256;
     }
 
     encryptBlock(counter, block, roundKeys, keyLength);
@@ -49,18 +51,22 @@ void encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
  @param keyLength The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  */
-void encryptCTRMultithreaded(const unsigned char* plaintext, unsigned char* ciphertext, unsigned int length, 
-                             unsigned char* roundKeys, AESKeyLength keyLength, const unsigned char* lastData) 
+void encryptCTRMultithreaded(const unsigned char *plaintext,
+                             unsigned char *ciphertext, unsigned int length,
+                             unsigned char *roundKeys, AESKeyLength keyLength,
+                             const unsigned char *lastData)
 {
     unsigned int numBlocks = length / BLOCK_BYTES_LEN;
-    std::vector<std::thread> threads;  
+    std::vector<std::thread> threads;
 
     for (unsigned int i = 0; i < numBlocks; ++i) {
-        threads.push_back(std::thread(encryptBlockThreadedCTR, &plaintext[i * BLOCK_BYTES_LEN], 
-                                      &ciphertext[i * BLOCK_BYTES_LEN], roundKeys, keyLength, lastData, i));
+        threads.push_back(std::thread(encryptBlockThreadedCTR,
+                                      &plaintext[i * BLOCK_BYTES_LEN],
+                                      &ciphertext[i * BLOCK_BYTES_LEN],
+                                      roundKeys, keyLength, lastData, i));
     }
 
-    for (auto& th : threads) {
+    for (auto &th : threads) {
         th.join();
     }
 }
@@ -78,8 +84,10 @@ void encryptCTRMultithreaded(const unsigned char* plaintext, unsigned char* ciph
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  @param blockIndex The index of the current block to be decrypted, used to compute the counter value.
  */
-void decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
-                             AESKeyLength keyLength, const unsigned char* lastData, unsigned int blockIndex) 
+void decryptBlockThreadedCTR(const unsigned char *input, unsigned char *output,
+                             unsigned char *roundKeys, AESKeyLength keyLength,
+                             const unsigned char *lastData,
+                             unsigned int blockIndex)
 {
     unsigned char block[BLOCK_BYTES_LEN];
     unsigned char counter[BLOCK_BYTES_LEN];
@@ -87,9 +95,10 @@ void decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
     memcpy(counter, lastData, BLOCK_BYTES_LEN);
 
     for (int j = BLOCK_BYTES_LEN - 1, k = blockIndex; j >= 0; --j) {
-        counter[j] += (k % 256);  
-        if (counter[j] != 0) break;  
-        k /= 256; 
+        counter[j] += (k % 256);
+        if (counter[j] != 0)
+            break;
+        k /= 256;
     }
 
     encryptBlock(counter, block, roundKeys, keyLength);
@@ -110,85 +119,97 @@ void decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
  @param keyLength  The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  */
-void decryptCTRMultithreaded(const unsigned char* ciphertext, unsigned char* plaintext, unsigned int length, 
-                             unsigned char* roundKeys, AESKeyLength keyLength, const unsigned char* lastData) 
+void decryptCTRMultithreaded(const unsigned char *ciphertext,
+                             unsigned char *plaintext, unsigned int length,
+                             unsigned char *roundKeys, AESKeyLength keyLength,
+                             const unsigned char *lastData)
 {
     unsigned int numBlocks = length / BLOCK_BYTES_LEN;
-    std::vector<std::thread> threads;  
+    std::vector<std::thread> threads;
 
-    for (unsigned int i = 0; i < numBlocks; ++i) {
-        threads.push_back(std::thread(decryptBlockThreadedCTR, &ciphertext[i * BLOCK_BYTES_LEN], 
-                                      &plaintext[i * BLOCK_BYTES_LEN], roundKeys, keyLength, lastData, i));
-    }
+    for (unsigned int i = 0; i < numBlocks; ++i)
+        threads.push_back(std::thread(decryptBlockThreadedCTR,
+                                      &ciphertext[i * BLOCK_BYTES_LEN],
+                                      &plaintext[i * BLOCK_BYTES_LEN],
+                                      roundKeys, keyLength, lastData, i));
 
-    for (auto& th : threads) {
+    for (auto &th : threads)
         th.join();
-    }
 }
 
-void AESCtr::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength)
+void AESCtr::encryptStart(unsigned char block[], unsigned int inLen,
+                          unsigned char *out, unsigned int outLen,
+                          unsigned char *key, AESKeyLength keyLength)
 {
-    unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
     generateRandomIV(iv);
     memcpy(lastData, iv, BLOCK_BYTES_LEN);
-    encrypt(block, inLen, key, out, outLen, iv, lastData, keyLength);
-    unsigned char *newOut = new unsigned char[outLen + 16];
-    memcpy(newOut, out, outLen);
-    memcpy(newOut + outLen, iv, 16);
-    out = newOut;
-    this -> lastBlock  = out;
-    this -> key = key;
-    this -> keyLength = keyLength;
-    this-> lastData = lastData;
-    outLen += 16;
+    encrypt(block, inLen, key, out, outLen - BLOCK_BYTES_LEN, iv, lastData,
+            keyLength);
+    memcpy(out + outLen - BLOCK_BYTES_LEN, iv, BLOCK_BYTES_LEN);
+    memcpy(lastBlock, out + outLen - BLOCK_BYTES_LEN * 2, BLOCK_BYTES_LEN);
+    this->key = new unsigned char[keyLength];
+    memcpy(this->key, key, keyLength);
+    this->keyLength = keyLength;
 }
 
-void AESCtr::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
+void AESCtr::encryptContinue(unsigned char block[], unsigned int inLen,
+                             unsigned char *out, unsigned int outLen)
 {
-    encrypt(block, inLen, key,out, outLen, lastBlock, lastData, keyLength);
+    encrypt(block, inLen, key, out, outLen, lastData, lastData, keyLength);
+    memcpy(lastBlock, out + outLen - BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
 }
 
-void AESCtr::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
+void AESCtr::decryptStart(unsigned char block[], unsigned int inLen,
+                          unsigned char *out, unsigned int &outLen,
+                          unsigned char *key, AESKeyLength keyLength)
 {
-  unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
-  memcpy(lastData, iv, BLOCK_BYTES_LEN);
-  this-> iv = block + inLen - 16;
-  decrypt(block,  inLen - 16, key, out, outLen, block + inLen - 16, lastData, keyLength);
-  this-> lastBlock = out;
-  this->lastData = lastData;
+    memcpy(lastData, iv, BLOCK_BYTES_LEN);
+    memcpy(iv, block + inLen - BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
+    decrypt(block, inLen - BLOCK_BYTES_LEN, key, out, outLen,
+            block + inLen - BLOCK_BYTES_LEN, lastData, keyLength);
+    memcpy(lastBlock, block + inLen - 2 * BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
 }
 
-void AESCtr::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
+void AESCtr::decryptContinue(unsigned char block[], unsigned int inLen,
+                             unsigned char *out, unsigned int &outLen)
 {
-  decrypt(block,  inLen  , key, out, outLen, lastBlock, lastData, keyLength);
+    decrypt(block, inLen, key, out, outLen, lastData, lastData, keyLength);
+    memcpy(lastBlock, block + inLen - BLOCK_BYTES_LEN, BLOCK_BYTES_LEN);
 }
 
 void AESCtr::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
-                unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
+                     unsigned char *out, unsigned int outLen,
+                     const unsigned char *iv, unsigned char *lastData,
+                     AESKeyLength keyLength)
 {
+    size_t paddedLength = getPaddedLength(inLen);
+    unsigned char *paddedIn = new unsigned char[paddedLength];
+    padMessage(in, inLen, paddedIn);
 
-    padMessage(in, inLen, outLen);
-    out = new unsigned char[outLen];
-
-    unsigned char* roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * AES_STATE_ROWS];
+    unsigned char *roundKeys =
+        new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) *
+                          NUM_BLOCKS * AES_STATE_ROWS];
     keyExpansion(key, roundKeys, keyLength);
 
-    encryptCTRMultithreaded(in, out, outLen, roundKeys, keyLength, iv);
-
-    delete[] roundKeys;  
+    encryptCTRMultithreaded(paddedIn, out, outLen, roundKeys, keyLength, iv);
+    delete[] paddedIn;
+    delete[] roundKeys;
 }
 
 void AESCtr::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
-                unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
+                     unsigned char *out, unsigned int &outLen,
+                     const unsigned char *iv, unsigned char *lastData,
+                     AESKeyLength keyLength)
 {
-    checkLength(inLen);  
+    checkLength(inLen);
     outLen = inLen;
-    out = new unsigned char[outLen];
 
-    unsigned char* roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * AES_STATE_ROWS];
+    unsigned char *roundKeys =
+        new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) *
+                          NUM_BLOCKS * AES_STATE_ROWS];
     keyExpansion(key, roundKeys, keyLength);
 
     decryptCTRMultithreaded(in, out, outLen, roundKeys, keyLength, iv);
-
-    delete[] roundKeys;  
+    outLen = getUnpadMessageLength(out, inLen);
+    delete[] roundKeys;
 }
