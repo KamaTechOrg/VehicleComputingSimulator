@@ -1,90 +1,96 @@
 #include "../include/aes_stream.h"
 
-void AESOfb::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength) 
+CK_RV AESOfb::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength) 
 {
     unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
+    if(!lastData)
+        return CKR_FUNCTION_FAILED;
     generateRandomIV(iv);
     memcpy(lastData, iv, BLOCK_BYTES_LEN);
     encrypt(block, inLen, key, out, outLen, iv,lastData, keyLength);
-    unsigned char *newOut = new unsigned char[outLen + 16];
+    unsigned char *newOut = new unsigned char[outLen + BLOCK_BYTES_LEN];
+    if(!newOut)
+        return CKR_FUNCTION_FAILED;
     memcpy(newOut, out, outLen);
-    memcpy(newOut + outLen, iv, 16);
+    memcpy(newOut + outLen, iv, BLOCK_BYTES_LEN);
+    memcpy(lastBlock, out, outLen);
     out = newOut;
     this -> lastBlock  = out;
     this -> key = key;
     this -> keyLength = keyLength;
-   this-> lastData = lastData;
-    outLen += 16;
+    this-> lastData = lastData;
+    outLen += BLOCK_BYTES_LEN;
+
+    return CKR_OK;
 }
 
-void AESOfb::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
+CK_RV AESOfb::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
 {
-    encrypt(block, inLen, key,out, outLen, lastBlock, lastData, keyLength);
+    return encrypt(block, inLen, key,out, outLen, lastBlock, lastData, keyLength);
 }
 
-void AESOfb::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
+CK_RV AESOfb::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
 {
-  unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
+    unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
   memcpy(lastData, iv, BLOCK_BYTES_LEN);
-  this-> iv = block + inLen - 16;
-  decrypt(block,  inLen - 16, key, out, outLen, block + inLen - 16, lastData, keyLength);
+  this-> iv = block + inLen - BLOCK_BYTES_LEN;
+  CK_RV status = decrypt(block,  inLen - BLOCK_BYTES_LEN, key, out, outLen, block + inLen - BLOCK_BYTES_LEN, lastData, keyLength);
   this-> lastBlock = out;
   this->lastData = lastData;
+
+  return status;
 }
 
-void AESOfb::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
+CK_RV AESOfb::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
 {
-  decrypt(block,  inLen , key, out, outLen, lastBlock, lastData, keyLength);
+   return decrypt(block,  inLen , key, out, outLen, lastBlock, lastData, keyLength);
 }
 
-void AESOfb::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
+CK_RV AESOfb::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
                 unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
 {
     padMessage(in, inLen, outLen);
-    unsigned char block[BLOCK_BYTES_LEN];
     out = new unsigned char[outLen];
+    unsigned char block[BLOCK_BYTES_LEN];
     unsigned char feedback[BLOCK_BYTES_LEN];
     unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
+    if(!roundKeys || !out)
+        return CKR_FUNCTION_FAILED;
     keyExpansion(key, roundKeys, keyLength);
-    if(lastData)
-        memcpy(feedback, lastData, BLOCK_BYTES_LEN);
-    else
-       memcpy(feedback, iv, BLOCK_BYTES_LEN);
+    memcpy(feedback, lastData, BLOCK_BYTES_LEN);
     for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
         encryptBlock(feedback, block, roundKeys, keyLength);
+        xorBlocks(in + i, block, out+ i,BLOCK_BYTES_LEN);
         for (unsigned int j = 0; j < BLOCK_BYTES_LEN; ++j) 
             out[i + j] = in[i + j] ^ block[j];
         memcpy(feedback, block, BLOCK_BYTES_LEN);
         memcpy(lastData, feedback, BLOCK_BYTES_LEN);
     }
     delete[] roundKeys;
+
+    return CKR_FUNCTION_FAILED;
 }
 
-void AESOfb::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
+CK_RV AESOfb::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
                 unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
 {
-    checkLength(inLen);
+    if(!checkLength(inLen))
+        return CKR_FUNCTION_FAILED;
     unsigned char block[BLOCK_BYTES_LEN];
     outLen = inLen;
     out = new unsigned char[outLen];
     unsigned char feedback[BLOCK_BYTES_LEN];
     unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
-    if(lastData)
-        memcpy(feedback, lastData, BLOCK_BYTES_LEN);
-    else
-       memcpy(feedback, iv, BLOCK_BYTES_LEN);
-    for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
-        encryptBlock(feedback, block, roundKeys, keyLength);
-        // Copy only the amount of data needed for the current block
-        unsigned int blockLen = (i + BLOCK_BYTES_LEN <= outLen) ? BLOCK_BYTES_LEN : (outLen - i);
-        for (unsigned int j = 0; j < blockLen; ++j) 
-            out[i + j] = in[i + j] ^ block[j];
-        // Update feedback to be used for the next block
-        memcpy(feedback, block, BLOCK_BYTES_LEN);
-        memcpy(lastData, feedback, BLOCK_BYTES_LEN);
-
+    memcpy(feedback, lastData, BLOCK_BYTES_LEN);
+        for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
+            encryptBlock(feedback, block, roundKeys, keyLength);
+            xorBlocks(in + i, block, out + i, BLOCK_BYTES_LEN);
+            memcpy(feedback, block, BLOCK_BYTES_LEN);
+            memcpy(lastData, feedback, BLOCK_BYTES_LEN);
     }
     unpadMessage(out, outLen);
     delete[] roundKeys;
+
+    return CKR_FUNCTION_FAILED;
 }

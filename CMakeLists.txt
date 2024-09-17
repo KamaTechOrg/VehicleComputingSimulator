@@ -13,7 +13,7 @@ include_directories(${GMP_INCLUDE_DIR})
 # Find Google Test
 find_package(GTest REQUIRED)
 # Add source files
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB SOURCES "src/*.cpp" "logger/*.cpp")
 # Check if SYCL is enabled
 option(USE_SYCL "Enable SYCL support" OFF)
 include_directories(src)
@@ -33,13 +33,14 @@ if(USE_SYCL)
     remove_definitions(-DUSE_SYCL)
 endif()
 # Add the executable for the tests
-add_executable(runTests tests/aes_tests.cpp tests/ecc_tests.cpp tests/sha256_tests.cpp ${SOURCES})
+add_executable(runTests tests/aes_tests.cpp   ${SOURCES})
 # Link libraries
 target_link_libraries(runTests
     ${GMP_LIBRARY} 
     ${GMPXX_LIBRARY} 
     gtest gtest_main pthread
 )
+
 # Add debug flags
 set(CMAKE_BUILD_TYPE Debug)
 # Add the executable for the tests

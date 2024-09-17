@@ -1,32 +1,34 @@
-#include <string>
+
+#include "../include/aes_stream_factory.h"
 #include "../include/crypto_api.h"
 
-StreamAES* AESEcbFactory::create() const  
-{
-    logger.logMessage(logger::LogLevel::INFO, "using EBC chaining mode");
-    return new AESEcb();
-};
+FactoryManager FactoryManager::instance;
 
-StreamAES* AESCbcFactory::create() const  
-{
-    logger.logMessage(logger::LogLevel::INFO, "using CBC chaining mode");
-    return new AESCbc();
-};
+FactoryManager &FactoryManager::getInstance() 
+{ 
+    return instance; 
+}
 
-StreamAES* AESCfbFactory::create() const  
+std::string aesChainingModeToString(AESChainingMode mode) 
 {
-    logger.logMessage(logger::LogLevel::INFO, "using CFB chaining mode");
-    return new AESCfb();
-};
+    switch (mode) {
+        case AESChainingMode::ECB: return "ECB";
+        case AESChainingMode::CBC: return "CBC";
+        case AESChainingMode::CFB: return "CFB";
+        case AESChainingMode::OFB: return "OFB";
+        case AESChainingMode::CTR: return "CTR";
+        default: return "Unknown";
+    }
+}
 
-StreamAES* AESOfbFactory::create() const  
+StreamAES* FactoryManager::create(const AESChainingMode &type) const 
 {
-    logger.logMessage(logger::LogLevel::INFO, "using OFB chaining mode");
-    return new AESOfb();
-};
+    std::string modeString = aesChainingModeToString(type);
+    logger.logMessage(logger::LogLevel::INFO, "using " + modeString + " chaining mode");
 
-StreamAES* AESCtrFactory::create() const  
-{
-    logger.logMessage(logger::LogLevel::INFO, "using CTR chaining mode");
-    return new AESCtr();
-};
+    auto it = factories.find(type);
+    if (it != factories.end())
+        return it->second;
+
+    return nullptr;
+}

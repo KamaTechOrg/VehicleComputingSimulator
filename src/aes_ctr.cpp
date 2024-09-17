@@ -1,7 +1,6 @@
 #include "../include/aes_stream.h"
 #include <thread>
 #include <vector>
-#include <mutex>
 #include <cstring>
 
 /**
@@ -17,7 +16,7 @@
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  @param blockIndex The index of the current block to be encrypted, used to compute the counter value.
  */
-void encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
+CK_RV encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
                              AESKeyLength keyLength, const unsigned char* lastData, unsigned int blockIndex) 
 {
     unsigned char block[BLOCK_BYTES_LEN];
@@ -34,6 +33,8 @@ void encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
     encryptBlock(counter, block, roundKeys, keyLength);
 
     xorBlocks(block, input, output, BLOCK_BYTES_LEN);
+
+    return CKR_OK;
 }
 
 /**
@@ -49,7 +50,7 @@ void encryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
  @param keyLength The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  */
-void encryptCTRMultithreaded(const unsigned char* plaintext, unsigned char* ciphertext, unsigned int length, 
+CK_RV encryptCTRMultithreaded(const unsigned char* plaintext, unsigned char* ciphertext, unsigned int length, 
                              unsigned char* roundKeys, AESKeyLength keyLength, const unsigned char* lastData) 
 {
     unsigned int numBlocks = length / BLOCK_BYTES_LEN;
@@ -63,6 +64,8 @@ void encryptCTRMultithreaded(const unsigned char* plaintext, unsigned char* ciph
     for (auto& th : threads) {
         th.join();
     }
+
+    return CKR_OK;
 }
 
 /**
@@ -78,7 +81,7 @@ void encryptCTRMultithreaded(const unsigned char* plaintext, unsigned char* ciph
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  @param blockIndex The index of the current block to be decrypted, used to compute the counter value.
  */
-void decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
+CK_RV decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, unsigned char* roundKeys, 
                              AESKeyLength keyLength, const unsigned char* lastData, unsigned int blockIndex) 
 {
     unsigned char block[BLOCK_BYTES_LEN];
@@ -95,6 +98,8 @@ void decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
     encryptBlock(counter, block, roundKeys, keyLength);
 
     xorBlocks(block, input, output, BLOCK_BYTES_LEN);
+
+    return CKR_OK;
 }
 
 /**
@@ -110,85 +115,103 @@ void decryptBlockThreadedCTR(const unsigned char* input, unsigned char* output, 
  @param keyLength  The length of the AES key being used (e.g., AES_KEY_LENGTH_128, AES_KEY_LENGTH_192, AES_KEY_LENGTH_256).
  @param iv        Pointer to the initialization vector (IV) used for the counter.
  */
-void decryptCTRMultithreaded(const unsigned char* ciphertext, unsigned char* plaintext, unsigned int length, 
+CK_RV decryptCTRMultithreaded(const unsigned char* ciphertext, unsigned char* plaintext, unsigned int length, 
                              unsigned char* roundKeys, AESKeyLength keyLength, const unsigned char* lastData) 
 {
     unsigned int numBlocks = length / BLOCK_BYTES_LEN;
     std::vector<std::thread> threads;  
 
-    for (unsigned int i = 0; i < numBlocks; ++i) {
+    for (unsigned int i = 0; i < numBlocks; ++i) 
         threads.push_back(std::thread(decryptBlockThreadedCTR, &ciphertext[i * BLOCK_BYTES_LEN], 
                                       &plaintext[i * BLOCK_BYTES_LEN], roundKeys, keyLength, lastData, i));
-    }
 
-    for (auto& th : threads) {
+    for (auto& th : threads) 
         th.join();
-    }
+
+    return CKR_OK;
+ 
 }
 
-void AESCtr::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength)
+CK_RV AESCtr::encryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen,unsigned char* key, AESKeyLength keyLength)
 {
     unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
+    if(!lastData)
+        return CKR_FUNCTION_FAILED;
     generateRandomIV(iv);
     memcpy(lastData, iv, BLOCK_BYTES_LEN);
-    encrypt(block, inLen, key, out, outLen, iv, lastData, keyLength);
-    unsigned char *newOut = new unsigned char[outLen + 16];
+    CK_RV status = encrypt(block, inLen, key, out, outLen, iv, lastData, keyLength);
+    unsigned char *newOut = new unsigned char[outLen + BLOCK_BYTES_LEN];
+    if(!newOut)
+        return CKR_FUNCTION_FAILED;
     memcpy(newOut, out, outLen);
-    memcpy(newOut + outLen, iv, 16);
+    memcpy(newOut + outLen, iv, BLOCK_BYTES_LEN);
     out = newOut;
     this -> lastBlock  = out;
     this -> key = key;
     this -> keyLength = keyLength;
     this-> lastData = lastData;
-    outLen += 16;
+    outLen += BLOCK_BYTES_LEN;
+
+    return status;
 }
 
-void AESCtr::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
+CK_RV AESCtr::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
 {
-    encrypt(block, inLen, key,out, outLen, lastBlock, lastData, keyLength);
+   return encrypt(block, inLen, key,out, outLen, lastData, lastData, keyLength);
 }
 
-void AESCtr::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
+CK_RV AESCtr::decryptStart(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen,unsigned char* key, AESKeyLength keyLength)
 {
-  unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
-  memcpy(lastData, iv, BLOCK_BYTES_LEN);
-  this-> iv = block + inLen - 16;
-  decrypt(block,  inLen - 16, key, out, outLen, block + inLen - 16, lastData, keyLength);
-  this-> lastBlock = out;
-  this->lastData = lastData;
+    unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
+    if(!lastData)
+        return CKR_FUNCTION_FAILED;
+    memcpy(lastData, iv, BLOCK_BYTES_LEN);
+    this-> iv = block + inLen - BLOCK_BYTES_LEN;
+    CK_RV status = decrypt(block,  inLen - BLOCK_BYTES_LEN, key, out, outLen, block + inLen - BLOCK_BYTES_LEN, lastData, keyLength);
+    this-> lastBlock = out;
+    this->lastData = lastData;
+
+    return status;
 }
 
-void AESCtr::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
+CK_RV AESCtr::decryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
 {
-  decrypt(block,  inLen  , key, out, outLen, lastBlock, lastData, keyLength);
+  return decrypt(block,  inLen  , key, out, outLen, lastData, lastData, keyLength);
 }
 
-void AESCtr::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
+CK_RV AESCtr::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
                 unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
 {
-
     padMessage(in, inLen, outLen);
     out = new unsigned char[outLen];
 
     unsigned char* roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * AES_STATE_ROWS];
+    if(!roundKeys || !out)
+        return CKR_FUNCTION_FAILED;
+
     keyExpansion(key, roundKeys, keyLength);
 
-    encryptCTRMultithreaded(in, out, outLen, roundKeys, keyLength, iv);
+    CK_RV status = encryptCTRMultithreaded(in, out, outLen, roundKeys, keyLength, iv);
 
-    delete[] roundKeys;  
+    delete[] roundKeys;
+
+    return CKR_OK;
 }
 
-void AESCtr::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
+CK_RV AESCtr::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
                 unsigned char *&out, unsigned int &outLen, const unsigned char *iv, unsigned char *lastData, AESKeyLength keyLength) 
 {
-    checkLength(inLen);  
+    if(!checkLength(inLen))
+        return CKR_FUNCTION_FAILED;  
     outLen = inLen;
     out = new unsigned char[outLen];
 
     unsigned char* roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * AES_STATE_ROWS];
     keyExpansion(key, roundKeys, keyLength);
 
-    decryptCTRMultithreaded(in, out, outLen, roundKeys, keyLength, iv);
+    CK_RV status = decryptCTRMultithreaded(in, out, outLen, roundKeys, keyLength, iv);
 
-    delete[] roundKeys;  
+    delete[] roundKeys; 
+
+    return status; 
 }

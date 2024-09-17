@@ -1,5 +1,6 @@
 #ifndef _AES_H_
 #define _AES_H_
+#include "return_codes.h"
 #include <functional>
 #include <cstdio>
 #include <cstring>
@@ -37,28 +38,30 @@ static std::map<AESKeyLength,AESData> aesKeyLengthData = {
    { AESKeyLength::AES_192, {6, 12, 192} },
    { AESKeyLength::AES_256, {8, 14, 256} }
 };
-
-    void padMessage(unsigned char* &message, unsigned int& length, unsigned int& paddedLength);
-    void unpadMessage(unsigned char* message, unsigned int& length);
-    void addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char* roundKey);
-    void checkLength(unsigned int length);
-    void encryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, AESKeyLength keyLength);
-    void decryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, AESKeyLength keyLength);
-    void subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
-    void invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
-    void invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
-    void invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
-    void mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
-    void shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
-    void keyExpansion(const unsigned char* key, unsigned char roundKeys[], AESKeyLength keyLength);
+    void generateKey(unsigned char *key, AESKeyLength keyLength);
+    CK_RV padMessage(unsigned char* &message, unsigned int& length, unsigned int& paddedLength);
+    CK_RV unpadMessage(unsigned char* message, unsigned int& length);
+    CK_RV addRoundKey(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS], unsigned char* roundKey);
+    bool checkLength(unsigned int length);
+    CK_RV encryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, AESKeyLength keyLength);
+    CK_RV decryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, AESKeyLength keyLength);
+    CK_RV subBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
+    CK_RV invSubBytes(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
+    CK_RV invShiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
+    CK_RV invMixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
+    CK_RV mixColumns(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
+    CK_RV shiftRows(unsigned char state[AES_STATE_ROWS][NUM_BLOCKS]);
+    CK_RV keyExpansion(const unsigned char* key, unsigned char roundKeys[], AESKeyLength keyLength);
     unsigned char xtime(unsigned char x);
-    void rotWord(unsigned char word[AES_STATE_ROWS]);
-    void subWord(unsigned char word[AES_STATE_ROWS]);
-    void rconWord(unsigned char rcon[AES_STATE_ROWS], unsigned int n);
+    CK_RV rotWord(unsigned char word[AES_STATE_ROWS]);
+    CK_RV subWord(unsigned char word[AES_STATE_ROWS]);
+    CK_RV rconWord(unsigned char rcon[AES_STATE_ROWS], unsigned int n);
     unsigned char multiply(unsigned char x, unsigned char y);
-    void xorBlocks(const unsigned char *a, const unsigned char *b,
+    CK_RV xorBlocks(const unsigned char *a, const unsigned char *b,
                     unsigned char *c, unsigned int len);
-   void generateRandomIV(unsigned char* iv); 
+    CK_RV generateRandomIV(unsigned char* iv); 
+    size_t calculatDecryptedLenAES(size_t inLen, bool isFirst);
+    size_t calculatEncryptedLenAES(size_t inLen, bool isFirst);
 
 /*Inverse S-Box*/
 const unsigned char invSBox[16][16] = {
@@ -130,6 +133,5 @@ const unsigned char sBox[16][16] = {
     {0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f,
      0xb0, 0x54, 0xbb, 0x16}};
 
-unsigned char *generateKey(AESKeyLength keyLength);
 
 #endif
