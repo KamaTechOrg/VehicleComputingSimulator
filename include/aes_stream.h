@@ -13,7 +13,7 @@ class StreamAES
     unsigned char* key;
     unsigned char* lastData;
  
-    StreamAES():iv(new unsigned char[16]){};
+    StreamAES():iv(new unsigned char[BLOCK_BYTES_LEN]){};
     /** 
  @brief Encrypts the initial block of data using AES in CBC mode.
  

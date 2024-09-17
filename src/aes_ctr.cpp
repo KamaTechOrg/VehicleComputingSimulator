@@ -132,15 +132,15 @@ void AESCtr::encryptStart(unsigned char block[], unsigned int inLen, unsigned ch
     generateRandomIV(iv);
     memcpy(lastData, iv, BLOCK_BYTES_LEN);
     encrypt(block, inLen, key, out, outLen, iv, lastData, keyLength);
-    unsigned char *newOut = new unsigned char[outLen + 16];
+    unsigned char *newOut = new unsigned char[outLen + BLOCK_BYTES_LEN];
     memcpy(newOut, out, outLen);
-    memcpy(newOut + outLen, iv, 16);
+    memcpy(newOut + outLen, iv, BLOCK_BYTES_LEN);
     out = newOut;
     this -> lastBlock  = out;
     this -> key = key;
     this -> keyLength = keyLength;
     this-> lastData = lastData;
-    outLen += 16;
+    outLen += BLOCK_BYTES_LEN;
 }
 
 void AESCtr::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
@@ -152,8 +152,8 @@ void AESCtr::decryptStart(unsigned char block[], unsigned int inLen, unsigned ch
 {
   unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
   memcpy(lastData, iv, BLOCK_BYTES_LEN);
-  this-> iv = block + inLen - 16;
-  decrypt(block,  inLen - 16, key, out, outLen, block + inLen - 16, lastData, keyLength);
+  this-> iv = block + inLen - BLOCK_BYTES_LEN;
+  decrypt(block,  inLen - BLOCK_BYTES_LEN, key, out, outLen, block + inLen - BLOCK_BYTES_LEN, lastData, keyLength);
   this-> lastBlock = out;
   this->lastData = lastData;
 }
