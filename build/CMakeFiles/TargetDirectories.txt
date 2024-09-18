@@ -1,4 +1,0 @@
-/root/VehicleComputingSimulator/build/CMakeFiles/rebuild_cache.dir
-/root/VehicleComputingSimulator/build/CMakeFiles/edit_cache.dir
-/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares.dir
-/root/VehicleComputingSimulator/build/CMakeFiles/DraggableSquares_autogen.dir

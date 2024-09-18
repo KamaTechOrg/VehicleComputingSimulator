@@ -1,0 +1,14 @@
+[369526644ns] [INFO] SRC SimulationStateManager DST Constructor SimulationStateManager instance created
+[369594634ns] [INFO] Process created with ID: 0
+[369788684ns] [INFO] Setting process for DraggableSquare
+[385836116ns] [INFO] Process created with ID: 1
+[386157299ns] [INFO] Setting process for DraggableSquare
+[386952736ns] [INFO] Process created with ID: 2
+[387219205ns] [INFO] Setting process for DraggableSquare
+[387777420ns] [INFO] Process created with ID: 3
+[388124653ns] [INFO] Setting process for DraggableSquare
+[17410742591ns] [INFO] openImageDialog() canceled: No image path selected.
+[27144858242ns] [INFO] Destroying DraggableSquare with ID: 0
+[27145689114ns] [INFO] Destroying DraggableSquare with ID: 1
+[27145972855ns] [INFO] Destroying DraggableSquare with ID: 2
+[27146215328ns] [INFO] Destroying DraggableSquare with ID: 3

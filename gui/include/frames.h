@@ -45,17 +45,12 @@ public:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-
-private slots:
-
 private:
     LogHandler &logHandler;
     std::vector<std::vector<Frame>> framesMat;
     std::multimap<QDateTime, LogHandler::LogEntry> activeLogEntries;
     QMap<int, int> idMapping;
     qint64 differenceTime;
-
-    
     QString generateRandomColor();
 };
 

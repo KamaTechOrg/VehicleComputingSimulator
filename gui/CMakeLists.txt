@@ -28,11 +28,12 @@ add_executable(DraggableSquares
     src/process.cpp
     src/process_dialog.cpp
     src/main_window.cpp
-    src/simulation_data_manager.cpp
+    src/simulation_state_manager.cpp
     src/log_handler.cpp
     src/frames.cpp
     src/dataToSql.cpp
     src/HistoryWindow.cpp
+    ../logger/logger.cpp
 )
 
 # Add headers to the executable target
@@ -40,13 +41,13 @@ target_sources(DraggableSquares PRIVATE
     include/main_window.h
     include/draggable_square.h
     include/process_dialog.h
-    include/simulation_data_manager.h
+    include/simulation_state_manager.h
     include/log_handler.h
     include/frames.h
     include/process.h
     include/dataToSql.h
     include/HistoryWindow.h
-
+    ../logger/logger.h
 )
 
 # Include BSON directories
@@ -61,7 +62,7 @@ target_include_directories(DraggableSquares PRIVATE ${BSON_INCLUDE_DIRS} include
 
 
 # # Enable testing
-#enable_testing()
+# enable_testing()
 
 # # Add test directory
-#add_subdirectory(test)
+# add_subdirectory(test)

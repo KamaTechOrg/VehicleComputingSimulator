@@ -5,51 +5,56 @@ class ProcessDialogTests : public QObject {
     Q_OBJECT
 
 private slots:
-    void testGetId() {
+    void testGetId()
+    {
         ProcessDialog dialog;
         dialog.setId(123);
         QCOMPARE(dialog.getId(), 123);
     }
 
-    void testGetName() {
+    void testGetName()
+    {
         ProcessDialog dialog;
         dialog.setName("Test Process");
         QCOMPARE(dialog.getName(), "Test Process");
     }
 
-    void testGetCMakeProject() {
+    void testGetExecutionFile()
+    {
         ProcessDialog dialog;
-        dialog.setCMakeProject("TestProject");
-        QCOMPARE(dialog.getCMakeProject(), "TestProject");
+        dialog.setExecutionFile("TestProject");
+        QCOMPARE(dialog.getExecutionFile(), "TestProject");
     }
 
-    void testGetQEMUPlatform() {
+    void testGetQEMUPlatform()
+    {
         ProcessDialog dialog;
         dialog.setQEMUPlatform("arm");
         QCOMPARE(dialog.getQEMUPlatform(), "arm");
     }
 
-    void testIsValid() {
+    void testIsValid()
+    {
         ProcessDialog dialog;
         dialog.setId(123);
         dialog.setName("Test Process");
-        dialog.setCMakeProject("TestProject");
+        dialog.setExecutionFile("TestProject");
         dialog.setQEMUPlatform("x86");
         QVERIFY(dialog.isValid());
     }
 
-    void testValidateAndAccept() {
+    void testValidateAndAccept()
+    {
         ProcessDialog dialog;
         dialog.setId(123);
         dialog.setName("Test Process");
-        dialog.setCMakeProject("TestProject");
+        dialog.setExecutionFile("TestProject");
         dialog.setQEMUPlatform("x86");
-        QVERIFY(dialog.validateAndAccept() == true); // Assuming true indicates validation success
+        // Assuming true indicates validation success
+        QVERIFY(dialog.validateAndAccept() == true);
     }
 };
 
-// הוסף את המאקרו QTEST_MAIN כדי ליצור את פונקציית main
 QTEST_MAIN(ProcessDialogTests)
 
-// הקובץ שכולל את Q_OBJECT צריך להיות מחובר למאקרו
 #include "test_process_dialog.moc"

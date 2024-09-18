@@ -27,7 +27,7 @@
 #include "log_handler.h"
 #include "process.h"
 #include "process_dialog.h"
-#include "simulation_data_manager.h"
+#include "simulation_state_manager.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QByteArray>
@@ -35,24 +35,47 @@
 #include <QTextStream>
 #include "dataToSql.h"
 #include "HistoryWindow.h"
+#include "../logger/logger.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
-   public:
+public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void updateTimer();
     void endProcesses();
+    void stopProcess(int deleteId);
     void showTimerInput();
     void timerTimeout();
     void openImageDialog();
     void createProcessConfigFile(int id, const QString &processPath);
-    QLineEdit *getTimeInput() const { return timeInput; }
-    QPushButton *getStartButton() const { return runButton; }
-    QTimer *getTimer() const { return timer; }
-    QTextEdit *getLogOutput() const { return logOutput; }
-    QString getCurrentImagePath() const { return currentImagePath; }
+    QLineEdit *getTimeInput() const 
+    { 
+        return timeInput; 
+    }
+    QPushButton *getStartButton() const 
+    { 
+        return runButton; 
+    }
+    QTimer *getTimer() const 
+    { 
+        return timer; 
+    }
+    QTextEdit *getLogOutput() const 
+    { 
+        return logOutput; 
+    }
+    QString getCurrentImagePath() const 
+    { 
+        return currentImagePath; 
+    }
+    static logger guiLogger;
+
+private slots:
+    void showSimulation();
+    void loadSimulation();
+
    public slots:
     void createNewProcess();
     void editSquare(int id);
@@ -62,14 +85,15 @@ class MainWindow : public QMainWindow {
    protected:
     void resizeEvent(QResizeEvent *event) override;
    private:
+    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
     friend class TestMainWindow;
     friend class DraggableSquareTest;
     friend class UserInteractionTests;
     void addProcessSquare(Process *&process);
     bool isUniqueId(int id);
     void addId(int id);
-    void addProcessSquare(Process *&process, int index,
-                          const QString &color = "background-color: green;");
+     void addProcessSquare(Process *process, QPoint position, int width,
+                          int height, const QString &color);
     void compileProjects();
     void runProjects();
     QString getExecutableName(const QString &buildDirPath);
@@ -90,9 +114,9 @@ class MainWindow : public QMainWindow {
     QTextEdit *logOutput;
     QTimer *timer;
     QLabel *imageLabel;
-    QVector<QProcess *> runningProcesses;
+    QVector<QPair<QProcess *, int>> runningProcesses;
     QString currentImagePath;
-    SimulationDataManager *dataManager;
+    SimulationStateManager *stateManager;
     LogHandler logHandler;
     Frames *frames;
     dataToSql *sqlDataManager;

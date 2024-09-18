@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-9297019bb49b7c2ad25d1e3752d3e643 CMakeFiles/DraggableSquares_autogen
