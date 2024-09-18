@@ -1,6 +1,6 @@
 #include <csignal>
 #include <iostream>
-#include "serverConnection.h"
+#include "server_connection.h"
 
 // Constructor
 ServerConnection::ServerConnection(int port, std::function<void(Packet&)> callback, ISocket* socketInterface) {

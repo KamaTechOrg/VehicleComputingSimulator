@@ -10,7 +10,6 @@ class RealSocket : public ISocket
 {
 private:
     logger log;
-
 public:
 
     RealSocket()

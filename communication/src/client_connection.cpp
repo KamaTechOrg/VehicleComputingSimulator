@@ -1,9 +1,15 @@
-#include "clientConnection.h"
+#include "client_connection.h"
 
 // Constructor
-ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface): connected(false){
-        setCallback(callback);
-        setSocketInterface(socketInterface);
+ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface)
+    : connected(false)
+{
+    setCallback(callback);
+#ifdef ESP32
+    setSocketInterface(new ESP32Socket("Wokwi-GUEST", ""));
+#else
+    setSocketInterface(new RealSocket());
+#endif
 }
 
 // Requesting a connection to the server
@@ -32,8 +38,17 @@ ErrorCode ClientConnection::connectToServer(int id)
     }
     
     connected = true;
+
+#ifdef ESP32
+    // Create a FreeRTOS task for receiving packets
+    xTaskCreatePinnedToCore([](void* param) {
+        static_cast<ClientConnection*>(param)->receivePacket();
+    }, "ReceiveTask", 4096, this, 1, &receiveTaskHandle, 0);
+#else
+    // Create a standard C++ thread for receiving packets
     receiveThread = std::thread(&ClientConnection::receivePacket, this);
     receiveThread.detach();
+#endif
 
     return ErrorCode::SUCCESS;
 }
@@ -41,17 +56,14 @@ ErrorCode ClientConnection::connectToServer(int id)
 // Sends the packet to the manager-sync
 ErrorCode ClientConnection::sendPacket(Packet &packet)
 {
-    //If send executed before start
+    // If send executed before start
     if (!connected)
         return ErrorCode::CONNECTION_FAILED;
         
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
-    if (!bytesSent)
-        return ErrorCode::SEND_FAILED;
-
-    if (bytesSent<0){
+    if (bytesSent < 0) {
         closeConnection();
-        return ErrorCode::CONNECTION_FAILED;
+        return ErrorCode::SEND_FAILED;
     }
         
     return ErrorCode::SUCCESS;
@@ -66,7 +78,7 @@ void ClientConnection::receivePacket()
         if (!valread)
             continue;
 
-        if(valread<0)
+        if(valread < 0)
             break;
 
         passPacketCom(packet);
@@ -80,8 +92,16 @@ ErrorCode ClientConnection::closeConnection()
 {
     connected = false;
     int socketInterfaceRes = socketInterface->close(clientSocket);
-    if(socketInterfaceRes < 0)
+    if (socketInterfaceRes < 0)
         return ErrorCode::CLOSE_FAILED;
+
+#ifdef ESP32
+    if (receiveTaskHandle != nullptr) {
+        vTaskDelete(receiveTaskHandle); // Close the FreeRTOS task if it's running
+        receiveTaskHandle = nullptr;
+    }
+#endif
+
     return ErrorCode::SUCCESS;
 }
 
@@ -114,10 +134,14 @@ int ClientConnection::isConnected()
 
 bool ClientConnection::isReceiveThreadRunning()
 {
-    return false;
+#ifdef ESP32
+    return receiveTaskHandle != nullptr;
+#else
+    return receiveThread.joinable();
+#endif
 }
 
-//Destructor
+// Destructor
 ClientConnection::~ClientConnection()
 {
     closeConnection();

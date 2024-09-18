@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <functional>
+#include <algorithm>
 #include <map>
 #include <csignal>
 #include "message.h"

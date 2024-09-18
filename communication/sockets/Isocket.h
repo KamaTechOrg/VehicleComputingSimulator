@@ -1,8 +1,14 @@
 #ifndef ISOCKET_H
 #define ISOCKET_H
+#ifdef INADDR_NONE
+#undef INADDR_NONE
+#endif
 
-#include <sys/socket.h>
-
+#ifdef ESP32
+#include <lwip/sockets.h>  // For ESP32
+#else
+#include <sys/socket.h>    // For Linux or other platforms
+#endif
 class ISocket {
 public:
     virtual int socket(int domain, int type, int protocol) = 0;
