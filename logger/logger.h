@@ -29,6 +29,7 @@ public:
     std::string getLogFileName();
     std::string sharedLogFileName = "shared_log_file_name.txt";
     void cleanUp();
+    void createLogDirectory();
 
 private:
     static std::string logLevelToString(LogLevel level);
@@ -39,6 +40,7 @@ private:
     bool isInitialized = false;
     static std::mutex logMutex;
     static std::chrono::system_clock::time_point initTime;
+    static std::string logDirectory;
 };
 
 #endif  // LOGGER_H

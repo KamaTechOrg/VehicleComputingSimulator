@@ -1,26 +1,52 @@
+#include <sys/stat.h>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <chrono>
+#include <ctime>
+#include <sstream>
 #include "logger.h"
+
 
 std::string logger::logFileName;
 std::mutex logger::logMutex;
 std::chrono::system_clock::time_point logger::initTime =
     std::chrono::system_clock::now();
 std::string logger::componentName = "out";
+std::string logger::logDirectory = "./logs/";
 
 logger::logger(std::string componentName)
 {
     logger::componentName = componentName;
 }
+
+// Function to create the log directory if it doesn't exist
+void logger::createLogDirectory() {
+    struct stat info;
+    if (stat(logDirectory.c_str(), &info) != 0) {
+        // Directory doesn't exist - create it
+        #ifdef _WIN32
+            _mkdir(logDirectory.c_str());
+        #else
+            mkdir(logDirectory.c_str(), 0755);  // Linux/Unix permissions
+        #endif
+    }
+}
+
 void logger::initializeLogFile()
 {
     if (isInitialized)
         return;
 
+    // Create the directory (if it doesn't exist)
+    createLogDirectory();
+
     auto time = std::chrono::system_clock::to_time_t(initTime);
     std::tm tm = *std::localtime(&time);
 
     std::ostringstream oss;
-    oss << "" << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S") << "_" << componentName
-        << ".log";
+    oss << logDirectory << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S") << ".log";
     logFileName = oss.str();
 
     std::ofstream sharedFile(sharedLogFileName,
