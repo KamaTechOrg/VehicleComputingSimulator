@@ -118,12 +118,3 @@ TEST(KeyLengths, KeyLength256_CTR)
 {
     testEncryptionDecryption(AESChainingMode::CTR, AESKeyLength::AES_256);
 }
-
-int main() {
-    // Register factories
-    FactoryManager& manager = FactoryManager::getInstance();
-
-    // Now run your tests
-    ::testing::InitGoogleTest();
-    return RUN_ALL_TESTS();
-}
