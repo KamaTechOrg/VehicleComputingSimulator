@@ -1,18 +1,4 @@
 #include "../include/central_manager.h"
-#include <iostream>
-#include <stdexcept>
-#include "../include/central_manager.h"
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <ifaddrs.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <cstdio>
-#include <memory>
-#include <stdexcept>
-#include <array>
-#include <string>
 
 CentralManager* CentralManager::instance = nullptr;
 std::vector<uint16_t> CentralManager::ports;

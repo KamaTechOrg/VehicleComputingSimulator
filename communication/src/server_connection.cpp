@@ -1,5 +1,3 @@
-#include <csignal>
-#include <iostream>
 #include "../include/server_connection.h"
 
 // Constructor
