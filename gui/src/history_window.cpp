@@ -1,9 +1,12 @@
-#include "HistoryWindow.h"
+#include "history_window.h"
 #include <QMessageBox>
 #include <QHeaderView>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <main_window.h>
 
 HistoryWindow::HistoryWindow(dataToSql *dataHandler, QWidget *parent)
-    : QWidget(parent), dataHandler(dataHandler) {
+    : QDialog(parent), dataHandler(dataHandler) {  // Use QDialog instead of QWidget
     // Set window title
     setWindowTitle("הסטוריית סימולציות");
 
@@ -23,9 +26,14 @@ HistoryWindow::HistoryWindow(dataToSql *dataHandler, QWidget *parent)
     // Set a default window size
     setMinimumSize(600, 400);
 
+    // Center the window on the screen
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int x = (screenGeometry.width() - this->width()) / 2;
+    int y = (screenGeometry.height() - this->height()) / 2;
+    this->move(x, y);
+
     // Connect the button to load history data
     loadHistory();
-
 }
 
 void HistoryWindow::loadHistory() {
@@ -39,9 +47,9 @@ void HistoryWindow::loadHistory() {
     QStringList headers;
     headers << "ID" << "Input String" << "Datetime" << "הרצה נוספת";
     tableWidget->setHorizontalHeaderLabels(headers);
-    // if (!query.exec("CREATE TABLE IF NOT EXISTS data_simulation (id INTEGER PRIMARY KEY AUTOINCREMENT, input_string TEXT, datetime TEXT, bson_data BLOB, log_data TEXT)")) {
-    if (simulationData.size()==0)
-        qDebug()<<"the table is empty";
+
+    if (simulationData.size() == 0)
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"the table is empty");
     // Fill table with data
     for (int i = 0; i < simulationData.size(); ++i) {
         // Set ID, Input String, and Datetime

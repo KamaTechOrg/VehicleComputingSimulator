@@ -1,18 +1,11 @@
 #include <QMessageBox>
 #include <QHBoxLayout>
 #include <QFileInfo>
-#include <QDebug>
 #include <QPixmap>
 #include <QFileDialog>
 #include <QTimer>
 #include <QJsonDocument>
-#include "process.h"
 #include "main_window.h"
-#include "draggable_square.h"
-#include "process_dialog.h"
-#include "frames.h"
-#include "log_handler.h"
-#include "dataToSql.h"
 
 int sizeSquare = 120;
 logger MainWindow::guiLogger("gui");
@@ -312,23 +305,21 @@ void MainWindow::endProcesses()
 
     QString logData =sqlDataManager->readLogFile(logFilePath);
     if (logData.isEmpty()) {
-        qWarning() << "Log data is empty!";
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
     }
 
     // BSON
     QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
     if (bsonData.isEmpty()) {
-        qWarning() << "BSON data is empty!";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
     }
 
     QString inputString = "Some input data";  
 
     if (!sqlDataManager->insertDataToDatabase(inputString, bsonData, logData)) {
-        qWarning() << "Failed to insert data into the database.";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
     } else {
-        logOutput->append("Data successfully inserted into the database.");
-                qDebug()<<"Data successfully inserted into the database";
-
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
     }
 
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
@@ -421,7 +412,7 @@ void MainWindow::setDefaultBackgroundImage() {
         workspace->setLayout(newLayout);
     }
     else{
-        qDebug()<<"i dont have defult img";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"i dont have defult img");
     }
 }
 

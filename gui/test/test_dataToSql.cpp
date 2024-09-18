@@ -2,9 +2,9 @@
 #include <QFile>
 #include <QTemporaryFile>
 #include <QVariantMap>
-#include "../include/dataToSql.h"
+#include "data_sql.h"
 
-class dataToSqlTest : public QObject
+class DataToSqlTest : public QObject
 {
     Q_OBJECT
 
@@ -22,17 +22,17 @@ private slots:
 
 };
 
-void dataToSqlTest::initTestCase() {
+void DataToSqlTest::initTestCase() {
     // Any initial setup if needed
     qDebug() << "Starting dataToSql tests...";
 }
 
-void dataToSqlTest::cleanupTestCase() {
+void DataToSqlTest::cleanupTestCase() {
     // Cleanup operations after all tests
     qDebug() << "Cleaning up...";
 }
 
-void dataToSqlTest::testReadLogFile() {
+void DataToSqlTest::testReadLogFile() {
     // Create a temporary log file
     QTemporaryFile tempFile;
     QVERIFY(tempFile.open());  // Check if file opened successfully
@@ -46,7 +46,7 @@ void dataToSqlTest::testReadLogFile() {
     QCOMPARE(logData, QString("This is a log file.\n"));  // Check content
 }
 
-void dataToSqlTest::testReadBsonFile() {
+void DataToSqlTest::testReadBsonFile() {
     // Create a temporary BSON file with some binary data
     QTemporaryFile tempFile;
     QVERIFY(tempFile.open());
@@ -60,7 +60,7 @@ void dataToSqlTest::testReadBsonFile() {
     QCOMPARE(bsonData, testData);  // Check if BSON data matches
 }
 
-void dataToSqlTest::testInsertDataToDatabase() {
+void DataToSqlTest::testInsertDataToDatabase() {
     dataToSql dataHandler;
     QByteArray bsonData("Test BSON data");
     QString logData("Test log data");
@@ -69,20 +69,20 @@ void dataToSqlTest::testInsertDataToDatabase() {
     QVERIFY(result);  // Ensure the insertion was successful
 }
 
-void dataToSqlTest::testGetAllDataSimulation() {
+void DataToSqlTest::testGetAllDataSimulation() {
     dataToSql dataHandler;
     QList<QVariantMap> dataList = dataHandler.getAllDataSimulation();
     QVERIFY(!dataList.isEmpty());  // Check that data was retrieved
 }
 
-void dataToSqlTest::testGetRecordById() {
+void DataToSqlTest::testGetRecordById() {
     dataToSql dataHandler;
     QVariantMap record = dataHandler.getRecordById(1);  // Assume there's at least one record
     QVERIFY(!record.isEmpty());  // Check if the record is valid
     QCOMPARE(record["id"].toInt(), 1);  // Verify the ID
 }
 ////
-void dataToSqlTest::testInsertDataDetails() {
+void DataToSqlTest::testInsertDataDetails() {
     dataToSql dbHandler;
     // Assuming that dbHandler is properly initialized and connected to the SQLite database
 
@@ -101,7 +101,7 @@ void dataToSqlTest::testInsertDataDetails() {
     QCOMPARE(lastRecord["send_recieved"].toString(), "sent");
     QCOMPARE(lastRecord["success_failed"].toString(), "success");
 }
-void dataToSqlTest::testGetAllDataDetails() {
+void DataToSqlTest::testGetAllDataDetails() {
     dataToSql dbHandler;
     // Assuming dbHandler is initialized and has data
     QList<QVariantMap> details = dbHandler.getAllDataDetails();
@@ -112,7 +112,7 @@ void dataToSqlTest::testGetAllDataDetails() {
     QCOMPARE(firstRecord["data_simulation_id"].toInt(), 1); // Modify as needed
     QCOMPARE(firstRecord["timesTamp"].toString(), "2024-09-15 12:00:00"); // Example timestamp
 }
-void dataToSqlTest::testGetDataDetailsBySimulationAndTime() {
+void DataToSqlTest::testGetDataDetailsBySimulationAndTime() {
     dataToSql dbHandler;
     // Insert test data first, ensuring there's data to fetch
     dbHandler.insertDataDetails(1, "2024-09-15 12:00:00", 100, 101, "Test Message", "sent", "success");
@@ -131,5 +131,5 @@ void dataToSqlTest::testGetDataDetailsBySimulationAndTime() {
     QCOMPARE(record["success_failed"].toString(), "success");
 }
 
-QTEST_MAIN(dataToSqlTest)
+QTEST_MAIN(DataToSqlTest)
 #include "test_dataToSql.moc"

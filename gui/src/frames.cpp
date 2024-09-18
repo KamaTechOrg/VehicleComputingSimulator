@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <ctime>
 #include "frames.h"
-#include <QDebug>
 #include <QMouseEvent>
 #include <QMessageBox>
 #include "main_window.h"

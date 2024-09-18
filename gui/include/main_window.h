@@ -33,8 +33,8 @@
 #include <QByteArray>
 #include <QFile>
 #include <QTextStream>
-#include "dataToSql.h"
-#include "HistoryWindow.h"
+#include "data_sql.h"
+#include "history_window.h"
 #include "../logger/logger.h"
 
 class MainWindow : public QMainWindow {

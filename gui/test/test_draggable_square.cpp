@@ -4,8 +4,7 @@
 #include "draggable_square.h"
 #include "process.h"
 #include "main_window.h"
-class DraggableSquareTest : public QObject
-{
+class DraggableSquareTest : public QObject {
     Q_OBJECT
 private slots:
     void initTestCase();
@@ -14,6 +13,7 @@ private slots:
     void testMousePressEvent();
     void testMouseMoveEvent();
     void testMouseReleaseEvent();
+
 private:
     QWidget *parentWidget;
     DraggableSquare *draggableSquare;
@@ -28,7 +28,8 @@ void DraggableSquareTest::initTestCase()
     mainWindow = new MainWindow(parentWidget);
     mainWindow->resize(800, 600);
     parentWidget->show();
-    testProcess = new Process(1, "Test Process", "Test CMake", "Test QEMU");
+    testProcess = new Process(1, "Test Process", "../../src/dummy_program1",
+                              "QEMUPlatform");
     draggableSquare =
         new DraggableSquare(parentWidget, "background-color: red;", 100, 100);
     draggableSquare->setProcess(testProcess);
@@ -45,8 +46,8 @@ void DraggableSquareTest::testSetProcess()
 {
     QCOMPARE(draggableSquare->getProcess()->getId(), testProcess->getId());
     QCOMPARE(draggableSquare->getProcess()->getName(), testProcess->getName());
-    QCOMPARE(draggableSquare->getProcess()->getCMakeProject(),
-             testProcess->getCMakeProject());
+    QCOMPARE(draggableSquare->getProcess()->getExecutionFile(),
+             testProcess->getExecutionFile());
     QCOMPARE(draggableSquare->getProcess()->getQEMUPlatform(),
              testProcess->getQEMUPlatform());
 }

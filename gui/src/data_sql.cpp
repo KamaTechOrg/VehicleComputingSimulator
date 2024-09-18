@@ -1,26 +1,29 @@
-#include "dataToSql.h"
-#include "QDebug"
-
+#include "data_sql.h"
+#include "main_window.h"
 dataToSql::dataToSql(QObject *parent) : QObject(parent)
 {
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("database.db");
+   if (!QSqlDatabase::contains("qt_sql_default_connection")) {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("database.db");
+    } else {
+        db = QSqlDatabase::database("qt_sql_default_connection");
+    }
     
     if (!db.open()) {
-        qWarning() << "Cannot open database:" << db.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Cannot open database:");
     }
     else{
-        qWarning() << "i suceeses open database:";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO ,"i suceeses open database:");
     }
 }
 QString dataToSql::readLogFile(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Failed to open log file:" << filePath;
-        return QString();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Failed to open log file:");
+            return QString();
     }
     else{
-        qDebug()<<"i sucess open log file";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO ,"i sucess open log file");
     }
     QTextStream in(&file);
     QString logData = in.readAll();
@@ -31,11 +34,11 @@ QString dataToSql::readLogFile(const QString &filePath) {
 QByteArray dataToSql::readBsonFile(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open BSON file:" << filePath;
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Failed to open bson file:");
         return QByteArray();
     }
     else{
-        qDebug()<<"i sucess open bson file";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO ,"i sucess open bson file");
     }
     QByteArray bsonData = file.readAll();
     file.close();
@@ -44,16 +47,16 @@ QByteArray dataToSql::readBsonFile(const QString &filePath) {
 
 bool dataToSql::insertDataToDatabase(const QString &inputString, const QByteArray &bsonData, const QString &logData)
 {
-    qDebug() << "Available SQL Drivers:" << QSqlDatabase::drivers();
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO ,"Available SQL Drivers:");
 
     if (!db.isOpen()) {
-        qWarning() << "Database is not open."<<db.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
         return false;
     }
 
     QSqlQuery query;
     if (!query.exec("CREATE TABLE IF NOT EXISTS data_simulation (id INTEGER PRIMARY KEY AUTOINCREMENT, input_string TEXT, datetime TEXT, bson_data BLOB, log_data TEXT)")) {
-        qWarning() << "Failed to create table:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Failed to create table:" );
         return false;
     }
 
@@ -64,7 +67,7 @@ bool dataToSql::insertDataToDatabase(const QString &inputString, const QByteArra
     query.bindValue(":log_data", logData);
 
     if (!query.exec()) {
-        qWarning() << "Failed to insert data:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Failed to insert data:");
         return false;
     }
 
@@ -74,13 +77,13 @@ QList<QVariantMap> dataToSql::getAllDataSimulation() {
     QList<QVariantMap> simulationList;
 
     if (!db.isOpen()) {
-        qWarning() << "Database is not open.";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
         return simulationList;
     }
 
     QSqlQuery query;
     if (!query.exec("SELECT id, input_string, datetime, bson_data, log_data FROM data_simulation")) {
-        qWarning() << "Failed to fetch data_simulation:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR , "Failed to fetch data_simulation:");
         return simulationList;
     }
 
@@ -101,7 +104,7 @@ QVariantMap dataToSql::getRecordById(int id) {
     QVariantMap record;
 
     if (!db.isOpen()) {
-        qWarning() << "Database is not open.";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
         return record;
     }
 
@@ -110,7 +113,9 @@ QVariantMap dataToSql::getRecordById(int id) {
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch record by ID:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+        "dataToSql","getRecordById",
+        ("Failed to fetch record by ID:" +query.lastError().text()).toStdString());
         return record;
     }
 
@@ -121,12 +126,11 @@ QVariantMap dataToSql::getRecordById(int id) {
         record["bson_data"] = query.value("bson_data");
         record["log_data"] = query.value("log_data");
     } else {
-        qWarning() << "Record with ID" << id << "not found.";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"dataToSql","getRecordById","not found Record with ID" +id);
     }
 
     return record;
 }
-//// 
 bool dataToSql::insertDataDetails(int dataSimulationId, const QString &timeStamp, int idSrc, int idDst, const QString &message, const QString &sendReceived, const QString &successFailed) {
     QSqlQuery query;
 
@@ -141,7 +145,10 @@ bool dataToSql::insertDataDetails(int dataSimulationId, const QString &timeStamp
                     "send_recieved TEXT, "
                     "success_failed TEXT, "
                     "FOREIGN KEY(data_simulation_id) REFERENCES data_simulation(id))")) {
-        qWarning() << "Failed to create data_details table:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+                                        "dataToSql",
+                                        "insertDataDetails",
+                                        ("Failed to create data_details table:" + query.lastError().text()).toStdString());
         return false;
     }
 
@@ -158,7 +165,10 @@ bool dataToSql::insertDataDetails(int dataSimulationId, const QString &timeStamp
 
     // Execute the insert query
     if (!query.exec()) {
-        qWarning() << "Failed to insert data into data_details:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+                                "dataToSql",
+                                "insertDataDetails",
+                                ("Failed to insert data into data_details:"+query.lastError().text() ).toStdString());
         return false;
     }
 
@@ -168,14 +178,17 @@ QList<QVariantMap> dataToSql::getAllDataDetails() {
     QList<QVariantMap> detailsList;
 
     if (!db.isOpen()) {
-        qWarning() << "Database is not open.";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
         return detailsList;
     }
 
     QSqlQuery query;
     if (!query.exec("SELECT id, data_simulation_id, timesTamp, idSrc, idDst, message, send_recieved, success_failed FROM data_details")) {
-        qWarning() << "Failed to fetch data_details:" << query.lastError().text();
-        return detailsList;
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+                                        "dataToSql",
+                                        "getAllDataDetails",
+                                        ("Failed to fetch data_details:"+query.lastError().text()).toStdString());
+         return detailsList;
     }
 
     while (query.next()) {
@@ -198,7 +211,7 @@ QList<QVariantMap> dataToSql::getDataDetailsBySimulationAndTime(int dataSimulati
     QList<QVariantMap> detailsList;
 
     if (!db.isOpen()) {
-        qWarning() << "Database is not open.";
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
         return detailsList;
     }
 
@@ -209,7 +222,10 @@ QList<QVariantMap> dataToSql::getDataDetailsBySimulationAndTime(int dataSimulati
     query.bindValue(":timeStamp", timeStamp);
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch data_details by data_simulation_id and timeStamp:" << query.lastError().text();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+        "dataToSql",
+        "getDataDetailsBySimulationAndTime",
+        ("Failed to fetch data_details by data_simulation_id and timeStamp:"+ query.lastError().text()).toStdString());
         return detailsList;
     }
 
