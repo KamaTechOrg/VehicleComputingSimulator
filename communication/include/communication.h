@@ -48,7 +48,7 @@ public:
     Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *));
     
     // Sends the client to connect to server
-    ErrorCode startConnection();
+    ErrorCode startConnection(uint32_t port);
     
     // Sends a message to manager
     ErrorCode sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);

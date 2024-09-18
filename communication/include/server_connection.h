@@ -25,7 +25,8 @@ private:
     std::vector<int> sockets;
     std::mutex socketMutex;
     std::mutex threadMutex;
-    std::function<void(Packet&)> receiveDataCallback;
+    std::function<ErrorCode(Packet&)> receiveDataCallback;
+    std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessIDCallback;
     std::map<int, uint32_t> clientIDMap;
     std::mutex IDMapMutex;
     ISocket* socketInterface;
@@ -45,7 +46,7 @@ private:
 public:
 
     // Constructor
-    ServerConnection(int port, std::function<void(Packet&)> callback, ISocket* socketInterface = new RealSocket());
+    ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessIDCallback, ISocket* socketInterface = new RealSocket());
     
     // Initializes the listening socket
     ErrorCode startConnection();
@@ -60,7 +61,7 @@ public:
     void setPort(int port);
 
     // Sets the callback for receiving data, throws an exception if the callback is null.
-    void setReceiveDataCallback(std::function<void(Packet&)> callback);
+    void setReceiveDataCallback(std::function<ErrorCode(Packet&)> callback);
 
     // Sets the socket interface, throws an exception if the socketInterface is null.
     void setSocketInterface(ISocket *socketInterface);              

@@ -18,11 +18,11 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 }
 
 // Sends the client to connect to server
-ErrorCode Communication::startConnection()
+ErrorCode Communication::startConnection(uint32_t port)
 {
     //Waiting for manager
     //syncCommunication.isManagerRunning()
-    ErrorCode isConnected = client.connectToServer(id);
+    ErrorCode isConnected = client.connectToServer(port, id);
     //Increases the shared memory and blocks the process - if not all are connected
     //syncCommunication.registerProcess()
     return isConnected;

@@ -24,13 +24,13 @@ private:
     std::function<void(Packet &)> passPacketCom;
     ISocket* socketInterface;
     std::thread receiveThread;
-
+    uint32_t port;
 public:
     // Constructor
     ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface = new RealSocket());
 
     // Requesting a connection to the server
-    ErrorCode connectToServer(int id);
+    ErrorCode connectToServer(uint32_t port, int id);
 
     // Sends the packet to the manager-sync
     ErrorCode sendPacket(Packet &packet);

@@ -3,9 +3,11 @@
 #include "../include/server_connection.h"
 
 // Constructor
-ServerConnection::ServerConnection(int port, std::function<void(Packet&)> callback, ISocket* socketInterface) {
+ServerConnection::ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessID, ISocket* socketInterface)
+{
+    this->receiveNewProcessIDCallback = receiveNewProcessID;
     setPort(port);
-    setReceiveDataCallback(callback);
+    setReceiveDataCallback(receiveDataCallback);
     setSocketInterface(socketInterface);
     running = false;
 }
@@ -114,6 +116,9 @@ void ServerConnection::handleClient(int clientSocket)
         std::lock_guard<std::mutex> lock(socketMutex);
         sockets.push_back(clientSocket);
     }
+    
+    // send callback to manager - new process connected
+    receiveNewProcessIDCallback(clientID, port);
 
     while (running) {
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
@@ -203,7 +208,7 @@ void ServerConnection::setPort(int port) {
 }
 
 // Sets the callback for receiving data, throws an exception if the callback is null.
-void ServerConnection::setReceiveDataCallback(std::function<void(Packet&)> callback) {
+void ServerConnection::setReceiveDataCallback(std::function<ErrorCode(Packet&)> callback) {
     if (!callback) {
         throw std::invalid_argument("Invalid callback function: callback cannot be null.");
     }

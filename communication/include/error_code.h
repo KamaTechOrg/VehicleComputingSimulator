@@ -17,7 +17,8 @@ enum class ErrorCode {
     SOCKET_INTERFACE_ERROR = -12,
     INVALID_DATA_SIZE = -13,     
     INVALID_DATA = -14,          
-    INVALID_ID = -15             
+    INVALID_ID = -15,
+    BUS_NOT_FOUND = -16           
 };
 
 // Function to convert ErrorCode to string

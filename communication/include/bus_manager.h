@@ -3,32 +3,33 @@
 #include <utility>
 #include "server_connection.h"
 #include <iostream>
+#include "Imanager.h"
 
-class BusManager
-{
+class BusManager:IManager{
 private:
     ServerConnection server;
-
-    // Singleton instance
     static BusManager* instance;
     static std::mutex managerMutex;
-    //SyncCommunication syncCommunication;
-    
-    // Sending according to broadcast variable
-    ErrorCode sendToClients(const Packet &packet);
+    std::mutex processesIdMutex;
 
-    // Private constructor
-    BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit);
+    //callback 
+    std::function<ErrorCode(Packet&)> recievedMessageCallback;
+    std::function<ErrorCode(const uint32_t ,const uint32_t)> processJoinCallback;
 
 public:
-    //Static function to return a singleton instance
-    static BusManager* getInstance(std::vector<uint32_t> idShouldConnect, uint32_t limit);
+    BusManager(uint32_t port, std::function<ErrorCode(Packet&)> recievedMessageCallback , std::function<ErrorCode(const uint32_t ,const uint32_t)> processJoinCallback);
 
     // Sends to the server to listen for requests
-    ErrorCode startConnection();
+    ErrorCode startConnection() override;
 
     // Receives the packet that arrived and checks it before sending it out
-    void receiveData(Packet &p);
+    ErrorCode receiveMessage(Packet &packet) override;
+
+    // Receives the processId that arrived
+    ErrorCode receiveNewProcessID(const uint32_t processID ,const uint32_t port) override;
+
+     // Sending according to broadcast variable
+    ErrorCode sendMessage(const Packet &packet) override;
 
     // Implementation according to the conflict management of the CAN bus protocol
     Packet checkCollision(Packet &currentPacket);
@@ -38,6 +39,9 @@ public:
 
     // Static method to handle SIGINT signal
     static void signalHandler(int signum);
+
+    //close the manager
+    ErrorCode closeConnection() override;
 
     ~BusManager();
 };

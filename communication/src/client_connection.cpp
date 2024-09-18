@@ -7,7 +7,7 @@ ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISock
 }
 
 // Requesting a connection to the server
-ErrorCode ClientConnection::connectToServer(int id)
+ErrorCode ClientConnection::connectToServer(uint32_t port, int id)
 {
     clientSocket = socketInterface->socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0) {
@@ -15,7 +15,7 @@ ErrorCode ClientConnection::connectToServer(int id)
     }
 
     servAddress.sin_family = AF_INET;
-    servAddress.sin_port = htons(PORT);
+    servAddress.sin_port = htons(port);
     inet_pton(AF_INET, IP, &servAddress.sin_addr);
 
     int connectRes = socketInterface->connect(clientSocket, (struct sockaddr *)&servAddress, sizeof(servAddress));
