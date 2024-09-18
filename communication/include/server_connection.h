@@ -7,7 +7,9 @@
 #include <unistd.h>
 #include <functional>
 #include <unordered_map>
+#include <algorithm>
 #include <csignal>
+#include <iostream>
 #include "message.h"
 #include "../sockets/Isocket.h"
 #include "../sockets/real_socket.h"

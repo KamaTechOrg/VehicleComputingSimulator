@@ -1,14 +1,16 @@
 #ifndef REALSOCKET_H
 #define REALSOCKET_H
 
-#include "Isocket.h"
 #include <unistd.h>
 #include <string.h>
-#include "../include/packet.h"
 #include <bitset>
+#include "../include/packet.h"
+#include "Isocket.h"
+#include "../../logger/logger.h"
 
 class RealSocket : public ISocket
 {
+
 public:
     static logger log;
 

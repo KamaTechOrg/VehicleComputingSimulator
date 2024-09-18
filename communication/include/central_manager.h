@@ -6,6 +6,8 @@
 #include <string>
 #include <cstdint>
 #include <mutex>
+#include <iostream>
+#include <stdexcept>
 #include "gateway.h"
 #include "bus_manager.h"
 #include "packet.h"

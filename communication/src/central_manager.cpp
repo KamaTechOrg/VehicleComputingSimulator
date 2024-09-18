@@ -1,7 +1,4 @@
 #include "../include/central_manager.h"
-#include <iostream>
-#include <stdexcept>
-#include "../include/central_manager.h"
 
 CentralManager* CentralManager::instance = nullptr;
 std::vector<uint16_t> CentralManager::ports;

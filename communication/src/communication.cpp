@@ -1,5 +1,4 @@
 #include "../include/communication.h"
-#include <future>
 
 Communication* Communication::instance = nullptr;
 
@@ -10,8 +9,6 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
     setId(id);
     setPassDataCallback(passDataCallback);
     
-    //SyncCommunication::initializeProcess();
-
     instance = this;
     setSignaleHandler(); 
 }
@@ -54,6 +51,25 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
 // Sends a message Async
 void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(ErrorCode)> sendCallback, bool isBroadcast)
 {
+#ifdef ESP32
+    // Create a FreeRTOS task for asynchronous message sending
+    xTaskCreate([](void* param) {
+        auto* asyncParams = static_cast<std::tuple<Communication*, void*, size_t, uint32_t, uint32_t, bool, std::function<void(ErrorCode)> >*>(param);
+        Communication* comm = std::get<0>(*asyncParams);
+        void* data = std::get<1>(*asyncParams);
+        size_t dataSize = std::get<2>(*asyncParams);
+        uint32_t destID = std::get<3>(*asyncParams);
+        uint32_t srcID = std::get<4>(*asyncParams);
+        bool isBroadcast = std::get<5>(*asyncParams);
+        std::function<void(ErrorCode)> callback = std::get<6>(*asyncParams);
+
+        ErrorCode res = comm->sendMessage(data, dataSize, destID, srcID, isBroadcast);
+        callback(res);
+
+        delete asyncParams; // Clean up the parameters
+        vTaskDelete(nullptr); // Delete the FreeRTOS task
+    }, "SendMessageTask", 2048, new std::tuple<Communication*, void*, size_t, uint32_t, uint32_t, bool, std::function<void(ErrorCode)> >(this, data, dataSize, destID, srcID, isBroadcast, sendCallback), 1, nullptr);
+#else
     std::promise<ErrorCode> resultPromise;
     std::future<ErrorCode> resultFuture = resultPromise.get_future();
 
@@ -64,6 +80,7 @@ void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destI
     
     ErrorCode res = resultFuture.get();
     sendCallback(res);
+#endif
 }
 
 // Accepts the packet from the client and checks..
@@ -83,8 +100,8 @@ bool Communication::checkDestId(const Packet &p)
     return p.header.isBroadcast || p.header.DestID == processID;
 }
 
-// Checks if the data is currect
-bool Communication::validCRC(const Packet &p)
+// Checks if the data is correct
+bool Communication::validCRC(Packet &p)
 {
     return p.header.CRC == p.calculateCRC(p.data, p.header.DLC);
 }
@@ -115,17 +132,14 @@ Packet Communication::hadArrived()
 void Communication::addPacketToMessage(const Packet &p)
 {
     std::string messageId = std::to_string(p.header.ID);
-    // If the message already exists, we will add the packet
     if (receivedMessages.find(messageId) != receivedMessages.end()) {
         receivedMessages[messageId].addPacket(p);
     } else {
-        // If the message does not exist, we will create a new message
         Message msg(p.header.TPS);
         msg.addPacket(p);
         receivedMessages[messageId] = msg;
     }
 
-    // If the message is complete, we pass the data to the passData function
     if (receivedMessages[messageId].isComplete()) {
         void *completeData = receivedMessages[messageId].completeData();
         passData(p.header.SrcID, completeData);
@@ -157,12 +171,21 @@ void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
 
 void Communication::setSignaleHandler()
 {
+#ifndef ESP32
     auto signalResult = signal(SIGINT, Communication::signalHandler);
     if (signalResult == SIG_ERR)
         throw std::runtime_error("Failed to set signal handler for SIGINT");
+#else
+    receiveTaskHandle = nullptr; // Initialize FreeRTOS task handle
+#endif
 }
 
-// Destructor
+//Destructor
 Communication::~Communication() {
     instance = nullptr;
+#ifdef ESP32
+    if (receiveTaskHandle != nullptr) {
+        vTaskDelete(receiveTaskHandle);
+    }
+#endif
 }

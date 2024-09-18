@@ -4,7 +4,11 @@
 ClientConnection::ClientConnection(std::function<void(const Packet &)> callback, ISocket* socketInterface): connected(false)
 {
         setCallback(callback);
-        setSocketInterface(socketInterface);
+#ifdef ESP32
+    setSocketInterface(new ESP32Socket("Wokwi-GUEST", ""));
+#else
+    setSocketInterface(new RealSocket());
+#endif
 }
 
 // Function to load the server configuration from a JSON file
@@ -72,8 +76,16 @@ ErrorCode ClientConnection::connectToServer(uint32_t processID)
         return ErrorCode::RECEIVE_FAILED;
     }
 
+#ifdef ESP32
+    // Create a FreeRTOS task for receiving packets
+    xTaskCreatePinnedToCore([](void* param) {
+        static_cast<ClientConnection*>(param)->receivePacket();
+    }, "ReceiveTask", 4096, this, 1, &receiveTaskHandle, 0);
+#else
+    // Create a standard C++ thread for receiving packets
     receiveThread = std::thread(&ClientConnection::receivePacket, this);
     receiveThread.detach();
+#endif
 
     return ErrorCode::SUCCESS;
 }
@@ -122,6 +134,13 @@ ErrorCode ClientConnection::closeConnection()
         if(socketInterfaceRes < 0)
             return ErrorCode::CLOSE_FAILED;
         connected.exchange(false);
+
+#ifdef ESP32
+    if (receiveTaskHandle != nullptr) {
+        vTaskDelete(receiveTaskHandle); // Close the FreeRTOS task if it's running
+        receiveTaskHandle = nullptr;
+    }
+#endif
     }
     RealSocket::log.cleanUp();
     return ErrorCode::SUCCESS;  
@@ -156,6 +175,9 @@ int ClientConnection::isConnected() const
 
 bool ClientConnection::isReceiveThreadRunning() const 
 {
+#ifdef ESP32
+    return receiveTaskHandle != nullptr;
+#else
     return false;
 }
 
