@@ -139,7 +139,8 @@ TEST(KeyLengths, KeyLength256_CTR)
     testEncryptionDecryption(AESChainingMode::CTR, AESKeyLength::AES_256);
 }
 
-int main() {
+int main() 
+{
     ::testing::InitGoogleTest();
     return RUN_ALL_TESTS();
 }
