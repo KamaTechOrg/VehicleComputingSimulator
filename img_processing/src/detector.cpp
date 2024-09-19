@@ -1,5 +1,6 @@
 #include "detector.h"
 #include "manager.h"
+#include <string>
 
 using namespace std;
 using namespace cv;
@@ -115,9 +116,8 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
 void Detector::detectChanges()
 {
     const vector<Rect> changedAreas = findDifference();
-    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
-                                  "changedAreas" + changedAreas.size());
-
+    LogManager::logInfoMessage(InfoType::CHANGED,
+                               "Areas- " + changedAreas.size());
     for (Rect oneChange : changedAreas) {
         int x = oneChange.x;
         int y = oneChange.y;
@@ -151,12 +151,9 @@ vector<Rect> Detector::findDifference()
         Rect boundingBox = boundingRect(contour);
         differencesRects.push_back(boundingBox);
     }
-    Manager::imgLogger.logMessage(
-        logger::LogLevel::INFO,
-        "num of difference: " + differencesRects.size());
+    LogManager::logInfoMessage(InfoType::NUM_OF_DIFFERENCE, to_string(differencesRects.size()));
     vector<Rect> unionRects = unionOverlappingRectangels(differencesRects);
-    Manager::imgLogger.logMessage(logger::LogLevel::INFO,
-                                  "after union: " + unionRects.size());
+    LogManager::logInfoMessage(InfoType::UNION, to_string(unionRects.size()));
     return unionRects;
 }
 
@@ -226,17 +223,16 @@ void Detector::loadNet(bool isCuda)
 {
     auto result = readNet("../yolov5s.onnx");
     if (result.empty()) {
-        Manager::imgLogger.logMessage(logger::LogLevel::ERROR,
-                                      "failed to load yolov5 model");
+        LogManager::logErrorMessage(ErrorType::MODEL_ERROR, "failed to load yolov5");
     }
 
     if (isCuda) {
-        Manager::imgLogger.logMessage(logger::LogLevel::INFO, "Using CUDA");
+        LogManager::logInfoMessage(InfoType::MODE, "using CUDA");
         result.setPreferableBackend(DNN_BACKEND_CUDA);
         result.setPreferableTarget(DNN_TARGET_CUDA_FP16);
     }
     else {
-        Manager::imgLogger.logMessage(logger::LogLevel::INFO, "CPU Mode");
+        LogManager::logInfoMessage(InfoType::MODE, "CPU");
         result.setPreferableBackend(DNN_BACKEND_OPENCV);
         result.setPreferableTarget(DNN_TARGET_CPU);
     }
