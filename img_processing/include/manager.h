@@ -5,9 +5,11 @@
 #include "detector.h"
 #include "dynamic_tracker.h"
 #include "distance.h"
+#include "logger.h"
 
 class Manager {
    public:
+    static logger imgLogger;
     Manager() {}
     // Manager(const cv::Mat &Frame);
     // Gets the currentFrame and sends it for detection and then tracking,

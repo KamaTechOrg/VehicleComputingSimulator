@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include "../include/distance.h"
 #include "../include/detector.h"
+#include "manager.h"
+
 using namespace std;
 using namespace cv;
 #define MIN_LEGAL_HEIGHT 900
@@ -18,7 +20,9 @@ Distance &Distance::getInstance(const cv::Mat &image)
 {
     if (!instance) {
         if (image.empty())
-            cerr << "No image was provided";
+            Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "No image was provided");
         else
             instance = new Distance(image);
     }
@@ -59,7 +63,11 @@ void Distance::findFocalLength(const cv::Mat &image)
 {
     // Check if the input image is empty
     if (image.empty()) {
-        throw std::runtime_error("Could not open or find the image");
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Could not open or find the image");
+            return;
+            //throw std::runtime_error("Could not open or find the image");
     }
 
     // Convert the input image to grayscale

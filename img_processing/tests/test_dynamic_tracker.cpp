@@ -2,8 +2,11 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
 #include "../include/dynamic_tracker.h"
+#include "manager.h"
 #include "../include/detector.h"
 #include <gtest/gtest.h>
+#include "utils.h"
+
 using namespace std;
 using namespace cv;
 
@@ -35,7 +38,6 @@ float calculateIoU(const Rect &rect1, const Rect &rect2)
 
 TEST(Track, twoCars)
 {
-    cout << "TEST Twocars" << endl;
     Detector detector;
     DynamicTracker tracker;
     detector.init(false);
@@ -43,7 +45,9 @@ TEST(Track, twoCars)
     Mat img1 = imread("../tests/images/track_2_cars_first_frame.jpg");
     Mat img2 = imread("../tests/images/track_2_cars_second_frame.jpg");
     if (img1.empty() || img2.empty()) {
-        cerr << "Error: Could not load images!" << endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Error: Could not load images!");
     }
     shared_ptr<Mat> prevFrame = make_shared<Mat>(img1);
     shared_ptr<Mat> currentFrame = make_shared<Mat>(img2);
@@ -60,15 +64,22 @@ TEST(Track, twoCars)
     //check time - end
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
-    std::cout << "Execution time: " << elapsed.count() << " ms" << std::endl;
+    Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Execution time: " +  to_string(elapsed.count()) + " ms");
     int i = 0;
     float result;
     for (const auto &tracktion : tracker.getOutput()) {
-        std::cout << " ID: " << tracktion.id << ", Type: " << tracktion.type
-                  << ", position: " << tracktion.position << std::endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "ID: " + to_string(tracktion.id) +
+            " Type: " + to_string(tracktion.type) +
+            " Position: " + rectToString(tracktion.position));
         result = calculateIoU(tracktion.position,
                               (*currentOutput)[i].position);
-        cout << "calculateIoU " << result << endl;
+        Manager::imgLogger.logMessage(
+                logger::LogLevel::INFO,
+                "calculateIoU: " + to_string(result));
         i++;
     }
 }
@@ -155,8 +166,9 @@ TEST(Track, calculate_execution_time)
     //check time - end
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
-    std::cout << "Execution tracking time: " << elapsed.count() << " ms"
-              << std::endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Execution tracking time: " + to_string(elapsed.count()) + " ms");
     VideoCapture capture1("../tests/images/one_car.mp4");
     frame;
     capture1.read(frame);
@@ -170,8 +182,9 @@ TEST(Track, calculate_execution_time)
     //check time - end
     end = std::chrono::high_resolution_clock::now();
     elapsed = end - start;
-    std::cout << "Execution detection time: " << elapsed.count() << " ms"
-              << std::endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Execution tracking time: " + to_string(elapsed.count()) + " ms");
 }
 
 TEST(Track, calculate_iou)
@@ -208,7 +221,9 @@ TEST(Track, calculate_iou)
             waitKey(0);
             float iou = calculateIoU((*detectionOutput)[0].position,
                                      (*trackingOutput)[0].position);
-            cout << iou << endl;
+            Manager::imgLogger.logMessage(
+                logger::LogLevel::INFO,
+                "iou: " + to_string(iou));
         }
         capture.read(frame);
     }
@@ -246,7 +261,9 @@ TEST(Track, track_with_few_detection)
                       Scalar(0, 0, 256), 2);
         }
         imshow("frame1", *frame1);
-        cout << cnt++ << endl;
+        Manager::imgLogger.logMessage(
+                logger::LogLevel::INFO,
+                "cnt++: " + cnt++);
         waitKey(1);
     }
 }
@@ -288,7 +305,9 @@ TEST(Track, calculate_detection_per_frames)
             }
             imshow("frame", *frame1);
             waitKey(1);
-            cout << cnt << endl;
+            Manager::imgLogger.logMessage(
+                logger::LogLevel::INFO,
+                "cnt: " + cnt);
         }
         capture.read(frame);
         cnt++;

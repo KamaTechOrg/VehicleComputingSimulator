@@ -1,6 +1,9 @@
 #include <opencv2/opencv.hpp>
 #include <gtest/gtest.h>
+#include "manager.h"
 #include "../include/detector.h"
+#include "utils.h"
+
 using namespace std;
 using namespace cv;
 
@@ -11,7 +14,10 @@ Mat loadImage(const string &filename)
 {
     Mat img = imread(filename);
     if (img.empty()) {
-        throw runtime_error("Could not open or find the image");
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Could not open or find the image");
+            throw runtime_error("Could not open or find the image");
     }
     return img;
 }
@@ -50,8 +56,11 @@ TEST(DetectorTest, DetectTwoCars)
     // Print results for manual inspection
     int peopleCount = 0, carCount = 0;
     for (const auto &detection : output) {
-        cout << "Detection ID: " << detection.id << ", Type: " << detection.type
-             << ", Position: " << detection.position << endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Detection ID: " + to_string(detection.id) +
+            " Type: " + to_string(detection.type) +
+            " Position: " + rectToString(detection.position));
         // Assuming ObjectType::CAR corresponds to the type of car in the enum
         if (detection.type == ObjectType::CAR) {
             carCount++;
@@ -98,8 +107,11 @@ TEST(DetectorTest, DetectThreeCars)
     // Print results for manual inspection
     int peopleCount = 0, carCount = 0;
     for (const auto &detection : output) {
-        cout << "Detection ID: " << detection.id << ", Type: " << detection.type
-             << ", Position: " << detection.position << endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Detection ID: " + to_string(detection.id) +
+            " Type: " + to_string(detection.type) +
+            " Position: " + rectToString(detection.position));
         // Assuming ObjectType::CAR corresponds to the type of car in the enum
         if (detection.type == ObjectType::CAR) {
             carCount++;
@@ -146,8 +158,11 @@ TEST(DetectorTest, DetectTwoPeoples)
     // Print results for manual inspection
     int peopleCount = 0, carCount = 0;
     for (const auto &detection : output) {
-        cout << "Detection ID: " << detection.id << ", Type: " << detection.type
-             << ", Position: " << detection.position << endl;
+        Manager::imgLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Detection ID: " + to_string(detection.id) +
+            " Type: " + to_string(detection.type) +
+            " Position: " + rectToString(detection.position));
         // Assuming ObjectType::CAR corresponds to the type of car in the enum
         if (detection.type == ObjectType::CAR) {
             peopleCount++;
@@ -167,11 +182,17 @@ TEST(DetectorTest, DetectChangesTest)
     string imagePath1 = "../tests/images/track_2_cars_first_frame.jpg";
     first = loadImage(imagePath1);
     if (first.empty()) {
+         Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Could not open or find the image");
         throw runtime_error("Could not open or find the image");
     }
     string imagePath2 = "../tests/images/track_2_cars_second_frame.jpg";
     second = loadImage(imagePath2);
     if (second.empty()) {
+         Manager::imgLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Could not open or find the image");
         throw runtime_error("Could not open or find the image");
     }
 
