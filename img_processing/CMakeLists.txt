@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(ImageProcessing)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # adding libaries
 find_package(OpenCV REQUIRED)
@@ -9,10 +9,10 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
-include_directories(include)
+include_directories(include ../logger)
 
 # make the library with the src files
-file(GLOB SOURCES "src/*.cpp")  
+file(GLOB SOURCES "src/*.cpp" "../logger/*.cpp" "tests/utils.cpp")
 add_library(ImageProcessingLib ${SOURCES})
 
 # create test execute

@@ -1,6 +1,7 @@
 #ifndef __DISTANCE_H__
 #define __DISTANCE_H__
 #include "object_information_struct.h"
+#include "log_manager.h"
 #define PERSON_HEIGHT 1700
 #define CAR_WIDTH 2000
 

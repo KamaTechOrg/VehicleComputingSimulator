@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include "object_information_struct.h"
 #include "object_type_enum.h"
+#include "log_manager.h"
 
 class Detector {
    public:

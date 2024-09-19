@@ -1,4 +1,7 @@
 #include "../include/detector.h"
+#include <string>
+#include "manager.h"
+
 using namespace std;
 using namespace cv;
 using namespace dnn;
@@ -109,7 +112,8 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
 void Detector::detectChanges()
 {
     const vector<Rect> changedAreas = findDifference();
-    cout << "changedAreas:" << changedAreas.size() << endl;
+    LogManager::logInfoMessage(InfoType::CHANGED,
+                               "Areas- " + changedAreas.size());
     //TODO : delete all rects that contained in another rect
     for (Rect oneChange : changedAreas) {
         int x = oneChange.x;
@@ -144,9 +148,9 @@ vector<Rect> Detector::findDifference()
         Rect boundingBox = boundingRect(contour);
         differencesRects.push_back(boundingBox);
     }
-    cout << "num of difference:" << differencesRects.size() << endl;
+    LogManager::logInfoMessage(InfoType::NUM_OF_DIFFERENCE, to_string(differencesRects.size()));
     vector<Rect> unionRects = unionOverlappingRectangels(differencesRects);
-    cout << "after union:" << unionRects.size() << endl;
+    LogManager::logInfoMessage(InfoType::UNION, to_string(unionRects.size()));
     return unionRects;
 }
 
@@ -214,20 +218,16 @@ void Detector::loadNet(bool isCuda)
 {
     auto result = readNet("../yolov5s.onnx");
     if (result.empty()) {
-        cerr << "failed to load yolov5 model";
-    }
-
-    if (result.empty()) {
-        cerr << "failed to load yolov5 model";
+        LogManager::logErrorMessage(ErrorType::MODEL_ERROR, "failed to load yolov5");
     }
 
     if (isCuda) {
-        cout << "Using CUDA\n";
+        LogManager::logInfoMessage(InfoType::MODE, "using CUDA");
         result.setPreferableBackend(DNN_BACKEND_CUDA);
         result.setPreferableTarget(DNN_TARGET_CUDA_FP16);
     }
     else {
-        cout << "CPU Mode\n";
+        LogManager::logInfoMessage(InfoType::MODE, "CPU");
         result.setPreferableBackend(DNN_BACKEND_OPENCV);
         result.setPreferableTarget(DNN_TARGET_CPU);
     }

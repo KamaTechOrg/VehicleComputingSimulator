@@ -1,14 +1,17 @@
 #include "../include/manager.h"
 #include "../include/alert.h"
+
 using namespace std;
 using namespace cv;
 #define NUM_OF_TRACKING 10
+
+logger Manager::imgLogger("img_processing");
 
 void Manager::init()
 {
     Mat calibrationImage = imread("../tests/images/black_line.JPG");
     if (calibrationImage.empty()) {
-        cerr << "image not found";
+        LogManager::logErrorMessage(ErrorType::IMAGE_ERROR, "image not found");
         return;
     }
     Distance &distance = Distance::getInstance(calibrationImage);
@@ -23,13 +26,14 @@ void Manager::mainDemo()
     VideoCapture capture("../tests/images/close_cars.mov");
     Mat frame = Mat::zeros(480, 640, CV_8UC3);
     if (!capture.isOpened()) {
-        cerr << "Error while opening video media\n";
+        LogManager::logErrorMessage(ErrorType::VIDEO_ERROR, "video not found");
+        throw runtime_error("video not found");
         return;
     }
     while (1) {
         capture >> frame;
         if (frame.empty()) {
-            cout << "media finish" << endl;
+            LogManager::logInfoMessage(InfoType::MEDIA_FINISH);
             break;
         }
         int result = processing(frame, true);

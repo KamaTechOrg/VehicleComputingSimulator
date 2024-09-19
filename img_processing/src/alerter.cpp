@@ -3,6 +3,8 @@
 #include <iostream>
 #include "../include/alerter.h"
 #include "../include/alert.h"
+#include "manager.h"
+
 using json = nlohmann::json;
 using namespace std;
 #define MIN_LEGAL_DISTANCE 5000
@@ -86,6 +88,6 @@ void Alerter::makeFileJSON()
         output_file.close();
     }
     else {
-        std::cerr << "Error: Could not open file for writing" << std::endl;
+        LogManager::logErrorMessage(ErrorType::FILE_ERROR, "open file for writing");
     }
 }
