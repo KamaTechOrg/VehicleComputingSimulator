@@ -1,0 +1,9 @@
+[wokwi]
+# Wokwi project configuration file
+version = 1
+
+# Path to the compiled firmware binary
+firmware = ".pio/build/mhetesp32devkit/firmware.bin"
+
+# Path to the compiled firmware ELF
+elf = ".pio/build/mhetesp32devkit/firmware.elf"
