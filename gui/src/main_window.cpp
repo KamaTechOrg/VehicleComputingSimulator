@@ -63,7 +63,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     toolboxLayout->insertWidget(1, showSimulationButton);
     toolboxLayout->insertWidget(2, loadSimulationButton);
     toolboxLayout->addStretch();
-
+    dataHandler = new dataToSql(this);
+    QPushButton *historyButton = new QPushButton("Show Simulation History", this);
+    connect(historyButton, &QPushButton::clicked, this, &MainWindow::openHistoryWindow);
     connect(addProcessButton, &QPushButton::clicked, this,
             &MainWindow::createNewProcess);
     connect(compileButton, &QPushButton::clicked, this,
@@ -107,6 +109,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     toolboxLayout->addWidget(timeInput);
     toolboxLayout->addWidget(logOutput);
     toolboxLayout->addWidget(chooseButton);
+    toolboxLayout->addWidget(historyButton);
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
@@ -243,7 +246,10 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
     squarePositions[process->getId()] = pos;
     squares.push_back(square);
 }
-
+void MainWindow::openHistoryWindow() {
+    historyWindow = new HistoryWindow(dataHandler, this);
+    historyWindow->show();
+}
 bool MainWindow::isUniqueId(int id)
 {
     return !usedIds.contains(id);

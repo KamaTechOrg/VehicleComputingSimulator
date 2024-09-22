@@ -34,6 +34,7 @@
 #include "process_dialog.h"
 #include "simulation_state_manager.h"
 #include "data_sql.h"
+#include "history_window.h"
 #include "../../logger/logger.h"
 
 
@@ -85,6 +86,7 @@ public slots:
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
+    void openHistoryWindow();  
 protected:
     void resizeEvent(QResizeEvent *event) override;
 private:
@@ -128,7 +130,8 @@ private:
     SimulationStateManager *stateManager;
     LogHandler logHandler;
     dataToSql *sqlDataManager;
-
+    dataToSql *dataHandler;   // Pointer to dataToSql
+    HistoryWindow *historyWindow; // Pointer to history window
 };
 
 #endif  // MAIN_WINDOW_H

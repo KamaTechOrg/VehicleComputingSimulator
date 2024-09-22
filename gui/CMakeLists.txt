@@ -38,7 +38,8 @@ add_library(DraggableSquaresLib
     src/log_handler.cpp
     src/frames.cpp
     src/data_sql.cpp
-     ../logger/logger.cpp
+    src/history_window.cpp
+    ../logger/logger.cpp
 )
 
 # Add headers to the library target
@@ -50,6 +51,7 @@ target_sources(DraggableSquaresLib PRIVATE
     include/log_handler.h
     include/frames.h
     include/data_sql.h
+    include/history_window.h
     ../logger/logger.h
 )
 
