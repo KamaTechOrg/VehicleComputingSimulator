@@ -23,6 +23,13 @@ public:
                               const QString &logData);
     QList<QVariantMap> getAllDataSimulation();
     QVariantMap getRecordById(int id);
+    bool insertDataDetails(int dataSimulationId, const QString &timeStamp,
+                           int idSrc, int idDst, const QString &message,
+                           const QString &sendReceived,
+                           const QString &successFailed);
+    QList<QVariantMap> getAllDataDetails();
+    QList<QVariantMap> getDataDetailsBySimulationAndTime(
+        int dataSimulationId, const QString &timeStamp);
 
 private:
     QSqlDatabase db;
