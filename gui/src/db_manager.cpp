@@ -13,11 +13,11 @@ DbManager::DbManager(QObject *parent) : QObject(parent)
 
     if (!db.open()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Cannot open database:");
+                                         "The database cannot be opened");
     }
     else {
         MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                         "i suceeses open database:");
+                                         "successfully opened The database");
     }
 }
 
@@ -26,12 +26,12 @@ QString DbManager::readLogFile(const QString &filePath)
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to open log file:");
+                                         "Failed to open log file");
         return QString();
     }
     else {
         MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                         "i sucess open log file");
+                                         "successfully opened The log file");
     }
     QTextStream in(&file);
     QString logData = in.readAll();
@@ -44,12 +44,12 @@ QByteArray DbManager::readBsonFile(const QString &filePath)
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to open bson file:");
+                                         "Opening the bson file failed");
         return QByteArray();
     }
     else {
         MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                         "i sucess open bson file");
+                                         "successfully opened The bson file");
     }
     QByteArray bsonData = file.readAll();
     file.close();
@@ -65,7 +65,7 @@ bool DbManager::insertDataToDatabase(const QString &inputString,
 
     if (!db.isOpen()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Database is not open.");
+                                         "Opening the database failed");
         return false;
     }
 
@@ -74,7 +74,7 @@ bool DbManager::insertDataToDatabase(const QString &inputString,
                     "PRIMARY KEY AUTOINCREMENT, input_string TEXT, datetime "
                     "TEXT, bson_data BLOB, log_data TEXT)")) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to create table:");
+                                         "Table creation failed");
         return false;
     }
 
@@ -89,12 +89,12 @@ bool DbManager::insertDataToDatabase(const QString &inputString,
 
     if (!query.exec()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to insert data:");
+                                         "Data entry failed");
         return false;
     }
     else {
         MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                         "sucessed to insert data:");
+                                         "Successfully entered the information");
     }
     return true;
 }
@@ -105,7 +105,7 @@ QList<QVariantMap> DbManager::getAllDataSimulation()
 
     if (!db.isOpen()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Database is not open.");
+                                         "Opening the database failed");
         return simulationList;
     }
 
@@ -137,7 +137,7 @@ QVariantMap DbManager::getRecordById(int id)
 
     if (!db.isOpen()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Database is not open.");
+                                         "Opening the database failed");
         return record;
     }
 
@@ -231,7 +231,7 @@ QList<QVariantMap> DbManager::getAllDataDetails()
 
     if (!db.isOpen()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Database is not open.");
+                                         "Opening the database failed");
         return detailsList;
     }
 
@@ -270,7 +270,7 @@ QList<QVariantMap> DbManager::getDataDetailsBySimulationAndTime(
 
     if (!db.isOpen()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Database is not open.");
+                                         "Opening the database failed");
         return detailsList;
     }
 
