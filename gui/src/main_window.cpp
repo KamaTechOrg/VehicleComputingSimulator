@@ -116,10 +116,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
+    setDefaultBackgroundImage();
     mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
 
     stateManager = new SimulationStateManager(this);
+    void setDefaultBackgroundImage();
 
     int id = 0;
     const QString styleSheet =
@@ -401,41 +403,77 @@ void MainWindow::timerTimeout()
     endProcesses();
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);  // Call the base class implementation
+
+    if (!currentImagePath.isEmpty()) {
+        QPixmap pixmap(currentImagePath);
+        imageLabel->setPixmap(pixmap.scaled(
+            workspace->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setGeometry(workspace->rect());
+    }
+}
+
+void MainWindow::setDefaultBackgroundImage()
+{
+    // Set default image path
+    QString defaultImagePath =
+        "../../1.jpg";  // Assuming default image is in resources
+    currentImagePath = defaultImagePath;
+
+    // Load and set the default image
+    QPixmap pixmap(defaultImagePath);
+    if (!pixmap.isNull()) {
+        // Clear any existing layout in the workspace (if necessary)
+        QLayout *layout = workspace->layout();
+        if (layout) {
+            QLayoutItem *item;
+            while ((item = layout->takeAt(0)) != nullptr) {
+                delete item->widget();
+                delete item;
+            }
+        }
+
+        // Add imageLabel to workspace and set the pixmap
+        //imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+        imageLabel->setPixmap(pixmap.scaled(workspace->size(),
+                                            Qt::IgnoreAspectRatio,
+                                            Qt::SmoothTransformation));
+        imageLabel->setAlignment(Qt::AlignCenter);
+        imageLabel->setGeometry(workspace->rect());
+        imageLabel->setScaledContents(true);
+
+        // Add imageLabel to the workspace layout
+        QVBoxLayout *newLayout = new QVBoxLayout(workspace);
+        newLayout->addWidget(imageLabel);
+        workspace->setLayout(newLayout);
+    }
+    else {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                         "i dont have defult img");
+    }
+}
+
 void MainWindow::openImageDialog()
 {
+    // Open file dialog to select a new image
     QString imagePath = QFileDialog::getOpenFileName(
         this, tr("Select Image"), "", tr("Image Files (*.png *.jpg *.jpeg)"));
 
     if (!imagePath.isEmpty()) {
         currentImagePath = imagePath;
+
+        // Load and set the new image
         QPixmap pixmap(imagePath);
-
         if (!pixmap.isNull()) {
-            // Clear the workspace before adding the new image
-            QLayout *layout = workspace->layout();
-            if (layout) {
-                QLayoutItem *item;
-                while ((item = layout->takeAt(0)) != nullptr) {
-                    delete item->widget();
-                    delete item;
-                }
-            }
-
-            // Create a new QLabel to display the image as background
-            QLabel *backgroundLabel = new QLabel(workspace);
-            backgroundLabel->setPixmap(pixmap.scaled(workspace->size(),
-                                                     Qt::IgnoreAspectRatio,
-                                                     Qt::SmoothTransformation));
-            backgroundLabel->setGeometry(workspace->rect());
-            backgroundLabel->setScaledContents(true);
-            backgroundLabel->setAttribute(Qt::WA_TranslucentBackground);
-            backgroundLabel->lower();
-            backgroundLabel->show();
-
-            // Add a new layout to the workspace
-            QVBoxLayout *newLayout = new QVBoxLayout(workspace);
-            workspace->setLayout(newLayout);
-
+            imageLabel->clear();  // Clear previous image
+            imageLabel->setPixmap(pixmap.scaled(workspace->size(),
+                                                Qt::IgnoreAspectRatio,
+                                                Qt::SmoothTransformation));
+            imageLabel->setGeometry(workspace->rect());
+            imageLabel->setScaledContents(true);
             guiLogger.logMessage(
                 logger::LogLevel::INFO,
                 "openImageDialog() called: Image loaded and displayed.");
@@ -460,7 +498,7 @@ void MainWindow::showSimulation()
     logHandler.readLogFile(filePath);
     logHandler.analyzeLogEntries(this, "simulation_state.bson");
 
-    Frames* frames = new Frames(logHandler);  // Initialize Frames
+    Frames *frames = new Frames(logHandler);  // Initialize Frames
     QVBoxLayout *framesLayout = new QVBoxLayout(workspace);
     framesLayout->addWidget(frames);
     workspace->setLayout(framesLayout);
@@ -812,7 +850,8 @@ void MainWindow::enableAllButtons()
     timerButton->setEnabled(true);
 }
 
-void MainWindow::rotateImage() {
+void MainWindow::rotateImage()
+{
     // Rotate the pixmap by the current angle
     QTransform transform;
     transform.rotate(rotationAngle);
@@ -822,7 +861,8 @@ void MainWindow::rotateImage() {
     loadingLabel->setPixmap(rotatedPixmap);
 
     // Increment the rotation angle for the next frame
-    rotationAngle = (rotationAngle + 10) % 360;  // Rotate by 10 degrees each time
+    rotationAngle =
+        (rotationAngle + 10) % 360;  // Rotate by 10 degrees each time
 }
 
 // Show the loading spinner with rotation

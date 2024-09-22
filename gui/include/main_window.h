@@ -83,6 +83,9 @@ public slots:
     void editSquare(int id);
     void deleteSquare(int id);
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
     void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
     friend class TestMainWindow;
@@ -99,6 +102,7 @@ private:
     Process *getProcessById(int id);
     void rotateImage();     // Function to handle rotation
     void openSecondProject();  // Function that handles launching the second project
+    void setDefaultBackgroundImage();
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
