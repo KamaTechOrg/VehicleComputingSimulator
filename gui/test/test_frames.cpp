@@ -2,7 +2,7 @@
 #include <QtTest/QtTest>
 #include "frames.h"
 #include "log_handler.h"
-// Mocking necessary components
+
 class MockLogHandler : public LogHandler {
     // Implement mock methods as needed
 };
@@ -38,8 +38,6 @@ void TestFrames::testInvalidIndexHandling()
 {
     frames->initialFramesMat(2);
     frames->fillFramesMat();
-    
-    // Add a log entry with invalid IDs
     LogHandler::LogEntry logEntry;
     logEntry.srcId = -1; // Invalid ID
     logEntry.dstId = 10; // Invalid ID
@@ -47,8 +45,6 @@ void TestFrames::testInvalidIndexHandling()
 
     frames->setActiveLogEntries({{logEntry.timestamp, logEntry}});
     frames->updateFrames();
-
-    // No specific checks; just ensure no crash or assertion failure
 }
 
 void TestFrames::testUniqueColors()
@@ -67,7 +63,7 @@ void TestFrames::testUniqueColors()
 void TestFrames::testInitialFramesMat()
 {
     frames->initialFramesMat(5);
-    QCOMPARE(frames->getFramesMat().size(), 5); // לבדוק את גודל framesMat
+    QCOMPARE(frames->getFramesMat().size(), 5); 
 }
 
 void TestFrames::testUpdateFrames()
