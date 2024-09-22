@@ -106,6 +106,7 @@ private:
     void rotateImage();     // Function to handle rotation
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
+    void openDialog();
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
