@@ -36,13 +36,13 @@ public:
     void setActiveLogEntries(
         const std::multimap<QDateTime, LogHandler::LogEntry> &logEntriesVector);
     void setIdMapping(const QMap<int, int> &idMapping);
+    void updateFrames();
+    void fillFramesMat();
+    void initialFramesMat(int size);
+    void createSequentialIds();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-
-private slots:
-    void updateFrames();
-
 private:
     LogHandler &logHandler;
     std::vector<std::vector<Frame>> framesMat;
@@ -50,10 +50,7 @@ private:
     QMap<int, int> idMapping;
     qint64 differenceTime;
 
-    void initialFramesMat(int size);
-    void createSequentialIds();
     QString generateRandomColor();
-    void fillFramesMat();
 };
 
 #endif  // __FRAMES_H__
