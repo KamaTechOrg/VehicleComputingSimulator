@@ -39,7 +39,8 @@ add_library(VehicleComputingSimulatorLib
     src/frames.cpp
     src/compiler.cpp
     src/db_manager.cpp
-     ../logger/logger.cpp
+    src/history_window.cpp
+    ../logger/logger.cpp
 )
 
 # Add headers to the library target
@@ -52,6 +53,7 @@ target_sources(VehicleComputingSimulatorLib PRIVATE
     include/frames.h
     include/compiler.h
     include/db_manager.h
+    include/history_window.h
     ../logger/logger.h
 )
 
