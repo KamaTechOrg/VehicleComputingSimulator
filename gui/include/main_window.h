@@ -34,6 +34,7 @@
 #include "process_dialog.h"
 #include "simulation_state_manager.h"
 #include "db_manager.h"
+#include "history_window.h"
 #include "../../logger/logger.h"
 
 
@@ -85,7 +86,8 @@ public slots:
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
-
+    void openHistoryWindow();  
+    
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
@@ -130,7 +132,8 @@ private:
     SimulationStateManager *stateManager;
     LogHandler logHandler;
     DbManager *sqlDataManager;
-
+    DbManager *dataHandler;   // Pointer to DbManager
+    HistoryWindow *historyWindow; // Pointer to history window
 };
 
 #endif  // MAIN_WINDOW_H
