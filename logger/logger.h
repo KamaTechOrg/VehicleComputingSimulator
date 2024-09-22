@@ -1,13 +1,13 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <string>
 #include <chrono>
-#include <iomanip>
-#include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <mutex>
+#include <sstream>
+#include <string>
 
 #ifndef LOG_LEVEL
 #define LOG_LEVEL logger::LogLevel::INFO
