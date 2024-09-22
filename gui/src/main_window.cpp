@@ -207,6 +207,75 @@ void MainWindow::createNewProcess()
     }
 }
 
+void MainWindow::openDialog()
+{
+    QDialog dialog;
+    dialog.setWindowTitle("Saving the simulation?");
+    dialog.resize(300, 150);
+
+    QLabel *label = new QLabel("Save the simulation?");
+    label->setAlignment(Qt::AlignCenter); 
+    QPushButton *yesButton = new QPushButton("Yes");
+    QPushButton *noButton = new QPushButton("No");
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(yesButton);
+    layout->addWidget(noButton);
+    dialog.setLayout(layout);
+
+    QObject::connect(yesButton, &QPushButton::clicked, [&]()
+    {
+        dialog.close();
+        QDialog inputDialog;
+        inputDialog.setWindowTitle("insert simulation name");
+
+        QLineEdit *input = new QLineEdit();
+        QPushButton *saveButton = new QPushButton("save");
+
+        QVBoxLayout *inputLayout = new QVBoxLayout;
+        inputLayout->addWidget(new QLabel("insert simulation name"));
+        inputLayout->addWidget(input);
+        inputLayout->addWidget(saveButton);
+        inputDialog.setLayout(inputLayout);
+
+        QObject::connect(saveButton, &QPushButton::clicked, [&]()
+        {
+            QString simulationName =input->text();
+            inputDialog.close();
+            QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
+            QString logFilePath = "../log_file.log";       
+            QString bsonFilePath = "simulation_state.bson";     //  BSON
+
+            QString logData =sqlDataManager->readLogFile(logFilePath);
+            if (logData.isEmpty()) {
+                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
+            }
+
+            // BSON
+            QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
+            if (bsonData.isEmpty()) {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
+            }  
+
+            if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData, logData)) {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
+            } else {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
+            }
+        });
+
+        inputDialog.exec();
+    });
+
+    QObject::connect(noButton, &QPushButton::clicked, [&]()
+    {
+        dialog.close();
+    });
+
+    dialog.exec();
+}
+
+
 Process *MainWindow::getProcessById(int id)
 {
     for (DraggableSquare *square : squares) {
@@ -302,7 +371,8 @@ void MainWindow::updateTimer()
         }
 
         timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this, time]() mutable {
+        connect(timer, &QTimer::timeout, this, [this, time]() mutable
+        {
 
             if (time > 0) {
                 time--;
@@ -343,28 +413,6 @@ void MainWindow::endProcesses()
                                      "MainWindow::endProcesses  Simulation "
                                      "data saved to simulation_state.bson");
     
-    QString logFilePath = "../log_file.log";       
-    QString bsonFilePath = "simulation_state.bson";     //  BSON
-
-    QString logData =sqlDataManager->readLogFile(logFilePath);
-    if (logData.isEmpty()) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
-    }
-
-    // BSON
-    QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
-    if (bsonData.isEmpty()) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
-    }
-
-    QString inputString = "Some input data";  
-
-    if (!sqlDataManager->insertDataToDatabase(inputString, bsonData, logData)) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
-    } else {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
-    }
-
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
         int id = pair.second;
@@ -379,6 +427,7 @@ void MainWindow::endProcesses()
         }
     }
     runningProcesses.clear();
+     openDialog();
 }
 
 void MainWindow::stopProcess(int deleteId)
@@ -412,7 +461,8 @@ void MainWindow::showTimerInput()
     timeInput->setFont(font);
 
     // Connect to textChanged signal to ensure text stays centered
-    connect(timeInput, &QLineEdit::textChanged, this, [this]() {
+    connect(timeInput, &QLineEdit::textChanged, this, [this]()
+    {
         timeInput->setAlignment(Qt::AlignCenter);
     });
 
@@ -449,7 +499,7 @@ void MainWindow::setDefaultBackgroundImage()
 {
     // Set default image path
     QString defaultImagePath =
-        "../../1.jpg";  // Assuming default image is in resources
+        "../img/1.jpg";  // Assuming default image is in resources
     currentImagePath = defaultImagePath;
 
     // Load and set the default image
@@ -641,7 +691,8 @@ void MainWindow::compileProjects()
         Compiler *compiler =
             new Compiler(executionFilePath, &compileSuccessful, this);
         connect(compiler, &Compiler::logMessage, this,
-                [this](const QString &message) {
+                [this](const QString &message)
+                {
                     guiLogger.logMessage(logger::LogLevel::ERROR,
                                          message.toStdString());
                 });
@@ -679,12 +730,14 @@ void MainWindow::runProjects()
             scriptProcess->start("bash", QStringList() << executionFilePath);
             connect(
                 scriptProcess, &QProcess::readyReadStandardOutput,
-                [this, scriptProcess]() {
+                [this, scriptProcess]()
+                {
                     logOutput->append(scriptProcess->readAllStandardOutput());
                 });
             connect(
                 scriptProcess, &QProcess::readyReadStandardError,
-                [this, scriptProcess]() {
+                [this, scriptProcess]()
+                {
                     logOutput->append(scriptProcess->readAllStandardError());
                 });
         }
@@ -712,11 +765,13 @@ void MainWindow::runProjects()
             QProcess *runProcess = new QProcess(this);
             runProcess->setWorkingDirectory(buildDirPath);
             connect(runProcess, &QProcess::readyReadStandardOutput,
-                    [this, runProcess]() {
+                    [this, runProcess]()
+                    {
                         logOutput->append(runProcess->readAllStandardOutput());
                     });
             connect(runProcess, &QProcess::readyReadStandardError,
-                    [this, runProcess]() {
+                    [this, runProcess]()
+                    {
                         logOutput->append(runProcess->readAllStandardError());
                     });
             connect(
