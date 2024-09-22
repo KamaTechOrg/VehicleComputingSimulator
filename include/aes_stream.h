@@ -1,4 +1,5 @@
 #include "aes.h"
+#include <cstdlib>
 #include <functional>
 #include <map>
 #include <string>
@@ -13,7 +14,11 @@ class StreamAES
     unsigned char* key;
     unsigned char* lastData;
  
-    StreamAES():iv(new unsigned char[16]){};
+    StreamAES() : iv(new unsigned char[16]), lastBlock(new unsigned char[16]){};
+   ~StreamAES() {
+    delete[] iv;
+    delete[] lastBlock;
+   }
     /** 
  @brief Encrypts the initial block of data using AES in CBC mode.
  

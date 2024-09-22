@@ -6,15 +6,12 @@ void AESOfb::encryptStart(unsigned char block[], unsigned int inLen, unsigned ch
     generateRandomIV(iv);
     memcpy(lastData, iv, BLOCK_BYTES_LEN);
     encrypt(block, inLen, key, out, outLen, iv,lastData, keyLength);
-    unsigned char *newOut = new unsigned char[outLen + 16];
-    memcpy(newOut, out, outLen);
-    memcpy(newOut + outLen, iv, 16);
-    out = newOut;
+    memcpy(out + outLen, iv, BLOCK_BYTES_LEN);
     this -> lastBlock  = out;
     this -> key = key;
     this -> keyLength = keyLength;
-   this-> lastData = lastData;
-    outLen += 16;
+    this-> lastData = lastData;
+    outLen += BLOCK_BYTES_LEN;
 }
 
 void AESOfb::encryptContinue(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int &outLen)
@@ -26,8 +23,8 @@ void AESOfb::decryptStart(unsigned char block[], unsigned int inLen, unsigned ch
 {
   unsigned char* lastData = new unsigned char[BLOCK_BYTES_LEN];
   memcpy(lastData, iv, BLOCK_BYTES_LEN);
-  this-> iv = block + inLen - 16;
-  decrypt(block,  inLen - 16, key, out, outLen, block + inLen - 16, lastData, keyLength);
+  this-> iv = block + inLen - BLOCK_BYTES_LEN;
+  decrypt(block,  inLen - BLOCK_BYTES_LEN, key, out, outLen, block + inLen - BLOCK_BYTES_LEN, lastData, keyLength);
   this-> lastBlock = out;
   this->lastData = lastData;
 }
@@ -42,16 +39,13 @@ void AESOfb::encrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
 {
     padMessage(in, inLen, outLen);
     unsigned char block[BLOCK_BYTES_LEN];
-    out = new unsigned char[outLen];
     unsigned char feedback[BLOCK_BYTES_LEN];
     unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
-    if(lastData)
-        memcpy(feedback, lastData, BLOCK_BYTES_LEN);
-    else
-       memcpy(feedback, iv, BLOCK_BYTES_LEN);
+    memcpy(feedback, lastData, BLOCK_BYTES_LEN);
     for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
         encryptBlock(feedback, block, roundKeys, keyLength);
+        xorBlocks(in + i, block, out+ i,BLOCK_BYTES_LEN);
         for (unsigned int j = 0; j < BLOCK_BYTES_LEN; ++j) 
             out[i + j] = in[i + j] ^ block[j];
         memcpy(feedback, block, BLOCK_BYTES_LEN);
@@ -66,24 +60,15 @@ void AESOfb::decrypt(unsigned char in[], unsigned int inLen, unsigned char *key,
     checkLength(inLen);
     unsigned char block[BLOCK_BYTES_LEN];
     outLen = inLen;
-    out = new unsigned char[outLen];
     unsigned char feedback[BLOCK_BYTES_LEN];
     unsigned char *roundKeys = new unsigned char[(aesKeyLengthData[keyLength].numRound + 1) * NUM_BLOCKS * 4];
     keyExpansion(key, roundKeys, keyLength);
-    if(lastData)
-        memcpy(feedback, lastData, BLOCK_BYTES_LEN);
-    else
-       memcpy(feedback, iv, BLOCK_BYTES_LEN);
-    for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
+    memcpy(feedback, lastData, BLOCK_BYTES_LEN);
+        for (unsigned int i = 0; i < outLen; i += BLOCK_BYTES_LEN) {
         encryptBlock(feedback, block, roundKeys, keyLength);
-        // Copy only the amount of data needed for the current block
-        unsigned int blockLen = (i + BLOCK_BYTES_LEN <= outLen) ? BLOCK_BYTES_LEN : (outLen - i);
-        for (unsigned int j = 0; j < blockLen; ++j) 
-            out[i + j] = in[i + j] ^ block[j];
-        // Update feedback to be used for the next block
+        xorBlocks(in + i, block, out + i, BLOCK_BYTES_LEN);
         memcpy(feedback, block, BLOCK_BYTES_LEN);
         memcpy(lastData, feedback, BLOCK_BYTES_LEN);
-
     }
     unpadMessage(out, outLen);
     delete[] roundKeys;

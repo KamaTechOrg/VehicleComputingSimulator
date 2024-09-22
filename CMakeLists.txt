@@ -24,7 +24,7 @@ option(USE_SYCL "Enable SYCL support" OFF)
 if(USE_SYCL)
     # Set the icpx compiler with SYCL support
     set(CMAKE_CXX_COMPILER icpx)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl -g")
     # Add oneAPI include directories
     include_directories(${CMAKE_SOURCE_DIR}/include /opt/intel/oneapi/compiler/latest/linux/include)
     # Add oneAPI library directories
@@ -33,6 +33,7 @@ if(USE_SYCL)
     add_definitions(-DUSE_SYCL)
 else()
     message(STATUS "Compiling without SYCL support")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     remove_definitions(-DUSE_SYCL)
 endif()
 
@@ -50,9 +51,11 @@ add_executable(runTests
 
 # Link libraries
 target_link_libraries(runTests
-    ${GMP_LIBRARY} 
-    ${GMPXX_LIBRARY} 
-    gtest gtest_main pthread
+    ${GMP_LIBRARY}
+    ${GMPXX_LIBRARY}
+    gtest
+    gtest_main
+    pthread
 )
 
 # Set build type to Debug
