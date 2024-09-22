@@ -2,33 +2,28 @@
 #include <QHeaderView>
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QGuiApplication>
+#include <QScreen>
 #include <main_window.h>
 #include "history_window.h"
 
 HistoryWindow::HistoryWindow(DbManager *dataHandler, QWidget *parent)
     : QDialog(parent), dataHandler(dataHandler)
-{  // Use QDialog instead of QWidget
+{
     // Set window title
     setWindowTitle("Simulations History");
 
     // Initialize tableWidget
     tableWidget = new QTableWidget(this);
-
-    // Set the size policies to expanding
     tableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    // Enable column stretching for better fitting
     tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    // Set up layout
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(tableWidget);
-
-    // Set a default window size
     setMinimumSize(600, 400);
 
     // Center the window on the screen
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    QScreen* screen = QGuiApplication::screens().at(0);
+    QRect screenGeometry = screen->geometry();
     int x = (screenGeometry.width() - this->width()) / 2;
     int y = (screenGeometry.height() - this->height()) / 2;
     this->move(x, y);
