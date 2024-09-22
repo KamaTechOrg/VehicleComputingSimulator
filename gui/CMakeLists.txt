@@ -22,7 +22,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Find the Qt5 library
-find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Test)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui Sql Test)
 
 # Find the BSON library using pkg-config
 find_package(PkgConfig REQUIRED)
@@ -37,7 +37,8 @@ add_library(DraggableSquaresLib
     src/simulation_state_manager.cpp
     src/log_handler.cpp
     src/frames.cpp
-    ../logger/logger.cpp
+    src/data_sql.cpp
+     ../logger/logger.cpp
 )
 
 # Add headers to the library target
@@ -48,6 +49,7 @@ target_sources(DraggableSquaresLib PRIVATE
     include/simulation_state_manager.h
     include/log_handler.h
     include/frames.h
+    include/data_sql.h
     ../logger/logger.h
 )
 
@@ -59,13 +61,13 @@ target_include_directories(DraggableSquaresLib PRIVATE
 )
 
 # Link the BSON library and Qt5 components to the library
-target_link_libraries(DraggableSquaresLib PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(DraggableSquaresLib PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Sql Qt5::Widgets)
 
 # Create the main executable
 add_executable(DraggableSquares src/main.cpp)
 
 # Link the main executable with the library and Qt5 modules
-target_link_libraries(DraggableSquares PRIVATE DraggableSquaresLib Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(DraggableSquares PRIVATE DraggableSquaresLib Qt5::Core Qt5::Gui Qt5::Sql Qt5::Widgets)
 
 # Make sure the main executable has access to the include directory
 target_include_directories(DraggableSquares PRIVATE ${CMAKE_SOURCE_DIR}/include ${BSON_INCLUDE_DIRS})

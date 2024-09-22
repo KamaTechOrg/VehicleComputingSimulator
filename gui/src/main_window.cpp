@@ -16,7 +16,7 @@ int sizeSquare = 120;
 int rotationTimerIntervals = 100;
 logger MainWindow::guiLogger("gui");
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new dataToSql(this))
 {
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -114,7 +114,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
     imageLabel = new QLabel(this);
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    
+
     setDefaultBackgroundImage();
     mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
@@ -318,6 +318,28 @@ void MainWindow::endProcesses()
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "MainWindow::endProcesses  Simulation "
                                      "data saved to simulation_state.bson");
+    
+    QString logFilePath = "../log_file.log";       
+    QString bsonFilePath = "simulation_state.bson";     //  BSON
+
+    QString logData =sqlDataManager->readLogFile(logFilePath);
+    if (logData.isEmpty()) {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
+    }
+
+    // BSON
+    QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
+    if (bsonData.isEmpty()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
+    }
+
+    QString inputString = "Some input data";  
+
+    if (!sqlDataManager->insertDataToDatabase(inputString, bsonData, logData)) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
+    } else {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
+    }
 
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
