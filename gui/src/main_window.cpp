@@ -207,6 +207,72 @@ void MainWindow::createNewProcess()
     }
 }
 
+void MainWindow::openDialog()
+{
+    QDialog dialog;
+    dialog.setWindowTitle("Saving the simulation?");
+    dialog.resize(300, 150);
+
+    QLabel *label = new QLabel("Save the simulation?");
+    label->setAlignment(Qt::AlignCenter); 
+    QPushButton *yesButton = new QPushButton("Yes");
+    QPushButton *noButton = new QPushButton("No");
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(yesButton);
+    layout->addWidget(noButton);
+    dialog.setLayout(layout);
+
+    QObject::connect(yesButton, &QPushButton::clicked, [&]() {
+        dialog.close();
+        QDialog inputDialog;
+        inputDialog.setWindowTitle("insert simulation name");
+
+        QLineEdit *input = new QLineEdit();
+        QPushButton *saveButton = new QPushButton("save");
+
+        QVBoxLayout *inputLayout = new QVBoxLayout;
+        inputLayout->addWidget(new QLabel("insert simulation name"));
+        inputLayout->addWidget(input);
+        inputLayout->addWidget(saveButton);
+        inputDialog.setLayout(inputLayout);
+
+        QObject::connect(saveButton, &QPushButton::clicked, [&]() {
+            QString simulationName =input->text();
+            inputDialog.close();
+            QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
+            QString logFilePath = "../log_file.log";       
+            QString bsonFilePath = "simulation_state.bson";     //  BSON
+
+            QString logData =sqlDataManager->readLogFile(logFilePath);
+            if (logData.isEmpty()) {
+                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
+            }
+
+            // BSON
+            QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
+            if (bsonData.isEmpty()) {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
+            }  
+
+            if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData, logData)) {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
+            } else {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
+            }
+        });
+
+        inputDialog.exec();
+    });
+
+    QObject::connect(noButton, &QPushButton::clicked, [&]() {
+        dialog.close();
+    });
+
+    dialog.exec();
+}
+
+
 Process *MainWindow::getProcessById(int id)
 {
     for (DraggableSquare *square : squares) {
@@ -343,28 +409,6 @@ void MainWindow::endProcesses()
                                      "MainWindow::endProcesses  Simulation "
                                      "data saved to simulation_state.bson");
     
-    QString logFilePath = "../log_file.log";       
-    QString bsonFilePath = "simulation_state.bson";     //  BSON
-
-    QString logData =sqlDataManager->readLogFile(logFilePath);
-    if (logData.isEmpty()) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
-    }
-
-    // BSON
-    QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
-    if (bsonData.isEmpty()) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
-    }
-
-    QString inputString = "Some input data";  
-
-    if (!sqlDataManager->insertDataToDatabase(inputString, bsonData, logData)) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
-    } else {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
-    }
-
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
         int id = pair.second;
@@ -379,6 +423,7 @@ void MainWindow::endProcesses()
         }
     }
     runningProcesses.clear();
+     openDialog();
 }
 
 void MainWindow::stopProcess(int deleteId)
@@ -449,7 +494,7 @@ void MainWindow::setDefaultBackgroundImage()
 {
     // Set default image path
     QString defaultImagePath =
-        "../../1.jpg";  // Assuming default image is in resources
+        "../img/1.jpg";  // Assuming default image is in resources
     currentImagePath = defaultImagePath;
 
     // Load and set the default image
