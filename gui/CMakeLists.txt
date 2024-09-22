@@ -22,7 +22,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Find the Qt5 library
-find_package(Qt5 REQUIRED COMPONENTS Concurrent Widgets Core Gui Test)
+find_package(Qt5 REQUIRED COMPONENTS Concurrent Widgets Core Gui Sql Test)
 
 # Find the BSON library using pkg-config
 find_package(PkgConfig REQUIRED)
@@ -38,7 +38,8 @@ add_library(VehicleComputingSimulatorLib
     src/log_handler.cpp
     src/frames.cpp
     src/compiler.cpp
-    ../logger/logger.cpp
+    src/db_manager.cpp
+     ../logger/logger.cpp
 )
 
 # Add headers to the library target
@@ -50,6 +51,7 @@ target_sources(VehicleComputingSimulatorLib PRIVATE
     include/log_handler.h
     include/frames.h
     include/compiler.h
+    include/db_manager.h
     ../logger/logger.h
 )
 
@@ -61,7 +63,7 @@ target_include_directories(VehicleComputingSimulatorLib PRIVATE
 )
 
 # Link the BSON library and Qt5 components to the library
-target_link_libraries(VehicleComputingSimulatorLib PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Concurrent)
+target_link_libraries(VehicleComputingSimulatorLib PRIVATE ${BSON_LIBRARIES} Qt5::Core Qt5::Gui Qt5::Sql Qt5::Widgets Qt5::Concurrent)
 
 # Create the main executable
 add_executable(VehicleComputingSimulator src/main.cpp)

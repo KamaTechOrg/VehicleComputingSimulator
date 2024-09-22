@@ -15,16 +15,17 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QPixmap>
-#include <QPropertyAnimation>
-#include <QGraphicsOpacityEffect>
-#include <QGraphicsRotation>
-#include <QTransform>
 #include <QPushButton>
 #include <QTextEdit>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QVector>
 #include <memory>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QByteArray>
+#include <QFile>
+#include <QTextStream>
 #include "process.h"
 #include "draggable_square.h"
 #include "frames.h"
@@ -32,7 +33,9 @@
 #include "process.h"
 #include "process_dialog.h"
 #include "simulation_state_manager.h"
+#include "db_manager.h"
 #include "../../logger/logger.h"
+
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -126,6 +129,8 @@ private:
     QString currentImagePath;
     SimulationStateManager *stateManager;
     LogHandler logHandler;
+    DbManager *sqlDataManager;
+
 };
 
 #endif  // MAIN_WINDOW_H
