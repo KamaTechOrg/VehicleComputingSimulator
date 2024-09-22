@@ -4,6 +4,7 @@ std::string logger::logFileName;
 std::mutex logger::logMutex;
 std::chrono::system_clock::time_point logger::initTime =
     std::chrono::system_clock::now();
+
 std::string logger::componentName = "out";
 
 logger::logger(std::string componentName) {
