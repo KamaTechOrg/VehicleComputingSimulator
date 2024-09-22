@@ -133,3 +133,117 @@ QVariantMap dataToSql::getRecordById(int id) {
 
     return record;
 }
+bool dataToSql::insertDataDetails(int dataSimulationId, const QString &timeStamp, int idSrc, int idDst, const QString &message, const QString &sendReceived, const QString &successFailed) {
+    QSqlQuery query;
+
+    // Create the table if it doesn't exist
+    if (!query.exec("CREATE TABLE IF NOT EXISTS data_details ("
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    "data_simulation_id INTEGER, "
+                    "timesTamp TEXT, "
+                    "idSrc INTEGER, "
+                    "idDst INTEGER, "
+                    "message TEXT, "
+                    "send_recieved TEXT, "
+                    "success_failed TEXT, "
+                    "FOREIGN KEY(data_simulation_id) REFERENCES data_simulation(id))")) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+                                        "dataToSql",
+                                        "insertDataDetails",
+                                        ("Failed to create data_details table:" + query.lastError().text()).toStdString());
+        return false;
+    }
+
+    // Insert a new row into the table
+    query.prepare("INSERT INTO data_details (data_simulation_id, timesTamp, idSrc, idDst, message, send_recieved, success_failed) "
+                  "VALUES (:data_simulation_id, :timesTamp, :idSrc, :idDst, :message, :send_recieved, :success_failed)");
+    query.bindValue(":data_simulation_id", dataSimulationId);
+    query.bindValue(":timesTamp", timeStamp);
+    query.bindValue(":idSrc", idSrc);
+    query.bindValue(":idDst", idDst);
+    query.bindValue(":message", message);
+    query.bindValue(":send_recieved", sendReceived);
+    query.bindValue(":success_failed", successFailed);
+
+    // Execute the insert query
+    if (!query.exec()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+                                "dataToSql",
+                                "insertDataDetails",
+                                ("Failed to insert data into data_details:"+query.lastError().text() ).toStdString());
+        return false;
+    }
+
+    return true;
+}
+QList<QVariantMap> dataToSql::getAllDataDetails() {
+    QList<QVariantMap> detailsList;
+
+    if (!db.isOpen()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
+        return detailsList;
+    }
+
+    QSqlQuery query;
+    if (!query.exec("SELECT id, data_simulation_id, timesTamp, idSrc, idDst, message, send_recieved, success_failed FROM data_details")) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+                                        "dataToSql",
+                                        "getAllDataDetails",
+                                        ("Failed to fetch data_details:"+query.lastError().text()).toStdString());
+         return detailsList;
+    }
+
+    while (query.next()) {
+        QVariantMap record;
+        record["id"] = query.value("id");
+        record["data_simulation_id"] = query.value("data_simulation_id");
+        record["timesTamp"] = query.value("timesTamp");
+        record["idSrc"] = query.value("idSrc");
+        record["idDst"] = query.value("idDst");
+        record["message"] = query.value("message");
+        record["send_recieved"] = query.value("send_recieved");
+        record["success_failed"] = query.value("success_failed");
+
+        detailsList.append(record);
+    }
+
+    return detailsList;
+}
+QList<QVariantMap> dataToSql::getDataDetailsBySimulationAndTime(int dataSimulationId, const QString &timeStamp) {
+    QList<QVariantMap> detailsList;
+
+    if (!db.isOpen()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,"Database is not open.");
+        return detailsList;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT id, data_simulation_id, timesTamp, idSrc, idDst, message, send_recieved, success_failed "
+                  "FROM data_details WHERE data_simulation_id = :data_simulation_id AND timesTamp = :timeStamp");
+    query.bindValue(":data_simulation_id", dataSimulationId);
+    query.bindValue(":timeStamp", timeStamp);
+
+    if (!query.exec()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR ,
+        "dataToSql",
+        "getDataDetailsBySimulationAndTime",
+        ("Failed to fetch data_details by data_simulation_id and timeStamp:"+ query.lastError().text()).toStdString());
+        return detailsList;
+    }
+
+    while (query.next()) {
+        QVariantMap record;
+        record["id"] = query.value("id");
+        record["data_simulation_id"] = query.value("data_simulation_id");
+        record["timesTamp"] = query.value("timesTamp");
+        record["idSrc"] = query.value("idSrc");
+        record["idDst"] = query.value("idDst");
+        record["message"] = query.value("message");
+        record["send_recieved"] = query.value("send_recieved");
+        record["success_failed"] = query.value("success_failed");
+
+        detailsList.append(record);
+    }
+
+    return detailsList;
+}
