@@ -7,7 +7,6 @@
 
 using json = nlohmann::json;
 using namespace std;
-#define MIN_LEGAL_DISTANCE 5000
 
 // create buffer from alert object
 char *Alerter::makeAlertBuffer(int type, double distance)
