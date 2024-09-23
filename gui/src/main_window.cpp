@@ -299,11 +299,7 @@ void MainWindow::updateTimer()
                 timeInput->setText(QString::number(time));
                 timeInput->setAlignment(Qt::AlignCenter);  // Keep text centered
             } else {
-                timer->stop();
-                logOutput->append("Timer finished.");
-                MainWindow::guiLogger.logMessage(
-                    logger::LogLevel::INFO, "MainWindow", "updateTimer",
-                    "Timer finished");
+                timerTimeout();
             }
         });
 
