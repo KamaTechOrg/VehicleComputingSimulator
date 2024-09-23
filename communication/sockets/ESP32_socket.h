@@ -1,5 +1,6 @@
 #ifndef ESP32SOCKET_H
 #define ESP32SOCKET_H
+
 #ifdef INADDR_NONE
 #undef INADDR_NONE
 #endif
@@ -9,37 +10,39 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "../../logger/logger.h"
 
 class ESP32Socket : public ISocket
 {
 private:
+    // Wi-Fi configuration
     const char *ssid;
     const char *password;
     int s_retry_num;
-    bool wifi_connected; // Flag to indicate Wi-Fi connection status
+    bool wifi_connected;
+    logger log;
 
-    // Event handler function to handle Wi-Fi events like disconnects, reconnects, etc.
-    void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+   // Event handler function to handle Wi-Fi events like disconnects, reconnects, etc.
+void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+{
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
-        if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
-        {
-            s_retry_num++;
-            Serial.println("Reconnecting to WiFi...");
-            esp_wifi_connect();
-        }
-        else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
-        {
-            ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-            Serial.print("Got IP: ");
-            Serial.println(ip4addr_ntoa(reinterpret_cast<const ip4_addr_t *>(&event->ip_info.ip)));
-            wifi_connected = true;
-            s_retry_num = 0;
-        }
+        s_retry_num++;
+        log.logMessage(logger::LogLevel::ERROR, "Reconnecting to WiFi...");
+        esp_wifi_connect();
     }
+    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+    {
+        // Log a message indicating successful Wi-Fi connection
+        log.logMessage(logger::LogLevel::INFO, "Connected to WiFi successfully");
+        wifi_connected = true;
+        s_retry_num = 0;
+    }
+}
 
 public:
     ESP32Socket(const char *wifi_ssid, const char *wifi_password, int retry_num = 10)
-        : ssid(wifi_ssid), password(wifi_password), s_retry_num(retry_num), wifi_connected(false)
+        : ssid(wifi_ssid), password(wifi_password), s_retry_num(retry_num), wifi_connected(false), log("communication")
     {
         initWifi();
     }
@@ -89,7 +92,7 @@ public:
         esp_event_handler_instance_t instance_got_ip;
         ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, [](void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
                                                             { 
-                                                                auto self = static_cast<ESP32Socket *>(arg);   // Cast to ESP32Socket class.
+                                                                auto self = static_cast<ESP32Socket *>(arg);   
                                                                 self->wifi_event_handler(arg, event_base, event_id, event_data); }, this, &instance_got_ip));
 
         // Initiate the connection to the Wi-Fi network.
@@ -103,13 +106,13 @@ public:
         while (!wifi_connected && retry_count < s_retry_num)
         {
             delay(1000);
-            Serial.println("Waiting for WiFi connection...");
+            log.logMessage(logger::LogLevel::INFO, "Waiting for WiFi connection...");
             retry_count++;
         }
 
         if (!wifi_connected)
         {
-            Serial.println("Failed to connect to WiFi.");
+            log.logMessage(logger::LogLevel::ERROR, "Failed to connect to WiFi.");
         }
     }
 
@@ -118,11 +121,11 @@ public:
         int sockFd = lwip_socket(domain, type, protocol);
         if (sockFd < 0)
         {
-            Serial.printf("Socket creation error: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Socket creation error: " + std::string(strerror(errno)));
         }
         else
         {
-            Serial.printf("Created socket: %d\n", sockFd);
+            log.logMessage(logger::LogLevel::INFO, "Created socket: " + std::to_string(sockFd));
         }
         return sockFd;
     }
@@ -132,7 +135,11 @@ public:
         int res = lwip_setsockopt(sockfd, level, optname, optval, optlen);
         if (res < 0)
         {
-            Serial.printf("setsockopt failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "setsockopt failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "setsockopt success: " + std::to_string(sockfd));
         }
         return res;
     }
@@ -142,7 +149,11 @@ public:
         int res = lwip_bind(sockfd, addr, addrlen);
         if (res < 0)
         {
-            Serial.printf("Bind failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Bind failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Bind success: " + std::to_string(sockfd));
         }
         return res;
     }
@@ -152,7 +163,11 @@ public:
         int res = lwip_listen(sockfd, backlog);
         if (res < 0)
         {
-            Serial.printf("Listen failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Listen failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Listen success: " + std::to_string(sockfd));
         }
         return res;
     }
@@ -162,7 +177,11 @@ public:
         int newSocket = lwip_accept(sockfd, addr, addrlen);
         if (newSocket < 0)
         {
-            Serial.printf("Accept failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Accept failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Accepted new connection: " + std::to_string(newSocket));
         }
         return newSocket;
     }
@@ -174,15 +193,18 @@ public:
 
         if (!wifi_connected)
         {
-            Serial.println("WiFi not connected. Cannot connect to server.");
+            log.logMessage(logger::LogLevel::ERROR, "WiFi not connected. Cannot connect to server.");
             return -1;
         }
 
         int res = lwip_connect(sockfd, addr, addrlen);
         if (res < 0)
         {
-            Serial.printf("Connection failed: %s\n", strerror(errno));
-            Serial.printf("address: %s\n", addr->sa_data);
+            log.logMessage(logger::LogLevel::ERROR, "Connection failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Connection successful: " + std::string(strerror(errno)));
         }
         return res;
     }
@@ -192,7 +214,15 @@ public:
         ssize_t res = lwip_recv(sockfd, buf, len, flags);
         if (res < 0)
         {
-            Serial.printf("Receive failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Receive failed: " + std::string(strerror(errno)));
+        }
+        else if (res == 0)
+        {
+            log.logMessage(logger::LogLevel::INFO, "Connection closed by peer: " + std::to_string(sockfd));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Received " + std::to_string(res) + " bytes from socket: " + std::to_string(sockfd));
         }
         return res;
     }
@@ -202,7 +232,11 @@ public:
         ssize_t res = lwip_send(sockfd, buf, len, flags);
         if (res < 0)
         {
-            Serial.printf("Send failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Send failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Sent " + std::to_string(res) + " bytes to socket: " + std::to_string(sockfd));
         }
         return res;
     }
@@ -212,7 +246,11 @@ public:
         int res = lwip_close(fd);
         if (res < 0)
         {
-            Serial.printf("Close failed: %s\n", strerror(errno));
+            log.logMessage(logger::LogLevel::ERROR, "Close failed: " + std::string(strerror(errno)));
+        }
+        else
+        {
+            log.logMessage(logger::LogLevel::INFO, "Closed socket: " + std::to_string(fd));
         }
         return res;
     }
