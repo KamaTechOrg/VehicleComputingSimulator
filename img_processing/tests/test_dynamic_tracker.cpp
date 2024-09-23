@@ -63,8 +63,8 @@ TEST(Track, twoCars)
     trackingOutput=detector.getOutput();
     // check time - start
     auto start = std::chrono::high_resolution_clock::now();
-    tracker.startTracking(prevFrame, *prevOutput);
-    tracker.tracking(currentFrame);
+    tracker.startTracking(prevFrame, prevOutput);
+    tracker.tracking(currentFrame,trackingOutput);
     // check time - end
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
@@ -72,13 +72,13 @@ TEST(Track, twoCars)
                                to_string(elapsed.count()) + " ms");
     int i = 0;
     float result;
-    for (const auto &tracktion : tracker.getOutput()) {
+    for (const auto &tracktion : trackingOutput) {
         LogManager::logInfoMessage(
             InfoType::TRACKING,
             "ID: " + to_string(tracktion.id) +
                 " Type: " + to_string(tracktion.type) +
                 " Position: " + rectToString(tracktion.position));
-        result = calculateIoU(tracktion.position, (*currentOutput)[i].position);
+        result = calculateIoU(tracktion.position, detectionOutput[i].position);
         LogManager::logInfoMessage(InfoType::IOU,
                                    "calculate- " + to_string(result));
         i++;
@@ -98,7 +98,7 @@ TEST(Track, track_video)
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
         auto output = make_shared<vector<ObjectInformation>>();
         detector.detect(f1, true);
-        output=detector.getOutput();
+        *output=detector.getOutput();
         vector<Scalar> colours = {
             Scalar(255, 0, 0),     // Blue
             Scalar(0, 255, 0),     // Green
@@ -111,10 +111,10 @@ TEST(Track, track_video)
             Scalar(128, 128, 0),   // Olive
             Scalar(128, 128, 128)  // Gray
         };
-        tracker.startTracking(f1, output);
-        for (int i = 0; i < output.size(); i++) {
+        tracker.startTracking(f1, *output);
+        for (int i = 0; i < (*output).size(); i++) {
             colours.push_back(Scalar(i * 40, i * 20, i * 50));
-            rectangle(frame, output[i].position, colours[i]);
+            rectangle(frame, (*output)[i].position, colours[i]);
         }
         cv::imshow("output", frame);
         // cv::waitKey(0);
@@ -126,9 +126,9 @@ TEST(Track, track_video)
             }
             // auto start = std::chrono::high_resolution_clock::now();
             shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
-            tracker.tracking(frame1,output);
-            for (int j = 0; j < output.size(); j++) {
-                rectangle(frame, output[j].position, colours[j]);
+            tracker.tracking(frame1,*output);
+            for (int j = 0; j < (*output).size(); j++) {
+                rectangle(frame, (*output)[j].position, colours[j]);
             }
             cv::imshow("output", frame);
             // cv::waitKey(0);
@@ -223,8 +223,8 @@ TEST(Track, calculate_iou)
                       Scalar(0, 0, 256), 3);
             imshow("frame1", *frame1);
             //waitKey(0);
-            float iou = calculateIoU((*detectionOutput)[0].position,
-                                     (*trackingOutput)[0].position);
+            float iou = calculateIoU((detectionOutput)[0].position,
+                                     (trackingOutput)[0].position);
             LogManager::logDebugMessage(DebugType::PRINT,
                                         "iou " + to_string(iou));
         }
