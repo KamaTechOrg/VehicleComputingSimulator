@@ -3,13 +3,13 @@
 #include "../include/server_connection.h"
 
 // Constructor
-ServerConnection::ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessID, ISocket* socketInterface)
+ServerConnection::ServerConnection(uint16_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint16_t, bool)> receiveNewProcessID, ISocket* socketInterface)
 {
     this->receiveNewProcessIDCallback = receiveNewProcessID;
     setPort(port);
     setReceiveDataCallback(receiveDataCallback);
     setSocketInterface(socketInterface);
-    running = false;
+    running.exchange(false);
 }
 
 // Initializes the listening socket
@@ -44,7 +44,7 @@ ErrorCode ServerConnection::startConnection()
         return ErrorCode::LISTEN_FAILED;
     }
     
-    running = true;
+    running.exchange(true);
     mainThread = std::thread(&ServerConnection::startThread, this);
     mainThread.detach();
 
@@ -54,11 +54,11 @@ ErrorCode ServerConnection::startConnection()
 // Starts listening for connection requests
 void ServerConnection::startThread()
 {
-    while (running) {
+    while (running.load()) {
         int clientSocket = socketInterface->accept(serverSocket, nullptr, nullptr);
         if (!clientSocket)
             continue;
-        
+
         if(clientSocket<0){
             stopServer();
             return;
@@ -72,17 +72,21 @@ void ServerConnection::startThread()
 }
 
 // Closes the sockets and the threads
-void ServerConnection::stopServer()
+ErrorCode ServerConnection::stopServer()
 {
-    if(!running)
-        return;
-        
-    running = false;
+    if(!running.load())
+        return ErrorCode::SUCCESS;
+
+    running.exchange(false);
     socketInterface->close(serverSocket);
+    ErrorCode allClosed = ErrorCode::SUCCESS;
     {
         std::lock_guard<std::mutex> lock(socketMutex);
-        for (int sock : sockets)
-            socketInterface->close(sock);
+        for (int sock : sockets){
+            int resClose = socketInterface->close(sock);
+            if(resClose < 0)
+                allClosed = ErrorCode::CLOSE_FAILED;
+        }
         sockets.clear();
     }
     {
@@ -91,6 +95,10 @@ void ServerConnection::stopServer()
             if (th.joinable())
                 th.join();
     }
+
+    delete socketInterface;
+
+    return allClosed;
 }
 
 // Runs in a thread for each process - waits for a message and forwards it to the manager
@@ -111,16 +119,15 @@ void ServerConnection::handleClient(int clientSocket)
         std::lock_guard<std::mutex> lock(IDMapMutex);
         clientIDMap[clientSocket] = clientID;
     }
-
     {
         std::lock_guard<std::mutex> lock(socketMutex);
         sockets.push_back(clientSocket);
     }
     
     // send callback to manager - new process connected
-    receiveNewProcessIDCallback(clientID, port);
+    receiveNewProcessIDCallback(clientID, port, true);
 
-    while (running) {
+    while (running.load()) {
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
         if (valread == 0)
             break;
@@ -131,18 +138,21 @@ void ServerConnection::handleClient(int clientSocket)
         receiveDataCallback(packet);
     }
 
-    {
     // If the process is no longer connected
-    std::lock_guard<std::mutex> lock(socketMutex);
-    auto it = std::find(sockets.begin(), sockets.end(), clientSocket);
-    socketInterface->close(*it);
-    if (it != sockets.end())
-        sockets.erase(it);
+    {
+        std::lock_guard<std::mutex> lock(socketMutex);
+        auto it = std::find(sockets.begin(), sockets.end(), clientSocket);
+        if (it != sockets.end()){
+            socketInterface->close(*it);
+            sockets.erase(it);
+        }
     }
     {
         std::lock_guard<std::mutex> lock(IDMapMutex);
         clientIDMap.erase(clientSocket);
     }
+    //update the central manager
+    receiveNewProcessIDCallback(clientID, port, false);
 }
 
 // Implementation according to the CAN BUS
@@ -200,7 +210,7 @@ ErrorCode ServerConnection::sendBroadcast(const Packet &packet)
 }
 
 // Sets the server's port number, throws an exception if the port is invalid.
-void ServerConnection::setPort(int port) {
+void ServerConnection::setPort(uint16_t port) {
     if (port <= 0 || port > 65535)
         throw std::invalid_argument("Invalid port number: Port must be between 1 and 65535.");
 
@@ -224,32 +234,32 @@ void ServerConnection::setSocketInterface(ISocket* socketInterface) {
 }
 
 // For testing
-int ServerConnection::getServerSocket()
+int ServerConnection::getServerSocket() const
 {
     return serverSocket;
 }
 
-int ServerConnection::isRunning()
+int ServerConnection::isRunning() const
 {
-    return running;
+    return running.load();
 }
 
-std::vector<int>* ServerConnection::getSockets()
+const std::vector<int>* ServerConnection::getSockets() const
 {
     return &sockets;
 }
 
-std::mutex* ServerConnection::getSocketMutex()
+const std::mutex* ServerConnection::getSocketMutex() const
 {
     return &socketMutex;
 }
 
-std::mutex* ServerConnection::getIDMapMutex()
+const std::mutex* ServerConnection::getIDMapMutex() const
 {
     return &IDMapMutex;
 }
 
-std::map<int, uint32_t>* ServerConnection::getClientIDMap()
+const std::unordered_map<int, uint32_t>* ServerConnection::getClientIDMap() const
 {
     return &clientIDMap;
 }
@@ -268,5 +278,4 @@ int ServerConnection::testGetClientSocketByID(uint32_t destID)
 ServerConnection::~ServerConnection()
 {
     stopServer();
-    delete socketInterface;
 }

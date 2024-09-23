@@ -48,8 +48,6 @@ int RealSocket::listen(int sockfd, int backlog)
         RealSocket::log.logMessage(logger::LogLevel::ERROR, "Listen failed: " + std::string(strerror(errno)));
         close(sockfd);
     }
-
-    RealSocket::log.logMessage(logger::LogLevel::INFO, "server running on port " + std::to_string(8080));
     return listenAns;
 }
 
@@ -115,7 +113,6 @@ ssize_t RealSocket::send(int sockfd, const void *buf, size_t len, int flags)
 int RealSocket::close(int fd)
 {
     RealSocket::log.logMessage(logger::LogLevel::INFO, "close socket number: " + std::to_string(fd));
-    RealSocket::log.cleanUp();
     shutdown(fd, SHUT_RDWR);
     return ::close(fd);
 }

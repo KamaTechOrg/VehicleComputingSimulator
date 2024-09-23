@@ -15,28 +15,28 @@
 class CentralManager:IManager{
 private:
     static CentralManager* instance;
-    std::vector<int> ports;
+    std::vector<uint16_t> ports;
     Gateway* gateway;
-
+    std::atomic<bool> running;
     // Mutexes for protecting shared data
     std::mutex managersMutex;
     std::mutex processToPortMutex;
     std::mutex gatewayMutex;
 
     //private constructor to singleton
-    CentralManager(std::vector<int> ports);
+    CentralManager(std::vector<uint16_t> ports);
 
     //manager port - manager object
-    std::unordered_map<uint32_t, BusManager*> managers;
+    std::unordered_map<uint16_t, BusManager*> managers;
     
     //process id - manager port
-    std::unordered_map<uint32_t, uint32_t> processToPort;
+    std::unordered_map<uint32_t, uint16_t> processToPort;
 
     //check if packet need a convertion
     bool needsTranslation(uint32_t srcId, uint32_t dstId);
 
 public:
-    static CentralManager* getInstance(std::vector<int> ports);
+    static CentralManager* getInstance(std::vector<uint16_t> ports);
 
     //connect centeral manager
     ErrorCode startConnection() override;
@@ -44,11 +44,14 @@ public:
     //close the centeral manager
     ErrorCode closeConnection() override;
 
+    // Static method to handle SIGINT signal
+    static void signalHandler(int signum);
+
     //recieve message from some bus
     ErrorCode receiveMessage(Packet &packet) override;
 
     //recieve processId from some bus
-    ErrorCode receiveNewProcessID(const uint32_t processID ,const uint32_t port) override;
+    ErrorCode updateProcessID(const uint32_t processID ,const uint16_t port, bool isConnected) override;
 
     //send message to some bus
     ErrorCode sendMessage(const Packet &packet) override;
@@ -57,7 +60,10 @@ public:
     ErrorCode forwardToGateway(Packet &packet);
 
     //connect new bus manager
-    ErrorCode registerBusManager(const uint32_t port);
+    ErrorCode registerBusManager(const uint16_t port);
+
+    //Destructor
+    ~CentralManager();
 };
 
 #endif // CENTRALMANAGER_H

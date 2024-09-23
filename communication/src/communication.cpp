@@ -18,7 +18,7 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 }
 
 // Sends the client to connect to server
-ErrorCode Communication::startConnection(uint32_t port)
+ErrorCode Communication::startConnection(uint16_t port)
 {
     //Waiting for manager
     //syncCommunication.isManagerRunning()
@@ -70,7 +70,7 @@ void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destI
 }
 
 // Accepts the packet from the client and checks..
-void Communication::receivePacket(Packet &p)
+void Communication::receivePacket(const Packet &p)
 {
     if (checkDestId(p)) {
         if (validCRC(p))
@@ -81,19 +81,19 @@ void Communication::receivePacket(Packet &p)
 }
 
 // Checks if the packet is intended for him
-bool Communication::checkDestId(Packet &p)
+bool Communication::checkDestId(const Packet &p)
 {
     return p.header.isBroadcast || p.header.DestID == this->id;
 }
 
 // Checks if the data is currect
-bool Communication::validCRC(Packet &p)
+bool Communication::validCRC(const Packet &p)
 {
     return p.header.CRC == p.calculateCRC(p.data, p.header.DLC);
 }
 
 // Receives the packet and adds it to the message
-void Communication::handlePacket(Packet &p)
+void Communication::handlePacket(const Packet &p)
 {
     // Send acknowledgment according to CAN bus
     // client.sendPacket(hadArrived());
@@ -115,7 +115,7 @@ Packet Communication::hadArrived()
 }
 
 // Adding the packet to the complete message
-void Communication::addPacketToMessage(Packet &p)
+void Communication::addPacketToMessage(const Packet &p)
 {
     std::string messageId = std::to_string(p.header.ID);
     // If the message already exists, we will add the packet

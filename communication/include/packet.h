@@ -42,7 +42,7 @@ public:
     Packet(uint32_t id);
 
     // Calculate CRC for the given data and length
-    uint16_t calculateCRC(const void *data, size_t length);
+    uint16_t calculateCRC(const void *data, size_t length)const;
 
     // A function to convert the data to hexa (logger)
     std::string pointerToHex(const void *ptr, size_t size) const;

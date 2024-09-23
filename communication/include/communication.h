@@ -16,16 +16,16 @@ private:
     static Communication* instance;
 
     // Accepts the packet from the client and checks..
-    void receivePacket(Packet &p);
+    void receivePacket(const Packet &p);
     
     // Checks if the packet is intended for him
-    bool checkDestId(Packet &p);
+    bool checkDestId(const Packet &p);
     
     // Checks if the Packet is currect
-    bool validCRC(Packet &p);
+    bool validCRC(const Packet &p);
     
     // Receives the packet and adds it to the message
-    void handlePacket(Packet &p);
+    void handlePacket(const Packet &p);
     
     // Implement error handling according to CAN bus
     void handleError();
@@ -34,7 +34,7 @@ private:
     Packet hadArrived();
     
     // Adding the packet to the complete message
-    void addPacketToMessage(Packet &p);
+    void addPacketToMessage(const Packet &p);
 
     // Static method to handle SIGINT signal
     static void signalHandler(int signum);
@@ -48,7 +48,7 @@ public:
     Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *));
     
     // Sends the client to connect to server
-    ErrorCode startConnection(uint32_t port);
+    ErrorCode startConnection(uint16_t port);
     
     // Sends a message to manager
     ErrorCode sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);

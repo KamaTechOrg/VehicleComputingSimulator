@@ -25,7 +25,7 @@ Packet::Packet(uint32_t id)
 }
 
 // Implementation according to the CAN BUS
-uint16_t Packet::calculateCRC(const void *data, size_t length)
+uint16_t Packet::calculateCRC(const void *data, size_t length) const
 {
     uint16_t crc = 0xFFFF;
     // Calculate CRC for the given data and length

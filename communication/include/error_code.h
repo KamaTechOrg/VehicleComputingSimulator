@@ -18,7 +18,8 @@ enum class ErrorCode {
     INVALID_DATA_SIZE = -13,     
     INVALID_DATA = -14,          
     INVALID_ID = -15,
-    BUS_NOT_FOUND = -16           
+    BUS_NOT_FOUND = -16,
+    NOT_RUNNING = -17         
 };
 
 // Function to convert ErrorCode to string
@@ -40,6 +41,8 @@ inline const char* toString(ErrorCode error) {
         case ErrorCode::INVALID_DATA_SIZE: return "INVALID_DATA_SIZE";
         case ErrorCode::INVALID_DATA: return "INVALID_DATA";
         case ErrorCode::INVALID_ID: return "INVALID_ID";
+        case ErrorCode::BUS_NOT_FOUND: return "BUS_NOT_FOUND";
+        case ErrorCode::NOT_RUNNING: return "NOT_RUNNING";
         default: return "UNKNOWN_ERROR";
     }
 }

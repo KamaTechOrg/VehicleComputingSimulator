@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <csignal>
 #include "message.h"
 #include "../sockets/Isocket.h"
@@ -18,7 +18,7 @@ class ServerConnection
 private:
     int serverSocket;
     sockaddr_in address;
-    int port;
+    uint16_t port;
     std::atomic<bool> running;
     std::thread mainThread;
     std::vector<std::thread> clientThreads;
@@ -26,8 +26,8 @@ private:
     std::mutex socketMutex;
     std::mutex threadMutex;
     std::function<ErrorCode(Packet&)> receiveDataCallback;
-    std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessIDCallback;
-    std::map<int, uint32_t> clientIDMap;
+    std::function<ErrorCode(const uint32_t,const uint16_t, bool)> receiveNewProcessIDCallback;
+    std::unordered_map<int, uint32_t> clientIDMap;
     std::mutex IDMapMutex;
     ISocket* socketInterface;
 
@@ -46,19 +46,19 @@ private:
 public:
 
     // Constructor
-    ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessIDCallback, ISocket* socketInterface = new RealSocket());
+    ServerConnection(uint16_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint16_t, bool)> receiveNewProcessIDCallback, ISocket* socketInterface = new RealSocket());
     
     // Initializes the listening socket
     ErrorCode startConnection();
     
     // Closes the sockets and the threads
-    void stopServer();
+    ErrorCode stopServer();
 
     // Sends the message to all connected processes - broadcast
     ErrorCode sendBroadcast(const Packet &packet);
 
     // Sets the server's port number, throws an exception if the port is invalid.
-    void setPort(int port);
+    void setPort(uint16_t port);
 
     // Sets the callback for receiving data, throws an exception if the callback is null.
     void setReceiveDataCallback(std::function<ErrorCode(Packet&)> callback);
@@ -70,17 +70,17 @@ public:
     ErrorCode sendDestination(const Packet &packet);
     
     // For testing
-    int getServerSocket();
+    int getServerSocket() const;
 
-    int isRunning();
+    int isRunning() const;
 
-    std::vector<int>* getSockets();
+    const std::vector<int>* getSockets() const;
 
-    std::mutex* getSocketMutex();
+    const std::mutex* getSocketMutex() const;
 
-    std::mutex* getIDMapMutex();
+    const std::mutex* getIDMapMutex() const;
 
-    std::map<int, uint32_t>* getClientIDMap();
+    const std::unordered_map<int, uint32_t>* getClientIDMap() const;
 
     void testHandleClient(int clientSocket);
 

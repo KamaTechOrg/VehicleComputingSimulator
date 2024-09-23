@@ -1,13 +1,13 @@
 #include "../include/client_connection.h"
 
 // Constructor
-ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface): connected(false){
+ClientConnection::ClientConnection(std::function<void(const Packet &)> callback, ISocket* socketInterface): connected(false){
         setCallback(callback);
         setSocketInterface(socketInterface);
 }
 
 // Requesting a connection to the server
-ErrorCode ClientConnection::connectToServer(uint32_t port, int id)
+ErrorCode ClientConnection::connectToServer(uint16_t port, int id)
 {
     clientSocket = socketInterface->socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0) {
@@ -31,7 +31,7 @@ ErrorCode ClientConnection::connectToServer(uint32_t port, int id)
         return ErrorCode::SEND_FAILED;
     }
     
-    connected = true;
+    connected.exchange(true);
     receiveThread = std::thread(&ClientConnection::receivePacket, this);
     receiveThread.detach();
 
@@ -39,10 +39,10 @@ ErrorCode ClientConnection::connectToServer(uint32_t port, int id)
 }
 
 // Sends the packet to the manager-sync
-ErrorCode ClientConnection::sendPacket(Packet &packet)
+ErrorCode ClientConnection::sendPacket(const Packet &packet)
 {
     //If send executed before start
-    if (!connected)
+    if (!connected.load())
         return ErrorCode::CONNECTION_FAILED;
         
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
@@ -50,7 +50,6 @@ ErrorCode ClientConnection::sendPacket(Packet &packet)
         closeConnection();
         return ErrorCode::CONNECTION_FAILED;
     }
-        
     if (bytesSent<0)
         return ErrorCode::SEND_FAILED;
         
@@ -58,9 +57,9 @@ ErrorCode ClientConnection::sendPacket(Packet &packet)
 }
 
 // Waits for a message and forwards it to Communication
-void ClientConnection::receivePacket()
+void ClientConnection::receivePacket() 
 {
-    while (connected) {
+    while (connected.load()) {
         Packet packet;
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
         if (valread==0)
@@ -78,17 +77,18 @@ void ClientConnection::receivePacket()
 // Closes the connection
 ErrorCode ClientConnection::closeConnection()
 {
-    if (connected) {
+    if (connected.load()) {
         int socketInterfaceRes = socketInterface->close(clientSocket);
         if(socketInterfaceRes < 0)
             return ErrorCode::CLOSE_FAILED;
-        connected = false;
+        connected.exchange(false);
     }
+    RealSocket::log.cleanUp();
     return ErrorCode::SUCCESS;  
 }
 
 // Setter for passPacketCom
-void ClientConnection::setCallback(std::function<void(Packet&)> callback) {
+void ClientConnection::setCallback(const std::function<void(const Packet&)> callback) {
     if (!callback)
         throw std::invalid_argument("Callback function cannot be null");
     
@@ -104,17 +104,17 @@ void ClientConnection::setSocketInterface(ISocket* socketInterface) {
 }
 
 // For testing
-int ClientConnection::getClientSocket()
+int ClientConnection::getClientSocket() const 
 {
     return clientSocket;
 }
 
-int ClientConnection::isConnected()
+int ClientConnection::isConnected() const 
 {
-    return connected;
+    return connected.load();
 }
 
-bool ClientConnection::isReceiveThreadRunning()
+bool ClientConnection::isReceiveThreadRunning() const 
 {
     return false;
 }

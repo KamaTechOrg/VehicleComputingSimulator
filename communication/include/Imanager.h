@@ -13,7 +13,7 @@ public:
 
     virtual ErrorCode receiveMessage(Packet &packet) = 0;
 
-    virtual ErrorCode receiveNewProcessID(const uint32_t processID ,const uint32_t port) = 0;
+    virtual ErrorCode updateProcessID(const uint32_t processID ,const uint16_t port, bool isConnected) = 0;
 
     virtual ErrorCode sendMessage(const Packet &packet) = 0;
 
