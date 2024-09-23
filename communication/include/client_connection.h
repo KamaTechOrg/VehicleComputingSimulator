@@ -27,6 +27,11 @@
 #include "error_code.h"
 #endif
 
+#ifdef ESP32
+#define PORT 8081
+#define IP "172.28.151.112"
+#endif
+
 class ClientConnection
 {
 private:
@@ -45,7 +50,7 @@ private:
     ISocket* socketInterface;
 public:
     // Constructor
-    ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface = new RealSocket());
+    ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface = nullptr);
 
     // Function to load the server configuration from a JSON file
     ErrorCode loadServerConfig(const std::string& filePath);

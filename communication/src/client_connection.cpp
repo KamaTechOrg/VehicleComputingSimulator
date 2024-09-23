@@ -14,6 +14,10 @@ ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISock
 // Function to load the server configuration from a JSON file
 ErrorCode ClientConnection::loadServerConfig(const std::string& filePath)
 {
+#ifdef ESP32
+    serverPort = PORT;
+    serverIP = IP;
+#else
     // Open the JSON file
     std::ifstream file(filePath);
     if (!file.is_open())
@@ -36,6 +40,7 @@ ErrorCode ClientConnection::loadServerConfig(const std::string& filePath)
     }
 
     file.close();
+#endif
     return ErrorCode::SUCCESS;
 }
 
@@ -138,9 +143,10 @@ ErrorCode ClientConnection::closeConnection()
         vTaskDelete(receiveTaskHandle); // Close the FreeRTOS task if it's running
         receiveTaskHandle = nullptr;
     }
+#else
+    RealSocket::log.cleanUp();
 #endif
     }
-    RealSocket::log.cleanUp();
     return ErrorCode::SUCCESS;  
 }
 
