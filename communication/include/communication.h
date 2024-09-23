@@ -33,7 +33,7 @@ private:
     bool checkDestId(const Packet &p);
     
     // Checks if the Packet is correct
-    bool validCRC(Packet &p);
+    bool validCRC(const Packet &p);
     
     // Receives the packet and adds it to the message
     void handlePacket(const Packet &p);

@@ -37,7 +37,7 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
     Message msg(srcID, data, dataSize, isBroadcast, destID);
     
     //Sending the message to logger
-    RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(srcID),std::to_string(destID),"Complete message:" + msg.getPackets().at(0).pointerToHex(data, dataSize));
+    //RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(srcID),std::to_string(destID),"Complete message:" + msg.getPackets().at(0).pointerToHex(data, dataSize));
     
     for (auto &packet : msg.getPackets()) {
         ErrorCode res = client.sendPacket(packet);
@@ -86,6 +86,10 @@ void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destI
 // Accepts the packet from the client and checks..
 void Communication::receivePacket(const Packet &p)
 {
+#ifdef ESP32
+    Serial.println("dlc of received packet");
+    Serial.println(std::to_string(p.header.DLC).c_str());
+#endif
     if (checkDestId(p)) {
         if (validCRC(p))
             handlePacket(p);
@@ -101,7 +105,7 @@ bool Communication::checkDestId(const Packet &p)
 }
 
 // Checks if the data is correct
-bool Communication::validCRC(Packet &p)
+bool Communication::validCRC(const Packet &p)
 {
     return p.header.CRC == p.calculateCRC(p.data, p.header.DLC);
 }
@@ -142,7 +146,13 @@ void Communication::addPacketToMessage(const Packet &p)
 
     if (receivedMessages[messageId].isComplete()) {
         void *completeData = receivedMessages[messageId].completeData();
+#ifdef ESP32
+    Serial.println("in if - before passData");
+#endif
         passData(p.header.SrcID, completeData);
+#ifdef ESP32
+    Serial.println("in if - after passData");
+#endif
         receivedMessages.erase(messageId); // Removing the message once completed
     }
 }
@@ -165,7 +175,6 @@ void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
 {
     if (callback == nullptr)
         throw std::invalid_argument("Invalid callback function: passDataCallback cannot be null");
-    
     passData = callback;
 }
 
