@@ -26,7 +26,7 @@ private:
     std::mutex socketMutex;
     std::mutex threadMutex;
     std::function<ErrorCode(Packet&)> receiveDataCallback;
-    std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessIDCallback;
+    std::function<ErrorCode(const uint32_t,const uint32_t, bool)> receiveNewProcessIDCallback;
     std::map<int, uint32_t> clientIDMap;
     std::mutex IDMapMutex;
     ISocket* socketInterface;
@@ -46,13 +46,13 @@ private:
 public:
 
     // Constructor
-    ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessIDCallback, ISocket* socketInterface = new RealSocket());
+    ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t, bool)> receiveNewProcessIDCallback, ISocket* socketInterface = new RealSocket());
     
     // Initializes the listening socket
     ErrorCode startConnection();
     
     // Closes the sockets and the threads
-    void stopServer();
+    ErrorCode stopServer();
 
     // Sends the message to all connected processes - broadcast
     ErrorCode sendBroadcast(const Packet &packet);

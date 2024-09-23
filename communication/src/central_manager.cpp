@@ -1,34 +1,43 @@
 #include "../include/central_manager.h"
 #include <iostream>
 #include <stdexcept>
+#include "../include/central_manager.h"
 
 CentralManager* CentralManager::instance = nullptr;
 
 // Singleton instance retrieval
-CentralManager* CentralManager::getInstance(std::vector<int> ports)
+CentralManager* CentralManager::getInstance(std::vector<int> ports, const std::vector<uint32_t>& processIds, int maxCriticalProcessID)
 {
-    if (instance == nullptr) 
-        instance = new CentralManager(ports);
+    if (instance == nullptr)
+        instance = new CentralManager(ports, processIds, maxCriticalProcessID);
     
     return instance;
 }
 
 // Singleton pattern: private constructor
-CentralManager::CentralManager(std::vector<int> ports) : ports(ports)
+CentralManager::CentralManager(std::vector<int> ports, const std::vector<uint32_t>& processIds, int maxCriticalProcessID) :ports(ports), running(false)
 {
+    // Setup the signal handler for SIGINT
+    signal(SIGINT, CentralManager::signalHandler);
+    SyncCommunication::initializeManager(processIds,maxCriticalProcessID);
     for (auto port : ports)
-        managers[port] = new BusManager(port, std::bind(&CentralManager::receiveMessage, this, std::placeholders::_1), std::bind(&CentralManager::receiveNewProcessID, this, std::placeholders::_1, std::placeholders::_2));
+        managers[port] = new BusManager(port, std::bind(&CentralManager::receiveMessage, this, std::placeholders::_1), std::bind(&CentralManager::updateProcessID, this, std::placeholders::_1, std::placeholders::_2,std::placeholders::_3));
 }
 
 // Start the connection for the central manager
 ErrorCode CentralManager::startConnection()
 {
+    running = true;
     ErrorCode allProcessConnected = ErrorCode::SUCCESS;
     std::lock_guard<std::mutex> lock(managersMutex);
     for (auto& [port, manager] : managers) {
         ErrorCode code = manager->startConnection();
-        if (code != ErrorCode::SUCCESS)
+        if (code != ErrorCode::SUCCESS){
+            RealSocket::log.logMessage(logger::LogLevel::ERROR, " Central Manager : Error connecting port: " + std::to_string(port) + "  " + toString(code));
             allProcessConnected = code;
+        }
+
+        RealSocket::log.logMessage(logger::LogLevel::INFO, " Central Manager : Bus is running on port: " + std::to_string(port));
     }
     
     return allProcessConnected;
@@ -42,17 +51,22 @@ ErrorCode CentralManager::registerBusManager(const uint32_t port)
     if (managers.find(port) != managers.end())
         return ErrorCode::CONNECTION_FAILED;
     
-    BusManager* newManager = new BusManager(port, std::bind(&CentralManager::receiveMessage, this, std::placeholders::_1), std::bind(&CentralManager::receiveNewProcessID, this, std::placeholders::_1, std::placeholders::_2));
+    BusManager* newManager = new BusManager(port, std::bind(&CentralManager::receiveMessage, this, std::placeholders::_1), std::bind(&CentralManager::updateProcessID, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     ErrorCode code = newManager->startConnection();
-    if (code != ErrorCode::SUCCESS)
+    if (code != ErrorCode::SUCCESS){
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, " Central Manager : Error connecting port: " + std::to_string(port) + "  " + toString(code));
         return code;
+    }
 
     managers[port] = newManager;
+    RealSocket::log.logMessage(logger::LogLevel::INFO, " Central Manager : Bus is running on port: " + std::to_string(port));
     return ErrorCode::SUCCESS;      
 }
 
-ErrorCode CentralManager::receiveNewProcessID(const uint32_t processID, const uint32_t port)
+ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint32_t port, bool isConnected)
 {
+    if(!running)
+        return ErrorCode::SUCCESS;
     {
         std::lock_guard<std::mutex> lock(managersMutex);
          if (managers.find(port) == managers.end())
@@ -60,10 +74,18 @@ ErrorCode CentralManager::receiveNewProcessID(const uint32_t processID, const ui
     }
     {
         std::lock_guard<std::mutex> lock(processToPortMutex);
-        if (processToPort.find(processID) != processToPort.end())
+        auto it = processToPort.find(processID);
+        if ( it != processToPort.end()){
+            if (!isConnected){
+                processToPort.erase(it);
+                return ErrorCode::SUCCESS;
+            } 
             return ErrorCode::INVALID_ID;
+        }
         processToPort[processID] = port;
-    } 
+    }
+    // if(isConnected)
+    //     sync.registerProcessManager(processID);
     return ErrorCode::SUCCESS;
 }
 
@@ -75,41 +97,33 @@ ErrorCode CentralManager::receiveMessage(Packet& packet)
     return sendMessage(packet);
 }
 
-// Close the connection for the central manager
-ErrorCode CentralManager::closeConnection()
-{
-    ErrorCode allProcessClosed = ErrorCode::SUCCESS;
-    std::lock_guard<std::mutex> lock(managersMutex);
-    for (auto& [id, manager] : managers) {
-        ErrorCode code = manager->closeConnection();
-        if (code != ErrorCode::SUCCESS)
-            allProcessClosed = code;
-    }
-
-    return allProcessClosed;
-}
-
 // Send a message to a specific bus
 ErrorCode CentralManager::sendMessage(const Packet& packet)
 {
-    uint32_t destID = packet.header.DestID, destPort;
+    uint32_t destID = packet.header.DestID, destPort,srcPort;
     BusManager* destBus;
     {
         std::lock_guard<std::mutex> lock(processToPortMutex);
         // Find the manager of destID
-        if (processToPort.find(destID) == processToPort.end())
+        if (processToPort.find(destID) == processToPort.end()){
+            RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), " Central Manager : destID not found: " + std::to_string(destID));
             return ErrorCode::INVALID_ID;
-
+        }
+        
         destPort = processToPort[destID];
+        srcPort = processToPort[packet.header.SrcID];
     }
     {
         std::lock_guard<std::mutex> managersLock(managersMutex);
-        if (managers.find(destPort) == managers.end())
+        if (managers.find(destPort) == managers.end()){
+            RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), " Central Manager : destPort not found: " + std::to_string(destPort));
             return ErrorCode::BUS_NOT_FOUND;
-
+        }
+        
         destBus = managers[destPort];
     }
-    
+
+    RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), " Central Manager : On bus "+ std::to_string(srcPort) +" Passing to bus: " + std::to_string(destPort));
     return destBus->sendMessage(packet);
 }
 
@@ -119,8 +133,10 @@ ErrorCode CentralManager::forwardToGateway(Packet& packet)
     std::lock_guard<std::mutex> lock(gatewayMutex);
     if (gateway) {
         gateway->translate(packet);
+        RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), " Central Manager : translate packet succeeded ");
         return ErrorCode::SUCCESS;
     } else
+        RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), " Central Manager : translate packet failed ");
         return ErrorCode::BUS_NOT_FOUND;
 }
 
@@ -128,4 +144,37 @@ ErrorCode CentralManager::forwardToGateway(Packet& packet)
 bool CentralManager::needsTranslation(uint32_t srcId, uint32_t dstId) {
     // Implement protocol checking
     return false;
+}
+
+// Close the connection for the central manager
+ErrorCode CentralManager::closeConnection()
+{
+    running = false;
+    ErrorCode allProcessClosed = ErrorCode::SUCCESS;
+    std::lock_guard<std::mutex> lock(managersMutex);
+    for (auto& [id, manager] : managers) {
+        ErrorCode code = manager->closeConnection();
+        if (code != ErrorCode::SUCCESS)
+            allProcessClosed = code;
+    }
+    SyncCommunication::close();
+    RealSocket::log.logMessage(logger::LogLevel::INFO, " Central Manager : Close connection succeeded");
+    RealSocket::log.cleanUp();
+
+    return allProcessClosed;
+}
+
+// Static method to handle SIGINT signal
+void CentralManager::signalHandler(int signum)
+{
+    if (instance)
+        instance->closeConnection();
+
+    exit(signum);
+}
+
+// Destructor
+CentralManager::~CentralManager()
+{
+    closeConnection();
 }

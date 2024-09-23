@@ -1,16 +1,9 @@
 #include "../include/bus_manager.h"
 
-BusManager* BusManager::instance = nullptr;
-std::mutex BusManager::managerMutex;
-
 //Private constructor
-BusManager::BusManager(uint32_t port, std::function<ErrorCode(Packet&)> recievedMessageCallback , std::function<ErrorCode(const uint32_t ,const uint32_t)> processJoinCallback)
- : server(port, std::bind(&BusManager::receiveMessage, this, std::placeholders::_1), std::bind(&BusManager::receiveNewProcessID, this, std::placeholders::_1, std::placeholders::_2))
- ,recievedMessageCallback(recievedMessageCallback) ,processJoinCallback(processJoinCallback) //,syncCommunication(idShouldConnect, limit)
-{
-    // Setup the signal handler for SIGINT
-    signal(SIGINT, BusManager::signalHandler);
-}
+BusManager::BusManager(uint32_t port, std::function<ErrorCode(Packet&)> recievedMessageCallback , std::function<ErrorCode(const uint32_t ,const uint32_t,bool)> processJoinCallback)
+ : server(port, std::bind(&BusManager::receiveMessage, this, std::placeholders::_1), std::bind(&BusManager::updateProcessID, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
+ ,recievedMessageCallback(recievedMessageCallback) ,processJoinCallback(processJoinCallback){}
 
 // Sends to the server to listen for requests
 ErrorCode BusManager::startConnection()
@@ -34,9 +27,9 @@ ErrorCode BusManager::receiveMessage(Packet &packet)
 
 }
 
-ErrorCode BusManager::receiveNewProcessID(const uint32_t processID, const uint32_t port)
+ErrorCode BusManager::updateProcessID(const uint32_t processID, const uint32_t port, bool isConnected)
 {
-    return processJoinCallback(processID ,port);
+    return processJoinCallback(processID ,port,isConnected);
 }
 
 // Sending according to broadcast variable
@@ -59,21 +52,12 @@ Packet BusManager::packetPriority(Packet &a, Packet &b)
     return (a.header.SrcID < b.header.SrcID) ? a : b;
 }
 
-// Static method to handle SIGINT signal
-void BusManager::signalHandler(int signum)
-{
-    if (instance) {
-        instance->server.stopServer();  // Call the stopServer method
-    }
-    exit(signum);
-}
-
 ErrorCode BusManager::closeConnection()
 {
-    return ErrorCode();
+    return server.stopServer();
 }
 
 BusManager::~BusManager()
 {
-    instance = nullptr;
+    server.stopServer();
 }

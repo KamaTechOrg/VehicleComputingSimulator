@@ -3,7 +3,7 @@
 #include "../include/server_connection.h"
 
 // Constructor
-ServerConnection::ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t)> receiveNewProcessID, ISocket* socketInterface)
+ServerConnection::ServerConnection(uint32_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint32_t, bool)> receiveNewProcessID, ISocket* socketInterface)
 {
     this->receiveNewProcessIDCallback = receiveNewProcessID;
     setPort(port);
@@ -72,17 +72,21 @@ void ServerConnection::startThread()
 }
 
 // Closes the sockets and the threads
-void ServerConnection::stopServer()
+ErrorCode ServerConnection::stopServer()
 {
     if(!running)
-        return;
+        return ErrorCode::SUCCESS;
         
     running = false;
     socketInterface->close(serverSocket);
+    bool allClosed = true;
     {
         std::lock_guard<std::mutex> lock(socketMutex);
-        for (int sock : sockets)
-            socketInterface->close(sock);
+        for (int sock : sockets){
+            int resClose = socketInterface->close(sock);
+            if(resClose < 0)
+                allClosed = false;
+        }
         sockets.clear();
     }
     {
@@ -91,6 +95,11 @@ void ServerConnection::stopServer()
             if (th.joinable())
                 th.join();
     }
+    delete socketInterface;
+    if(!allClosed)
+        return ErrorCode::CLOSE_FAILED;
+
+    return ErrorCode::SUCCESS;
 }
 
 // Runs in a thread for each process - waits for a message and forwards it to the manager
@@ -111,14 +120,13 @@ void ServerConnection::handleClient(int clientSocket)
         std::lock_guard<std::mutex> lock(IDMapMutex);
         clientIDMap[clientSocket] = clientID;
     }
-
     {
         std::lock_guard<std::mutex> lock(socketMutex);
         sockets.push_back(clientSocket);
     }
     
     // send callback to manager - new process connected
-    receiveNewProcessIDCallback(clientID, port);
+    receiveNewProcessIDCallback(clientID, port, true);
 
     while (running) {
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
@@ -131,18 +139,20 @@ void ServerConnection::handleClient(int clientSocket)
         receiveDataCallback(packet);
     }
 
-    {
     // If the process is no longer connected
-    std::lock_guard<std::mutex> lock(socketMutex);
-    auto it = std::find(sockets.begin(), sockets.end(), clientSocket);
-    socketInterface->close(*it);
-    if (it != sockets.end())
-        sockets.erase(it);
+    {
+        std::lock_guard<std::mutex> lock(socketMutex);
+        auto it = std::find(sockets.begin(), sockets.end(), clientSocket);
+        socketInterface->close(*it);
+        if (it != sockets.end())
+            sockets.erase(it);
     }
     {
         std::lock_guard<std::mutex> lock(IDMapMutex);
         clientIDMap.erase(clientSocket);
     }
+    //update the central manager
+    receiveNewProcessIDCallback(clientID, port, false);
 }
 
 // Implementation according to the CAN BUS
@@ -268,5 +278,4 @@ int ServerConnection::testGetClientSocketByID(uint32_t destID)
 ServerConnection::~ServerConnection()
 {
     stopServer();
-    delete socketInterface;
 }
