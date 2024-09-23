@@ -6,6 +6,7 @@
 #include "dynamic_tracker.h"
 #include "distance.h"
 #include "logger.h"
+#include "velocity.h"
 
 class Manager {
    public:
@@ -26,6 +27,7 @@ class Manager {
     std::vector<ObjectInformation> prevOutput;
     std::vector<ObjectInformation> currentOutput;
     Detector detector;
+    Velocity velocity;
     DynamicTracker dynamicTracker;
     Alerter alerter;
     //Distance distance;

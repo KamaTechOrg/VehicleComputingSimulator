@@ -20,9 +20,8 @@ Distance &Distance::getInstance(const cv::Mat &image)
 {
     if (!instance) {
         if (image.empty())
-            Manager::imgLogger.logMessage(
-            logger::LogLevel::ERROR,
-            "No image was provided");
+            Manager::imgLogger.logMessage(logger::LogLevel::ERROR,
+                                          "No image was provided");
         else
             instance = new Distance(image);
     }
@@ -54,6 +53,7 @@ void Distance::findDistance(std::vector<ObjectInformation> &objectInformations)
             imageSize = objectInformation.position.width;
         }
         // Calculate the distance in meters
+        objectInformation.prevDistance = objectInformation.distance;
         objectInformation.distance =
             (focalLength * knownSize / imageSize) / 1000;
     }
@@ -63,11 +63,10 @@ void Distance::findFocalLength(const cv::Mat &image)
 {
     // Check if the input image is empty
     if (image.empty()) {
-        Manager::imgLogger.logMessage(
-            logger::LogLevel::ERROR,
-            "Could not open or find the image");
-            return;
-            //throw std::runtime_error("Could not open or find the image");
+        Manager::imgLogger.logMessage(logger::LogLevel::ERROR,
+                                      "Could not open or find the image");
+        return;
+        //throw std::runtime_error("Could not open or find the image");
     }
 
     // Convert the input image to grayscale
