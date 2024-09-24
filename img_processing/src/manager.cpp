@@ -25,7 +25,7 @@ void Manager::init()
 
 void Manager::mainDemo()
 {
-    VideoCapture capture("../tests/images/close_cars.mov");
+    VideoCapture capture("../tests/images/one_car.mp4");
     Mat frame = Mat::zeros(480, 640, CV_8UC3);
     if (!capture.isOpened()) {
         Manager::imgLogger.logMessage(logger::LogLevel::ERROR,
