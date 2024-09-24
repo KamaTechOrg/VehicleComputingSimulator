@@ -223,7 +223,8 @@ void MainWindow::openDialog()
     layout->addWidget(noButton);
     dialog.setLayout(layout);
 
-    QObject::connect(yesButton, &QPushButton::clicked, [&]() {
+    QObject::connect(yesButton, &QPushButton::clicked, [&]() 
+    {
         dialog.close();
         QDialog inputDialog;
         inputDialog.setWindowTitle("insert simulation name");
@@ -237,7 +238,8 @@ void MainWindow::openDialog()
         inputLayout->addWidget(saveButton);
         inputDialog.setLayout(inputLayout);
 
-        QObject::connect(saveButton, &QPushButton::clicked, [&]() {
+        QObject::connect(saveButton, &QPushButton::clicked, [&]() 
+        {
             QString simulationName =input->text();
             inputDialog.close();
             QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
@@ -265,7 +267,8 @@ void MainWindow::openDialog()
         inputDialog.exec();
     });
 
-    QObject::connect(noButton, &QPushButton::clicked, [&]() {
+    QObject::connect(noButton, &QPushButton::clicked, [&]() 
+    {
         dialog.close();
     });
 
@@ -368,7 +371,8 @@ void MainWindow::updateTimer()
         }
 
         timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this, time]() mutable {
+        connect(timer, &QTimer::timeout, this, [this, time]() mutable 
+        {
 
             if (time > 0) {
                 time--;
@@ -457,7 +461,8 @@ void MainWindow::showTimerInput()
     timeInput->setFont(font);
 
     // Connect to textChanged signal to ensure text stays centered
-    connect(timeInput, &QLineEdit::textChanged, this, [this]() {
+    connect(timeInput, &QLineEdit::textChanged, this, [this]() 
+    {
         timeInput->setAlignment(Qt::AlignCenter);
     });
 
@@ -686,7 +691,8 @@ void MainWindow::compileProjects()
         Compiler *compiler =
             new Compiler(executionFilePath, &compileSuccessful, this);
         connect(compiler, &Compiler::logMessage, this,
-                [this](const QString &message) {
+                [this](const QString &message) 
+                {
                     guiLogger.logMessage(logger::LogLevel::ERROR,
                                          message.toStdString());
                 });
@@ -724,12 +730,14 @@ void MainWindow::runProjects()
             scriptProcess->start("bash", QStringList() << executionFilePath);
             connect(
                 scriptProcess, &QProcess::readyReadStandardOutput,
-                [this, scriptProcess]() {
+                [this, scriptProcess]() 
+                {
                     logOutput->append(scriptProcess->readAllStandardOutput());
                 });
             connect(
                 scriptProcess, &QProcess::readyReadStandardError,
-                [this, scriptProcess]() {
+                [this, scriptProcess]() 
+                {
                     logOutput->append(scriptProcess->readAllStandardError());
                 });
         }
@@ -757,11 +765,13 @@ void MainWindow::runProjects()
             QProcess *runProcess = new QProcess(this);
             runProcess->setWorkingDirectory(buildDirPath);
             connect(runProcess, &QProcess::readyReadStandardOutput,
-                    [this, runProcess]() {
+                    [this, runProcess]() 
+                    {
                         logOutput->append(runProcess->readAllStandardOutput());
                     });
             connect(runProcess, &QProcess::readyReadStandardError,
-                    [this, runProcess]() {
+                    [this, runProcess]() 
+                    {
                         logOutput->append(runProcess->readAllStandardError());
                     });
             connect(

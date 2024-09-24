@@ -45,7 +45,7 @@ void HistoryWindow::loadHistory()
     headers << "ID"
             << "Input String"
             << "Datetime"
-            << "הרצה נוספת";
+            << "Another run";
     tableWidget->setHorizontalHeaderLabels(headers);
 
     if (simulationData.size() == 0)
@@ -63,14 +63,14 @@ void HistoryWindow::loadHistory()
             i, 2,
             new QTableWidgetItem(simulationData[i]["datetime"].toString()));
 
-        // Create "הרצה נוספת" button
-        QPushButton *rerunButton = new QPushButton("הרצה נוספת", this);
+        QPushButton *rerunButton = new QPushButton("Another run", this);
         tableWidget->setCellWidget(i, 3, rerunButton);
 
         // Connect the rerun button to display a message
-        connect(rerunButton, &QPushButton::clicked, [=]() {
-            QMessageBox::information(this, "הרצה נוספת",
-                                     "תודה שלחצת על הרצה נוספת.");
+        connect(rerunButton, &QPushButton::clicked, [=]() 
+        {
+            QMessageBox::information(this, "Another run",
+                                     "Thank you");
         });
     }
 }
