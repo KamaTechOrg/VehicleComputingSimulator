@@ -26,7 +26,7 @@ CTestTestfile.cmake
 *.tmp
 
 # Ignore IDE specific files (e.g., Visual Studio Code, CLion)
-.vscode/
+/.vscode/
 .idea/
 *.iml
 .clang-format
