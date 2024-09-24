@@ -5,12 +5,14 @@
 
 class Velocity {
    public:
-    Velocity(){}
+    Velocity() {}
     void returnVelocities(std::vector<ObjectInformation> &objects);
     void init(double frameTimeDiff);
+
    private:
     double frameTimeDiff;
     void calculateVelocity(ObjectInformation &object);
     double averageDistanceChange(ObjectInformation obj) const;
+    void updateVelocity(double newVelocity, ObjectInformation &obj);
 };
 #endif
