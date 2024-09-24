@@ -16,8 +16,11 @@ public:
         QDateTime timestamp;
         int srcId;
         int dstId;
-        QString payload;
-        QString status;  // SEND/RECEIVE
+        QString payload;  //num packet
+        QString status;   // SEND/RECEIVE
+        bool success;
+        int messageId;    // Added messageId field
+        QByteArray data;  // Changed from void* to QByteArray
 
         bool operator<(const LogEntry &other) const
         {
@@ -38,6 +41,8 @@ private:
         processSquares;  // Track process squares by their IDs
     QMap<int, QMap<int, int>>
         communicationCounts;  // Track communication counts between process pairs
+    QByteArray convertStringToBinary(const QString &dataString);
+    LogEntry parseLogLine(const QString &line);
 };
 
 #endif  // LOGHANDLER_H

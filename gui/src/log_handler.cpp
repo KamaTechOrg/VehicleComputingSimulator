@@ -15,11 +15,6 @@
 #include "simulation_state_manager.h"
 #include "main_window.h"
 
-QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
-{
-    return logEntries;
-}
-
 void LogHandler::readLogFile(const QString &fileName)
 {
     QFile file(fileName);
@@ -34,45 +29,77 @@ void LogHandler::readLogFile(const QString &fileName)
         logger::LogLevel::INFO,
         "File successfully opened: " + fileName.toStdString());
 
-    QByteArray fileData = file.readAll();
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.contains("SRC") && line.contains("DST")) {
+            LogEntry entry = parseLogLine(line);
+            if (entry.srcId != -1) {  // Assuming -1 indicates an invalid entry
+                logEntries.push_back(entry);
+            }
+        }
+    }
     file.close();
+}
 
-    QList<QByteArray> lines = fileData.split('\n');
-    for (const QByteArray &line : lines) {
-        QString trimmedLine = QString(line).trimmed();
-        QStringList fields = trimmedLine.split(' ');
-
-        if (fields.size() < 6) {
-            MainWindow::guiLogger.logMessage(
-                logger::LogLevel::DEBUG,
-                "Skipping malformed line: " + trimmedLine.toStdString());
-            continue;
-        }
-
-        LogEntry entry;
-        QString dateString = fields[0].trimmed();
-        QString timeString = fields[1].trimmed();
-
-        QString dateTimeString = dateString + " " + timeString;
-        entry.timestamp =
-            QDateTime::fromString(dateTimeString, "yyyy-MM-dd HH:mm:ss.zzz");
-        if (!entry.timestamp.isValid()) {
-            MainWindow::guiLogger.logMessage(
-                logger::LogLevel::ERROR,
-                "Skipping line with invalid timestamp: " +
-                    trimmedLine.toStdString());
-            continue;
-        }
-
-        entry.srcId = fields[2].trimmed().toInt();
-        entry.dstId = fields[3].trimmed().toInt();
-        entry.payload = fields[4].trimmed();
-        entry.status = fields[5].trimmed();
-        logEntries.push_back(entry);
+LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
+{
+    LogEntry entry;
+    QStringList fields = line.split(' ');
+    if (fields.size() < 12) {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "Skipping malformed line: " + line.toStdString());
+        entry.srcId = -1;  // Mark as invalid
+        return entry;
     }
 
-    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                     "Log file successfully read.");
+    // Extract timestamp
+    QString timestampStr = fields[0];
+    timestampStr.chop(2);  // Remove the 'ns' suffix
+    qint64 nanoseconds = timestampStr.toLongLong();
+    entry.timestamp = QDateTime::fromMSecsSinceEpoch(nanoseconds / 1000000);
+
+    // Extract other fields
+    entry.srcId = fields[3].toInt();
+    entry.dstId = fields[5].toInt();
+    QString packetNumber = fields[9];
+    entry.payload = packetNumber.remove("number:").trimmed();
+
+    QString messageIdField = fields[11];
+    entry.messageId =
+        messageIdField.remove("of").remove("messageId:").trimmed().toInt();
+
+    entry.success = line.contains("Success");
+    entry.status = line.contains("received") ? "RECEIVE" : "SEND";
+
+    // Extract and convert Data to binary
+    int dataIndex = fields.indexOf("Data:");
+    if (dataIndex != -1 && dataIndex + 1 < fields.size()) {
+        QString dataString = fields[dataIndex + 1].trimmed();
+        entry.data = convertStringToBinary(dataString);
+    }
+
+    return entry;
+}
+
+QByteArray LogHandler::convertStringToBinary(const QString &dataString)
+{
+    QByteArray byteArray;
+    for (int i = 0; i < dataString.length(); i += 8) {
+        QString byteStr = dataString.mid(i, 8);
+        bool ok;
+        char byte = static_cast<char>(byteStr.toUInt(&ok, 2));
+        if (ok) {
+            byteArray.append(byte);
+        }
+    }
+    return byteArray;
+}
+
+QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
+{
+    return logEntries;
 }
 
 void LogHandler::sortLogEntries()

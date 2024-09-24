@@ -456,8 +456,40 @@ void MainWindow::openImageDialog()
 
 void MainWindow::showSimulation()
 {
-    QString filePath = "log_file.log";
-    logHandler.readLogFile(filePath);
+    QString pathFile = "../../main_bus/build/shared_log_file_name.txt";
+    QString path;
+    
+    // Read the path from the first file
+    {
+        QFile file(pathFile);
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&file);
+            path = in.readLine();
+            guiLogger.logMessage(
+                logger::LogLevel::INFO,
+                "Successfull to open file:"+ pathFile);
+            file.close();
+        } else {
+            guiLogger.logMessage(
+                logger::LogLevel::ERROR,
+                "Unable to open file:"+ pathFile);
+            return;
+        }
+    }
+
+    // Construct the full path
+    QString fullPath = "../../main_bus/build/" + path;
+    
+    // Check if the file exists
+    if (!QFile::exists(fullPath)) {
+        guiLogger.logMessage(
+                logger::LogLevel::ERROR,
+                "File does not exist:" + fullPath);
+        return;
+    }
+
+    // Use the full path for log handling
+    logHandler.readLogFile(fullPath);
     logHandler.analyzeLogEntries(this, "simulation_state.bson");
 
     Frames* frames = new Frames(logHandler);  // Initialize Frames
