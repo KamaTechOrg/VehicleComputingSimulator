@@ -49,7 +49,7 @@ void Input::fillSensorsFields()
 {
     for (auto& [sensorId, sensorData] : sensors.items()) { 
         Output::controlLogger.logMessage(logger::LogLevel::DEBUG, sensorId + " - " + string(sensorData["name"]) + " : " + string(sensorData["pathToJson"]));
-        sensorData["fields"] = getFieldsOfSensor("sensors_data/" + sensorData["name"].get<string>() + ".json");
+        sensorData["fields"] = getFieldsOfSensor(sensorData["pathToJson"]);
         cout << sensorId << " - " << sensorData["name"] << " : " << sensorData["pathToJson"] << endl;
     }
 }
