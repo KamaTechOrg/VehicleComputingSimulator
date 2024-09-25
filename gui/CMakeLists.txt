@@ -6,6 +6,7 @@ project(DraggableSquares VERSION 1.0)
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 # Enable automatic generation of MOC, UIC, and RCC
 set(CMAKE_AUTOMOC ON)

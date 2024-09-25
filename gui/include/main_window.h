@@ -36,8 +36,9 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    std::string getCoreDumpPath(qint64 pid, const std::string &executableName);
+    void setCoreDumpLimit();
     void updateTimer();
-    void endProcesses();
     void stopProcess(int deleteId);
     void showTimerInput();
     void timerTimeout();
@@ -70,6 +71,7 @@ private slots:
     void loadSimulation();
 
 public slots:
+    void endProcesses();
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);

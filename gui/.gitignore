@@ -39,6 +39,7 @@
 .vscode/
 # Ignore build directory
 build/
+crashProgram/build/
 # Exclude generated files in include, lib, bin
 include/divisible/*
 lib/*

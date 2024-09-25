@@ -7,6 +7,16 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QMenu>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QAbstractAnimation>
+#include <QTimer>
+#include <QGraphicsDropShadowEffect>
+#include <QLabel>
+#include <QPushButton>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
 #include "main_window.h"
 #include "draggable_square.h"
 
@@ -30,12 +40,16 @@ void DraggableSquare::setSquareColor(const QString &color)
                                       "color: white; font-size: 12px;")
                                   .arg(color));
 }
-// constructor
+
+// Constructor
 DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
                                  int width, int height)
     : QWidget(parent),
       label(new QLabel(this)),
-      stopButton(new QPushButton("STOP", this))
+      stopButton(new QPushButton("STOP", this)),
+      infoButton(
+          new QPushButton("Information", this)),  // Add Information button
+      dumpFilePath("")
 {
     setFixedSize(width, height);
     setStyleSheet(color);
@@ -43,10 +57,25 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(label);
     layout->addWidget(stopButton);
+    layout->addWidget(infoButton);  // Add Info button to layout
     setLayout(layout);
+
     stopButton->hide();
+    infoButton->hide();  // Start hidden, will be shown when a crash happens
+
     connect(stopButton, &QPushButton::clicked, this,
             &DraggableSquare::handleStopButtonClicked);
+    connect(
+        infoButton, &QPushButton::clicked, this,
+        &DraggableSquare::showCrashInfo);  // Connect button click to handler
+
+    crashLabel = new QLabel("Crashed", this);
+    crashLabel->setAlignment(Qt::AlignCenter);
+    crashLabel->setStyleSheet(
+        "color: white; font-weight: bold; background-color: rgba(255, 0, 0, "
+        "150);");
+    crashLabel->setGeometry(0, 0, width, height);
+    crashLabel->hide();  // Start hidden
 }
 
 // Copy constructor
@@ -207,6 +236,7 @@ void DraggableSquare::deleteSquare(int id)
         mainWindow->deleteSquare(id);
     }
 }
+
 void DraggableSquare::setStopButtonVisible(bool visible)
 {
     if (process->getId() > 3) {
@@ -218,6 +248,7 @@ void DraggableSquare::setStopButtonVisible(bool visible)
         }
     }
 }
+
 void DraggableSquare::handleStopButtonClicked()
 {
     if (process) {
@@ -229,4 +260,75 @@ void DraggableSquare::handleStopButtonClicked()
             stopButton->hide();
         }
     }
+}
+
+void DraggableSquare::setCrashIndicator(bool crashed)
+{
+    if (crashed) {
+        // Create a red glowing effect using QGraphicsDropShadowEffect
+        QGraphicsDropShadowEffect *glowEffect =
+            new QGraphicsDropShadowEffect(this);
+        glowEffect->setColor(QColor(255, 0, 0));
+        glowEffect->setBlurRadius(30);
+        glowEffect->setOffset(0, 0);
+
+        this->setGraphicsEffect(glowEffect);  // Apply effect
+
+        // Show crash label on top of the square
+        crashLabel->show();
+        infoButton->show();   // Show the Information button when crashed
+        infoButton->raise();  // Ensure the button is on top of crashLabel
+
+        QPropertyAnimation *animation =
+            new QPropertyAnimation(glowEffect, "blurRadius", this);
+        animation->setDuration(1500);
+        animation->setStartValue(20);
+        animation->setEndValue(40);
+        animation->setEasingCurve(QEasingCurve::InOutSine);
+        animation->setLoopCount(-1);
+        animation->start(QAbstractAnimation::DeleteWhenStopped);
+
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                         "DraggableSquare::setCrashIndicator "
+                                         "Glow effect and animation started.");
+    }
+    else {
+        this->setGraphicsEffect(nullptr);  // Remove effect
+        crashLabel->hide();                // Hide crash label
+        infoButton->hide();                // Hide Information button
+    }
+}
+
+void DraggableSquare::showCrashInfo()
+{
+    if (!dumpFilePath.isEmpty()) {
+        QFile dumpFile(dumpFilePath);
+        if (dumpFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&dumpFile);
+            QString content = in.readAll();  // Read the dump file content
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::INFO, "DraggableSquare", "showCrashInfo",
+                "Crash dump file read successfully: " +
+                    dumpFilePath.toStdString());
+
+            // Show content in a message box
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Crash Information");
+            msgBox.setText("Crash Dump:");
+            msgBox.setInformativeText(content);
+            msgBox.exec();
+        }
+        else {
+            QMessageBox::warning(this, "Error", "Failed to open dump file.");
+        }
+    }
+    else {
+        QMessageBox::information(this, "No Crash Dump",
+                                 "No crash dump available for this process.");
+    }
+}
+
+void DraggableSquare::setDumpFilePath(const QString &filePath)
+{
+    dumpFilePath = filePath;
 }

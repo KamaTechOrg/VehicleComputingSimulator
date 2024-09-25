@@ -22,7 +22,8 @@ int main()
     // Extract ID from JSON
     int id = jsonObject["ID"];  // Assuming the JSON structure has an "id" field
     std::cout << "Loaded ID from JSON: " << id << std::endl;
-
+    int zero = 0;
+    int a = 5 / zero;
     // Simulate work
     for (int i = 0; i < 10; ++i) {
         std::cout << "Dummy Program 2 is running: " << i << std::endl;

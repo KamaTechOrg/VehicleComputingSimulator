@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-project(DummyProgram)
+project(crashProgram)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(dummy_program main.cpp)
+add_executable(crash_program main.cpp)
