@@ -6,8 +6,9 @@
 
 using json = nlohmann::json;
 
-int main() {
-    // Read JSON file
+int main() 
+{
+    //Read JSON file
     std::ifstream file("../config.json");  // Replace with your JSON file name
     if (!file.is_open()) {
         std::cerr << "Unable to open file!" << std::endl;
@@ -16,7 +17,6 @@ int main() {
 
     json jsonObject;
     file >> jsonObject;
-
     // Extract ID from JSON
     int id = jsonObject["ID"];  // Assuming the JSON structure has an "id" field
     std::cout << "Loaded ID from JSON: " << id << std::endl;
