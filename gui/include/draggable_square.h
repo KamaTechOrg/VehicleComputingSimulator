@@ -41,7 +41,12 @@ public:
     ~DraggableSquare() override;
     void print() const;
     void setStopButtonVisible(bool visible);
-
+    void setCrashIndicator(bool crashed);
+    void setDumpFilePath(const QString &filePath);
+    QString getDumpFilePath()
+    {
+        return dumpFilePath;
+    }
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -49,16 +54,20 @@ protected:
 
 private:
     QPushButton *stopButton;
+    QPushButton *infoButton;
     QLabel *label;
+    QLabel *crashLabel;
     Process *process;
     int id;
     bool dragging;
     QPoint dragStartPosition;
+    QString dumpFilePath;
 
 private slots:
     void editSquare(int id);
     void deleteSquare(int id);
     void handleStopButtonClicked();
+    void showCrashInfo();
 };
 
 #endif  // __DRAGGABLE_SQUARE_H__

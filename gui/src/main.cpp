@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
     MainWindow window;
 
-    window.setFixedSize(600, 600);
+    window.setFixedSize(1000, 800);
     window.show();
 
     MainWindow::guiLogger.cleanUp();

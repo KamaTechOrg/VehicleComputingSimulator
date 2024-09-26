@@ -44,6 +44,10 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    //
+    std::string getCoreDumpPath(qint64 pid, const std::string &executableName);
+    void setCoreDumpLimit();
+    //
     void updateTimer();
     void endProcesses();
     void stopProcess(int deleteId);
@@ -109,6 +113,7 @@ private:
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
     void openDialog();
+    
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;

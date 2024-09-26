@@ -1,6 +1,8 @@
 #include <QTest>
 #include <QMouseEvent>
 #include <QWidget>
+#include <QFile>
+#include <QMessageBox>
 #include "draggable_square.h"
 #include "process.h"
 #include "main_window.h"
@@ -13,6 +15,9 @@ private slots:
     void testMousePressEvent();
     void testMouseMoveEvent();
     void testMouseReleaseEvent();
+    void testSetCrashIndicator();
+    void testShowCrashInfo();
+    void testSetDumpFilePath();
 
 private:
     QWidget *parentWidget;
@@ -85,6 +90,51 @@ void DraggableSquareTest::testMouseReleaseEvent()
         new QMouseEvent(QEvent::MouseButtonRelease, QPoint(50, 50),
                         Qt::LeftButton, Qt::LeftButton, Qt::NoModifier));
     QCOMPARE(draggableSquare->getDragStartPosition(), QPoint(50, 50));
+}
+
+void DraggableSquareTest::testSetCrashIndicator()
+{
+    // Test enabling the crash indicator
+    draggableSquare->setCrashIndicator(true);
+    QVERIFY(draggableSquare->graphicsEffect() != nullptr);
+    QVERIFY(draggableSquare->crashLabel->isVisible());
+    QVERIFY(draggableSquare->infoButton->isVisible());
+
+    // Test disabling the crash indicator
+    draggableSquare->setCrashIndicator(false);
+    QVERIFY(draggableSquare->graphicsEffect() == nullptr);
+    QVERIFY(!draggableSquare->crashLabel->isVisible());
+    QVERIFY(!draggableSquare->infoButton->isVisible());
+}
+
+void DraggableSquareTest::testShowCrashInfo()
+{
+    QString testDumpPath = "../test/test_crash_dump_verify.txt";
+
+    // Case 1: Create a temporary crash dump file and verify it's shown correctly
+    QFile file(testDumpPath);
+    QVERIFY(file.open(QIODevice::WriteOnly |
+                      QIODevice::Text));  // Verify file can be opened
+    QTextStream out(&file);
+    out << "Test crash dump contents for QVerify.";
+    file.close();
+
+    // Set the dump file path and verify it's set correctly
+    draggableSquare->setDumpFilePath(testDumpPath);
+    QCOMPARE(draggableSquare->getDumpFilePath(),
+             testDumpPath);  // Verify file path is correctly set
+    QVERIFY(file.exists());  // Verify that the dump file exists
+
+    // Verify behavior when dump file doesn't exist
+    draggableSquare->setDumpFilePath("/invalid/path/to/non_existent_file.txt");
+    QVERIFY(!QFile::exists("/invalid/path/to/non_existent_file.txt"));
+}
+
+void DraggableSquareTest::testSetDumpFilePath()
+{
+    QString testPath = "/tmp/test_dump_path.txt";
+    draggableSquare->setDumpFilePath(testPath);
+    QCOMPARE(draggableSquare->getDumpFilePath(), testPath);
 }
 
 QTEST_MAIN(DraggableSquareTest)

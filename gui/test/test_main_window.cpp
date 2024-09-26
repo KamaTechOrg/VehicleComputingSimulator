@@ -14,11 +14,17 @@ private slots:
     void testStartProcesses();
     void testEndProcesses();
     void testDeleteSquare();
+    // void testSetCoreDumpLimit();
+    // void testCrashAndCoreDump();
+    // void testCreateBacktrace();
     void testShowTimerInput();
     void addId(int id);
 
 private:
     MainWindow *window;  // Pointer to MainWindow to allow reuse in each test
+    QString crashedProcessRelativePath =
+        "../test/crashProgram";  // Path to the crashing process
+    QString crashedProcessAbsolutePath;
 };
 
 void TestMainWindow::init()
@@ -129,6 +135,76 @@ void TestMainWindow::testShowTimerInput()
     QVERIFY(window->timeInput->isVisible());
     QVERIFY(window->timeLabel->isVisible());
 }
+
+// void TestMainWindow::testSetCoreDumpLimit()
+// {
+//     window->compileProjects();
+//     struct rlimit core_limit;
+//     getrlimit(RLIMIT_CORE, &core_limit);
+
+//     QCOMPARE(core_limit.rlim_cur, RLIM_INFINITY);
+//     QCOMPARE(core_limit.rlim_max, RLIM_INFINITY);
+// }
+
+// void TestMainWindow::testCrashAndCoreDump()
+// {
+//     // Add a process that crashes
+//     Process *crashedProcess = new Process(
+//         7, "CrashedProcess", crashedProcessRelativePath, "QEMUPlatform");
+//     window->addProcessSquare(crashedProcess);
+//     window->compileProjects();
+//     // Start the process (this will crash with division by zero)
+//     window->runProjects();
+
+//     // Check if core dump and crash indicator are set for the crashed process
+//     for (DraggableSquare *square : window->squares) {
+//         Process *process = square->getProcess();
+//         QFileInfo processFileInfo(process->getCMakeProject());
+//         QString processAbsolutePath = processFileInfo.absoluteFilePath();
+
+//         if (processAbsolutePath == crashedProcessAbsolutePath) {
+//             QVERIFY(!square->getDumpFilePath()
+//                          .isEmpty());  // Verify dump file path is set
+
+//             // Check if the core dump file exists
+//             QString coreDumpPath = square->getDumpFilePath();
+//             QFile coreDumpFile(coreDumpPath);
+//             QVERIFY(coreDumpFile.exists());  // Core dump should exist
+//         }
+//     }
+//     window->endProcesses();
+//     delete crashedProcess;
+// }
+
+// void TestMainWindow::testCreateBacktrace()
+// {
+//     // Add a process that crashes
+//     Process *crashedProcess = new Process(
+//         7, "CrashedProcess", crashedProcessRelativePath, "QEMUPlatform");
+//     window->addProcessSquare(crashedProcess);
+//     window->compileProjects();
+//     // Simulate the process crash and check for the backtrace
+//     window->runProjects();
+
+//     // Check for backtrace creation
+//     for (DraggableSquare *square : window->squares) {
+//         Process *process = square->getProcess();
+//         QFileInfo processFileInfo(process->getCMakeProject());
+//         QString processAbsolutePath = processFileInfo.absoluteFilePath();
+
+//         if (processAbsolutePath == crashedProcessAbsolutePath) {
+//             QString coreDumpPath = square->getDumpFilePath();
+//             QString backtraceFilePath =
+//                 coreDumpPath.replace("core.", "backtrace_");
+
+//             // Check if the backtrace file exists
+//             QFile backtraceFile(backtraceFilePath);
+//             QVERIFY(backtraceFile.exists());  // Backtrace should exist
+//         }
+//     }
+//     window->endProcesses();
+//     delete crashedProcess;
+// }
 
 QTEST_MAIN(TestMainWindow)
 #include "test_main_window.moc"
