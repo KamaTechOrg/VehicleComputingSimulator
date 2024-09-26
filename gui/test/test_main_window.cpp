@@ -1,4 +1,9 @@
 #include <QtTest/QtTest>
+#include <QTimer>
+#include <chrono>
+#include <thread>
+#include <QDebug>
+#include <sys/resource.h>
 #include "main_window.h"
 
 class TestMainWindow : public QObject {
@@ -14,6 +19,7 @@ private slots:
     void testStartProcesses();
     void testEndProcesses();
     void testDeleteSquare();
+    void testSetCoreDumpLimit();
     void testShowTimerInput();
     void addId(int id);
 
@@ -38,7 +44,7 @@ void TestMainWindow::testCreateNewProcess()
 {
     int newProcessId = 6;
     QString processName = "NewProcess";
-    QString cmakeProject = "../dummy_program1";
+    QString cmakeProject = "../test/dummy_program2";
     QString qemuPlatform = "QEMUPlatform";
 
     Process *newProcess =
@@ -59,7 +65,7 @@ void TestMainWindow::testCreateNewProcess()
 void TestMainWindow::testAddProcessSquare()
 {
     Process *newProcess =
-        new Process(5, "Test Process", "../dummy_program1", "QEMUPlatform");
+        new Process(5, "Test Process", "../test/dummy_program2", "QEMUPlatform");
     window->addProcessSquare(newProcess);
     QCOMPARE(window->squares.size(), 5);  // Check if square is added
 
@@ -94,7 +100,7 @@ void TestMainWindow::testEndProcesses()
 
 void TestMainWindow::testDeleteSquare()
 {
-    QString cmakeProject = "../dummy_program1";
+    QString cmakeProject = "../test/dummy_program2";
     Process *process =
         new Process(5, "Test Process", cmakeProject, "QEMUPlatform");
     window->addProcessSquare(process);
@@ -128,6 +134,16 @@ void TestMainWindow::testShowTimerInput()
     // Now, the time input and label should be visible
     QVERIFY(window->timeInput->isVisible());
     QVERIFY(window->timeLabel->isVisible());
+}
+
+void TestMainWindow::testSetCoreDumpLimit()
+{
+    window->compileProjects();
+    struct rlimit core_limit;
+    getrlimit(RLIMIT_CORE, &core_limit);
+
+    QCOMPARE(core_limit.rlim_cur, RLIM_INFINITY);
+    QCOMPARE(core_limit.rlim_max, RLIM_INFINITY);
 }
 
 QTEST_MAIN(TestMainWindow)
