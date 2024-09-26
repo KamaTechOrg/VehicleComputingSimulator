@@ -44,6 +44,8 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    std::string getCoreDumpPath(qint64 pid, const std::string &executableName);
+    void setCoreDumpLimit();
     void updateTimer();
     void endProcesses();
     void stopProcess(int deleteId);
@@ -55,7 +57,6 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
-  
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -108,7 +109,7 @@ private:
     void rotateImage();     // Function to handle rotation
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
-    void openDialog();
+    void openDialog();   
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
