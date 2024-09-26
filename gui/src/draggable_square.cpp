@@ -16,6 +16,15 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QAbstractAnimation>
+#include <QTimer>
+#include <QGraphicsDropShadowEffect>
+#include <QPushButton>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
 #include "main_window.h"
 #include "draggable_square.h"
 
@@ -69,10 +78,23 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
     // layout->setSpacing(0);
     setLayout(layout);
 
+
     stopButton->hide();
+    infoButton->hide();
     infoButton->hide();
     connect(stopButton, &QPushButton::clicked, this,
             &DraggableSquare::handleStopButtonClicked);
+    connect(
+        infoButton, &QPushButton::clicked, this,
+        &DraggableSquare::showCrashInfo); 
+
+    crashLabel = new QLabel("Crashed", this);
+    crashLabel->setAlignment(Qt::AlignCenter);
+    crashLabel->setStyleSheet(
+        "color: white; font-weight: bold; background-color: rgba(255, 0, 0, "
+        "150);");
+    crashLabel->setGeometry(0, 0, width, height);
+    crashLabel->hide(); 
     connect(
         infoButton, &QPushButton::clicked, this,
         &DraggableSquare::showCrashInfo); 
@@ -345,4 +367,9 @@ void DraggableSquare::setDumpFilePath(const QString &filePath)
                 "Crash dump file read successfully: " +
                     dumpFilePath.toStdString());
     dumpFilePath = filePath;
+}
+
+QString DraggableSquare::getDumpFilePath()
+{
+    return dumpFilePath;
 }

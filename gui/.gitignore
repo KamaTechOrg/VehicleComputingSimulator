@@ -41,6 +41,7 @@
 build/
 test/dummy_program1/build/
 test/dummy_program2/build/
+test/crashProgram/build/
 # Exclude generated files in include, lib, bin
 include/divisible/*
 lib/*
