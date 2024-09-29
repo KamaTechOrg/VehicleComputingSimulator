@@ -40,6 +40,7 @@ private slots:
         dialog.setName("Test Process");
         dialog.setExecutionFile("TestProject");
         dialog.setQEMUPlatform("x86");
+        
         QVERIFY(dialog.isValid());
     }
 
@@ -50,6 +51,12 @@ private slots:
         dialog.setName("Test Process");
         dialog.setExecutionFile("TestProject");
         dialog.setQEMUPlatform("x86");
+
+        QMap<KeyPermission, bool> permissions;
+        permissions.insert(KeyPermission::VERIFY, true);
+        permissions.insert(KeyPermission::SIGN, true);
+        dialog.setSecurityPermissions(permissions);
+
         // Assuming true indicates validation success
         QVERIFY(dialog.validateAndAccept() == true);
     }

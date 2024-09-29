@@ -199,29 +199,37 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         "  border-radius: 10px;"                  // Rounded corners
         "}";
 
+        QMap<KeyPermission, bool> allPermissions = {
+            {VERIFY, true},
+            {SIGN, true},
+            {ENCRYPT, true},
+            {DECRYPT, true},
+            {EXPORTABLE, true}
+        };
+
     Process *mainProcess =
-        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         mainProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -274,7 +282,7 @@ void MainWindow::createNewProcess()
         }
         Process *newProcess =
             new Process(id, dialog.getName(), dialog.getExecutionFile(),
-                        dialog.getQEMUPlatform());
+                        dialog.getQEMUPlatform(), dialog.getSelectedPermissionsMap());
         addProcessSquare(newProcess);
         addId(id);
         MainWindow::guiLogger.logMessage(
@@ -373,6 +381,8 @@ void MainWindow::addProcessSquare(Process *&process)
     squarePositions[process->getId()] = pos;
     squares.push_back(square);
 
+    ProcessDialog::addingNewProcess = true;
+
     createProcessConfigFile(process->getId(), process->getExecutionFile());
     QString jsonFilePath = runScriptAndGetJsonPath(process->getExecutionFile());
     if (jsonFilePath.isEmpty()) {
@@ -395,6 +405,8 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
     QPoint pos = squarePositions.value(process->getId(), position);
     square->move(pos);
     square->show();
+
+    ProcessDialog::addingNewProcess = true;
 
     squarePositions[process->getId()] = pos;
     squares.push_back(square);
@@ -762,7 +774,8 @@ void MainWindow::loadSelectedSimulation(const QList<QVariantMap> &simulations,
                         new Process(sqr->getProcess()->getId(),
                                     sqr->getProcess()->getName(),
                                     sqr->getProcess()->getExecutionFile(),
-                                    sqr->getProcess()->getQEMUPlatform());
+                                    sqr->getProcess()->getQEMUPlatform(),
+                                    sqr->getProcess()->getSecurityPermissions());
                     addProcessSquare(process, sqr->pos(), sqr->width(),
                                      sqr->height(), sqr->styleSheet());
                     addId(sqr->getId());
@@ -1182,6 +1195,8 @@ void MainWindow::editSquare(int id)
     guiLogger.logMessage(logger::LogLevel::INFO,
                          "Editing square with ID: " + std::to_string(id));
 
+    ProcessDialog::addingNewProcess = false;
+
     for (DraggableSquare *square : squares) {
         if (square->getProcess()->getId() == id) {
             ProcessDialog dialog(this);
@@ -1190,12 +1205,16 @@ void MainWindow::editSquare(int id)
             dialog.setExecutionFile(square->getProcess()->getExecutionFile());
             dialog.setQEMUPlatform(square->getProcess()->getQEMUPlatform());
 
+            QMap<KeyPermission, bool> currentPermissions =
+                square->getProcess()->getSecurityPermissions();
+            dialog.setSecurityPermissions(currentPermissions); 
+
             if (dialog.exec() == QDialog::Accepted && dialog.isValid()) {
-                // Update the process details
-                // square->setProcess(Process(dialog.getId(), dialog.getName(), dialog.getCMakeProject(), dialog.getQEMUPlatform()));
                 Process *updatedProcess = new Process(
-                    dialog.getId(), dialog.getName(), dialog.getExecutionFile(),
-                    dialog.getQEMUPlatform());
+                    dialog.getId(), dialog.getName(),
+                    dialog.getExecutionFile(),
+                    dialog.getQEMUPlatform(),
+                    dialog.getSelectedPermissionsMap());
                 square->setProcess(updatedProcess);
                 guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Updated process details for square ID: " +
