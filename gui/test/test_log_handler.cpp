@@ -45,7 +45,12 @@ void LogHandlerTests::testGetProcessSquares()
     LogHandler logHandler;
 
     // Create objects to test
-    Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1");
+    QMap<KeyPermission, bool> permissionsMap;
+
+    permissionsMap[KeyPermission::ENCRYPT] = true;
+    permissionsMap[KeyPermission::SIGN] = false;
+
+    Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1",permissionsMap);
     DraggableSquare square1;
     square1.setProcess(&process1);
     // Let's say you want to check that the DraggableSquare has been added to the QMap.

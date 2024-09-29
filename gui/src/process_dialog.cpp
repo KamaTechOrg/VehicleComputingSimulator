@@ -8,12 +8,22 @@
 #include "process_dialog.h"
 #include "main_window.h"
 
+bool ProcessDialog::addingNewProcess = true;
+
 ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Initializing ProcessDialog");
+
+    permMap = {
+        {VERIFY, "Verify"},
+        {SIGN, "Sign"},
+        {ENCRYPT, "Encrypt"},
+        {DECRYPT, "Decrypt"},
+        {EXPORTABLE, "Exportable"}
+    };
 
     QLabel *idLabel = new QLabel("ID:");
     idEdit = new QLineEdit(this);
@@ -135,6 +145,17 @@ bool ProcessDialog::validateAndAccept()
                                      "Validating ProcessDialog inputs");
 
     if (isValid()) {
+         QMap<KeyPermission, bool> selectedPermissions = getSelectedPermissionsMap();
+
+        if (selectedPermissions.isEmpty()) {
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::ERROR,
+                "Validation failed, no security permissions selected");
+            QMessageBox::warning(this, "Input Error",
+                                 "Please select at least one security permission.");
+            return false;
+        }
+
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO, "Validation successful, accepting dialog");
         MainWindow::guiLogger.logMessage(
@@ -179,11 +200,49 @@ void ProcessDialog::setQEMUPlatform(const QString &qemuPlatform)
     }
 }
 
-void ProcessDialog::setupPermissionCheckboxes() {
+void ProcessDialog::setupPermissionCheckboxes() 
+{
     QStringList permissions = { "Verify", "Sign", "Encrypt", "Decrypt", "Exportable" };
     
     for (int i = 0; i < permissions.size(); ++i) {
         KeyPermission perm = static_cast<KeyPermission>(i);  
-        permissionCheckboxes[perm] = new QCheckBox(permissions[i], this);  
+        permissionCheckboxes[perm] = new QCheckBox(permissions[i], this);
+
+        if (!ProcessDialog::addingNewProcess) {
+            permissionCheckboxes[perm]->setDisabled(true);
+        }
     }
+}
+
+QMap<KeyPermission, bool> ProcessDialog::getSelectedPermissionsMap() const
+{
+     QMap<KeyPermission, bool> selectedPermissions;
+
+    for (auto it = permissionCheckboxes.constBegin(); it != permissionCheckboxes.constEnd(); ++it) {
+        if (it.value()->isChecked()) {
+            selectedPermissions[it.key()] = true;
+        }
+    }
+    return selectedPermissions;
+}
+
+void ProcessDialog::setSecurityPermissions(const QMap<KeyPermission, bool>& permissions)
+{
+    for (auto it = permissions.constBegin(); it != permissions.constEnd(); ++it) {
+        KeyPermission key = it.key();
+        bool value = it.value();
+
+        if (permissionCheckboxes.contains(key)) {
+            permissionCheckboxes[key]->setChecked(value);
+        } else {
+            QCheckBox* newCheckbox = new QCheckBox();
+            newCheckbox->setChecked(value);
+            permissionCheckboxes.insert(key, newCheckbox);
+        }
+    }
+}
+
+QString ProcessDialog::permToString(KeyPermission perm) const
+{
+    return permMap.value(perm, "Unknown Permission");
 }

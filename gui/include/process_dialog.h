@@ -12,6 +12,14 @@
 #include <QLabel>
 #include <QMap>
 
+enum KeyPermission {
+        VERIFY,
+        SIGN,
+        ENCRYPT,
+        DECRYPT,
+        EXPORTABLE
+    };
+
 class ProcessDialog : public QDialog {
     Q_OBJECT
 
@@ -22,23 +30,18 @@ public:
     QString getName() const;
     QString getExecutionFile() const;
     QString getQEMUPlatform() const;
-    bool isValid() const;
+    QMap<KeyPermission, bool> getSelectedPermissionsMap() const;
+    static bool addingNewProcess;
+    
     void setId(int id);
     void setName(const QString &name);
     void setExecutionFile(const QString &executableFile);
     void setQEMUPlatform(const QString &qemuPlatform);
     void setCMakeProject(const QString &cmakeProject);
-    
-    enum KeyPermission {
-        VERIFY,
-        SIGN,
-        ENCRYPT,
-        DECRYPT,
-        EXPORTABLE
-    };
+    void setSecurityPermissions(const QMap<KeyPermission, bool>& permissions);
 
-    QMap<KeyPermission, bool> getKeyPermissions() const;
-    void setKeyPermissions(const QMap<KeyPermission, bool> &permissions);
+    bool isValid() const;
+    QString permToString(KeyPermission perm) const;
 
 private slots:
     bool validateAndAccept();
@@ -54,6 +57,7 @@ private:
     QMap<KeyPermission, QCheckBox*> permissionCheckboxes;
     QLineEdit *cmakeProjectEdit;            
     QPushButton *selectExecutableFileButton; 
+    QMap<KeyPermission, QString> permMap;
 
     friend class ProcessDialogTests;
 };
