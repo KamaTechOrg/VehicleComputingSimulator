@@ -28,8 +28,13 @@ void DraggableSquareTest::initTestCase()
     mainWindow = new MainWindow(parentWidget);
     mainWindow->resize(800, 600);
     parentWidget->show();
+    QMap<KeyPermission, bool> permissionsMap;
+
+    permissionsMap[KeyPermission::ENCRYPT] = true;
+    permissionsMap[KeyPermission::SIGN] = false;
+
     testProcess = new Process(1, "Test Process", "../../src/dummy_program1",
-                              "QEMUPlatform");
+                              "QEMUPlatform",permissionsMap);
     draggableSquare =
         new DraggableSquare(parentWidget, "background-color: red;", 100, 100);
     draggableSquare->setProcess(testProcess);

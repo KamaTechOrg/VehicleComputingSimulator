@@ -186,6 +186,7 @@ void SimulationStateManager::updateStateFromJson(QJsonObject jsonObject)
         QString name = squareObj["name"].toString();
         QString CMakeProject = squareObj["CMakeProject"].toString();
         QString QEMUPlatform = squareObj["QEMUPlatform"].toString();
+        QJsonObject permissionsObj = squareObj["securityPermissions"].toObject();
 
         QJsonObject positionObj = squareObj["position"].toObject();
         int x = positionObj["x"].toInt();
@@ -197,10 +198,17 @@ void SimulationStateManager::updateStateFromJson(QJsonObject jsonObject)
         // Load color
         QString color = squareObj["color"].toString();
 
+        QMap<KeyPermission, bool> permissionsMap;
+        for (auto key : permissionsObj.keys()) {
+            KeyPermission perm = static_cast<KeyPermission>(key.toInt());
+            bool value = permissionsObj[key].toBool();
+            permissionsMap.insert(perm, value);
+        }
+
         // Allocate a new DraggableSquare on the heap
         DraggableSquare *square =
             new DraggableSquare(nullptr, color, width, height);
-        square->setProcess(new Process(id, name, CMakeProject, QEMUPlatform));
+        square->setProcess(new Process(id, name, CMakeProject, QEMUPlatform, permissionsMap));
         square->move(QPoint(x, y));
         // Add the pointer to the vector
         data.squares.append(square);
