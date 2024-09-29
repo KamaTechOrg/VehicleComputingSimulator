@@ -11,6 +11,13 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 include_directories(include ../logger)
 
+# Check if SHOW_FRAMES flag is set
+option(SHOW_FRAMES "Enable showing frames" OFF)
+
+if(SHOW_FRAMES)
+    add_definitions(-DSHOW_FRAMES)
+endif()
+
 # make the library with the src files
 file(GLOB SOURCES "src/*.cpp" "../logger/*.cpp" "tests/utils.cpp")
 add_library(ImageProcessingLib ${SOURCES})

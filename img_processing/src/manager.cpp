@@ -142,6 +142,7 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
     }
 
     // visual
+    #ifdef SHOW_FRAMES
     drawOutput();
     imshow("aaa", *currentFrame);
     int key = cv::waitKey(1);
@@ -149,6 +150,9 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
         return -1;
     }
     return 1;
+     #endif
+    
+    
 }
 
 void Manager::drawOutput()
