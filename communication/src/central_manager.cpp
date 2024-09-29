@@ -1,7 +1,6 @@
 #include "../include/central_manager.h"
 #include <iostream>
 #include <stdexcept>
-#include "../include/central_manager.h"
 
 CentralManager* CentralManager::instance = nullptr;
 
@@ -67,7 +66,14 @@ ErrorCode CentralManager::registerBusManager(const uint16_t port)
     return ErrorCode::SUCCESS;      
 }
 
-ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint16_t port, bool isConnected)
+ErrorCode CentralManager::notifyAllProcess()
+{
+    for ( auto manager:managers)
+        manager.second->notifyAllProcess();
+    return ErrorCode();
+}
+
+ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint32_t port, bool isConnected)
 {
     if(!running.load())
         return ErrorCode::NOT_RUNNING;
@@ -87,6 +93,10 @@ ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint16
             return ErrorCode::INVALID_ID;
         }
         processToPort[processID] = port;
+        ErrorCode resRegister = SyncCommunication::registerProcess(processID);
+        if(resRegister == ErrorCode::SUCCESS)
+            notifyAllProcess();
+
     }
     return ErrorCode::SUCCESS;
 }
@@ -163,7 +173,6 @@ ErrorCode CentralManager::closeConnection()
         if (code != ErrorCode::SUCCESS)
             allProcessClosed = code;
     }
-
     RealSocket::log.logMessage(logger::LogLevel::INFO, " Central Manager : Close connection succeeded");
     RealSocket::log.cleanUp();
 

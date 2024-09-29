@@ -38,5 +38,7 @@ public:
     //close the manager
     ErrorCode closeConnection() override;
 
+    ErrorCode notifyAllProcess();
+    
     ~BusManager();
 };

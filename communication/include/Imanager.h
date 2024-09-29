@@ -20,5 +20,8 @@ public:
     virtual ErrorCode startConnection() = 0;
 
     virtual ErrorCode closeConnection() = 0;
+
+    virtual ErrorCode notifyAllProcess() = 0;
+
 };
 #endif
