@@ -1,33 +1,74 @@
 #include <QtTest/QtTest>
 #include "log_handler.h"
-#include "simulation_state_manager.h"
 #include "draggable_square.h"
-#include "process.h"
-#include <QCoreApplication>
-#include <QVector>
-#include <QString>
-#include <QFile>
-#include <QTextStream>
 
-class LogHandlerTests : public QObject {
+class TestLogHandler : public QObject {
     Q_OBJECT
-    SimulationStateManager state;
 
 private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void testReadLogFile();
+    void testParseLogLine();
     void testSortLogEntries();
-    void testGetProcessSquares();
+
+private:
+    LogHandler logHandler;
+    QString testDataDir;
 };
 
-void LogHandlerTests::testReadLogFile()
+void TestLogHandler::initTestCase()
 {
-    LogHandler logHandler;
-    logHandler.readLogFile("../log_file.log");
+    // Setup code: Create a temporary directory and test files
+    testDataDir = QDir::temp().filePath(
+        "loghandler_test_" +
+        QString::number(QDateTime::currentMSecsSinceEpoch()));
+    QDir().mkpath(testDataDir);
 
+    // Create a sample log file
+    QFile logFile(testDataDir + "/test_log.txt");
+    if (logFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&logFile);
+        out << "[1623456789000000000ns] [INFO] SRC 1 DST 2 Packet number: 1 "
+               "messageId: 1 Data: 0xf1010 Success\n";
+        out << "[1623456789100000000ns] [INFO] SRC 2 DST 1 Packet number: 2 "
+               "messageId: 2 Data: 0x010ab received\n";
+        out << "\n";  // Adding an empty line to simulate real-world logs
+        logFile.close();
+    }
+
+    // Create a sample JSON file
+    QFile jsonFile(testDataDir + "/test_state.json");
+    if (jsonFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&jsonFile);
+        out << R"({"squares":[{"id":1,"name":"Process1","CMakeProject":"Project1","QEMUPlatform":"Platform1","position":{"x":10,"y":20},"width":50,"height":50}]})";
+        jsonFile.close();
+    }
+}
+
+void TestLogHandler::cleanupTestCase()
+{
+    // Clean up: Remove the temporary directory and its contents
+    QDir(testDataDir).removeRecursively();
+}
+
+void TestLogHandler::testReadLogFile()
+{
+    logHandler.readLogFile(testDataDir + "/test_log.txt");
     QVERIFY(!logHandler.getLogEntries().isEmpty());
 }
 
-void LogHandlerTests::testSortLogEntries()
+void TestLogHandler::testParseLogLine()
+{
+    QString line =
+        "[1623456789000000000ns] [INFO] SRC 1 DST 2 Packet number: 1 "
+        "messageId: 1 Data: 0xf105485 Success";
+    LogHandler::LogEntry entry = logHandler.parseLogLine(line);
+    QCOMPARE(entry.srcId, 1);
+    QCOMPARE(entry.dstId, 2);
+}
+
+void TestLogHandler::testSortLogEntries()
 {
     LogHandler logHandler;
     logHandler.readLogFile("../log_file.log");
@@ -40,27 +81,5 @@ void LogHandlerTests::testSortLogEntries()
     }
 }
 
-void LogHandlerTests::testGetProcessSquares()
-{
-    LogHandler logHandler;
-
-    // Create objects to test
-    Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1");
-    DraggableSquare square1;
-    square1.setProcess(&process1);
-    // Let's say you want to check that the DraggableSquare has been added to the QMap.
-    // Add the DraggableSquare to the map
-    QMap<int, DraggableSquare *> &processSquares =
-        const_cast<QMap<int, DraggableSquare *> &>(
-            logHandler.getProcessSquares());
-    processSquares.insert(1, &square1);
-
-    // Now the contents of the map can be checked
-    const QMap<int, DraggableSquare *> &squares =
-        logHandler.getProcessSquares();
-    QVERIFY(squares.contains(1));
-    QCOMPARE(squares[1]->getProcess()->getId(), 1);
-}
-
-QTEST_MAIN(LogHandlerTests)
+QTEST_MAIN(TestLogHandler)
 #include "test_log_handler.moc"

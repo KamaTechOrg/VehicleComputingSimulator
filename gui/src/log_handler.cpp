@@ -15,11 +15,6 @@
 #include "simulation_state_manager.h"
 #include "main_window.h"
 
-QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
-{
-    return logEntries;
-}
-
 void LogHandler::readLogFile(const QString &fileName)
 {
     QFile file(fileName);
@@ -34,45 +29,44 @@ void LogHandler::readLogFile(const QString &fileName)
         logger::LogLevel::INFO,
         "File successfully opened: " + fileName.toStdString());
 
-    QByteArray fileData = file.readAll();
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (line.contains("SRC") && line.contains("DST")) {
+            LogEntry entry = parseLogLine(line);
+            if (entry.srcId != -1) {  // Assuming -1 indicates an invalid entry
+                logEntries.push_back(entry);
+            }
+        }
+    }
     file.close();
+}
 
-    QList<QByteArray> lines = fileData.split('\n');
-    for (const QByteArray &line : lines) {
-        QString trimmedLine = QString(line).trimmed();
-        QStringList fields = trimmedLine.split(' ');
-
-        if (fields.size() < 6) {
-            MainWindow::guiLogger.logMessage(
-                logger::LogLevel::DEBUG,
-                "Skipping malformed line: " + trimmedLine.toStdString());
-            continue;
-        }
-
-        LogEntry entry;
-        QString dateString = fields[0].trimmed();
-        QString timeString = fields[1].trimmed();
-
-        QString dateTimeString = dateString + " " + timeString;
-        entry.timestamp =
-            QDateTime::fromString(dateTimeString, "yyyy-MM-dd HH:mm:ss.zzz");
-        if (!entry.timestamp.isValid()) {
-            MainWindow::guiLogger.logMessage(
-                logger::LogLevel::ERROR,
-                "Skipping line with invalid timestamp: " +
-                    trimmedLine.toStdString());
-            continue;
-        }
-
-        entry.srcId = fields[2].trimmed().toInt();
-        entry.dstId = fields[3].trimmed().toInt();
-        entry.payload = fields[4].trimmed();
-        entry.status = fields[5].trimmed();
-        logEntries.push_back(entry);
+LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
+{
+    LogEntry entry;
+    QStringList fields = line.split(' ');
+    if (fields.size() < 12) {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "Skipping malformed line: " + line.toStdString());
+        entry.srcId = -1; 
+        return entry;
     }
 
-    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                     "Log file successfully read.");
+    QString timestampStr = fields[0];
+    timestampStr.chop(2);
+    qint64 nanoseconds = timestampStr.toLongLong();
+    entry.timestamp = QDateTime::fromMSecsSinceEpoch(nanoseconds / 1000000);
+
+    entry.srcId = fields[3].toInt();
+    entry.dstId = fields[5].toInt();
+    return entry;
+}
+
+QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
+{
+    return logEntries;
 }
 
 void LogHandler::sortLogEntries()

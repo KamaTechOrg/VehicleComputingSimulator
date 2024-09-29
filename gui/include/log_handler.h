@@ -11,13 +11,12 @@
 #include <QVector>
 
 class LogHandler {
+    friend class TestLogHandler;
 public:
     struct LogEntry {
         QDateTime timestamp;
         int srcId;
         int dstId;
-        QString payload;
-        QString status;  // SEND/RECEIVE
 
         bool operator<(const LogEntry &other) const
         {
@@ -35,9 +34,10 @@ public:
 private:
     QVector<LogEntry> logEntries;
     QMap<int, DraggableSquare *>
-        processSquares;  // Track process squares by their IDs
+        processSquares;
     QMap<int, QMap<int, int>>
-        communicationCounts;  // Track communication counts between process pairs
+        communicationCounts;
+    LogEntry parseLogLine(const QString &line);
 };
 
 #endif  // LOGHANDLER_H

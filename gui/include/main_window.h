@@ -110,6 +110,7 @@ private:
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
     void openDialog();   
+    QString getPathLogBus(const QString &pathFile);
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;

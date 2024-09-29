@@ -627,10 +627,40 @@ void MainWindow::openImageDialog()
     }
 }
 
+QString MainWindow::getPathLogBus(const QString &pathFile)
+{
+    QString path;
+    
+    QFile file(pathFile);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        path = in.readLine();
+        guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Successful to open file: " + pathFile.toStdString());
+        file.close();
+    } else {
+        guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Unable to open file: " + pathFile.toStdString());
+    }
+
+    QString fullPath = "../../main_bus/build/" + path;
+    
+    if (!QFile::exists(fullPath)) {
+        guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "File does not exist: " + fullPath.toStdString());
+    }
+
+    return fullPath;
+}
+
 void MainWindow::showSimulation()
 {
-    QString filePath = "log_file.log";
-    logHandler.readLogFile(filePath);
+    QString filePath = "../../main_bus/build/shared_log_file_name.txt";
+    QString fullPath = getPathLogBus(filePath);
+    logHandler.readLogFile(fullPath);
     logHandler.analyzeLogEntries(this, "simulation_state.bson");
 
     Frames *frames = new Frames(logHandler);  // Initialize Frames
