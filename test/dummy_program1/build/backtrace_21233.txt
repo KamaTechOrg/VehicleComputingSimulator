@@ -1,0 +1,7 @@
+# Crash Report
+
+Timestamp: Tue Oct  8 09:28:27 2024
+Executable: /home/chaya/git15/VehicleComputingSimulator/test/dummy_program1/build
+Core Dump Path: /mnt/wslg/dumps/core.build.21233
+
+# Backtrace

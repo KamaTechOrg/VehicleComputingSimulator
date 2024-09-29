@@ -60,12 +60,16 @@ private:
     bool dragging;
     QPoint dragStartPosition;
     QString dumpFilePath;
+    int clickCount;
+    QTimer *clickTimer;
 
 private slots:
     void editSquare(int id);
     void deleteSquare(int id);
     void handleStopButtonClicked();
     void showCrashInfo();
+    void showBufferInfo(int id);
+    void resetClickCount();
 };
 
 #endif  // __DRAGGABLE_SQUARE_H__

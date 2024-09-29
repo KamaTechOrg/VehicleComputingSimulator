@@ -80,7 +80,8 @@ public:
         return currentImagePath;
     }
     static logger guiLogger;
-
+    std::tuple<QStringList, int> getBuffersForProcess(Process *process);
+    static bool framesDisplayed;
 
 private slots:
     void showSimulation(bool isRealTime = false);
@@ -110,6 +111,7 @@ private:
     void runProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
+    QStringList extractBuffersFromLog(const QString &logFilePath);
     void rotateImage();     // Function to handle rotation
     void setDefaultBackgroundImage();
     void openDialog();
@@ -121,6 +123,10 @@ private:
     void checkJsonFileAndSetButtons();
 
     QPushButton *openDependencySelectionProjectButton;  // Button to open the second project
+    QString extractSourceId(const QString &buffer);
+    QString extractBuffer(const QString &buffer);
+    QString extractDstrceId(const QString &buffer);
+    // QString getJsonFilePathForId(int id);
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
     QVector<DraggableSquare *> squares;

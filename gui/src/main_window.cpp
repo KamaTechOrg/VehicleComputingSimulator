@@ -49,11 +49,13 @@
 #include "frames.h"
 #include "log_handler.h"
 #include "compiler.h"
+#include "communication_data_dialog.h"
 
 int sizeSquare = 120;
 int rotationTimerIntervals = 100;
 logger MainWindow::guiLogger("gui");
 const QString LOG_FILE_BUS_MANAGER_PATH =  "../../main_bus/build/shared_log_file_name.txt";
+bool MainWindow::framesDisplayed=false;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new DbManager(this))
 {
@@ -138,9 +140,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     // Initialize rotation-related variables
     rotationTimer = new QTimer(this);
     rotationAngle = 0;
-
-    // Connect the timer to the rotation function
-    connect(rotationTimer, &QTimer::timeout, this, &MainWindow::rotateImage);
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
@@ -394,6 +393,8 @@ void MainWindow::addProcessSquare(Process *&process)
     } else {
         // Update the JSON file with the new process
         updateProcessJsonFile(process->getId(), process->getName(), jsonFilePath);
+        PacketParser *parser = new PacketParser(jsonFilePath.toStdString());
+        CommunicationDataDialog::parserMap[process->getId()] = parser;
     }
 }
 
@@ -422,6 +423,8 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
     } else {
         // Update the JSON file with the new process
         updateProcessJsonFile(process->getId(), process->getName(), jsonFilePath);
+        PacketParser *parser = new PacketParser(jsonFilePath.toStdString());
+        CommunicationDataDialog::parserMap[process->getId()] = parser;
     }
 }
 
@@ -430,6 +433,50 @@ void MainWindow::openHistoryWindow()
     historyWindow = new HistoryWindow(dataHandler, this);
     historyWindow->show();
 }
+
+// QString MainWindow::getJsonFilePathForId(int id) 
+// {
+    // QString jsonFilePath = "../build/sensors.json";
+    // QFile file(jsonFilePath);
+    
+    // if (!file.open(QIODevice::ReadOnly)) {
+    //     guiLogger.logMessage(logger::LogLevel::ERROR,
+    //         "Failed to open the JSON file.");
+    //     return QString();
+    // }
+    
+    // QByteArray jsonData = file.readAll();
+    // file.close();
+    
+    // QJsonParseError jsonError;
+    // QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &jsonError);
+    
+    // if (jsonError.error != QJsonParseError::NoError) {
+    //     guiLogger.logMessage(logger::LogLevel::ERROR,
+    //         "JSON parsing error: " +
+    //             jsonError.errorString().toStdString());
+    //     return QString();
+    // }
+    
+    // if (!jsonDoc.isObject()) {
+    //     guiLogger.logMessage(logger::LogLevel::ERROR,
+    //        "JSON parsing error: " +
+    //             jsonError.errorString().toStdString());
+    //     return QString();
+    // }
+    
+    // QJsonObject jsonObject = jsonDoc.object();
+    
+    // if (!jsonObject.contains(QString::number(id))) {
+    //     guiLogger.logMessage(logger::LogLevel::ERROR,
+    //         "ID not found in JSON: " + std::to_string(id));
+    //     return QString();
+    // }
+
+    // QJsonObject processObject = jsonObject.value(
+    //     QString::number(id)).toObject();
+    // return processObject.value("pathToJson").toString();
+// }
 
 bool MainWindow::isUniqueId(int id)
 {
@@ -732,6 +779,99 @@ QString MainWindow::getPathLogBus(const QString &pathFile)
     return fullPath;
 }
 
+std::tuple<QStringList, int> MainWindow::getBuffersForProcess(Process *process) 
+{
+    QString logFilePath = "../build/log_buffer.log";
+    QStringList allBuffers = extractBuffersFromLog(logFilePath);
+    int srcId=-1;
+
+    QStringList relevantBuffers;
+
+    for (const QString &buffer : allBuffers) {
+        QString destId = extractDstrceId(buffer);
+        if (destId == QString::number(process->getId())) {
+            QString extractedBuffer = extractBuffer(buffer);
+            if (!extractedBuffer.isEmpty()) {
+
+                QString sourceIdString = extractSourceId(buffer);
+                bool conversionSuccess;
+                srcId = sourceIdString.toInt(&conversionSuccess);
+
+                if (!conversionSuccess) {
+                    srcId = -1;
+                }
+                relevantBuffers.append(extractedBuffer);
+            }
+        }
+    }
+    return std::make_tuple(relevantBuffers, srcId);
+}
+
+QStringList MainWindow::extractBuffersFromLog(const QString &logFilePath)
+{
+    QStringList bufferList;
+    QFile logFile(logFilePath);
+    if (logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&logFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            // Extracting the complete message
+            QRegularExpression regex(
+                R"(\[\d+ns\] \[INFO\] SRC (\d+) DST (\d+) Complete message:(0x[0-9A-Fa-f]+))");
+            QRegularExpressionMatch match = regex.match(line);
+            if (match.hasMatch()) {
+                QString srcId = match.captured(1);      // Capture the source ID
+                QString dstId = match.captured(2);      // Capture the destination ID
+                QString buffer = match.captured(3);     // Capture the buffer
+
+                // Format: "SRC: <srcId> DST: <dstId> Buffer: <buffer>"
+                QString formattedLine = QString("SRC: %1 DST: %2 Buffer: %3")
+                    .arg(srcId)
+                    .arg(dstId)
+                    .arg(buffer);
+
+                bufferList.append(formattedLine);  // Add the formatted line to the list
+            }
+        }
+        logFile.close();
+    }
+    else {
+        qDebug() << "Failed to open log file:" << logFilePath;
+    }
+    return bufferList;
+}
+
+QString MainWindow::extractDstrceId(const QString &buffer) 
+{
+    QRegularExpression regex(R"(DST\s*:\s*(\d+))");
+    QRegularExpressionMatch match = regex.match(buffer);
+    if (match.hasMatch()) {
+        return match.captured(1);
+    }
+    return QString();
+}
+
+QString MainWindow::extractSourceId(const QString &buffer) 
+{
+    QRegularExpression regex(R"(SRC:\s*(\d+))");
+    QRegularExpressionMatch match = regex.match(buffer);
+    if (match.hasMatch()) {
+        QString sourceId = match.captured(1);
+        return match.captured(1);
+    }
+    return QString();
+}
+
+QString MainWindow::extractBuffer(const QString &buffer) 
+{
+    QRegularExpression regex(R"(Buffer:\s*(0x[0-9A-Fa-f]+))");
+    QRegularExpressionMatch match = regex.match(buffer);
+    if (match.hasMatch()) {
+        return match.captured(1);
+    }
+    return QString();
+}
+
 void MainWindow::showSimulation(bool isRealTime)
 {
     if (isRealTime) {
@@ -790,6 +930,53 @@ void MainWindow::showSimulation(bool isRealTime)
         }
     }
 }
+
+
+// #include <thread>
+// #include <chrono>
+
+// bool checkSimulationEnd(const std::string& logFilePath) {
+//     std::ifstream logFile(logFilePath);
+//     std::string line;
+
+//     // בדוק אם הקובץ נפתח בהצלחה
+//     if (!logFile.is_open()) {
+//         std::cerr << "Error opening file: " << logFilePath << std::endl;
+//         return false;
+//     }
+
+//     // קרא את הקובץ שורה אחרי שורה
+//     while (std::getline(logFile, line)) {
+//         if (line.find("Finished processing log entries.") != std::string::npos) {
+//             std::cout << line << std::endl; // הדפס את השורה
+//             return true; // הסימולציה הסתיימה
+//         }
+//     }
+
+//     return false; // הסימולציה לא הסתיימה
+// }
+
+// void monitorLogFile(const std::string& logFilePath) {
+//     while (true) {
+//         if (checkSimulationEnd(logFilePath)) {
+//             std::cout << "Simulation has finished." << std::endl;
+//             break; // סיים את הלולאה
+//         }
+//         std::this_thread::sleep_for(std::chrono::seconds(5)); // המתן 5 שניות
+//     }
+// }
+
+// int main() {
+//     std::string logFilePath = "path/to/your/log_file.log";
+
+//     // הפעל את ניטור קובץ הלוגים ב-thread נפרד
+//     std::thread logThread(monitorLogFile, logFilePath);
+
+//     // המשך לבצע פעולות נוספות כאן, אם יש צורך
+//     logThread.join(); // המתן עד שה-thread יסתיים
+
+//     return 0;
+// }
 
 void MainWindow::loadSimulation()
 {

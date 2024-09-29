@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 project(VehicleComputingSimulator VERSION 1.0)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Enable automatic generation of MOC, UIC, and RCC
@@ -40,7 +40,9 @@ add_library(VehicleComputingSimulatorLib
     src/compiler.cpp
     src/db_manager.cpp
     src/history_window.cpp
+    src/communication_data_dialog.cpp
     ../logger/logger.cpp
+    ../parser_json/src/packet_parser.cpp
 )
 
 # Add headers to the library target
@@ -54,7 +56,9 @@ target_sources(VehicleComputingSimulatorLib PRIVATE
     include/compiler.h
     include/db_manager.h
     include/history_window.h
+    include/communication_data_dialog.h
     ../logger/logger.h
+    ../parser_json/src/packet_parser.h
 )
 
 # Include BSON directories and project include directory
@@ -62,6 +66,7 @@ target_include_directories(VehicleComputingSimulatorLib PRIVATE
     ${BSON_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/../logger
+    ${CMAKE_SOURCE_DIR}/../parser_json
 )
 
 # Link the BSON library and Qt5 components to the library

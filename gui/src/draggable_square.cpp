@@ -25,8 +25,10 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QApplication>
 #include "main_window.h"
 #include "draggable_square.h"
+#include "communication_data_dialog.h"
 
 void DraggableSquare::print() const
 {
@@ -51,7 +53,7 @@ void DraggableSquare::setSquareColor(const QString &color)
 // constructor
 DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
                                  int width, int height)
-    : QWidget(parent),
+    : QWidget(parent), clickCount(0),
       label(new QLabel(this)),
       stopButton(new QPushButton("STOP", this)),
       infoButton(
@@ -59,8 +61,10 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
       dumpFilePath("")
 {
     setFixedSize(width, height);
-    setStyleSheet(color);
+    setStyleSheet(color); 
 
+    clickTimer = new QTimer(this);
+    clickTimer->setSingleShot(true);
     
   label->setStyleSheet("QLabel {"
              " color: black;"
@@ -93,6 +97,9 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
         "150);");
     crashLabel->setGeometry(0, 0, width, height);
     crashLabel->hide(); 
+
+    connect(clickTimer, &QTimer::timeout, this,
+            &DraggableSquare::resetClickCount);
 }
 
 // Copy constructor
@@ -175,12 +182,14 @@ DraggableSquare::~DraggableSquare()
 
 void DraggableSquare::mousePressEvent(QMouseEvent *event)
 {
+
     if (event->button() == Qt::RightButton) {
+        // Right-click behavior
         if (id < 0 || id > 4) {  // Prevent menu for IDs 1 to 4
             MainWindow::guiLogger.logMessage(
                 logger::LogLevel::DEBUG,
                 "Right-click on DraggableSquare with ID: " +
-                    std::to_string(id));
+                std::to_string(id));
             QMenu contextMenu(this);
 
             QAction *editAction = contextMenu.addAction("Edit");
@@ -190,21 +199,71 @@ void DraggableSquare::mousePressEvent(QMouseEvent *event)
 
             if (selectedAction == editAction) {
                 editSquare(id);
-            }
-            else if (selectedAction == deleteAction) {
+            } else if (selectedAction == deleteAction) {
                 deleteSquare(id);
             }
         }
-    }
+    } 
     else if (event->button() == Qt::LeftButton) {
-        MainWindow::guiLogger.logMessage(
-            logger::LogLevel::DEBUG,
-            "Left-click on DraggableSquare with ID: " + std::to_string(id));
-        dragStartPosition = event->pos();
-        dragging = true;
+        // if (MainWindow::framesDisplayed) {
+            // std::cout <<"!!!!!!!"<<std::endl;
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::DEBUG,
+                "Left-click on DraggableSquare with ID: " +
+                std::to_string(id));
+            
+            // Increment the click count
+            clickCount++;
+
+            // Start the timer to detect double-click
+            if (clickCount == 1) {
+                clickTimer->start(QApplication::doubleClickInterval());
+                dragStartPosition = event->pos();
+                dragging = true;
+            } 
+            else if (clickCount == 2) {
+                clickTimer->stop(); // Stop the timer on the second click
+                clickCount = 0;     // Reset click count
+                    showBufferInfo(id);
+            }
+        // }
     }
     else {
         QWidget::mousePressEvent(event);
+    }
+}
+
+void DraggableSquare::resetClickCount() {
+    clickCount = 0; // Reset the click count after timeout
+}
+
+void DraggableSquare::showBufferInfo(int id)
+{
+    MainWindow *mainWindow =
+        qobject_cast<MainWindow *>(parentWidget()->window());
+
+    if (mainWindow && process) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::DEBUG,
+            "Retrieving buffers for Process ID: " +
+            std::to_string(process->getId()));
+
+        auto [buffers, srcId] = mainWindow->getBuffersForProcess(process);
+
+        if (!buffers.isEmpty()) {
+            MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                "Buffers found: " + buffers.join(", ").toStdString());
+
+            CommunicationDataDialog *dialog =
+                new CommunicationDataDialog(buffers, srcId, this);
+            dialog->exec();
+        } else {
+            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                "No buffers available for this process.");
+        }
+    } else {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+            "Failed to retrieve MainWindow or Process for ID: " +
+            std::to_string(id));
     }
 }
 
@@ -257,6 +316,7 @@ void DraggableSquare::deleteSquare(int id)
         mainWindow->deleteSquare(id);
     }
 }
+
 void DraggableSquare::setStopButtonVisible(bool visible)
 {
     if (process->getId() > 3) {
@@ -268,6 +328,7 @@ void DraggableSquare::setStopButtonVisible(bool visible)
         }
     }
 }
+
 void DraggableSquare::handleStopButtonClicked()
 {
     if (process) {

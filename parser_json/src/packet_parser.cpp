@@ -362,6 +362,7 @@ std::map<std::string, FieldValue> PacketParser::getAllFieldValues()
 uint8_t *PacketParser::extractBits(const uint8_t *bitFieldData, 
                                     size_t offset, size_t size)
 {
+
     size_t numBytes = BITS_TO_BYTES(size);
     uint8_t *result = (uint8_t *)std::calloc(numBytes, sizeof(uint8_t));
     
