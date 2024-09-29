@@ -16,16 +16,17 @@
 class CentralManager:IManager{
 private:
     static CentralManager* instance;
-    std::vector<uint16_t> ports;
+    static std::vector<uint16_t> ports;
     Gateway* gateway;
     std::atomic<bool> running;
+    
     // Mutexes for protecting shared data
     std::mutex managersMutex;
     std::mutex processToPortMutex;
     std::mutex gatewayMutex;
 
     //private constructor to singleton
-    CentralManager(std::vector<uint16_t> ports);
+    CentralManager();
 
     //manager port - manager object
     std::unordered_map<uint16_t, BusManager*> managers;
@@ -37,7 +38,13 @@ private:
     bool needsTranslation(uint32_t srcId, uint32_t dstId);
 
 public:
-    static CentralManager* getInstance(std::vector<uint16_t> ports);
+    static CentralManager* getInstance();
+
+    // Initializing the ports of the busses
+    static std::unordered_map<uint32_t, uint16_t> assignPorts(std::vector<uint32_t>& ids);
+
+    // Checking if the port is free
+    static bool isPortAvailable(uint16_t port);
 
     //connect centeral manager
     ErrorCode startConnection() override;

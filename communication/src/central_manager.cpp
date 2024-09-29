@@ -3,27 +3,55 @@
 #include <stdexcept>
 
 CentralManager* CentralManager::instance = nullptr;
+std::vector<uint16_t> CentralManager::ports;
+
+// Initializing the ports of the busses
+std::unordered_map<uint32_t, uint16_t> CentralManager::assignPorts(std::vector<uint32_t>& ids)
+{
+    std::unordered_map<uint32_t, uint16_t> idToPort;
+    int basePort = 8080;
+    for (const int id : ids) {
+        while (!isPortAvailable(basePort))
+            basePort++;
+
+        CentralManager::ports.push_back(basePort);
+        idToPort[id] = basePort;
+        basePort++;
+    }
+
+    return idToPort;
+}
+
+// Checking if the port is free
+bool CentralManager::isPortAvailable(uint16_t port)
+{
+    std::string command = "netstat -an | grep :" + std::to_string(port) + " > /dev/null";
+    int result = std::system(command.c_str());
+    if((std::find(CentralManager::ports.begin(),CentralManager::ports.end(),port) != CentralManager::ports.end()))
+        return false;
+    
+    return (result != 0);
+}
 
 // Singleton instance retrieval
-CentralManager* CentralManager::getInstance(std::vector<uint16_t> ports)
+CentralManager* CentralManager::getInstance()
 {   
     if (instance == nullptr)
-        instance = new CentralManager(ports);
+        instance = new CentralManager();
     
     return instance;
 }
 
 // Singleton pattern: private constructor
-CentralManager::CentralManager(std::vector<uint16_t> ports) : ports(ports), running(false)
+CentralManager::CentralManager() : running(false)
 {
-    if (ports.empty()) {
+    if (CentralManager::ports.empty())
         throw std::invalid_argument("Ports vector cannot be empty.");
-    }
 
     // Setup the signal handler for SIGINT
     signal(SIGINT, CentralManager::signalHandler);
 
-    for (auto port : ports)
+    for (auto port : CentralManager::ports)
         managers[port] = new BusManager(port, std::bind(&CentralManager::receiveMessage, this, std::placeholders::_1), std::bind(&CentralManager::updateProcessID, this, std::placeholders::_1, std::placeholders::_2,std::placeholders::_3));
 }
 
@@ -33,13 +61,13 @@ ErrorCode CentralManager::startConnection()
     running.exchange(true);
     ErrorCode allProcessConnected = ErrorCode::SUCCESS;
     std::lock_guard<std::mutex> lock(managersMutex);
+
     for (auto& [port, manager] : managers) {
         ErrorCode code = manager->startConnection();
         if (code != ErrorCode::SUCCESS){
             RealSocket::log.logMessage(logger::LogLevel::ERROR, " Central Manager : Error connecting port: " + std::to_string(port) + "  " + toString(code));
             allProcessConnected = code;
         }
-
         RealSocket::log.logMessage(logger::LogLevel::INFO, " Central Manager : Bus is running on port: " + std::to_string(port));
     }
     
