@@ -11,7 +11,7 @@
 #include "packet.h"
 #include "error_code.h"
 #include "Imanager.h"
-#include "syncCommunication.h"
+#include "sync_communication.h"
 
 class CentralManager:IManager{
 private:
@@ -63,6 +63,7 @@ public:
     //connect new bus manager
     ErrorCode registerBusManager(const uint32_t port);
 
+    ErrorCode notifyAllProcess();
     //Destructor
     ~CentralManager();
 };

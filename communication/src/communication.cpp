@@ -10,7 +10,7 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
     setId(id);
     setPassDataCallback(passDataCallback);
     
-    SyncCommunication::initializeProcess();
+    //SyncCommunication::initializeProcess();
 
     instance = this;
 
@@ -24,7 +24,6 @@ ErrorCode Communication::startConnection(uint32_t port)
 {
     ErrorCode isConnected = client.connectToServer(port, id);
     //Increases the shared memory and blocks the process - if not all are connected
-    SyncCommunication::registerProcess(id);
     return isConnected;
 }
 

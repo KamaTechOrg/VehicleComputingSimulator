@@ -31,6 +31,12 @@ ErrorCode ClientConnection::connectToServer(uint32_t port, int id)
         return ErrorCode::SEND_FAILED;
     }
     
+    ssize_t bytesRecv = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
+    if (bytesSent < sizeof(Packet)) {
+        socketInterface->close(clientSocket);
+        return ErrorCode::RECEIVE_FAILED;
+    }
+
     connected = true;
     receiveThread = std::thread(&ClientConnection::receivePacket, this);
     receiveThread.detach();
@@ -84,6 +90,7 @@ ErrorCode ClientConnection::closeConnection()
             return ErrorCode::CLOSE_FAILED;
         connected = false;
     }
+    RealSocket::log.cleanUp();
     return ErrorCode::SUCCESS;  
 }
 

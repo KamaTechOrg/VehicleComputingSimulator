@@ -3,7 +3,7 @@
 #include "client_connection.h"
 #include "../sockets/Isocket.h"
 #include "error_code.h"
-#include "syncCommunication.h"
+#include "sync_communication.h"
 
 class Communication
 {
