@@ -5,9 +5,28 @@
 
 using namespace std;
 using namespace cv;
+void processData(uint32_t srcId, void *data) {
+    // קוד לפונקציה
+}
 
+Manager::Manager() : communication(8, &processData) {
+    // קוד נוסף אם יש
+}
 void Manager::init()
 {
+    //--------------------------------
+    const char *message = "Hello, I'm userA sending to userB!";
+    size_t dataSize = strlen(message) + 1; 
+    uint32_t destID = 2;
+    uint32_t srcID = 8;
+    // Creating the communication object with the callback function to process the data
+    //Communicationcomm(srcID, processData);
+    // Starting communication with the server
+    communication.startConnection();
+    // Sending the message 
+    communication.sendMessage((void *)message, dataSize, destID, srcID,false);
+    //-----------------------------------
+    
     // calibration
     Mat calibrationImage = imread("../tests/images/black_line.JPG");
     if (calibrationImage.empty()) {

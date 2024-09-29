@@ -8,11 +8,11 @@
 #include "dynamic_tracker.h"
 #include "log_manager.h"
 #include "velocity.h"
-
+#include "communication.h"
 class Manager {
    public:
     static logger imgLogger;
-    Manager() {}
+    Manager();
     // Gets the currentFrame and sends it for detection and then tracking,
     // finally if necessary sends a alert
     int processing(const cv::Mat &newFrame, bool mode);
@@ -21,6 +21,7 @@ class Manager {
     void init();
 
    private:
+    Communication communication;
     std::shared_ptr<cv::Mat> prevFrame;
     std::shared_ptr<cv::Mat> currentFrame;
     std::vector<ObjectInformation> prevOutput;
