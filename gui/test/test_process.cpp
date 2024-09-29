@@ -7,7 +7,8 @@ class ProcessTests : public QObject {
 private slots:
     void testProcessConstructor()
     {
-        Process process(1, "Test Process", "TestProject", "TestPlatform");
+        QMap<KeyPermission, bool> permissionsMap;
+        Process process(1, "Test Process", "TestProject", "TestPlatform", permissionsMap);
         QCOMPARE(process.getId(), 1);
         QCOMPARE(process.getName(), QString("Test Process"));
         QCOMPARE(process.getExecutionFile(), QString("TestProject"));
