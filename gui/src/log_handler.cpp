@@ -120,9 +120,17 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
             int y = processObject["position"].toObject()["y"].toInt();
             int width = processObject["width"].toInt();
             int height = processObject["height"].toInt();
+            QJsonObject permissionsObj = processObject["securityPermissions"].toObject();
+
+            QMap<KeyPermission, bool> permissionsMap;
+            for (auto key : permissionsObj.keys()) {
+                KeyPermission perm = static_cast<KeyPermission>(key.toInt()); // Ensure correct conversion
+                bool value = permissionsObj[key].toBool();
+                permissionsMap.insert(perm, value);
+            }
 
             Process *process =
-                new Process(id, name, cmakeProject, qemuPlatform);
+                new Process(id, name, cmakeProject, qemuPlatform, permissionsMap);
             DraggableSquare *square =
                 new DraggableSquare(mainWindow, "", width, height);
             square->setProcess(process);
