@@ -1,5 +1,5 @@
 #include "logger.h"
-
+logger::LogLevel logger::logLevel = logger::LogLevel::INFO;
 std::string logger::logFileName;
 std::mutex logger::logMutex;
 std::chrono::system_clock::time_point logger::initTime =
@@ -8,6 +8,7 @@ std::string logger::componentName = "out";
 
 logger::logger(std::string componentName) {
   logger::componentName = componentName;
+  isDebugMode=false;
 }
 void logger::initializeLogFile() {
   if (isInitialized)
@@ -64,24 +65,18 @@ std::string logger::logLevelToString(LogLevel level) {
 }
 
 bool logger::shouldLog(LogLevel level) {
-<<<<<<< HEAD
-  switch (LOG_LEVEL) {
-=======
-  switch (logLevel) {  
->>>>>>> 062ac76... GUI:Inserting compilation variables for each processor
+  switch (logLevel) { 
   case LogLevel::ERROR:
     return level == LogLevel::ERROR;
   case LogLevel::INFO:
     return level == LogLevel::ERROR || level == LogLevel::INFO;
   case LogLevel::DEBUG:
-    return true;
+    return level == LogLevel::DEBUG;
   default:
     return false;
   }
 }
 
-<<<<<<< HEAD
-=======
 void logger::setDebugMode(bool debugMode){
   isDebugMode = debugMode;
   if(isDebugMode==false){
@@ -92,7 +87,6 @@ void logger::setDebugMode(bool debugMode){
   }
 }
 
->>>>>>> 062ac76... GUI:Inserting compilation variables for each processor
 std::string logger::getElapsedTime() {
   auto now = std::chrono::system_clock::now();
   auto elapsed =
