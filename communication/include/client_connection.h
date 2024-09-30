@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <functional>
 #include <iostream>
+#include <atomic>
 #include "message.h"
 #include "../sockets/Isocket.h"
 #include "../sockets/mock_socket.h"
