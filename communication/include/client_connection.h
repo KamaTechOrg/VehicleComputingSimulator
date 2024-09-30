@@ -21,6 +21,7 @@
 #include <atomic>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <atomic>
 #include "message.h"
 #include "../sockets/Isocket.h"
 #include "../sockets/real_socket.h"
