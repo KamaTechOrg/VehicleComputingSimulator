@@ -27,6 +27,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
+#include <QCheckBox>
 #include "process.h"
 #include "draggable_square.h"
 #include "frames.h"
@@ -59,6 +60,7 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
+    //void runDebug();
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -151,6 +153,7 @@ private:
     QPushButton *showSimulationButton;
     bson_t *bsonDocument;
     int offlineId = -1;
+    QCheckBox *debugCheckBox;
 };
 
 #endif  // MAIN_WINDOW_H

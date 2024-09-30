@@ -1,5 +1,5 @@
 #include "logger.h"
-
+logger::LogLevel logger::logLevel = logger::LogLevel::INFO;
 std::string logger::logFileName;
 std::mutex logger::logMutex;
 std::chrono::system_clock::time_point logger::initTime =
@@ -8,6 +8,7 @@ std::string logger::componentName = "out";
 
 logger::logger(std::string componentName) {
   logger::componentName = componentName;
+  isDebugMode=false;
 }
 void logger::initializeLogFile() {
   if (isInitialized)
@@ -62,18 +63,42 @@ std::string logger::logLevelToString(LogLevel level) {
     return "[UNKNOWN]";
   }
 }
+// bool logger::shouldLog(LogLevel level) {
+//   switch (LOG_LEVEL) {
+//   case LogLevel::ERROR:
+//     return level == LogLevel::ERROR;
+//   case LogLevel::INFO:
+//     return level == LogLevel::ERROR || level == LogLevel::INFO;
+//   case LogLevel::DEBUG:
+//     return level == LogLevel::DEBUG;
+//   default:
+//     return false;
+//   }
+// }
 
 bool logger::shouldLog(LogLevel level) {
-  switch (LOG_LEVEL) {
+  switch (logLevel) {  // כאן משתמשים במשתנה logLevel
   case LogLevel::ERROR:
     return level == LogLevel::ERROR;
   case LogLevel::INFO:
     return level == LogLevel::ERROR || level == LogLevel::INFO;
   case LogLevel::DEBUG:
-    return true;
+    return level == LogLevel::DEBUG;
   default:
     return false;
   }
+}
+
+void logger::setDebugMode(bool debugMode){
+  isDebugMode = debugMode;
+  if(isDebugMode==false){
+    logLevel=logger::LogLevel::INFO;
+  }
+  else{
+    logLevel=logger::LogLevel::DEBUG;
+
+  }
+
 }
 
 std::string logger::getElapsedTime() {

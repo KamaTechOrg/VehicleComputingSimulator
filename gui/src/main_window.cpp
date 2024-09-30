@@ -101,17 +101,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     frames = new Frames(logHandler);
 
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
+    debugCheckBox = new QCheckBox("run on debug ", this);
+
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->insertWidget(1, showSimulationButton);
     toolboxLayout->insertWidget(2, loadSimulationButton);
     toolboxLayout->addStretch();
     dataHandler = new DbManager(this);
     QPushButton *historyButton = new QPushButton("Show Simulation History", this);
+    
     connect(historyButton, &QPushButton::clicked, this, &MainWindow::openHistoryWindow);
     connect(addProcessButton, &QPushButton::clicked, this,
             &MainWindow::createNewProcess);
-    connect(compileButton, &QPushButton::clicked, this,
-            &MainWindow::compileProjects);
+    connect(compileButton, &QPushButton::clicked, this, [this]() 
+    {
+    debugCheckBox->setVisible(true);
+    });
+
+    connect(debugCheckBox, &QCheckBox::toggled, this, [this](bool checked) 
+    {
+    MainWindow::guiLogger.isDebugMode = checked; 
+    MainWindow::guiLogger.setDebugMode(checked); 
+    compileProjects();
+    });
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
     connect(timerButton, &QPushButton::clicked, this,
@@ -158,6 +170,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     // Add the loading label to the toolbox layout (under the buttons)
     toolboxLayout->addWidget(loadingLabel);
     toolboxLayout->addWidget(compileButton);
+    debugCheckBox->setVisible(false);
+    toolboxLayout->addWidget(debugCheckBox);
     toolboxLayout->addWidget(runButton);
     runButton->setEnabled(false);
     toolboxLayout->addWidget(endButton);
@@ -167,6 +181,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     toolboxLayout->addWidget(logOutput);
     toolboxLayout->addWidget(chooseButton);
     toolboxLayout->addWidget(historyButton);
+    
+
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
