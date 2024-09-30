@@ -18,7 +18,7 @@ public:
     void saveSimulationState(const std::string &fileName,
                              QVector<DraggableSquare *> squares, QString img);
     QJsonObject loadSimulationState(const std::string &fileName);
-
+    QJsonObject loadSimulationState(bson_t *bsonObject);
     void printJson(QJsonObject jsonObject);
 
     struct SimulationData {
