@@ -26,7 +26,7 @@ public:
     // Getters
     const LogHandler &getLogHandler() const;
     const std::vector<std::vector<Frame>> &getFramesMat() const;
-    const std::multimap<QDateTime, LogHandler::LogEntry> &getActiveLogEntries()
+    const std::map<QDateTime, LogHandler::LogEntry> &getActiveLogEntries()
         const;
     QMap<int, int> getIdMapping() const;
 
@@ -34,22 +34,31 @@ public:
     void setLogHandler(LogHandler &logHandler);
     void setFramesMat(const std::vector<std::vector<Frame>> &framesMat);
     void setActiveLogEntries(
-        const std::multimap<QDateTime, LogHandler::LogEntry> &logEntriesVector);
+        const std::map<QDateTime, LogHandler::LogEntry> &logEntriesVector);
     void setIdMapping(const QMap<int, int> &idMapping);
-    void updateFrames();
     void fillFramesMat();
     void initialFramesMat(int size);
     void createSequentialIds();
+    void stopFrames();
+    void startFrames();
+    void clearFrames();
+
+public slots:
+    void updateFrames();
+
+signals:
+    void simulationFinished();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+
 private:
     LogHandler &logHandler;
     std::vector<std::vector<Frame>> framesMat;
-    std::multimap<QDateTime, LogHandler::LogEntry> activeLogEntries;
+    std::map<QDateTime, LogHandler::LogEntry> activeLogEntries;
     QMap<int, int> idMapping;
     qint64 differenceTime;
-
+    QTimer *timer;
     QString generateRandomColor();
 };
 

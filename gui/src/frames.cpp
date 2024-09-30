@@ -28,11 +28,7 @@ Frames::Frames(LogHandler &logHandler, QWidget *parent)
         differenceTime = logHandler.getLogEntries().first().timestamp.msecsTo(
             QDateTime::currentDateTime());
     }
-
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Frames::updateFrames);
-    timer->start(timerIntervalMs);
-
+    timer = new QTimer(this);
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::DEBUG, "Frames initialized with timer set to 100ms");
 }
@@ -67,10 +63,12 @@ void Frames::paintEvent(QPaintEvent *event)
                 auto square1 = logHandler.getProcessSquares()[log.srcId];
                 auto square2 = logHandler.getProcessSquares()[log.dstId];
 
-                QRect rect1(square1->pos().x() - squareOffset, square1->pos().y() - squareOffset,
-                            square1->width(), square1->height());
-                QRect rect2(square2->pos().x() - squareOffset, square2->pos().y() - squareOffset,
-                            square2->width(), square2->height());
+                QRect rect1(square1->pos().x() - squareOffset,
+                            square1->pos().y() - squareOffset, square1->width(),
+                            square1->height());
+                QRect rect2(square2->pos().x() - squareOffset,
+                            square2->pos().y() - squareOffset, square2->width(),
+                            square2->height());
 
                 painter.drawRoundedRect(rect1, cornerRadius, cornerRadius);
                 painter.drawRoundedRect(rect2, cornerRadius, cornerRadius);
@@ -122,19 +120,28 @@ void Frames::updateFrames()
 
     // Increase thickness for new log entries
     for (const LogHandler::LogEntry &logEntry : logHandler.getLogEntries()) {
-        if (logEntry.timestamp <= currentTime) {
+        if (logEntry.timestamp <= currentTime &&
+            logEntry.timestamp >= currentTime.addSecs(-logEntryExpirySecs)) {
             if (idMapping[logEntry.srcId] < framesMat.size() &&
                 idMapping[logEntry.dstId] < framesMat.size()) {
                 int row = std::max(idMapping[logEntry.dstId],
                                    idMapping[logEntry.srcId]);
                 int col = std::min(idMapping[logEntry.dstId],
                                    idMapping[logEntry.srcId]);
-                if(framesMat[row][col].thickness <= maxThickness)
+                if (framesMat[row][col].thickness <= maxThickness)
                     framesMat[row][col].thickness += minThickness;
                 activeLogEntries.emplace(logEntry.timestamp, logEntry);
             }
         }
     }
+    // Check if all log entries have been processed
+    if (activeLogEntries.empty()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                         "Finished processing log entries.");
+        emit this->simulationFinished();
+        timer->stop();
+    }
+
     update();
 }
 
@@ -187,6 +194,32 @@ QString Frames::generateRandomColor()
     return color.toUpper();
 }
 
+void Frames::startFrames()
+{
+    connect(timer, &QTimer::timeout, this, &Frames::updateFrames);
+    timer->setInterval(timerIntervalMs);
+    timer->start();
+}
+
+void Frames::stopFrames()
+{
+    if (timer->isActive()) {
+        timer->stop();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                         "Simulation paused");
+    }
+}
+
+void Frames::clearFrames()
+{
+    timer->stop();
+    framesMat.clear();
+    activeLogEntries.clear();
+    update();
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                     "Simulation finished and frames cleared");
+}
+
 // Getters
 const LogHandler &Frames::getLogHandler() const
 {
@@ -198,8 +231,8 @@ const std::vector<std::vector<Frames::Frame>> &Frames::getFramesMat() const
     return framesMat;
 }
 
-const std::multimap<QDateTime, LogHandler::LogEntry>
-    &Frames::getActiveLogEntries() const
+const std::map<QDateTime, LogHandler::LogEntry> &Frames::getActiveLogEntries()
+    const
 {
     return activeLogEntries;
 }
@@ -221,7 +254,7 @@ void Frames::setFramesMat(const std::vector<std::vector<Frame>> &framesMat)
 }
 
 void Frames::setActiveLogEntries(
-    const std::multimap<QDateTime, LogHandler::LogEntry> &logEntriesVector)
+    const std::map<QDateTime, LogHandler::LogEntry> &logEntriesVector)
 {
     this->activeLogEntries = logEntriesVector;
 }
