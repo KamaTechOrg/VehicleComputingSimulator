@@ -21,7 +21,11 @@ enum class ErrorCode {
     BUS_NOT_FOUND = -16,
     NOT_SYNCHRONIZED = -17,
     TIMER_CREATE_FAILED = -18,
-    TIMER_SETTIME_FAILED = -19
+    TIMER_SETTIME_FAILED = -19,
+    NOT_RUNNING = -20,
+    FILE_OPEN_FAILED = -21,
+    JSON_PARSE_FAILED = -22,
+    MISSING_KEYS = -23 
 };
 
 // Function to convert ErrorCode to string
@@ -46,6 +50,12 @@ inline const char* toString(ErrorCode error) {
         case ErrorCode::NOT_SYNCHRONIZED: return "NOT_SYNCHRONIZED";
         case ErrorCode::TIMER_CREATE_FAILED: return "TIMER_CREATE_FAILED";
         case ErrorCode::TIMER_SETTIME_FAILED: return "TIMER_SETTIME_FAILED";
+        case ErrorCode::BUS_NOT_FOUND: return "BUS_NOT_FOUND";
+        case ErrorCode::NOT_RUNNING: return "NOT_RUNNING";
+        case ErrorCode::FILE_OPEN_FAILED: return "FILE_OPEN_FAILED";
+        case ErrorCode::JSON_PARSE_FAILED: return "JSON_PARSE_FAILED";
+        case ErrorCode::MISSING_KEYS: return "MISSING_KEYS";
+
         default: return "UNKNOWN_ERROR";
     }
 }

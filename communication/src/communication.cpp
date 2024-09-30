@@ -13,18 +13,15 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
     //SyncCommunication::initializeProcess();
 
     instance = this;
-
-    auto signalResult = signal(SIGINT, Communication::signalHandler);
-    if (signalResult == SIG_ERR)
-        throw std::runtime_error("Failed to set signal handler for SIGINT");
+    setSignaleHandler(); 
 }
 
 // Sends the client to connect to server
-ErrorCode Communication::startConnection(uint16_t port)
+ErrorCode Communication::startConnection()
 {
     //Waiting for manager
     //syncCommunication.isManagerRunning()
-    ErrorCode isConnected = client.connectToServer(port, id);
+    ErrorCode isConnected = client.connectToServer(processID);
     //Increases the shared memory and blocks the process - if not all are connected
     return isConnected;
 }
@@ -84,7 +81,7 @@ void Communication::receivePacket(const Packet &p)
 // Checks if the packet is intended for him
 bool Communication::checkDestId(const Packet &p)
 {
-    return p.header.isBroadcast || p.header.DestID == this->id;
+    return p.header.isBroadcast || p.header.DestID == processID;
 }
 
 // Checks if the data is currect
@@ -146,9 +143,9 @@ void Communication::signalHandler(int signum)
     exit(signum);
 }
 
-void Communication::setId(uint32_t newId)
+void Communication::setId(uint32_t id)
 {
-    id = newId;
+    processID = id;
 }
 
 void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
@@ -159,7 +156,14 @@ void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
     passData = callback;
 }
 
-//Destructor
+void Communication::setSignaleHandler()
+{
+    auto signalResult = signal(SIGINT, Communication::signalHandler);
+    if (signalResult == SIG_ERR)
+        throw std::runtime_error("Failed to set signal handler for SIGINT");
+}
+
+// Destructor
 Communication::~Communication() {
     instance = nullptr;
 }
