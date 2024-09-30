@@ -26,6 +26,7 @@
 #include <QByteArray>
 #include <QFile>
 #include <QTextStream>
+#include <QInputDialog>
 #include "process.h"
 #include "draggable_square.h"
 #include "frames.h"
@@ -36,7 +37,6 @@
 #include "db_manager.h"
 #include "history_window.h"
 #include "../../logger/logger.h"
-
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -84,6 +84,7 @@ private slots:
     void loadSimulation();
 
 public slots:
+    void updateShowSimulationButton();
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
@@ -109,7 +110,9 @@ private:
     void rotateImage();     // Function to handle rotation
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
-    void openDialog();   
+    void openDialog();
+    void loadSelectedSimulation(const QList<QVariantMap> &simulations,
+                                const QString &selectedSimulation);
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
@@ -136,6 +139,10 @@ private:
     DbManager *sqlDataManager;
     DbManager *dataHandler;   // Pointer to DbManager
     HistoryWindow *historyWindow; // Pointer to history window
+    bool isSimulationRunning = false;
+    Frames *frames;
+    QPushButton *showSimulationButton;
+    bson_t *bsonDocument;
 };
 
 #endif  // MAIN_WINDOW_H
