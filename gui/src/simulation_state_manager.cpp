@@ -161,6 +161,14 @@ QJsonObject SimulationStateManager::loadSimulationState(
     return QJsonObject();  // Return an empty QJsonObject
 }
 
+QJsonObject SimulationStateManager::loadSimulationState(bson_t *bsonObject)
+{
+    QJsonObject jsonObject = bsonToJsonObject(bsonObject);
+    bson_destroy(bsonObject);
+    updateStateFromJson(jsonObject);
+    return jsonObject;
+}
+
 void SimulationStateManager::updateStateFromJson(QJsonObject jsonObject)
 {
     data.id = jsonObject["id"].toInt();
