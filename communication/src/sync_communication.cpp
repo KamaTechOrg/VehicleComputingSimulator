@@ -6,6 +6,9 @@ int SyncCommunication::maxCriticalProcessID;
 std::atomic<int> SyncCommunication::registeredProcessesCount;
 std::vector<uint32_t> SyncCommunication::processIDs;
 timer_t SyncCommunication::timerID;
+bool SyncCommunication::critical_ready;
+std::mutex SyncCommunication::mutexCV;
+std::condition_variable SyncCommunication::cv;
 
 SyncCommunication::SyncCommunication()
 {
@@ -18,6 +21,7 @@ ErrorCode SyncCommunication::initializeManager(const std::vector<uint32_t>& proc
     registeredCriticalProcesses = 0;
     registeredProcessesCount = 0;
     processIDs = processIds;
+    critical_ready = false;
 
     for (uint32_t id : processIds)
         if (id < maxCriticalProcessID)
@@ -67,7 +71,13 @@ ErrorCode SyncCommunication::registerProcess(uint32_t processId)
     // If all critical processes are registered, release them
     if (registeredCriticalProcesses.load() != criticalProcessesCount.load()) 
         return ErrorCode::NOT_SYNCHRONIZED;
-  
+    
+    {
+        std::lock_guard<std::mutex> lock(mutexCV);
+        critical_ready = true;
+    }
+    cv.notify_all();
+
     return ErrorCode::SUCCESS;
 }
 

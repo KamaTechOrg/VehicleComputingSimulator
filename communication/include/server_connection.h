@@ -12,6 +12,7 @@
 #include "../sockets/Isocket.h"
 #include "../sockets/real_socket.h"
 #include "error_code.h"
+#include "sync_communication.h"
 
 class ServerConnection
 {

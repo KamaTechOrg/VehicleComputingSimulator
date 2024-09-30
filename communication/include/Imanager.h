@@ -21,7 +21,5 @@ public:
 
     virtual ErrorCode closeConnection() = 0;
 
-    virtual ErrorCode notifyAllProcess() = 0;
-
 };
 #endif

@@ -128,6 +128,18 @@ void ServerConnection::handleClient(int clientSocket)
     // send callback to manager - new process connected
     receiveNewProcessIDCallback(clientID, port, true);
 
+    {
+        std::unique_lock<std::mutex> lock(SyncCommunication::mutexCV);
+        SyncCommunication::cv.wait(lock, [] { return SyncCommunication::critical_ready; });
+    }
+
+    Packet packetSend(clientID);
+    ssize_t bytesSent = socketInterface->send(clientSocket, &packetSend, sizeof(Packet), 0);
+    if (bytesSent < sizeof(Packet)) {
+        socketInterface->close(clientSocket);
+        return;
+    }
+   
     while (running) {
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
         if (valread == 0)
