@@ -6,8 +6,7 @@ TEST(ECCTest, EncryptDecrypt)
 {
     mpz_class privateKey = generatePrivateKey();
     Point publicKey = generatePublicKey(privateKey);
-    std::vector<uint8_t> messageBytes = {0b01101000, 0b01100101, 0b01101100, 0b01101100, 0b01101111};  // 'hello'
-
+    std::vector<uint8_t> messageBytes (16, 1);
     // Encrypt the message
     auto cipher = encryptECC(messageBytes, publicKey);
 

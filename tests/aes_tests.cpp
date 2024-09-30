@@ -1,169 +1,196 @@
 #include <cstring>
 #include "gtest/gtest.h"
 #include "../include/aes.h"
+#include "debug_utils.h"
 #include "../include/aes_stream_factory.h"  // Assuming this is where your FactoryManager is defined
-void printBufferHexa(const uint8_t *buffer, size_t len, std::string message)
-{
-    std::cout << message << std::endl;
-    for (size_t i = 0; i < len; ++i)
-    {
-        std::cout << std::hex << std::setw(2) << std::setfill('0')
-                  << static_cast<int>(buffer[i]) << " ";
-        // Print a new line every 16 bytes for better readability
-        if ((i + 1) % 16 == 0)
-            std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    // Reset the stream format back to decimal
-    std::cout << std::dec;
-}
+
 /* Helper function to setup encryption and decryption */
-void testEncryptionDecryption(AESChainingMode mode, AESKeyLength keyLength) {
-    unsigned char plain[64] = {
-        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-           0x00, 0x10, 0x21, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x78, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-           0x00, 0x10, 0x21, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x78, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-    };
-   
-    unsigned char plain2[32] = {
-        0x00, 0x10, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x78, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
-           0x00, 0x10, 0x21, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x78, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
-    };
-   
-     unsigned char plain3[13] = {
-        0x48, 0x65, 0x6c ,0x6c ,0x6f ,0x2c ,0x20 ,0x57 ,0x6f ,0x72 ,0x6c ,0x64 ,0x21
-    };
-    
+void testEncryptionDecryption(AESChainingMode mode, AESKeyLength keyLength)
+{
+    // Same data as used in testEncryptionDecryptionAPI
+    size_t inputLength1 = 16;
+    unsigned char inputData1[inputLength1];
+    memset(inputData1, 0x01, inputLength1);
+    size_t inputLength2 = 16;
+    unsigned char inputData2[inputLength2];
+    memset(inputData2, 0x02, inputLength2);
+    size_t inputLength3 = 16;
+    unsigned char inputData3[inputLength3];
+    memset(inputData3, 0x03, inputLength3);
 
     // Create a factory instance
-    StreamAES* streamAES = FactoryManager::getInstance().create(mode);
-    ASSERT_NE(streamAES, nullptr); 
+    StreamAES *streamAES = FactoryManager::getInstance().create(mode);
+    ASSERT_NE(streamAES, nullptr);
 
-    unsigned char *key = new unsigned char[aesKeyLengthData[keyLength].keySize];
-    generateKey(key, keyLength);
-    unsigned char* encrypted = new unsigned char[calculatEncryptedLenAES(64, true)];
-    unsigned char* encrypted2 = new unsigned char[calculatEncryptedLenAES(32, false)];
-    unsigned char* encrypted3 = new unsigned char[calculatEncryptedLenAES(32, false)];
-    printBufferHexa(encrypted3, 13, "OFB hello world");
+    // Allocate memory for the key
+    std::unique_ptr<unsigned char[]> key(
+        new unsigned char[aesKeyLengthData[keyLength].keySize]);
+    generateKey(key.get(), keyLength);
+
+    // Calculate encrypted lengths
+    unsigned int encryptedLen1 =
+        calculatEncryptedLenAES(inputLength1, true, mode);
+    unsigned int encryptedLen2 =
+        calculatEncryptedLenAES(inputLength2, false, mode);
+    unsigned int encryptedLen3 =
+        calculatEncryptedLenAES(inputLength3, false, mode);
+
+    // Allocate memory for encrypted data based on the calculated lengths
+    std::unique_ptr<unsigned char[]> encrypted(
+        new unsigned char[encryptedLen1]);
+    std::unique_ptr<unsigned char[]> encrypted2(
+        new unsigned char[encryptedLen2]);
+    std::unique_ptr<unsigned char[]> encrypted3(
+        new unsigned char[encryptedLen3]);
+
     unsigned int outLenEncrypted = 0;
     unsigned int outLenEncrypted2 = 0;
     unsigned int outLenEncrypted3 = 0;
 
-    streamAES->encryptStart(plain, 64, encrypted, outLenEncrypted, key, keyLength);
-    streamAES->encryptContinue(plain2, 32, encrypted2, outLenEncrypted2);
-    streamAES->encryptContinue(plain3, 32, encrypted3, outLenEncrypted3);
-   
-    unsigned char* decrypted;
-    // new unsigned char[calculatDecryptedLenAES(BLOCK_BYTES_LEN, true)];
-    unsigned char* decrypted2;
-    // new unsigned char[calculatDecryptedLenAES(BLOCK_BYTES_LEN, false)];
-    unsigned char* decrypted3; 
-    // new unsigned char[calculatDecryptedLenAES(BLOCK_BYTES_LEN, false)];
+    // Use the raw pointers from unique_ptr
+    unsigned char *encryptedPtr = encrypted.get();
+    unsigned char *encrypted2Ptr = encrypted2.get();
+    unsigned char *encrypted3Ptr = encrypted3.get();
+
+    // Encrypt the data
+    streamAES->encryptStart(inputData1, inputLength1, encryptedPtr,
+                            outLenEncrypted, key.get(), keyLength);
+    streamAES->encryptContinue(inputData2, inputLength2, encrypted2Ptr,
+                               outLenEncrypted2);
+    streamAES->encryptContinue(inputData3, inputLength3, encrypted3Ptr,
+                               outLenEncrypted3);
+
+    // Print encrypted data
+    printBufferHexa(encryptedPtr, outLenEncrypted,
+                    "Encrypted data1 aes through streamAES");
+    printBufferHexa(encrypted2Ptr, outLenEncrypted2,
+                    "Encrypted data2 aes through streamAES");
+    printBufferHexa(encrypted3Ptr, outLenEncrypted3,
+                    "Encrypted data3 aes through streamAES");
+
+    // Calculate decrypted lengths
+    unsigned int decryptedLen1 =
+        calculatDecryptedLenAES(outLenEncrypted, true, mode);
+    unsigned int decryptedLen2 =
+        calculatDecryptedLenAES(outLenEncrypted2, false, mode);
+    unsigned int decryptedLen3 =
+        calculatDecryptedLenAES(outLenEncrypted3, false, mode);
+
+    // Allocate memory for decrypted data
+    std::unique_ptr<unsigned char[]> decrypted(
+        new unsigned char[decryptedLen1]);
+    std::unique_ptr<unsigned char[]> decrypted2(
+        new unsigned char[decryptedLen2]);
+    std::unique_ptr<unsigned char[]> decrypted3(
+        new unsigned char[decryptedLen3]);
+
     unsigned int outLenDecrypted = 0;
     unsigned int outLenDecrypted2 = 0;
     unsigned int outLenDecrypted3 = 0;
 
-    streamAES->decryptStart(encrypted, outLenEncrypted, decrypted, outLenDecrypted, key, keyLength);
-    streamAES->decryptContinue(encrypted2, outLenEncrypted2, decrypted2, outLenDecrypted2);
-    streamAES->decryptContinue(encrypted3, outLenEncrypted3, decrypted3, outLenDecrypted3);
+    // Use the raw pointers from unique_ptr
+    unsigned char *decryptedPtr = decrypted.get();
+    unsigned char *decrypted2Ptr = decrypted2.get();
+    unsigned char *decrypted3Ptr = decrypted3.get();
 
+    // Decrypt the data
+    streamAES->decryptStart(encryptedPtr, outLenEncrypted, decryptedPtr,
+                            outLenDecrypted, key.get(), keyLength);
+    streamAES->decryptContinue(encrypted2Ptr, outLenEncrypted2, decrypted2Ptr,
+                               outLenDecrypted2);
+    streamAES->decryptContinue(encrypted3Ptr, outLenEncrypted3, decrypted3Ptr,
+                               outLenDecrypted3);
 
-    ASSERT_FALSE(memcmp(plain, decrypted, 64));
-    ASSERT_FALSE(memcmp(plain2, decrypted2, 32));
-    ASSERT_FALSE(memcmp(plain3, decrypted3, 32));
+    // Print original and decrypted data for comparison
+    printBufferHexa(inputData1, inputLength1, "Original Data1: ");
+    printBufferHexa(decryptedPtr, outLenDecrypted, "Decrypted Data1: ");
+    printBufferHexa(inputData2, inputLength2, "Original Data2: ");
+    printBufferHexa(decrypted2Ptr, outLenDecrypted2, "Decrypted Data2: ");
+    printBufferHexa(inputData3, inputLength3, "Original Data3: ");
+    printBufferHexa(decrypted3Ptr, outLenDecrypted3, "Decrypted Data3: ");
 
-    delete [] encrypted;
-    delete [] encrypted2;
-    delete [] encrypted3;
-    delete [] decrypted;
-    delete [] decrypted2;
-    delete [] decrypted3;
-    delete [] key;
+    // Assertions to verify correctness
+    ASSERT_EQ(memcmp(inputData1, decryptedPtr, inputLength1), 0);
+    ASSERT_EQ(memcmp(inputData2, decrypted2Ptr, inputLength2), 0);
+    ASSERT_EQ(memcmp(inputData3, decrypted3Ptr, inputLength3), 0);
 }
 
-TEST(KeyLengths, KeyLength128_ECB) 
+TEST(KeyLengths, KeyLength128_ECB)
 {
     testEncryptionDecryption(AESChainingMode::ECB, AESKeyLength::AES_128);
 }
 
-TEST(KeyLengths, KeyLength128_CBC) 
+TEST(KeyLengths, KeyLength128_CBC)
 {
     testEncryptionDecryption(AESChainingMode::CBC, AESKeyLength::AES_128);
 }
 
-TEST(KeyLengths, KeyLength128_CFB) 
+TEST(KeyLengths, KeyLength128_CFB)
 {
     testEncryptionDecryption(AESChainingMode::CFB, AESKeyLength::AES_128);
 }
 
-TEST(KeyLengths, KeyLength128_OFB) 
+TEST(KeyLengths, KeyLength128_OFB)
 {
     testEncryptionDecryption(AESChainingMode::OFB, AESKeyLength::AES_128);
 }
 
-TEST(KeyLengths, KeyLength128_CTR) 
+TEST(KeyLengths, KeyLength128_CTR)
 {
     testEncryptionDecryption(AESChainingMode::CTR, AESKeyLength::AES_128);
 }
 
-TEST(KeyLengths, KeyLength192_ECB) 
+TEST(KeyLengths, KeyLength192_ECB)
 {
     testEncryptionDecryption(AESChainingMode::ECB, AESKeyLength::AES_192);
 }
 
-TEST(KeyLengths, KeyLength192_CBC) 
+TEST(KeyLengths, KeyLength192_CBC)
 {
     testEncryptionDecryption(AESChainingMode::CBC, AESKeyLength::AES_192);
 }
 
-TEST(KeyLengths, KeyLength192_CFB) 
+TEST(KeyLengths, KeyLength192_CFB)
 {
     testEncryptionDecryption(AESChainingMode::CFB, AESKeyLength::AES_192);
 }
 
-TEST(KeyLengths, KeyLength192_OFB) 
+TEST(KeyLengths, KeyLength192_OFB)
 {
     testEncryptionDecryption(AESChainingMode::OFB, AESKeyLength::AES_192);
 }
 
-TEST(KeyLengths, KeyLength192_CTR) 
+TEST(KeyLengths, KeyLength192_CTR)
 {
     testEncryptionDecryption(AESChainingMode::CTR, AESKeyLength::AES_192);
 }
 
-TEST(KeyLengths, KeyLength256_ECB) 
+TEST(KeyLengths, KeyLength256_ECB)
 {
     testEncryptionDecryption(AESChainingMode::ECB, AESKeyLength::AES_256);
 }
 
-TEST(KeyLengths, KeyLength256_CBC) 
+TEST(KeyLengths, KeyLength256_CBC)
 {
     testEncryptionDecryption(AESChainingMode::CBC, AESKeyLength::AES_256);
 }
 
-TEST(KeyLengths, KeyLength256_CFB) 
+TEST(KeyLengths, KeyLength256_CFB)
 {
     testEncryptionDecryption(AESChainingMode::CFB, AESKeyLength::AES_256);
 }
 
-TEST(KeyLengths, KeyLength256_OFB) 
+TEST(KeyLengths, KeyLength256_OFB)
 {
     testEncryptionDecryption(AESChainingMode::OFB, AESKeyLength::AES_256);
 }
 
-TEST(KeyLengths, KeyLength256_CTR) 
+TEST(KeyLengths, KeyLength256_CTR)
 {
     testEncryptionDecryption(AESChainingMode::CTR, AESKeyLength::AES_256);
 }
 
-int main() 
+int main()
 {
     ::testing::InitGoogleTest();
     return RUN_ALL_TESTS();

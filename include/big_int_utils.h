@@ -1,6 +1,7 @@
 #ifndef __BIG_INT_UTILS__
 #define __BIG_INT_UTILS__
 #include <cstdint>
+
 constexpr uint64_t MAX_VAL_64 = UINT64_MAX;
 constexpr int MAX_VAL_10 = 9;
 

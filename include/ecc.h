@@ -5,6 +5,7 @@
 #include <string>
 #include <gmpxx.h>
 #include <vector>
+#include <cstdint>
 
 // Structure for representing a point
 struct Point {
@@ -78,4 +79,5 @@ bool isOnCurve(Point P);
 mpz_class inverse(mpz_class base);
 std::pair<mpz_class, mpz_class> signMessageECC(const std::vector<uint8_t> &message, const mpz_class &privateKey);
 bool modularSqrt(mpz_t result, const mpz_t a, const mpz_t p);
+
 #endif  // USE_SYCL

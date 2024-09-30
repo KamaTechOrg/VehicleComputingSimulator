@@ -6,7 +6,6 @@
 using namespace sycl;
 #endif //USE_SYCL
 using namespace std;
-logger logger("hsm");
 
 // Constants used in SHA-256 processing
 #define CHOOSE(x, y, z) (((x) & (y)) ^ (~(x) & (z)))
@@ -40,7 +39,7 @@ SHA256::SHA256(){
  */
 CK_RV SHA256::update(const std::vector<uint8_t>& data)
 {
-    logger.logMessage(logger::LogLevel::DEBUG, "Updating SHA-256 with data.");
+     log(logger::LogLevel::DEBUG, "Updating SHA-256 with data.");
 
     // Get the size of the input data
     size_t length = data.size();
@@ -53,7 +52,7 @@ CK_RV SHA256::update(const std::vector<uint8_t>& data)
         if (messageSize == 64) {
             CK_RV transform_status = transform();
             if (transform_status != CKR_OK) {
-                logger.logMessage(logger::LogLevel::ERROR, "Transform failed during SHA-256 update.");
+                 log(logger::LogLevel::ERROR, "Transform failed during SHA-256 update.");
                 return transform_status;  // Return the error code from the transform function
             }
 
@@ -71,7 +70,7 @@ CK_RV SHA256::update(const std::vector<uint8_t>& data)
  */
 void SHA256::padding()
 {
-    logger.logMessage(logger::LogLevel::DEBUG, "Padding the message and appending its length to make it congruent to 56 mod 64.");
+     log(logger::LogLevel::DEBUG, "Padding the message and appending its length to make it congruent to 56 mod 64.");
 
     uint64_t currentLength = messageSize;
     uint8_t paddingEnd = currentLength < 56 ? 56 : 64;
@@ -97,7 +96,9 @@ void SHA256::padding()
     }
     transform();
 }
+
 #ifdef USE_SYCL
+
 /**
  * Transforms the message block by applying SHA-256 compression.
  * This function runs in parallel using SYCL if the USE_SYCL flag is enabled.
@@ -107,13 +108,13 @@ void SHA256::padding()
  */
 CK_RV SHA256::transform()
 {
-    logger.logMessage(logger::LogLevel::DEBUG, "Transforming message block and updating hash state using 64 rounds of SHA-256 compression.");
+     log(logger::LogLevel::DEBUG, "Transforming message block and updating hash state using 64 rounds of SHA-256 compression.");
     uint32_t temp[64];
     queue q;
 
     // Check if message size is correct
     if (messageSize != 64) {
-        logger.logMessage(logger::LogLevel::ERROR, "Message size is not 64 bytes.");
+         log(logger::LogLevel::ERROR, "Message size is not 64 bytes.");
         return CKR_FUNCTION_FAILED;  // Return an error code if the message size is incorrect
     }
 
@@ -175,7 +176,7 @@ CK_RV SHA256::transform()
  */
 CK_RV SHA256::finalize(std::vector<uint8_t>& output)
 {
-    logger.logMessage(logger::LogLevel::DEBUG, "Finalizing SHA-256 hash computation and returning the hash value.");
+     log(logger::LogLevel::DEBUG, "Finalizing SHA-256 hash computation and returning the hash value.");
 
     try {
         // Perform padding
@@ -209,24 +210,25 @@ CK_RV SHA256::finalize(std::vector<uint8_t>& output)
     }
     catch (const sycl::exception& e) {
         // Handle SYCL exceptions
-        logger.logMessage(logger::LogLevel::ERROR, "SYCL error: " + std::string(e.what()));
+         log(logger::LogLevel::ERROR, "SYCL error: " + std::string(e.what()));
         return CKR_FUNCTION_FAILED;
     }
     catch (const std::exception& e) {
         // Handle other exceptions
-        logger.logMessage(logger::LogLevel::ERROR, "Standard error: " + std::string(e.what()));
+         log(logger::LogLevel::ERROR, "Standard error: " + std::string(e.what()));
         return CKR_FUNCTION_FAILED;
     }
 }
 
 #else
+
 /**
  * Processes a 64-byte block of the message and updates the hash state.
  * Applies the SHA-256 compression function to the current block.
  */
 CK_RV SHA256::transform()
 {
-    logger.logMessage(logger::LogLevel::DEBUG, "Transforming message block and updating hash state using 64 rounds of SHA-256 compression.");
+     log(logger::LogLevel::DEBUG, "Transforming message block and updating hash state using 64 rounds of SHA-256 compression.");
 
     uint32_t temp[64];
 
@@ -285,11 +287,11 @@ CK_RV SHA256::transform()
  */
 CK_RV SHA256::finalize(std::vector<uint8_t>& output)
 {
-    logger.logMessage(logger::LogLevel::DEBUG, "Finalizing SHA-256 hash computation.");
+     log(logger::LogLevel::DEBUG, "Finalizing SHA-256 hash computation.");
 
     // Check if the internal state is valid
     if (result == nullptr) {
-        logger.logMessage(logger::LogLevel::ERROR, "SHA-256 computation has not been initialized or has failed.");
+         log(logger::LogLevel::ERROR, "SHA-256 computation has not been initialized or has failed.");
         return CKR_FUNCTION_FAILED;
     }
 
@@ -297,7 +299,7 @@ CK_RV SHA256::finalize(std::vector<uint8_t>& output)
         // Apply padding to the data
         padding();
     } catch (const std::exception& e) {
-        logger.logMessage(logger::LogLevel::ERROR, std::string("Padding failed: ") + e.what());
+         log(logger::LogLevel::ERROR, std::string("Padding failed: ") + e.what());
         return CKR_FUNCTION_FAILED;
     }
 

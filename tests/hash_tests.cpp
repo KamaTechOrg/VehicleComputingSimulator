@@ -21,12 +21,12 @@ protected:
         factoryManager = &HashFactory::getInstance();
         CK_RV result;
         // Create SHA256 object using FactoryManager
-        result = factoryManager->create(IHash::SHA256, sha256);
+        result = factoryManager->create(SHA_256, sha256);
         if (!sha256 || result != CKR_OK) {
             FAIL() << "Failed to create SHA256 instance";
         }
 
-        result = factoryManager->create(IHash::SHA3_512, sha512);        
+        result = factoryManager->create(SHA_3_512, sha512);        
         if(!sha512 || result != CKR_OK){
             FAIL() << "Failed to create SHA512 instance";
         }

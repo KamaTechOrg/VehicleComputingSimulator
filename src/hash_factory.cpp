@@ -1,8 +1,6 @@
 #include "../include/hash_factory.h"
 #include <string>
 
-logger factory_logger("hsm");
-
 /**
  * @brief Gets the singleton instance of HashFactory.
  * 
@@ -13,7 +11,7 @@ logger factory_logger("hsm");
  */
 HashFactory& HashFactory::getInstance()
 {
-    factory_logger.logMessage(logger::LogLevel::INFO, "HashFactory::getInstance() called");
+    log(logger::LogLevel::DEBUG, "HashFactory::getInstance() called");
     static HashFactory instance;
     return instance;
 }
@@ -28,9 +26,9 @@ HashFactory& HashFactory::getInstance()
  * @param hashPtr A reference to a unique_ptr where the newly created IHash object will be stored.
  * @return CK_RV The return code indicating success or failure.
  */
-CK_RV HashFactory::create(const IHash::SHAAlgorithm& type, std::unique_ptr<IHash>& hashPtr) const
+CK_RV HashFactory::create(const SHAAlgorithm& type, std::unique_ptr<IHash>& hashPtr) const
 {
-    factory_logger.logMessage(logger::LogLevel::INFO, "HashFactory::create() called with SHAAlgorithm: " + std::to_string(static_cast<int>(type)));
+    log(logger::LogLevel::INFO, "HashFactory::create() called with SHAAlgorithm: " + std::to_string(static_cast<int>(type)));
 
     try {
         const auto it = factories.find(type);
@@ -38,12 +36,12 @@ CK_RV HashFactory::create(const IHash::SHAAlgorithm& type, std::unique_ptr<IHash
             hashPtr = it->second();
             return CKR_OK;  // Success
         } else {
-            factory_logger.logMessage(logger::LogLevel::ERROR, "Error: Algorithm type not found in HashFactory.");
+            log(logger::LogLevel::ERROR, "Error: Algorithm type not found in HashFactory.");
             return CKR_FUNCTION_FAILED;  // Error: Algorithm type not found
         }
     }
     catch (const std::exception& e) {
-        factory_logger.logMessage(logger::LogLevel::ERROR, std::string("Exception caught in HashFactory::create: ") + e.what());
+        log(logger::LogLevel::ERROR, std::string("Exception caught in HashFactory::create: ") + e.what());
         return CKR_FUNCTION_FAILED;  // Error: Exception occurred
     }
 }
@@ -56,9 +54,9 @@ CK_RV HashFactory::create(const IHash::SHAAlgorithm& type, std::unique_ptr<IHash
  */
 HashFactory::HashFactory()
     : factories({
-        {IHash::SHAAlgorithm::SHA256, []() -> std::unique_ptr<IHash> { return std::make_unique<SHA256>(); }},
-        {IHash::SHAAlgorithm::SHA3_512, []() -> std::unique_ptr<IHash> { return std::make_unique<SHA3_512>(); }}
+        {SHAAlgorithm::SHA_256, []() -> std::unique_ptr<IHash> { return std::make_unique<SHA256>(); }},
+        {SHAAlgorithm::SHA_3_512, []() -> std::unique_ptr<IHash> { return std::make_unique<SHA3_512>(); }}
     })
 {
-    factory_logger.logMessage(logger::LogLevel::INFO, "HashFactory constructor called, initializing hash algorithm factories.");
+    log(logger::LogLevel::INFO, "HashFactory constructor called, initializing hash algorithm factories.");
 }
