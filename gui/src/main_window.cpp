@@ -93,6 +93,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
 
     mainLayout->addWidget(toolbox);
 
+    logHandler = LogHandler();
+    frames = new Frames(logHandler);
+
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->insertWidget(1, showSimulationButton);
@@ -115,6 +118,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
             &MainWindow::showSimulation);
     connect(loadSimulationButton, &QPushButton::clicked, this,
             &MainWindow::loadSimulation);
+    connect(frames, &Frames::simulationFinished, this,
+            &MainWindow::updateShowSimulationButton);
+
     // Create and set up the loading spinner (static PNG)
     loadingLabel = new QLabel(this);
     // Set up the loading spinner (rotating static image)
@@ -629,35 +635,85 @@ void MainWindow::openImageDialog()
 
 void MainWindow::showSimulation()
 {
-    QString filePath = "log_file.log";
-    logHandler.readLogFile(filePath);
-    logHandler.analyzeLogEntries(this, "simulation_state.bson");
-
-    Frames *frames = new Frames(logHandler);  // Initialize Frames
-    QVBoxLayout *framesLayout = new QVBoxLayout(workspace);
-    framesLayout->addWidget(frames);
-    workspace->setLayout(framesLayout);
+    if (isSimulationRunning) {
+        frames->stopFrames();
+        isSimulationRunning = false;
+        showSimulationButton->setText("Resume\nSimulation");
+    }
+    else {
+        QString filePath = "log_file.log";
+        logHandler.readLogFile(filePath);
+        logHandler.analyzeLogEntries(this, "simulation_state.bson");
+        frames = new Frames(logHandler);
+        QLayout *oldLayout = workspace->layout();
+        if (oldLayout) {
+            delete oldLayout;
+        }
+        QVBoxLayout *framesLayout = new QVBoxLayout(workspace);
+        framesLayout->addWidget(frames);
+        workspace->setLayout(framesLayout);
+        frames->startFrames();
+        isSimulationRunning = true;
+        showSimulationButton->setText(
+            "Pause\nSimulation");
+    }
 }
 
 void MainWindow::loadSimulation()
 {
-    SimulationStateManager *simManager;
-    simManager = new SimulationStateManager();
-    simManager->loadSimulationState("simulation_state.bson");
-    for (auto sq : squares) {
-        delete (sq);
+    QList<QVariantMap> simulations = dataHandler->getAllDataSimulation();
+
+    if (simulations.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No simulations found to load.");
+        return;
     }
-    squares.clear();
-    squarePositions.clear();
-    if (!simManager->data.squares.empty()) {
-        for (auto sqr : simManager->data.squares) {
-            Process *process = new Process(
-                sqr->getProcess()->getId(), sqr->getProcess()->getName(),
-                sqr->getProcess()->getExecutionFile(),
-                sqr->getProcess()->getQEMUPlatform());
-            addProcessSquare(process, sqr->pos(), sqr->width(), sqr->height(),
-                             sqr->styleSheet());
-            addId(sqr->getId());
+
+    QStringList simulationNames;
+    for (const auto &sim : simulations) {
+        simulationNames.append(sim["input_string"].toString());
+    }
+
+    bool ok;
+    QString selectedSimulation = QInputDialog::getItem(
+        this, "Select Simulation", "Choose a simulation:", simulationNames, 0,
+        false, &ok);
+    if (ok && !selectedSimulation.isEmpty()) {
+        loadSelectedSimulation(simulations, selectedSimulation);
+    }
+}
+
+void MainWindow::loadSelectedSimulation(const QList<QVariantMap> &simulations,
+                                        const QString &selectedSimulation)
+{
+    for (const auto &sim : simulations) {
+        if (sim["input_string"].toString() == selectedSimulation) {
+            int simulationId = sim["id"].toInt();
+            QByteArray bsonData = sim["bson_data"].toByteArray();
+            SimulationStateManager *state = new SimulationStateManager();
+            bsonDocument = bson_new_from_data(
+                reinterpret_cast<const uint8_t *>(bsonData.constData()),
+                bsonData.size());
+            if (bsonDocument)
+                state->loadSimulationState(bsonDocument);
+
+            for (auto sq : squares) {
+                delete (sq);
+            }
+            squares.clear();
+            squarePositions.clear();
+            if (!state->data.squares.empty()) {
+                for (auto sqr : state->data.squares) {
+                    Process *process =
+                        new Process(sqr->getProcess()->getId(),
+                                    sqr->getProcess()->getName(),
+                                    sqr->getProcess()->getExecutionFile(),
+                                    sqr->getProcess()->getQEMUPlatform());
+                    addProcessSquare(process, sqr->pos(), sqr->width(),
+                                     sqr->height(), sqr->styleSheet());
+                    addId(sqr->getId());
+                }
+            }
+            break;
         }
     }
 }
@@ -879,6 +935,9 @@ void MainWindow::runProjects()
                     "MainWindow::runProjects Failed to start the bash "
                     "script: " +
                         executionFilePath.toStdString());
+                logOutput->append("Failed to start the bash script: " +
+                                  executionFilePath);
+                logOutput->append(scriptProcess->readAllStandardError());
                 delete scriptProcess;
                 continue;
             }
@@ -1226,6 +1285,13 @@ void MainWindow::hideLoadingIndicator()
 {
     rotationTimer->stop();
     loadingLabel->hide();
+}
+
+void MainWindow::updateShowSimulationButton()
+{
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                     "Updating button text to Show Simulation");
+    showSimulationButton->setText("Show Simulation");
 }
 
 #include "moc_main_window.cpp"
