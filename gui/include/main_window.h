@@ -26,6 +26,7 @@
 #include <QByteArray>
 #include <QFile>
 #include <QTextStream>
+#include <QCheckBox>
 #include "process.h"
 #include "draggable_square.h"
 #include "frames.h"
@@ -57,6 +58,7 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
+    //void runDebug();
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -136,6 +138,7 @@ private:
     DbManager *sqlDataManager;
     DbManager *dataHandler;   // Pointer to DbManager
     HistoryWindow *historyWindow; // Pointer to history window
+    QCheckBox *debugCheckBox;
 };
 
 #endif  // MAIN_WINDOW_H

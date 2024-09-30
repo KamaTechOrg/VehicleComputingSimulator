@@ -9,9 +9,9 @@
 #include <sstream>
 #include <string>
 
-#ifndef LOG_LEVEL
-#define LOG_LEVEL logger::LogLevel::INFO
-#endif
+// #ifndef LOG_LEVEL
+// #define LOG_LEVEL logger::LogLevel::INFO
+// #endif
 
 class logger {
 public:
@@ -29,7 +29,10 @@ public:
   std::string getLogFileName();
   std::string sharedLogFileName = "shared_log_file_name.txt";
   void cleanUp();
-
+  void setDebugMode(bool debugMode);
+  bool isDebugMode; 
+  static LogLevel logLevel;
+  
 private:
   static std::string logLevelToString(LogLevel level);
   static bool shouldLog(LogLevel level);
