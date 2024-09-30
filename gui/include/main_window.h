@@ -27,6 +27,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
+#include <QCheckBox>
 #include "process.h"
 #include "draggable_square.h"
 #include "frames.h"
@@ -59,15 +60,11 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
-<<<<<<< HEAD
-=======
     void startControlConditonsDebug();
     void startControlDebug();
     void startImgProcessingDebug();
     void startCommunicationDebug();
     void startDebug(QString program,QString buildDir);
-
->>>>>>> 062ac76... GUI:Inserting compilation variables for each processor
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -160,6 +157,7 @@ private:
     QPushButton *showSimulationButton;
     bson_t *bsonDocument;
     int offlineId = -1;
+    QCheckBox *debugCheckBox;
 };
 
 #endif  // MAIN_WINDOW_H
