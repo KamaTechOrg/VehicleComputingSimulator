@@ -10,30 +10,30 @@
 #include "../sockets/mock_socket.h"
 #include "../sockets/real_socket.h"
 #include <string>
+#include <nlohmann/json.hpp>
 #include "error_code.h"
 
-#define PORT 80
-#define IP "213.151.44.47"
-// #define IP "192.168.33.14"
-// #define IP "100.87.44.47"
-// #define IP "127.0.0.1"
-// #define IP "https://699a9ee344d0a2963ff3324740836bac.serveo.net"
 class ClientConnection
 {
 private:
+    const char* serverIP;
+    uint16_t serverPort;
+    uint32_t processID;
     int clientSocket;
     sockaddr_in servAddress;
     std::atomic<bool> connected;
     std::function<void(const Packet &)> passPacketCom;
     ISocket* socketInterface;
     std::thread receiveThread;
-    uint16_t port;
 public:
     // Constructor
     ClientConnection(std::function<void(const Packet &)> callback, ISocket* socketInterface = new RealSocket());
 
+    // Function to load the server configuration from a JSON file
+    ErrorCode loadServerConfig(const std::string& filePath);
+    
     // Requesting a connection to the server
-    ErrorCode connectToServer(uint16_t port, int id);
+    ErrorCode connectToServer(uint32_t processID);
 
     // Sends the packet to the manager-sync
     ErrorCode sendPacket(const Packet &packet);

@@ -6,10 +6,11 @@
 class Communication
 {
 private:
+    uint32_t processID;
     ClientConnection client;
     std::unordered_map<std::string, Message> receivedMessages;
     void (*passData)(uint32_t, void *); 
-    uint32_t id;
+    
     //SyncCommunication syncCommunication;
 
     // A static variable that holds an instance of the class
@@ -43,12 +44,14 @@ private:
 
     void setPassDataCallback(void (*callback)(uint32_t, void *));
 
+    void setSignaleHandler();
+
 public:
     // Constructor
     Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *));
     
     // Sends the client to connect to server
-    ErrorCode startConnection(uint16_t port);
+    ErrorCode startConnection();
     
     // Sends a message to manager
     ErrorCode sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);

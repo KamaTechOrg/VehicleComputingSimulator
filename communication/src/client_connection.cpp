@@ -1,22 +1,55 @@
 #include "../include/client_connection.h"
 
 // Constructor
-ClientConnection::ClientConnection(std::function<void(const Packet &)> callback, ISocket* socketInterface): connected(false){
+ClientConnection::ClientConnection(std::function<void(const Packet &)> callback, ISocket* socketInterface): connected(false)
+{
         setCallback(callback);
         setSocketInterface(socketInterface);
 }
 
-// Requesting a connection to the server
-ErrorCode ClientConnection::connectToServer(uint16_t port, int id)
+// Function to load the server configuration from a JSON file
+ErrorCode ClientConnection::loadServerConfig(const std::string& filePath)
 {
+    // Open the JSON file
+    std::ifstream file(filePath);
+    if (!file.is_open())
+        return ErrorCode::FILE_OPEN_FAILED;
+
+    // Parse the JSON file
+    nlohmann::json jsonDoc;
+    try {
+        file >> jsonDoc;
+    } catch (const nlohmann::json::parse_error& e) {
+        return ErrorCode::JSON_PARSE_FAILED;
+    }
+        
+    // Check if the necessary keys are present
+    if (jsonDoc.contains("server") && jsonDoc["server"].contains("ip") && jsonDoc["server"].contains("port")) {
+        serverIP = jsonDoc["server"]["ip"].get<std::string>().c_str();
+        serverPort = jsonDoc["server"]["port"].get<uint16_t>();
+    } else {
+        return ErrorCode::MISSING_KEYS;
+    }
+
+    file.close();
+    return ErrorCode::SUCCESS;
+}
+
+// Requesting a connection to the server
+ErrorCode ClientConnection::connectToServer(uint32_t processID)
+{
+    ErrorCode result = loadServerConfig("..//config.json");
+    if (result != ErrorCode::SUCCESS)
+        return result;
+    
     clientSocket = socketInterface->socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket < 0) {
         return ErrorCode::SOCKET_FAILED;
     }
 
     servAddress.sin_family = AF_INET;
-    servAddress.sin_port = htons(port);
-    inet_pton(AF_INET, IP, &servAddress.sin_addr);
+    servAddress.sin_port = htons(serverPort);
+    inet_pton(AF_INET, serverIP, &servAddress.sin_addr);
 
     int connectRes = socketInterface->connect(clientSocket, (struct sockaddr *)&servAddress, sizeof(servAddress));
     if (connectRes < 0) {
@@ -24,7 +57,7 @@ ErrorCode ClientConnection::connectToServer(uint16_t port, int id)
         return ErrorCode::CONNECTION_FAILED;
     }
 
-    Packet packet(id);
+    Packet packet(processID);
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent < sizeof(Packet)) {
         socketInterface->close(clientSocket);

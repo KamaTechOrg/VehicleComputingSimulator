@@ -19,7 +19,10 @@ enum class ErrorCode {
     INVALID_DATA = -14,          
     INVALID_ID = -15,
     BUS_NOT_FOUND = -16,
-    NOT_RUNNING = -17         
+    NOT_RUNNING = -17,
+    FILE_OPEN_FAILED = -18,
+    JSON_PARSE_FAILED = -19,
+    MISSING_KEYS = -20     
 };
 
 // Function to convert ErrorCode to string
@@ -43,6 +46,9 @@ inline const char* toString(ErrorCode error) {
         case ErrorCode::INVALID_ID: return "INVALID_ID";
         case ErrorCode::BUS_NOT_FOUND: return "BUS_NOT_FOUND";
         case ErrorCode::NOT_RUNNING: return "NOT_RUNNING";
+        case ErrorCode::FILE_OPEN_FAILED: return "FILE_OPEN_FAILED";
+        case ErrorCode::JSON_PARSE_FAILED: return "JSON_PARSE_FAILED";
+        case ErrorCode::MISSING_KEYS: return "MISSING_KEYS";
         default: return "UNKNOWN_ERROR";
     }
 }
