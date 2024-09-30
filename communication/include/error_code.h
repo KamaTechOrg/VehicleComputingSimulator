@@ -22,7 +22,10 @@ enum class ErrorCode {
     NOT_RUNNING = -17,
     FILE_OPEN_FAILED = -18,
     JSON_PARSE_FAILED = -19,
-    MISSING_KEYS = -20     
+    MISSING_KEYS = -20,            
+    NOT_SYNCHRONIZED = -21,
+    TIMER_CREATE_FAILED = -22,
+    TIMER_SETTIME_FAILED = -23
 };
 
 // Function to convert ErrorCode to string
@@ -49,6 +52,9 @@ inline const char* toString(ErrorCode error) {
         case ErrorCode::FILE_OPEN_FAILED: return "FILE_OPEN_FAILED";
         case ErrorCode::JSON_PARSE_FAILED: return "JSON_PARSE_FAILED";
         case ErrorCode::MISSING_KEYS: return "MISSING_KEYS";
+        case ErrorCode::NOT_SYNCHRONIZED: return "NOT_SYNCHRONIZED";
+        case ErrorCode::TIMER_CREATE_FAILED: return "TIMER_CREATE_FAILED";
+        case ErrorCode::TIMER_SETTIME_FAILED: return "TIMER_SETTIME_FAILED";
         default: return "UNKNOWN_ERROR";
     }
 }

@@ -11,22 +11,25 @@
 #include "packet.h"
 #include "error_code.h"
 #include "Imanager.h"
+#include "sync_communication.h"
 
 class CentralManager:IManager{
 private:
     static CentralManager* instance;
     static std::vector<uint16_t> ports;
+    int maxCriticalProcessID;
+    std::vector<uint32_t> processIds;
     Gateway* gateway;
     std::atomic<bool> running;
-    
+
     // Mutexes for protecting shared data
     std::mutex managersMutex;
     std::mutex processToPortMutex;
     std::mutex gatewayMutex;
-
+    
     //private constructor to singleton
     CentralManager();
-
+    
     //manager port - manager object
     std::unordered_map<uint16_t, BusManager*> managers;
     

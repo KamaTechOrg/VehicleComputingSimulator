@@ -9,6 +9,8 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 {
     setId(id);
     setPassDataCallback(passDataCallback);
+    
+    //SyncCommunication::initializeProcess();
 
     instance = this;
     setSignaleHandler(); 
@@ -17,11 +19,9 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 // Sends the client to connect to server
 ErrorCode Communication::startConnection()
 {
-    //Waiting for manager
-    //syncCommunication.isManagerRunning()
     ErrorCode isConnected = client.connectToServer(processID);
+
     //Increases the shared memory and blocks the process - if not all are connected
-    //syncCommunication.registerProcess()
     return isConnected;
 }
 

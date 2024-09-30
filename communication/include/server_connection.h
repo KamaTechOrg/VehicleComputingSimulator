@@ -12,6 +12,7 @@
 #include "../sockets/Isocket.h"
 #include "../sockets/real_socket.h"
 #include "error_code.h"
+#include "sync_communication.h"
 
 class ServerConnection
 {
@@ -47,7 +48,7 @@ public:
 
     // Constructor
     ServerConnection(uint16_t port, std::function<ErrorCode(Packet&)> receiveDataCallback,std::function<ErrorCode(const uint32_t,const uint16_t, bool)> receiveNewProcessIDCallback, ISocket* socketInterface = new RealSocket());
-    
+ 
     // Initializes the listening socket
     ErrorCode startConnection();
     

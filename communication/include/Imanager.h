@@ -20,5 +20,6 @@ public:
     virtual ErrorCode startConnection() = 0;
 
     virtual ErrorCode closeConnection() = 0;
+
 };
 #endif

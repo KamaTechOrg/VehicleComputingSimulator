@@ -39,7 +39,7 @@ CentralManager* CentralManager::getInstance()
 {   
     if (instance == nullptr)
         instance = new CentralManager();
-    
+
     return instance;
 }
 
@@ -48,11 +48,11 @@ CentralManager::CentralManager() : running(false)
 {
     if (CentralManager::ports.empty())
         throw std::invalid_argument("Ports vector cannot be empty.");
-
+ 
     // Setup the signal handler for SIGINT
     signal(SIGINT, CentralManager::signalHandler);
-
-    for (auto port : CentralManager::ports)
+    SyncCommunication::initializeManager(processIds,maxCriticalProcessID);
+    for (auto port : ports)
         managers[port] = new BusManager(port, std::bind(&CentralManager::receiveMessage, this, std::placeholders::_1), std::bind(&CentralManager::updateProcessID, this, std::placeholders::_1, std::placeholders::_2,std::placeholders::_3));
 }
 
@@ -60,6 +60,7 @@ CentralManager::CentralManager() : running(false)
 ErrorCode CentralManager::startConnection()
 {
     running.exchange(true);
+
     ErrorCode allProcessConnected = ErrorCode::SUCCESS;
     std::lock_guard<std::mutex> lock(managersMutex);
 
@@ -71,7 +72,7 @@ ErrorCode CentralManager::startConnection()
         }
         RealSocket::log.logMessage(logger::LogLevel::INFO, " Central Manager : Bus is running on port: " + std::to_string(port));
     }
-    
+
     return allProcessConnected;
 }
 
@@ -99,6 +100,7 @@ ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint16
 {
     if(!running.load())
         return ErrorCode::NOT_RUNNING;
+
     {
         std::lock_guard<std::mutex> lock(managersMutex);
          if (managers.find(port) == managers.end())
@@ -115,7 +117,9 @@ ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint16
             return ErrorCode::INVALID_ID;
         }
         processToPort[processID] = port;
+        return SyncCommunication::registerProcess(processID);
     }
+
     return ErrorCode::SUCCESS;
 }
 
@@ -213,5 +217,4 @@ CentralManager::~CentralManager()
     closeConnection();
     for (auto& [port, manager] : managers)
         delete manager; 
-
 }

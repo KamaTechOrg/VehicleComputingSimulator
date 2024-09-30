@@ -37,6 +37,6 @@ public:
 
     //close the manager
     ErrorCode closeConnection() override;
-
+    
     ~BusManager();
 };

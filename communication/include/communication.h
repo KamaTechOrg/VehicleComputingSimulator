@@ -3,15 +3,15 @@
 #include "client_connection.h"
 #include "../sockets/Isocket.h"
 #include "error_code.h"
+#include "sync_communication.h"
+
 class Communication
 {
 private:
     uint32_t processID;
     ClientConnection client;
     std::unordered_map<std::string, Message> receivedMessages;
-    void (*passData)(uint32_t, void *); 
-    
-    //SyncCommunication syncCommunication;
+    void (*passData)(uint32_t, void *);  
 
     // A static variable that holds an instance of the class
     static Communication* instance;
