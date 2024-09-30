@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <algorithm>
 #include <cstring>
+#include <mutex>
+#include <condition_variable>
 #include "error_code.h"
 
 class SyncCommunication
@@ -28,6 +30,11 @@ public:
 
     static void handle_timeout(int signum);
     
+    static bool critical_ready;
+
+    static std::mutex mutexCV;
+
+    static std::condition_variable cv;
     
 private:
     static timer_t timerID;

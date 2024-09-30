@@ -70,7 +70,6 @@ public:
     //connect new bus manager
     ErrorCode registerBusManager(const uint16_t port);
 
-    ErrorCode notifyAllProcess();
     //Destructor
     ~CentralManager();
 };

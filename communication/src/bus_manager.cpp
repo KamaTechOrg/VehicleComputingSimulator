@@ -57,12 +57,6 @@ ErrorCode BusManager::closeConnection()
     return server.stopServer();
 }
 
-ErrorCode BusManager::notifyAllProcess()
-{
-    server.sendBroadcast(Packet());
-    return ErrorCode();
-}
-
 BusManager::~BusManager()
 {
     server.stopServer();
