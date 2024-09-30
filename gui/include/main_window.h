@@ -53,6 +53,8 @@ public:
     void timerTimeout();
     void openImageDialog();
     void createProcessConfigFile(int id, const QString &processPath);
+    void updateProcessJsonFile(int id, const QString &name, const QString &pathToJson);
+    void deleteProcessFromJsonFile(int id);
     void disableButtonsExceptEnd();  // Disable all buttons except the "End" button
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
@@ -108,12 +110,15 @@ private:
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
     void rotateImage();     // Function to handle rotation
-    void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
     void openDialog();
     void loadSelectedSimulation(const QList<QVariantMap> &simulations,
-                                const QString &selectedSimulation);
-    QPushButton *openSecondProjectButton;  // Button to open the second project
+                                const QString &selectedSimulation);   
+    void openDependencySelectionProject();  // Function that handles launching the second project
+    QString runScriptAndGetJsonPath(const QString &cmakeFilePath);
+    void checkJsonFileAndSetButtons();
+
+    QPushButton *openDependencySelectionProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
     QVector<DraggableSquare *> squares;

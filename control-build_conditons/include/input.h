@@ -23,7 +23,7 @@ private:
     static std::unique_ptr<Input> instance;
 
     // Name of the file to which the information will be saved
-    std::string fileName = "../sensors.json";
+    std::string fileName = "../../gui/build/sensors.json";
 
     // Functions for initialize the sensors fields
     void fillSensorsFields();
