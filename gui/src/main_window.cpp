@@ -14,7 +14,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <QProcess>
-#include <QFileInfo>
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
@@ -39,6 +38,9 @@
 #include <string>
 #include <iostream>
 #include <QSysInfo>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFileSystemWatcher>
 #include "process.h"
 #include "main_window.h"
 #include "draggable_square.h"
@@ -140,7 +142,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
-    toolboxLayout->addWidget(loadingLabel); // Add the loading label to the toolbox layout (under the buttons)
+
+    // Create the new button to open the Dependency selection project
+    openDependencySelectionProjectButton = new QPushButton("DependencySelection", this);
+    toolboxLayout->addWidget(openDependencySelectionProjectButton);  // Add button to the toolbox layout
+    
+    // Connect the button's click signal to the function that opens the second project
+    connect(openDependencySelectionProjectButton,
+            &QPushButton::clicked, this,
+            &MainWindow::openDependencySelectionProject
+        );
+
+    // Add the loading label to the toolbox layout (under the buttons)
+    toolboxLayout->addWidget(loadingLabel);
     toolboxLayout->addWidget(compileButton);
     toolboxLayout->addWidget(runButton);
     runButton->setEnabled(false);
@@ -162,6 +176,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     setDefaultBackgroundImage();
     mainLayout->addWidget(workspace);
     centralWidget->setLayout(mainLayout);
+    // Check if the JSON file exists and delete it if it does
+    QFile file("sensors.json");
+    if (file.exists()) {
+        // Remove the file if it exists
+        if (file.remove()) {
+            guiLogger.logMessage(logger::LogLevel::INFO, "Existing sensors.json file removed.");
+        } else {
+            guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to remove sensors.json file.");
+        }
+    }
 
     stateManager = new SimulationStateManager(this);
     void setDefaultBackgroundImage();
@@ -203,6 +227,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
+
+    // Create QFileSystemWatcher to monitor the directory
+    QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
+    watcher->addPath("../../control");
+
+    // Initial check if the file exists
+    checkJsonFileAndSetButtons();
+
+    // Connect to the directoryChanged event
+    connect(watcher, &QFileSystemWatcher::directoryChanged, this, [this]() {
+        checkJsonFileAndSetButtons();
+    });
 }
 
 MainWindow::~MainWindow()
@@ -338,6 +374,14 @@ void MainWindow::addProcessSquare(Process *&process)
     squares.push_back(square);
 
     createProcessConfigFile(process->getId(), process->getExecutionFile());
+    QString jsonFilePath = runScriptAndGetJsonPath(process->getExecutionFile());
+    if (jsonFilePath.isEmpty()) {
+            guiLogger.logMessage(logger::LogLevel::DEBUG,
+                         "Failed to run script and retrieve JSON file path.");
+    } else {
+        // Update the JSON file with the new process
+        updateProcessJsonFile(process->getId(), process->getName(), jsonFilePath);
+    }
 }
 
 void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
@@ -354,6 +398,16 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
 
     squarePositions[process->getId()] = pos;
     squares.push_back(square);
+    createProcessConfigFile(process->getId(), process->getExecutionFile());
+    QString jsonFilePath = runScriptAndGetJsonPath(process->getExecutionFile());
+
+    if (jsonFilePath.isEmpty()) {
+            guiLogger.logMessage(logger::LogLevel::DEBUG,
+                         "Failed to run script and retrieve JSON file path.");
+    } else {
+        // Update the JSON file with the new process
+        updateProcessJsonFile(process->getId(), process->getName(), jsonFilePath);
+    }
 }
 
 void MainWindow::openHistoryWindow()
@@ -505,6 +559,7 @@ void MainWindow::stopProcess(int deleteId)
             }
 
             process->deleteLater();
+            process->setProperty("isStopped", true);
             break;
         }
     }
@@ -1145,6 +1200,10 @@ void MainWindow::editSquare(int id)
                 guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Updated process details for square ID: " +
                                          std::to_string(id));
+                // Remove the old proces from the JSON file
+                deleteProcessFromJsonFile(id);
+                // Update the JSON file with the new details
+                updateProcessJsonFile(updatedProcess->getId(), updatedProcess->getName(), updatedProcess->getExecutionFile());
             }
             break;
         }
@@ -1177,6 +1236,8 @@ void MainWindow::deleteSquare(int id)
     }
     usedIds.remove(id);
     squarePositions.remove(id);
+    // Remove the process from the JSON file
+    deleteProcessFromJsonFile(id);
 }
 
 void MainWindow::createProcessConfigFile(int id, const QString &processPath)
@@ -1205,6 +1266,58 @@ void MainWindow::createProcessConfigFile(int id, const QString &processPath)
         guiLogger.logMessage(
             logger::LogLevel::ERROR,
             "Failed to create config file at: " + filePath.toStdString());
+    }
+}
+
+void MainWindow::updateProcessJsonFile(int id, const QString &name, const QString &pathToJson)
+{
+    QFile file("sensors.json");
+    QJsonObject processesObject;
+
+    if (file.exists()) {
+        // The file exists, let's load it
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
+            processesObject = jsonDoc.object();
+            file.close();
+        }
+    }
+
+    // Add or update the process in the JSON object
+    QJsonObject processDetails;
+    processDetails["name"] = name;
+    processDetails["pathToJson"] = pathToJson;
+
+    processesObject[QString::number(id)] = processDetails;
+
+    // Write the updated JSON object back to the file
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QJsonDocument jsonDoc(processesObject);
+        file.write(jsonDoc.toJson());
+        file.close();
+    }
+}
+
+void MainWindow::deleteProcessFromJsonFile(int id)
+{
+    QFile file("sensors.json");
+    if (!file.exists()) return;
+
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // Load the existing JSON content
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
+        QJsonObject processesObject = jsonDoc.object();
+        file.close();
+
+        // Remove the process from the JSON object
+        processesObject.remove(QString::number(id));
+
+        // Write the updated JSON object back to the file
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QJsonDocument newDoc(processesObject);
+            file.write(newDoc.toJson());
+            file.close();
+        }
     }
 }
 
@@ -1292,6 +1405,110 @@ void MainWindow::updateShowSimulationButton()
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Updating button text to Show Simulation");
     showSimulationButton->setText("Show Simulation");
+}
+
+void MainWindow::openDependencySelectionProject()
+{
+    // Define the build directory
+    QString buildDir = "../../control-build_conditons/build";
+    
+    // Check if the build directory exists, if not create it
+    QDir dir(buildDir);
+    if (!dir.exists()) {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Build directory does not exist. Creating build directory: " + buildDir.toStdString());
+        
+        if (!dir.mkpath(buildDir)) {
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::ERROR,
+                "Failed to create build directory: " + buildDir.toStdString());
+            return;
+        }
+
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Build directory created successfully: " + buildDir.toStdString());
+    }
+
+    // Add execution permissions to the compiled file
+    QProcess *chmodProcess = new QProcess(this);
+    chmodProcess->setWorkingDirectory(buildDir);
+    chmodProcess->start("chmod", QStringList() << "+x" << "BuildCondition");
+
+    if (!chmodProcess->waitForFinished()) {
+        qDebug() << "Failed to set execution permissions.";
+        qDebug() << chmodProcess->errorString();
+        return;
+    }
+
+    qDebug() << "Execution permissions set successfully.";
+
+    // Run the compiled executable
+    QString program = buildDir + "/BuildCondition";
+    qDebug() << "Attempting to start:" << program;
+
+    // Using startDetached to run the program independently
+    qint64 pid;
+    QStringList arguments;
+    if (QProcess::startDetached(program, arguments, buildDir, &pid)) {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::INFO,
+             "Second project started successfully with PID:" + QString::number(pid).toStdString());
+    } 
+    else {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Failed to start the second project.");
+    }
+}
+
+QString MainWindow::runScriptAndGetJsonPath(const QString& cmakeFilePath)
+{
+    // Derive the script path from the CMake file path
+    QString scriptPath = QFileInfo(cmakeFilePath).absolutePath() + "/create_json.sh"; // Adjusted path
+
+    // Set script permissions using QProcess
+    QProcess chmodProcess;
+    QStringList chmodArgs;
+    chmodArgs << "+x" << scriptPath; // Arguments for chmod
+    chmodProcess.start("chmod", chmodArgs);
+
+    if (!chmodProcess.waitForFinished()) {
+        guiLogger.logMessage(logger::LogLevel::ERROR,
+                             "Failed to set execute permissions for script: "
+                             + chmodProcess.errorString().toStdString());
+        return QString(); // Return empty if failed
+    }
+
+    // Prepare arguments for the script: output directory and filename
+    QString outputDirectory = QFileInfo(cmakeFilePath).absolutePath(); // Set the output directory
+    QString outputFilename = "generated_json_file.json"; // Set the desired JSON filename
+    QStringList scriptArgs;
+    scriptArgs << outputDirectory << outputFilename; // Pass arguments to the script
+
+    // Execute the script
+    QProcess scriptProcess;
+    scriptProcess.start(scriptPath, scriptArgs); // Use the updated start method
+
+    if (!scriptProcess.waitForFinished()) {
+        guiLogger.logMessage(logger::LogLevel::ERROR,
+                             "Failed to execute script: " 
+                             + scriptProcess.errorString().toStdString());
+        return QString(); // Return empty if failed
+    }
+
+    QString jsonFilePath = outputDirectory + "/" + outputFilename;  // Update with actual generated file name
+    return jsonFilePath;
+}
+
+void MainWindow::checkJsonFileAndSetButtons()
+{
+    QString jsonFilePath = "../../control/conditions.bson";
+    bool fileExists = QFile::exists(jsonFilePath);
+
+    compileButton->setEnabled(fileExists);
+    runButton->setEnabled(fileExists);
 }
 
 #include "moc_main_window.cpp"
