@@ -16,6 +16,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "error_code.h"
+#include "real_socket.h"
 
 class SyncCommunication
 {
@@ -39,7 +40,6 @@ public:
 private:
     static timer_t timerID;
     struct itimerspec its;
-    // Data structure to be stored
     static std::atomic<int> registeredCriticalProcesses;  
     static std::atomic<int> criticalProcessesCount;
     static int maxCriticalProcessID;

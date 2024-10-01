@@ -42,13 +42,18 @@ ErrorCode SyncCommunication::initializeManager(const std::vector<uint32_t>& proc
     its.it_interval.tv_nsec = 0;
 
     auto timerCreateRes = timer_create(CLOCK_REALTIME, NULL, &timerID);
-    if (timerCreateRes == -1)
+    if (timerCreateRes == -1){
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Failed to create timer: " + std::string(strerror(errno)));
         return ErrorCode::TIMER_CREATE_FAILED;
+    }
 
     auto timerSettimeRes = timer_settime(timerID, 0, &its, NULL);
-    if (timerSettimeRes == -1) 
-      return ErrorCode::TIMER_SETTIME_FAILED;
-      
+    if (timerSettimeRes == -1) {
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Failed to set timer: " + std::string(strerror(errno)));
+        return ErrorCode::TIMER_SETTIME_FAILED;
+    }
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Manager initialized successfully, Critical processes count initialized to: " + std::to_string(criticalProcessesCount));
+
     return ErrorCode::SUCCESS;
 }
 
@@ -56,27 +61,28 @@ ErrorCode SyncCommunication::registerProcess(uint32_t processId)
 { 
     auto findProcessId = std::find(processIDs.begin(), processIDs.end(), processId);
 
-    if (findProcessId == processIDs.end())
+    if (findProcessId == processIDs.end()){
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Invalid process ID: " + std::to_string(processId));
         return ErrorCode::INVALID_ID;
+    }
 
     // Register the process if it's critical
     if (processId < maxCriticalProcessID)
         registeredCriticalProcesses.fetch_add(1);
     
     registeredProcessesCount.fetch_add(1);
-    std::cout << "registeredProcessesCount "<<registeredProcessesCount.load()<< std::endl;
-    std::cout << "registeredCriticalProcesses "<<registeredCriticalProcesses.load()<< std::endl;
-    std::cout << "criticalProcessesCount "<<criticalProcessesCount.load()<< std::endl;
 
-    // If all critical processes are registered, release them
-    if (registeredCriticalProcesses.load() != criticalProcessesCount.load()) 
+    if (registeredCriticalProcesses.load() != criticalProcessesCount.load()) {
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Critical processes not synchronized. Registered: " + std::to_string(registeredCriticalProcesses) + ", Expected: " + std::to_string(criticalProcessesCount));
         return ErrorCode::NOT_SYNCHRONIZED;
+    }
     
     {
         std::lock_guard<std::mutex> lock(mutexCV);
         critical_ready = true;
     }
     cv.notify_all();
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Critical processes synchronized and ready.");
 
     return ErrorCode::SUCCESS;
 }
@@ -85,7 +91,7 @@ ErrorCode SyncCommunication::registerProcess(uint32_t processId)
 void SyncCommunication::handle_timeout(int signum)
 {
     if (registeredCriticalProcesses < criticalProcessesCount) {
-        std::cout<<"timeout"<<std::endl;
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Timeout occurred. Critical processes not fully registered.");
         //MainWindow::endProcesses();
     }
 }
