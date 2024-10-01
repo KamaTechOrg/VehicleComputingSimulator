@@ -12,6 +12,7 @@
 #include "../sockets/real_socket.h"
 #include <string>
 #include "error_code.h"
+#include "../include/global_clock.h"
 
 #define PORT 8080
 #define IP "127.0.0.1"

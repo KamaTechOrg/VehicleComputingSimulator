@@ -44,7 +44,7 @@ ErrorCode ClientConnection::sendPacket(Packet &packet)
     //If send executed before start
     if (!connected)
         return ErrorCode::CONNECTION_FAILED;
-        
+    packet.setTimestamp(GlobalClock::getCurrentTick());
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent==0) {
         closeConnection();

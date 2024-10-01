@@ -1,18 +1,23 @@
 #include "../include/bus_manager.h"
 
-BusManager* BusManager::instance = nullptr;
+// Initialize static instance to nullptr
+BusManager *BusManager::instance = nullptr;
 std::mutex BusManager::managerMutex;
 
-//Private constructor
-BusManager::BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit) :server(8080, std::bind(&BusManager::receiveData, this, std::placeholders::_1))//,syncCommunication(idShouldConnect, limit)
+// Private constructor: initializes the server and starts the collision timer
+BusManager::BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit)
+    : server(8080,
+             std::bind(&BusManager::receiveData, this, std::placeholders::_1)),
+      lastPacket(nullptr), stopFlag(false)
 {
-    // Setup the signal handler for SIGINT
+    startCollisionTimer();       // Start collision management timer
 }
 
-// Static function to return a singleton instance
-BusManager* BusManager::getInstance(std::vector<uint32_t> idShouldConnect, uint32_t limit) {
+// Singleton getter: ensures only one instance of Manager
+BusManager *BusManager::getInstance(std::vector<uint32_t> idShouldConnect,
+                              uint32_t limit)
+{
     if (instance == nullptr) {
-        // Lock the mutex to prevent multiple threads from creating instances simultaneously
         std::lock_guard<std::mutex> lock(managerMutex);
         if (instance == nullptr) {
             instance = new BusManager(idShouldConnect, limit);
@@ -21,44 +26,88 @@ BusManager* BusManager::getInstance(std::vector<uint32_t> idShouldConnect, uint3
     return instance;
 }
 
-// Sends to the server to listen for requests
+// Starts the server connection and listens for incoming requests
 ErrorCode BusManager::startConnection()
 {
-    
-    ErrorCode isConnected = server.startConnection();
-    //syncCommunication.notifyProcess()
-    return isConnected;
+    return server.startConnection();
 }
 
-// Receives the packet that arrived and checks it before sending it out
+// Receives a packet, checks for collisions, and sends it if valid
 void BusManager::receiveData(Packet &p)
 {
-    ErrorCode res = sendToClients(p);
-
-    // Checking the case of collision and priority in functions : checkCollision,packetPriority
-    // Packet* resolvedPacket = checkCollision(*p);
-    // if (resolvedPacket)
-    //     server.sendToClients(*resolvedPacket);
+    checkCollision(p); // Handle packet collisions
 }
 
-// Sending according to broadcast variable
+// Sends a packet either as broadcast or to a specific destination
 ErrorCode BusManager::sendToClients(const Packet &packet)
 {
-    if(packet.getIsBroadcast())
-        return server.sendBroadcast(packet);
-    return server.sendDestination(packet);
+    if (packet.getIsBroadcast()) {
+        return server.sendBroadcast(packet); // Broadcast message
+    }
+    return server.sendDestination(packet); // Send to specific client
 }
 
-// Implement according to the conflict management of the CAN bus protocol
-Packet BusManager::checkCollision(Packet &currentPacket)
+// Manages collisions based on the CAN BUS protocol
+void BusManager::checkCollision(Packet &currentPacket)
 {
-    return currentPacket;
+    std::lock_guard<std::mutex> lock(lastPacketMutex);
+    if (lastPacket == nullptr) {
+        // No previous packet, store the current one
+        lastPacket = new Packet(currentPacket);
+        if (lastPacket == nullptr) {
+        }
+    }
+    else {
+        if (lastPacket->getTimestamp() == currentPacket.getTimestamp()) {
+            // Same timestamp indicates potential collision, check priority
+            Packet *prioritizedPacket =
+                packetPriority(*lastPacket, currentPacket);
+            if (prioritizedPacket == &currentPacket) {
+                delete lastPacket; // Replace last packet if current packet has priority
+                lastPacket = new Packet(currentPacket);
+            }
+        }
+    }
 }
 
-// Implement a priority check according to the CAN bus
-Packet BusManager::packetPriority(Packet &a, Packet &b)
+// Determines which packet has higher priority (CAN BUS logic)
+Packet *BusManager::packetPriority(Packet &a, Packet &b)
 {
-    return (a.getSrcId() < b.getSrcId()) ? a : b;
+    if (a.getIsPassive() && !b.getIsPassive()) {
+        return &b; // Non-passive packet takes priority
+    }
+    else if (!a.getIsPassive() && b.getIsPassive()) {
+        return &a; // Non-passive packet takes priority
+    }
+    else {
+        return (a > b) ? &a
+                       : &b; // If both are the same type, compare based on ID
+    }
+}
+
+// Starts the collision timer to periodically check for packet collisions
+void BusManager::startCollisionTimer()
+{
+    stopFlag = false;
+    collisionTimerThread = std::thread([this]() {
+        while (!stopFlag) {
+            GlobalClock::waitForNextTick();
+            if (!stopFlag) {
+                checkLastPacket(); // Check and send last packet if necessary
+            }
+        }
+    });
+}
+
+// Checks the last packet and sends it if it hasn't been sent yet
+void BusManager::checkLastPacket()
+{
+    std::lock_guard<std::mutex> lock(lastPacketMutex);
+    if (lastPacket != nullptr) {
+        ErrorCode res = sendToClients(*lastPacket);
+        delete lastPacket; // Clear last packet after sending
+        lastPacket = nullptr;
+    }
 }
 
 //shut down the server
@@ -69,6 +118,13 @@ void BusManager::stopConnection()
     }
 }
 
-BusManager::~BusManager() {
+// Destructor: ensures proper cleanup of threads and resources
+BusManager::~BusManager()
+{
+    stopFlag = true; // Stop collision timer thread
+    if (collisionTimerThread.joinable()) {
+        collisionTimerThread.join();
+    }
+    delete lastPacket; // Clean up lastPacket
     instance = nullptr;
 }

@@ -1,5 +1,4 @@
 #include "../include/communication.h"
-#include <future>
 
 Communication* Communication::instance = nullptr;
 
@@ -50,6 +49,7 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
         ErrorCode res = client.sendPacket(packet);
         if (res != ErrorCode::SUCCESS)
             return res;
+        std::this_thread::sleep_for(std::chrono::seconds(2)); 
     }
 
     return ErrorCode::SUCCESS;  
