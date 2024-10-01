@@ -106,6 +106,7 @@ ErrorCode ClientConnection::sendPacket(const Packet &packet)
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 #endif
 
+    packet.setTimestamp(GlobalClock::getCurrentTick());
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent==0) {
         closeConnection();

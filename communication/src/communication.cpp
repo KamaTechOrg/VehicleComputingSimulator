@@ -48,6 +48,7 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
 #endif
         if (res != ErrorCode::SUCCESS)
             return res;
+        std::this_thread::sleep_for(std::chrono::seconds(2)); 
     }
 
     return ErrorCode::SUCCESS;  

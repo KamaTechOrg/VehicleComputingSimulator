@@ -26,6 +26,7 @@
 #include "../sockets/Isocket.h"
 #include "../sockets/real_socket.h"
 #include "error_code.h"
+#include "../include/global_clock.h"
 #endif
 
 #ifdef ESP32
@@ -33,8 +34,7 @@
 #define IP "172.28.151.112"
 #endif
 
-class ClientConnection
-{
+class ClientConnection {
 private:
 #ifdef ESP32
     TaskHandle_t receiveTaskHandle;

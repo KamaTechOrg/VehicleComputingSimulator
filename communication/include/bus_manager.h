@@ -1,11 +1,15 @@
 #pragma once
 #include <mutex>
-#include <utility>
-#include "server_connection.h"
+#include <thread>
+#include <atomic>
 #include <iostream>
+#include "../include/server_connection.h"
 #include "Imanager.h"
+#include "packet.h"
+#include "global_clock.h"
 
-class BusManager:IManager{
+// Manager class responsible for handling CAN BUS-like communication and collision management
+class BusManager:IManager {
 private:
     ServerConnection server;
     std::mutex processesIdMutex;
@@ -13,6 +17,12 @@ private:
     //callback 
     std::function<ErrorCode(Packet&)> recievedMessageCallback;
     std::function<ErrorCode(const uint32_t ,const uint16_t, bool)> processJoinCallback;
+    
+    //collision management
+    Packet *lastPacket;             // Stores the last packet received
+    std::mutex lastPacketMutex;     // Protects access to lastPacket
+    std::atomic<bool> stopFlag; // Indicates if the collision timer should stop
+    std::thread collisionTimerThread; // Thread for collision management
 
 public:
     BusManager(uint16_t port, std::function<ErrorCode(Packet&)> recievedMessageCallback , std::function<ErrorCode(const uint32_t ,const uint32_t, bool)> processJoinCallback);
@@ -28,12 +38,18 @@ public:
 
      // Sending according to broadcast variable
     ErrorCode sendMessage(const Packet &packet) override;
+   
+    // Starts the timer to check for packet collisions
+    void startCollisionTimer();
 
-    // Implementation according to the conflict management of the CAN bus protocol
-    Packet checkCollision(Packet &currentPacket);
+    // Checks if the current packet collides with the last one
+    void checkCollision(Packet &currentPacket);
 
-    // Implement a priority check according to the CAN bus
-    Packet packetPriority(Packet &a, Packet &b);
+    // Determines packet priority in case of collision, based on CAN BUS protocol
+    Packet *packetPriority(Packet &a, Packet &b);
+
+    // Sends the last packet if necessary and clears it
+    void checkLastPacket();
 
     //close the manager
     ErrorCode closeConnection() override;
