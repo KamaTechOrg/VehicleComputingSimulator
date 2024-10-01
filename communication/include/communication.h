@@ -25,6 +25,7 @@
 #define THRESHOLD_TO_PASSIVE 128 ///< Threshold for entering Passive state
 #define BUSOFF_RECOVERY_TIME (128 * TICK_DURATION)      ///< Time required to recover from BusOff state
 #define MAX_RETRANSMISSIONS 10 ///< Maximum allowed retransmissions for a packet
+#define MAX_SIMULTANEOUS_MESSAGES 5 ///< Maximum number of messages allowed to be sent simultaneously
 
 // Enumeration for different error states of the communication
 enum class ErrorState {
@@ -41,6 +42,15 @@ class Communication {
     std::unordered_map<std::string, Message> receivedMessages; ///< Map to store received messages
     void (*passData)(uint32_t, void *); ///< Callback function for passing data to the client
     static Communication *instance; ///< Static variable that holds an instance of the class
+
+    // To limit simultaneous messages in asynchronous send
+    static std::vector<std::future<void>> activeMessageFutures; ///< Vector to hold active message futures
+    static std::mutex messageThreadsMutex; ///< Mutex to synchronize access to the active thread vector
+    std::condition_variable messageThreadsCondition; ///< Condition variable to wait for available thread slots
+
+    // For ensuring that only one send per tick occurs
+    std::atomic<int> lastSendTick; ///< The last tick when a packet was sent
+    std::mutex sendMutex;          ///< Mutex for synchronizing send operations
 
     // Error tracking variables
     std::mutex mtx;   ///< Mutex to protect access to error counts and state
@@ -234,6 +244,21 @@ class Communication {
      */
     void resetState();
 
+    //Management of packet transmission according to clock ticks.
+
+    /**
+     * @brief Ensures that only one message is sent per clock tick.
+     * 
+     * This method checks the current clock tick and compares it with the last tick 
+     * when a message was sent. If the current tick is different, it updates the 
+     * last sent tick. If it is the same, the function waits for the next tick 
+     * before proceeding.
+     * 
+     * The method uses a mutex to ensure thread safety during the tick check and 
+     * update operations.
+     */
+    void ensureSingleSendPerTick();
+
     /**
      * @brief Sends a packet with a retransmission timeout (RTO).
      * 
@@ -241,6 +266,7 @@ class Communication {
      * number of retransmissions. If the system is in the BusOff state or the 
      * maximum retransmissions have been exceeded, it stops sending the packet.
      * 
+     * It ensures that only one packet is sent per tick and sets the packet's 
      * passive state based on the current system state. It waits for an acknowledgment 
      * (ACK) and handles retransmissions if needed.
      * 
@@ -254,7 +280,7 @@ class Communication {
      * @brief Sends a packet to the designated recipient.
      * 
      * This method checks if the system is in the BusOff state. If it is, the function 
-     * immediately returns false. 
+     * immediately returns false. It ensures that only one packet is sent per tick 
      * and sets the packet's passive state based on the current system state.
      * 
      * The method attempts to send the packet using the client and returns true if 
@@ -264,6 +290,15 @@ class Communication {
      * @return True if the packet was sent successfully, false otherwise.
      */
     bool sendPacket(Packet &packet);
+
+    /**
+     * @brief Waits for all active message threads to complete.
+     * 
+     * This function manages the synchronization of active message threads in a thread-safe manner. 
+     * It locks the mutex to ensure thread safety while iterating through the futures of active message threads. 
+     * Each valid future is waited upon to ensure that all active messages have been processed before clearing the vector.
+     */
+    static void waitForActiveMessages();
 
     /**
      * @brief Handles signals for the communication instance.
@@ -349,7 +384,20 @@ public:
                           uint32_t srcID,
                           MessageType messageType = MessageType::DATA_MESSAGE);
 
-    // Sends a message to manager - Async
+    /**
+     * @brief Sends a message asynchronously.
+     * 
+     * This function sends a message to a specified destination ID asynchronously, 
+     * allowing the calling thread to continue without blocking. It accepts a callback 
+     * function that will be called with the result of the sending operation.
+     *
+     * @param data Pointer to the data to send.
+     * @param dataSize Size of the data in bytes.
+     * @param destID The destination ID for the message.
+     * @param srcID The source ID of the message.
+     * @param sendCallback The callback function to call with the result of the send operation.
+     * @param messageType The type of message being sent.
+     */
     void sendMessageAsync(void *data, size_t dataSize, uint32_t destID,
                           uint32_t srcID,
                           std::function<void(ErrorCode)> sendCallback,
