@@ -90,9 +90,6 @@ void generateKey(unsigned char *key, AESKeyLength keyLength)
     // Fill the key with random bytes
     for (int i = 0; i < aesKeyLengthData[keyLength].keySize; i++)
         key[i] = dis(gen);
-    //TODO delete this!
-
-   // std::memset(key, 1, keyLength);
 }
 
 /**

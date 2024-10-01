@@ -178,7 +178,6 @@ bool modularSqrt(mpz_t result, const mpz_t a, const mpz_t p)
 
     // Check if a is sqrt of 1 (x^2 ≡ a (mod p))
     if (mpz_legendre(a, p) != 1) {
-        std::cout << "No solution exists." << std::endl;
         mpz_clears(q, s, z, m, c, t, r, b, temp, NULL);
         return false;
     }

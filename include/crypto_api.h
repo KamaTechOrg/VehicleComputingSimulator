@@ -101,5 +101,19 @@ CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
 CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,void * signature,size_t signatureLen, void *out,
               size_t &outLen, size_t counter);
 
-
+template<class T>
+void deleteFromMap(std::map<int, T>& streamingMap, int userId) {
+    // Find the userId in the map
+    auto it = streamingMap.find(userId);
+    
+    // Check if userId is found before attempting to erase
+    if (it != streamingMap.end()) {
+        streamingMap.erase(it);  // Erase the user by iterator
+        log(logger::LogLevel::INFO, 
+                    "Deleted user: " + std::to_string(userId) + " from map.");
+    } else {
+        log(logger::LogLevel::INFO, 
+                    "User: " + std::to_string(userId) + " not found in map.");
+    }
+}
 #endif  // __CRYPTO_API_H__

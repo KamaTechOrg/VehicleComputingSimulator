@@ -173,8 +173,15 @@ class TempHsm {
     }
     CryptoConfig getUserConfig(int userId)
     {
-        return usersConfig[userId];
+        // Check if the user exists in the configuration map
+        if (usersConfig.find(userId) != usersConfig.end()) {
+            return usersConfig[userId];  // Return user config if found
+        } else {
+            log(logger::LogLevel::ERROR, "User ID " + std::to_string(userId) + " not found in configuration.");
+            throw std::runtime_error("User config not found for user ID: " + std::to_string(userId));
+        }
     }
+
     AsymmetricFunction getAssymetricFunctionByUserId(int userId)
     {
         return usersConfig[userId].asymmetricFunction;
