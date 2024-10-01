@@ -41,10 +41,15 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     executionFile->setReadOnly(true);
     layout->addWidget(executableFileLabel);
     layout->addWidget(executionFile);
-
+    
     QPushButton *selectExecutableFileButton = new QPushButton("Select Executable File", this);
     layout->addWidget(selectExecutableFileButton);  
-
+    
+    QLabel *pluginsLabel = new QLabel("Plugins:", this);
+    pluginsEdit = new QLineEdit(this);
+    layout->addWidget(pluginsLabel);
+    layout->addWidget(pluginsEdit);
+    
     QLabel *qemuPlatformLabel = new QLabel("QEMU Platform:");
     qemuPlatformCombo = new QComboBox(this);
     qemuPlatformCombo->addItems({"x86_64", "arm", "aarch64"});
@@ -128,6 +133,15 @@ QString ProcessDialog::getQEMUPlatform() const
 {
     return qemuPlatformCombo->currentText();
 }
+QString ProcessDialog::getPlugins() const
+{
+    return pluginsEdit->text();
+}
+
+void ProcessDialog::setPlugins(const QString &plugins)
+{
+    pluginsEdit->setText(plugins);
+}
 
 bool ProcessDialog::isValid() const
 {
@@ -161,10 +175,15 @@ bool ProcessDialog::validateAndAccept()
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::DEBUG,
             "Entered values: ID = " + idEdit->text().toStdString() +
-                ", Name = " + nameEdit->text().toStdString() +
-                ", Executable File = " + executionFile->text().toStdString() +
-                ", QEMU Platform = " +
-                qemuPlatformCombo->currentText().toStdString());
+            ", Name = " + nameEdit->text().toStdString() +
+            ", Executable File = " + executionFile->text().toStdString() +
+            ", QEMU Platform = " +
+                    qemuPlatformCombo->currentText().toStdString());
+        if(!pluginsEdit->text().isEmpty()){
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::DEBUG,
+                "Entered Plugin" +pluginsEdit->text().toStdString());
+         }
         accept();
         return true;
     }

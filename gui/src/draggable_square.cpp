@@ -48,7 +48,7 @@ void DraggableSquare::setSquareColor(const QString &color)
                                       "color: black; font-size: 11px;")
                                   .arg(color));
 }
-// constructor
+
 DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
                                  int width, int height)
     : QWidget(parent),
@@ -128,10 +128,8 @@ DraggableSquare &DraggableSquare::operator=(const DraggableSquare &other)
     return *this;
 }
 
-void DraggableSquare::setProcess(Process *proc)
+void DraggableSquare::setProcecssA(Process *proc)
 {
-    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                     "Setting process for DraggableSquare");
     process = proc;
     if (process) {
         this->id = process->getId();
@@ -145,6 +143,37 @@ void DraggableSquare::setProcess(Process *proc)
         // Set the tooltip to show the full path of the executable file
         label->setToolTip(executionFilePath);
     }
+}
+
+void DraggableSquare::setProcecssB(Process *proc)
+{
+    process = proc;
+    if (process) {
+        this->id = process->getId();
+        QString executionFilePath = process->getExecutionFile();
+
+        label->setText(QString("ID: %1\nName: %2\nCMake: %3\n Plag:%4\n")
+                           .arg(process->getId())
+                           .arg(process->getName())
+                           .arg(executionFilePath)
+                           .arg(process->getPluginsEdit()));
+        // Set the tooltip to show the full path of the executable file
+        label->setToolTip(executionFilePath);
+    }
+}
+
+void DraggableSquare::setProcess(Process *proc)
+{
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                     "Setting process for DraggableSquare");
+     switch (proc->getConstructorType()) {
+            case Process::ParameterizedConstructor1:
+                setProcecssA(proc);
+                break;
+            case Process::ParameterizedConstructor2:
+                setProcecssB(proc);
+                break;
+        }
 }
 
 Process *DraggableSquare::getProcess() const
@@ -257,6 +286,7 @@ void DraggableSquare::deleteSquare(int id)
         mainWindow->deleteSquare(id);
     }
 }
+
 void DraggableSquare::setStopButtonVisible(bool visible)
 {
     if (process->getId() > 3) {
@@ -268,6 +298,7 @@ void DraggableSquare::setStopButtonVisible(bool visible)
         }
     }
 }
+
 void DraggableSquare::handleStopButtonClicked()
 {
     if (process) {

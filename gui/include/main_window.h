@@ -59,6 +59,15 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
+<<<<<<< HEAD
+=======
+    void startControlConditonsDebug();
+    void startControlDebug();
+    void startImgProcessingDebug();
+    void startCommunicationDebug();
+    void startDebug(QString program,QString buildDir);
+
+>>>>>>> 062ac76... GUI:Inserting compilation variables for each processor
     QLineEdit *getTimeInput() const
     {
         return timeInput;

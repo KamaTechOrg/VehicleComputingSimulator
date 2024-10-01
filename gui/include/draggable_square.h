@@ -43,8 +43,10 @@ public:
     void setStopButtonVisible(bool visible);
     void setCrashIndicator(bool crashed);
     void setDumpFilePath(const QString &filePath);
+    void setProcecssA(Process *process);
+    void setProcecssB(Process *process);
     QString getDumpFilePath();
-    
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
