@@ -1,14 +1,17 @@
 #include "../include/communication.h"
 
-Communication* Communication::instance = nullptr;
+// Initialize static member variables for the Communication class
+Communication *Communication::instance = nullptr;
+std::thread Communication::busOffRecoveryThread;
 
 // Constructor
-Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *)) : 
-    client(std::bind(&Communication::receivePacket, this, std::placeholders::_1))
+Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *))
+    : TEC(0), REC(0), state(ErrorState::Active),
+      client(std::bind(&Communication::receivePacket, this,
+                       std::placeholders::_1))
 {
     setId(id);
     setPassDataCallback(passDataCallback);
-    
     instance = this;
     setSignaleHandler(); 
 }
@@ -17,152 +20,363 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 ErrorCode Communication::startConnection()
 {
     ErrorCode isConnected = client.connectToServer(processID);
-
     //Increases the shared memory and blocks the process - if not all are connected
     return isConnected;
 }
 
-// Sends a message sync
-ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destID,
-                          uint32_t srcID,
-                          MessageType messageType)
+// Send message synchronously
+ErrorCode Communication::sendMessage(
+    void *data, size_t dataSize, uint32_t destID, uint32_t srcID,
+    MessageType messageType /*= MessageType::DATA_MESSAGE*/)
 {
     if (dataSize == 0)
-        return ErrorCode::INVALID_DATA_SIZE;
-
+        return ErrorCode::INVALID_DATA_SIZE; // Check for valid data size
     if (data == nullptr)
-        return ErrorCode::INVALID_DATA;
-
+        return ErrorCode::INVALID_DATA; // Check for valid data pointer
+    if (destID == 0 || srcID == 0)
+        return ErrorCode::INVALID_ID; // Check for valid IDs
     if (!client.isConnected())
-        return ErrorCode::CONNECTION_FAILED;
+        return ErrorCode::CONNECTION_FAILED; // Check for connection status
 
-    Message msg(srcID, destID, data, dataSize,messageType); // Create a new message 
+    Message msg(srcID, destID, data, dataSize,messageType); // Create a new message
 
     //Sending the message to logger
     RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(srcID),std::to_string(destID),"Complete message:" + msg.getPackets().at(0).pointerToHex(data, dataSize));
     
     for (auto &packet : msg.getPackets()) {
-        ErrorCode res = client.sendPacket(packet);
 #ifdef ESP32
           delay(80);
 #endif
-        if (res != ErrorCode::SUCCESS)
-            return res;
-        std::this_thread::sleep_for(std::chrono::seconds(2)); 
+        bool success =
+            (messageType == MessageType::DATA_MESSAGE)
+                ? sendPacketWithRTO(packet) // Send with retransmission timeout
+                : sendPacket(packet);       // Send packet directly
+        if (!success)
+            return ErrorCode::SEND_FAILED; // Return failure if sending fails
     }
+    return ErrorCode::SUCCESS; // Return success if all packets are sent
+}       
 
-    return ErrorCode::SUCCESS;  
-}
-
-// Sends a message Async
-void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destID,
-                                    uint32_t srcID,
-                                    std::function<void(ErrorCode)> sendCallback,
-                                    MessageType messageType)
+// Send message asynchronously
+void Communication::sendMessageAsync(
+    void *data, size_t dataSize, uint32_t destID, uint32_t srcID,
+    std::function<void(ErrorCode)> sendCallback, MessageType messageType)
 {
-#ifdef ESP32
-    // Create a FreeRTOS task for asynchronous message sending
-    xTaskCreate([](void* param) {
-        auto* asyncParams = static_cast<std::tuple<Communication*, void*, size_t, uint32_t, uint32_t, bool, std::function<void(ErrorCode)> >*>(param);
-        Communication* comm = std::get<0>(*asyncParams);
-        void* data = std::get<1>(*asyncParams);
-        size_t dataSize = std::get<2>(*asyncParams);
-        uint32_t destID = std::get<3>(*asyncParams);
-        uint32_t srcID = std::get<4>(*asyncParams);
-        bool isBroadcast = std::get<5>(*asyncParams);
-        std::function<void(ErrorCode)> callback = std::get<6>(*asyncParams);
-
-        ErrorCode res = comm->sendMessage(data, dataSize, destID, srcID, isBroadcast);
-        callback(res);
-
-        delete asyncParams; // Clean up the parameters
-        vTaskDelete(nullptr); // Delete the FreeRTOS task
-    }, "SendMessageTask", 2048, new std::tuple<Communication*, void*, size_t, uint32_t, uint32_t, bool, std::function<void(ErrorCode)> >(this, data, dataSize, destID, srcID, isBroadcast, sendCallback), 1, nullptr);
-#else
-    std::promise<ErrorCode> resultPromise;
-    std::future<ErrorCode> resultFuture = resultPromise.get_future();
-
-    std::thread([this, data, dataSize, destID, srcID, messageType, sendCallback,&resultPromise]() {
-        ErrorCode result = this->sendMessage(data, dataSize, destID, srcID, messageType); // Send the message        resultPromise.set_value(res);
-    }).detach();
     
-    ErrorCode res = resultFuture.get();
-    sendCallback(res);
-#endif
 }
 
-// Accepts the packet from the client and checks..
-void Communication::receivePacket(Packet &p)
+void Communication::receivePacket(Packet &packet)
 {
-    if (checkDestId(p)) {
-        if (validCRC(p))
-            handlePacket(p);
-        else
-            handleError();
+    // Check if the bus is in BusOff state
+    // If the system is in BusOff state, exit the function and do not process the packet
+    if (getState() == ErrorState::BusOff)
+        return;
+
+    // Check if the destination ID of the packet matches the expected destination
+    if (checkDestId(packet)) {
+        // Check CRC validity
+        // Validate the packet's CRC for data integrity
+        if (!validCRC(packet)) {
+            // If CRC is invalid, retrieve the packet ID
+            uint32_t packetId = packet.getId();
+            // Send an error message back to the source with the invalid packet ID
+            sendMessage(&packetId, sizeof(packetId), packet.getSrcId(),
+                        packet.getDestId(), MessageType::ERROR_MESSAGE);
+            return; // Exit after sending the error message
+        }
+
+        // Handle message based on type
+        // Determine the type of the message based on the packet ID
+        switch (Message::getMessageTypeFromID(packet.getId())) {
+            case DATA_MESSAGE:
+                // If the message is a data message, handle it accordingly
+                handleDataPacket(packet);
+                break;
+            case ERROR_MESSAGE:
+                // If the message is an error message, handle it accordingly
+                handleErrorPacket(packet);
+                break;
+            case ACK:
+                // If the message is an acknowledgment message, handle it accordingly
+                handleAckPacket(packet);
+                break;
+            default:
+                // If the message type is unrecognized, do nothing
+                break;
+        }
     }
 }
 
 // Checks if the packet is intended for him
-bool Communication::checkDestId(const Packet &p)
+bool Communication::checkDestId(Packet &p)
 {
-    return p.getIsBroadcast() || p.getDestId() == this->id;
+    // If the packet is a broadcast, it can be received by any node
+    //Or if the destination ID matches, the packet is intended for this node
+    return p.getIsBroadcast() || p.getDestId() == processID;
 }
 
 // Checks if the data is correct
 bool Communication::validCRC(const Packet &p)
 {
-    return p.validateCRC();
+    // Validate the CRC of the packet
+    // This checks the integrity of the packet to ensure it hasn't been corrupted
+    return packet.validateCRC();
 }
 
-// Receives the packet and adds it to the message
-void Communication::handlePacket(const Packet &p)
+void Communication::handleDataPacket(Packet &packet)
 {
-    // Send acknowledgment according to CAN bus
-    addPacketToMessage(p);
+    // Add the incoming data packet to the message queue
+    addPacketToMessage(packet);
+
+    // Retrieve the packet ID for acknowledgment
+    uint32_t packetId = packet.getId();
+
+    // Send an acknowledgment message back to the source of the packet
+    sendMessage(&packetId, sizeof(packetId), packet.getSrcId(),
+                packet.getDestId(), MessageType::ACK);
 }
 
-// Implement error handling according to CAN bus
-void Communication::handleError()
+void Communication::handleErrorPacket(Packet &packet)
 {
-    // Handle error cases according to CAN bus
+    // Check if the error packet is intended for this node
+    if (packet.getDestId() == id) {
+        // Handle the transmission error for this node
+        handleTransmitError();
+    }
+    else {
+        // Handle the reception error for other nodes
+        handleReceiveError();
+    }
 }
 
-// Implement arrival confirmation according to the CAN bus
-Packet Communication::hadArrived()
+void Communication::handleAckPacket(Packet &packet)
 {
-    Packet ack;
-    // Construct and return acknowledgment packet
-    return ack;
+    // Retrieve the message ID from the packet's payload
+    const uint32_t *receivedIdPtr =
+        reinterpret_cast<const uint32_t *>(packet.getPayload());
+    uint32_t receivedId = *receivedIdPtr;
+
+    // Notify the scheduler of the received acknowledgment
+    scheduler.receiveACK(receivedId);
+
+    // Handle the successful transmission
+    handleSuccessfulTransmission();
 }
 
 // Adding the packet to the complete message
-void Communication::addPacketToMessage(const Packet &p)
+void Communication::addPacketToMessage(Packet &packet)
 {
-    std::string messageId = std::to_string(p.getId());
-    // If the message already exists, we will add the packet
-    if (receivedMessages.find(messageId) != receivedMessages.end()) {
-        receivedMessages[messageId].addPacket(p);
-    } else {
-        // If the message does not exist, we will create a new message
-        Message msg(p.getTPS());
-        msg.addPacket(p);
-        receivedMessages[messageId] = msg;
-    }
+    // Convert the packet ID to a string for lookup
+    std::string messageId = std::to_string(packet.getId());
 
+    // Check if the message with the given ID already exists
+    if (receivedMessages.find(messageId) != receivedMessages.end()) {
+        // If it exists, add the packet to the existing message
+        receivedMessages[messageId].addPacket(packet);
+    }
+    else {
+        // If it does not exist, create a new message and add the packet
+        Message msg(packet.getTPS());
+        msg.addPacket(packet);
+        receivedMessages[messageId] = msg; // Store the new message
+    }
+    // If the message is complete, we pass the data to the passData function
     if (receivedMessages[messageId].isComplete()) {
+        // Retrieve complete data from the message
         void *completeData = receivedMessages[messageId].completeData();
-        passData(p.getSrcId(), completeData);
-        receivedMessages.erase(messageId); // Removing the message once completed
+        // Pass the complete data for further processing
+        passData(packet.getSrcId(),completeData);
+        // Remove the message from the received messages
+        receivedMessages.erase(messageId);
     }
 }
 
-// Static method to handle SIGINT signal
+void Communication::recoverFromBusOff()
+{
+    // Check if the communication system is in the BusOff state
+    // and if the bus off recovery thread is not already running
+    if (getState() == ErrorState::BusOff &&
+        (!busOffRecoveryThread.joinable())) {
+        // Start a new thread for the recovery process
+        busOffRecoveryThread = std::thread(&Communication::busOffTimer, this);
+    }
+}
+
+void Communication::busOffTimer()
+{
+    // Put the thread to sleep for the defined BusOff recovery time
+    std::this_thread::sleep_for(BUSOFF_RECOVERY_TIME);
+    // Reset the state of the communication system after the sleep period
+    resetState();
+}
+
+void Communication::cleanupBusOffRecoveryThread()
+{
+    // Check if the BusOff recovery thread is joinable
+    if (busOffRecoveryThread.joinable()) {
+        // Join the thread to clean up and ensure proper resource management
+        busOffRecoveryThread.join();
+    }
+}
+
+void Communication::checkState()
+{
+    // Lock the mutex to ensure thread safety while checking and updating the state
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        // Check if TEC exceeds the BusOff threshold
+        if (TEC >= THRESHOLD_TO_BUSOFF) {
+            state = ErrorState::BusOff; // Set state to BusOff
+        }
+        // Check if TEC or REC exceeds the Passive threshold
+        else if (TEC >= THRESHOLD_TO_PASSIVE || REC >= THRESHOLD_TO_PASSIVE) {
+            state = ErrorState::Passive; // Set state to Passive
+        }
+        else {
+            state = ErrorState::Active; // Set state to Active
+        }
+    }
+
+    // If the state is BusOff, initiate recovery process
+    if (getState() == ErrorState::BusOff) {
+        recoverFromBusOff();
+    }
+}
+
+void Communication::handleTransmitError()
+{
+    // Lock the mutex to ensure thread safety while updating the TEC
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        TEC += 8; // Increment the Transmission Error Counter by 8
+    }
+    // Check the state based on the updated TEC
+    checkState();
+}
+
+void Communication::handleACKError(Packet &packet)
+{
+    // Lock the mutex to ensure thread safety while updating the TEC
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        TEC += 1; // Increment the Transmission Error Counter by 1
+    }
+    // Check the state based on the updated TEC
+    checkState();
+}
+
+void Communication::handleReceiveError()
+{
+    // Lock the mutex to ensure thread safety while updating the REC
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        REC += 1; // Increment the Reception Error Counter by 1
+    }
+    // Check the state based on the updated REC
+    checkState();
+}
+
+void Communication::handleSuccessfulTransmission()
+{
+    // Lock the mutex to ensure thread safety while updating the TEC
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        if (TEC > 0)
+            TEC -=
+                1; // Decrement the Transmit Error Counter by 1 if greater than zero
+    }
+    // Check the state based on the updated TEC
+    checkState();
+}
+
+void Communication::resetState()
+{
+    // Lock the mutex to ensure thread safety while resetting the state
+    std::lock_guard<std::mutex> lock(mtx);
+    TEC = 0;                    // Reset the Transmit Error Counter to zero
+    REC = 0;                    // Reset the Receive Error Counter to zero
+    state = ErrorState::Active; // Set the communication state to Active
+}
+
+ErrorState Communication::getState()
+{
+    // Lock the mutex to ensure thread safety while accessing the state
+    std::lock_guard<std::mutex> lock(mtx);
+    // Return the current state of the communication system
+    return state; // Return the state regardless of its value
+}
+
+bool Communication::sendPacketWithRTO(Packet &packet,
+                                      int retransmissions /* = 0 */)
+{
+    // If the system is in BusOff state or retransmissions exceed the maximum limit, stop sending
+    if (getState() == ErrorState::BusOff ||
+        retransmissions > MAX_RETRANSMISSIONS) {
+        // Clear any packet-related data (if needed) if we stop the transmission
+        scheduler.clearPacketData(packet.getId());
+        return false;
+    }
+
+    // Set the packet to passive mode if the system state is passive (for error handling)
+    packet.setIsPassive(getState() == ErrorState::Passive);
+
+    // Attempt to send the packet using the client
+    ErrorCode res = client.sendPacket(packet);
+
+    // If the packet is successfully sent, wait for the ACK
+    if (res == ErrorCode::SUCCESS) {
+        // Create a promise to track the success of the transmission (ACK reception)
+        auto ackPromisePtr = std::make_shared<std::promise<bool>>();
+        auto ackFuture =
+            ackPromisePtr->get_future(); // Future to wait for the ACK result
+
+        // Start a retransmission timer for this packet
+        scheduler.startRetransmissionTimer(
+            packet.getId(),
+            [this, packet, ackPromisePtr](int retryCount) mutable {
+                // Handle errors if ACK was not received
+                this->handleACKError(packet);
+
+                // Retry sending the packet and update the promise with the result
+                bool result = this->sendPacketWithRTO(packet, retryCount);
+                ackPromisePtr->set_value(
+                    result); // Set the result of retransmission
+            },
+            ackPromisePtr);
+
+        // Wait for the result of the future (ACK reception or timeout)
+        bool success = ackFuture.get();
+
+        return success; // Return true if successful, false otherwise
+    }
+
+    // Return false if the initial packet transmission failed
+    return false;
+}
+
+bool Communication::sendPacket(Packet &packet)
+{
+    // Check if the system is in BusOff state
+    if (getState() == ErrorState::BusOff)
+        return false; 
+
+    // Set the packet to passive mode if the system state is passive
+    packet.setIsPassive(getState() == ErrorState::Passive);
+
+    // Attempt to send the packet using the client
+    ErrorCode res = client.sendPacket(packet);
+
+    return res ==
+           ErrorCode::SUCCESS; // Return true if successful, false otherwise
+}
+
 void Communication::signalHandler(int signum)
 {
-    if (instance)
-        instance->client.closeConnection();
-    
-    exit(signum);
+    if (instance) {
+        cleanupBusOffRecoveryThread(); // Clean up the recovery thread if it is running
+        instance->client.closeConnection(); // Close the client connection
+    }
+    exit(signum); // Exit the program with the given signal number
 }
 
 void Communication::setId(uint32_t id)
@@ -174,7 +388,6 @@ void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
 {
     if (callback == nullptr)
         throw std::invalid_argument("Invalid callback function: passDataCallback cannot be null");
-    passData = callback;
 }
 
 void Communication::setSignaleHandler()
@@ -189,11 +402,14 @@ void Communication::setSignaleHandler()
 }
 
 //Destructor
-Communication::~Communication() {
-    instance = nullptr;
+Communication::~Communication()
+{
 #ifdef ESP32
     if (receiveTaskHandle != nullptr) {
         vTaskDelete(receiveTaskHandle);
     }
 #endif
+    cleanupBusOffRecoveryThread(); // Clean up the bus off recovery thread
+    instance->client.closeConnection(); // Close the client connection
+    instance = nullptr;                 // Clear the singleton instance
 }
