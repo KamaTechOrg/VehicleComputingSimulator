@@ -49,9 +49,11 @@
 
 int sizeSquare = 120;
 int rotationTimerIntervals = 100;
+bool flag=false;
 logger MainWindow::guiLogger("gui");
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new DbManager(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), 
+    timer(nullptr),sqlDataManager(new DbManager(this))
 {
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -103,20 +105,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     dataHandler = new DbManager(this);
     QPushButton *historyButton = new QPushButton("Show Simulation History", this);
     
-    connect(historyButton, &QPushButton::clicked, this, &MainWindow::openHistoryWindow);
+    connect(historyButton, &QPushButton::clicked, this,
+            &MainWindow::openHistoryWindow);
     connect(addProcessButton, &QPushButton::clicked, this,
             &MainWindow::createNewProcess);
     connect(compileButton, &QPushButton::clicked, this, [this]() 
     {
-    debugCheckBox->setVisible(true);
+        compileProjects();
     });
 
     connect(debugCheckBox, &QCheckBox::toggled, this, [this](bool checked) 
     {
-    MainWindow::guiLogger.isDebugMode = checked; 
-    MainWindow::guiLogger.setDebugMode(checked); 
-    compileProjects();
+        MainWindow::guiLogger.isDebugMode = checked; 
+        MainWindow::guiLogger.setDebugMode(checked); 
     });
+
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
     connect(timerButton, &QPushButton::clicked, this,
@@ -146,10 +149,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
-    toolboxLayout->addWidget(loadingLabel); // Add the loading label to the toolbox layout (under the buttons)
-    toolboxLayout->addWidget(compileButton);
-    debugCheckBox->setVisible(false);
+    toolboxLayout->addWidget(loadingLabel); 
+    debugCheckBox->setVisible(true);
     toolboxLayout->addWidget(debugCheckBox);
+    toolboxLayout->addWidget(compileButton);
     toolboxLayout->addWidget(runButton);
     runButton->setEnabled(false);
     toolboxLayout->addWidget(endButton);
@@ -159,8 +162,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     toolboxLayout->addWidget(logOutput);
     toolboxLayout->addWidget(chooseButton);
     toolboxLayout->addWidget(historyButton);
-    
-
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
@@ -207,7 +208,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Main", "../../control/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -246,9 +247,15 @@ void MainWindow::createNewProcess()
                 "Non-unique ID entered: " + std::to_string(id));
             return;
         }
-        Process *newProcess =
-            new Process(id, dialog.getName(), dialog.getExecutionFile(),
-                        dialog.getQEMUPlatform());
+        Process *newProcess;
+        if (!dialog.pluginsEdit->text().isEmpty()) { 
+            newProcess = new Process(id, dialog.getName(), dialog.getExecutionFile(),
+                                     dialog.getQEMUPlatform(), dialog.getPlugins());
+        } 
+        else {
+            newProcess = new Process(id, dialog.getName(), dialog.getExecutionFile(),
+                                     dialog.getQEMUPlatform());
+        }
         addProcessSquare(newProcess);
         addId(id);
         MainWindow::guiLogger.logMessage(
@@ -256,14 +263,10 @@ void MainWindow::createNewProcess()
             "New process created with ID: " + std::to_string(id));
     }
 }
-// void MainWindow::runDebug(){
-//     debugCheckBox->setVisible(true);
-//     compileProjects()
-// }
 
 void MainWindow::openDialog()
 {
-    QDialog dialog;
+    QDialog dialog;    
     dialog.setWindowTitle("Saving the simulation?");
     dialog.resize(300, 150);
 
@@ -296,25 +299,30 @@ void MainWindow::openDialog()
         {
             QString simulationName =input->text();
             inputDialog.close();
-            QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
+            QMessageBox::information(nullptr, "save", 
+            "The name of the simulation is saved: " + simulationName);
             QString logFilePath = "../log_file.log";       
             QString bsonFilePath = "simulation_state.bson";     //  BSON
 
             QString logData =sqlDataManager->readLogFile(logFilePath);
             if (logData.isEmpty()) {
-                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
+                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                        "Log data is empty!");
             }
 
             // BSON
             QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
             if (bsonData.isEmpty()) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                "BSON data is empty!");
             }  
 
             if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData, logData)) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                "Failed to insert data into the database.");
             } else {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                "Data successfully inserted into the database.");
             }
         });
 
@@ -336,7 +344,7 @@ Process *MainWindow::getProcessById(int id)
             return square->getProcess();
         }
     }
-    return nullptr;  // Return nullptr if the process with the given ID is not found
+    return nullptr; 
 }
 
 void MainWindow::addProcessSquare(Process *&process)
@@ -591,8 +599,6 @@ void MainWindow::setDefaultBackgroundImage()
         }
 
         // Add imageLabel to workspace and set the pixmap
-        //imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
         imageLabel->setPixmap(pixmap.scaled(workspace->size(),
                                             Qt::IgnoreAspectRatio,
                                             Qt::SmoothTransformation));
@@ -762,6 +768,7 @@ void MainWindow::compileProjects()
     // Disable the run button until compilation finishes
     runButton->setEnabled(false);
     setCoreDumpLimit();
+
     // Clear previous running processes
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
@@ -774,19 +781,23 @@ void MainWindow::compileProjects()
     bool compileSuccessful = true;  // Track if all compilations succeed
 
     QList<QThread *> threads;
-
     QSet<QString> uniquePaths;  // Set to hold unique paths
     for (DraggableSquare *square : squares) {
         QString executionFilePath = square->getProcess()->getExecutionFile();
+        if(square->getProcess()->getConstructorType()==Process::ParameterizedConstructor2)
+        {
+          QString Plug=square->getProcess()->getPluginsEdit();
+          flag=true;
+        }
         uniquePaths.insert(executionFilePath);
     }
 
     for (QString executionFilePath : uniquePaths) {
+        
         Compiler *compiler =
-            new Compiler(executionFilePath, &compileSuccessful, this);
+            new Compiler(executionFilePath, &compileSuccessful,flag,this);
         connect(compiler, &Compiler::logMessage, this,
-                [this](const QString &message)
-                {
+                [this](const QString &message) {
                     guiLogger.logMessage(logger::LogLevel::ERROR,
                                          message.toStdString());
                 });

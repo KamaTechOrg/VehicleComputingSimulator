@@ -1,10 +1,19 @@
 #include "compiler.h"
 
-Compiler::Compiler(QString cmakePath, bool *compileSuccessful, QObject *parent)
+Compiler::Compiler(QString cmakePath, bool *compileSuccessful,bool plug,QObject *parent)
     : QThread(parent),
       cmakePath(cmakePath),
-      compileSuccessful(compileSuccessful)
+      compileSuccessful(compileSuccessful),
+      plug(plug)
 {
+}
+
+void Compiler::setUserDefines(QString defines){
+ userDefines=defines;
+}
+
+QString Compiler::getUserDefines(){
+    return userDefines;
 }
 
 void Compiler::run()
@@ -48,10 +57,17 @@ void Compiler::run()
 
         QProcess cmakeProcess;
         cmakeProcess.setWorkingDirectory(buildDirPath);
-        cmakeProcess.start(
-            "cmake",
-            QStringList()
-                << cmakeDir.absolutePath());  // Use project dir, not just ".."
+        
+        QStringList cmakeArgs;
+        cmakeArgs << cmakeDir.absolutePath();  // Use project dir
+        if(plug){
+            QString defines = getUserDefines(); 
+            if (!defines.isEmpty()) {
+                cmakeArgs << "-D" + defines; 
+            }
+        }
+
+        cmakeProcess.start("cmake", cmakeArgs);
 
         if (!cmakeProcess.waitForFinished()) {
             emit logMessage("Failed to run cmake in " + buildDirPath);

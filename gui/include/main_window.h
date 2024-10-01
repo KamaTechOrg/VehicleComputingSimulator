@@ -58,7 +58,6 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
-    //void runDebug();
     QLineEdit *getTimeInput() const
     {
         return timeInput;

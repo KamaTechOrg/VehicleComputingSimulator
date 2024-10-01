@@ -86,7 +86,6 @@ void TestMainWindow::testStartProcesses()
     window->runProjects();
     QVERIFY(
         !window->runningProcesses.isEmpty());  // Ensure processes are started
-    window->endProcesses();
 }
 
 void TestMainWindow::testEndProcesses()

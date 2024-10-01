@@ -63,21 +63,9 @@ std::string logger::logLevelToString(LogLevel level) {
     return "[UNKNOWN]";
   }
 }
-// bool logger::shouldLog(LogLevel level) {
-//   switch (LOG_LEVEL) {
-//   case LogLevel::ERROR:
-//     return level == LogLevel::ERROR;
-//   case LogLevel::INFO:
-//     return level == LogLevel::ERROR || level == LogLevel::INFO;
-//   case LogLevel::DEBUG:
-//     return level == LogLevel::DEBUG;
-//   default:
-//     return false;
-//   }
-// }
 
 bool logger::shouldLog(LogLevel level) {
-  switch (logLevel) {  // כאן משתמשים במשתנה logLevel
+  switch (logLevel) {  
   case LogLevel::ERROR:
     return level == LogLevel::ERROR;
   case LogLevel::INFO:
@@ -96,9 +84,7 @@ void logger::setDebugMode(bool debugMode){
   }
   else{
     logLevel=logger::LogLevel::DEBUG;
-
   }
-
 }
 
 std::string logger::getElapsedTime() {

@@ -22,13 +22,15 @@ public:
     QString getName() const;
     QString getExecutionFile() const;
     QString getQEMUPlatform() const;
+    QString getPlugins() const;
     bool isValid() const;
     void setId(int id);
     void setName(const QString &name);
     void setExecutionFile(const QString &executableFile);
     void setQEMUPlatform(const QString &qemuPlatform);
     void setCMakeProject(const QString &cmakeProject);
-    
+    void setPlugins(const QString &plugins);
+
     enum KeyPermission {
         VERIFY,
         SIGN,
@@ -39,6 +41,7 @@ public:
 
     QMap<KeyPermission, bool> getKeyPermissions() const;
     void setKeyPermissions(const QMap<KeyPermission, bool> &permissions);
+    QLineEdit *pluginsEdit;
 
 private slots:
     bool validateAndAccept();
