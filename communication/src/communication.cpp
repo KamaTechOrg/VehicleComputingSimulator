@@ -3,12 +3,15 @@
 // Initialize static member variables for the Communication class
 Communication *Communication::instance = nullptr;
 std::thread Communication::busOffRecoveryThread;
+std::mutex Communication::messageThreadsMutex;
+std::vector<std::future<void>> Communication::activeMessageFutures;
 
 // Constructor
 Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *))
     : TEC(0), REC(0), state(ErrorState::Active),
       client(std::bind(&Communication::receivePacket, this,
-                       std::placeholders::_1))
+                       std::placeholders::_1)),
+      lastSendTick(GlobalClock::getCurrentTick())
 {
     setId(id);                             // Set the communication ID
     setPassDataCallback(passDataCallback); // Set the callback for data passing
@@ -25,6 +28,7 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 Communication::~Communication()
 {
     cleanupBusOffRecoveryThread(); // Clean up the bus off recovery thread
+    waitForActiveMessages(); // Wait for any active message threads to complete
     instance->client.closeConnection(); // Close the client connection
     instance = nullptr;                 // Clear the singleton instance
 }
@@ -72,23 +76,48 @@ ErrorCode Communication::sendMessage(
     return ErrorCode::SUCCESS; // Return success if all packets are sent
 }
 
-// Sends a message Async
-void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destID,
-                                    uint32_t srcID,
-                                    std::function<void(ErrorCode)> sendCallback,
-                                    MessageType messageType)
+// Send message asynchronously
+void Communication::sendMessageAsync(
+    void *data, size_t dataSize, uint32_t destID, uint32_t srcID,
+    std::function<void(ErrorCode)> sendCallback, MessageType messageType)
 {
-    std::promise<ErrorCode> resultPromise;
-    std::future<ErrorCode> resultFuture = resultPromise.get_future();
+    std::unique_lock<std::mutex> lock(messageThreadsMutex);
+    // Wait until the number of active threads is below the maximum limit
+    while (activeMessageFutures.size() >= MAX_SIMULTANEOUS_MESSAGES) {
+        messageThreadsCondition.wait(lock); // Wait for a thread to complete
+    }
+    // Create a new promise and future
+    std::promise<void> promise;
+    std::future<void> future = promise.get_future();
+    activeMessageFutures.push_back(std::move(future)); // Store future
 
-    std::thread([this, data, dataSize, destID, srcID, messageType, sendCallback,&resultPromise]() {
-        ErrorCode result = this->sendMessage(data, dataSize, destID, srcID, messageType); // Send the message        resultPromise.set_value(res);
-    }).detach();
-    
-    ErrorCode res = resultFuture.get();
-    sendCallback(res);
+    // Create a new thread to handle message sending
+    std::thread([this, data, dataSize, destID, srcID, messageType, sendCallback,
+                 promise = std::move(promise)]() mutable {
+        ErrorCode result = this->sendMessage(data, dataSize, destID, srcID,
+                                             messageType); // Send the message
+        sendCallback(result); // Call the callback after the message is sent
+
+        // Notify that the thread work is done
+        promise.set_value(); // Set the promise value
+
+        // Lock the mutex to modify the active thread list
+        std::unique_lock<std::mutex> lock(this->messageThreadsMutex);
+
+        // Remove the promise from the vector of active futures
+        auto it = std::remove_if(
+            activeMessageFutures.begin(), activeMessageFutures.end(),
+            [](std::future<void> &future) {
+                return future.wait_for(std::chrono::seconds(0)) ==
+                       std::future_status::
+                           ready; // Check if the future is ready
+            });
+        activeMessageFutures.erase(
+            it, activeMessageFutures.end()); // Remove invalid futures
+        // Notify one waiting thread that space is available
+        this->messageThreadsCondition.notify_one();
+    }).detach(); // Detach the thread
 }
-
 
 void Communication::receivePacket(Packet &packet)
 {
@@ -330,6 +359,31 @@ ErrorState Communication::getState()
     return state; // Return the state regardless of its value
 }
 
+void Communication::ensureSingleSendPerTick()
+{
+    // Lock the mutex to ensure thread safety while checking the tick
+    std::lock_guard<std::mutex> lock(sendMutex); // ננעל את המנעול
+
+    // Retrieve the current clock tick from the GlobalClock
+    int currentTick =
+        GlobalClock::getCurrentTick(); // קבל את פעימת השעון הנוכחית
+
+    // Check if the current tick is different from the last sent tick
+    if (currentTick != lastSendTick.load()) {
+        // Update the last sent tick to the current tick
+        lastSendTick.store(currentTick); // עדכן את lastSendTick
+
+        return; // Exit the function if a message can be sent
+    }
+
+    // Wait for the next clock tick if the last tick is the same
+    GlobalClock::waitForNextTick();
+
+    // Update lastSendTick after waiting
+    lastSendTick.store(
+        GlobalClock::getCurrentTick()); // עדכון lastSendTick לאחר ההמתנה
+}
+
 bool Communication::sendPacketWithRTO(Packet &packet,
                                       int retransmissions /* = 0 */)
 {
@@ -340,6 +394,8 @@ bool Communication::sendPacketWithRTO(Packet &packet,
         scheduler.clearPacketData(packet.getId());
         return false;
     }
+
+    ensureSingleSendPerTick();
 
     // Set the packet to passive mode if the system state is passive (for error handling)
     packet.setIsPassive(getState() == ErrorState::Passive);
@@ -384,6 +440,8 @@ bool Communication::sendPacket(Packet &packet)
     if (getState() == ErrorState::BusOff)
         return false; // החזר false מיד
 
+    ensureSingleSendPerTick();
+
     // Set the packet to passive mode if the system state is passive
     packet.setIsPassive(getState() == ErrorState::Passive);
 
@@ -394,10 +452,27 @@ bool Communication::sendPacket(Packet &packet)
            ErrorCode::SUCCESS; // Return true if successful, false otherwise
 }
 
+void Communication::waitForActiveMessages()
+{
+    std::unique_lock<std::mutex> lock(
+        messageThreadsMutex); // Lock for thread safety
+
+    // Wait for all active message threads to complete
+    for (auto &future : activeMessageFutures) {
+        if (future.valid()) {
+            future.wait(); // Wait for the future to finish if valid
+        }
+    }
+
+    activeMessageFutures
+        .clear(); // Clear the vector after all futures are completed
+}
+
 void Communication::signalHandler(int signum)
 {
     if (instance) {
         cleanupBusOffRecoveryThread(); // Clean up the recovery thread if it is running
+        waitForActiveMessages(); // Wait for any active message threads to complete
         instance->client.closeConnection(); // Close the client connection
     }
     exit(signum); // Exit the program with the given signal number
