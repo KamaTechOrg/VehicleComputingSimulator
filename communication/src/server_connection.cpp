@@ -101,7 +101,7 @@ void ServerConnection::handleClient(int clientSocket)
     if (valread <= 0)
         return;
     
-    uint32_t clientID = packet.header.SrcID;
+    uint32_t clientID = packet.getSrcId();
     if(!isValidId(clientID))
         return;
 
@@ -161,7 +161,7 @@ int ServerConnection::getClientSocketByID(uint32_t destID)
 // Sends the message to destination
 ErrorCode ServerConnection::sendDestination(const Packet &packet)
 {
-    int targetSocket = getClientSocketByID(packet.header.DestID);
+    int targetSocket = getClientSocketByID(packet.getDestId());
     if (targetSocket == -1)
         return ErrorCode::INVALID_CLIENT_ID;
     

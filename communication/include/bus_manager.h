@@ -27,6 +27,9 @@ public:
     // Sends to the server to listen for requests
     ErrorCode startConnection();
 
+    // Stops server connection
+    static void stopConnection();
+
     // Receives the packet that arrived and checks it before sending it out
     void receiveData(Packet &p);
 
@@ -35,9 +38,6 @@ public:
 
     // Implement a priority check according to the CAN bus
     Packet packetPriority(Packet &a, Packet &b);
-
-    // Static method to handle SIGINT signal
-    static void signalHandler(int signum);
 
     ~BusManager();
 };

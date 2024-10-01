@@ -29,7 +29,9 @@ ErrorCode Communication::startConnection()
 }
 
 // Sends a message sync
-ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast)
+ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destID,
+                          uint32_t srcID,
+                          MessageType messageType)
 {
     if (dataSize == 0)
         return ErrorCode::INVALID_DATA_SIZE;
@@ -40,10 +42,9 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
     if (!client.isConnected())
         return ErrorCode::CONNECTION_FAILED;
 
-    Message msg(srcID, data, dataSize, isBroadcast, destID);
-    
+    Message msg(srcID, destID, data, dataSize,messageType); // Create a new message    
     //Sending the message to logger
-    RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(srcID),std::to_string(destID),"Complete message:" + msg.getPackets().at(0).pointerToHex(data, dataSize));
+    RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(srcID),std::to_string(destID),"Complete message:" + msg.getPackets().at(0).pointerToHex());
     
     for (auto &packet : msg.getPackets()) {
         ErrorCode res = client.sendPacket(packet);
@@ -55,14 +56,16 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
 }
 
 // Sends a message Async
-void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(ErrorCode)> sendCallback, bool isBroadcast)
+void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destID,
+                                    uint32_t srcID,
+                                    std::function<void(ErrorCode)> sendCallback,
+                                    MessageType messageType)
 {
     std::promise<ErrorCode> resultPromise;
     std::future<ErrorCode> resultFuture = resultPromise.get_future();
 
-    std::thread([this, data, dataSize, destID, srcID, isBroadcast, &resultPromise]() {
-        ErrorCode res = this->sendMessage(data, dataSize, destID, srcID, isBroadcast);
-        resultPromise.set_value(res);
+    std::thread([this, data, dataSize, destID, srcID, messageType, sendCallback,&resultPromise]() {
+        ErrorCode result = this->sendMessage(data, dataSize, destID, srcID, messageType); // Send the message        resultPromise.set_value(res);
     }).detach();
     
     ErrorCode res = resultFuture.get();
@@ -83,13 +86,13 @@ void Communication::receivePacket(Packet &p)
 // Checks if the packet is intended for him
 bool Communication::checkDestId(Packet &p)
 {
-    return p.header.isBroadcast || p.header.DestID == this->id;
+    return p.getIsBroadcast() || p.getDestId() == this->id;
 }
 
 // Checks if the data is currect
 bool Communication::validCRC(Packet &p)
 {
-    return p.header.CRC == p.calculateCRC(p.data, p.header.DLC);
+    return p.validateCRC();
 }
 
 // Receives the packet and adds it to the message
@@ -117,13 +120,13 @@ Packet Communication::hadArrived()
 // Adding the packet to the complete message
 void Communication::addPacketToMessage(Packet &p)
 {
-    std::string messageId = std::to_string(p.header.ID);
+    std::string messageId = std::to_string(p.getId());
     // If the message already exists, we will add the packet
     if (receivedMessages.find(messageId) != receivedMessages.end()) {
         receivedMessages[messageId].addPacket(p);
     } else {
         // If the message does not exist, we will create a new message
-        Message msg(p.header.TPS);
+        Message msg(p.getTPS());
         msg.addPacket(p);
         receivedMessages[messageId] = msg;
     }
@@ -131,7 +134,7 @@ void Communication::addPacketToMessage(Packet &p)
     // If the message is complete, we pass the data to the passData function
     if (receivedMessages[messageId].isComplete()) {
         void *completeData = receivedMessages[messageId].completeData();
-        passData(p.header.SrcID, completeData);
+        passData(p.getSrcId(), completeData);
         receivedMessages.erase(messageId); // Removing the message once completed
     }
 }

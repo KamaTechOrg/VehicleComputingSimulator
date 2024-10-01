@@ -7,7 +7,6 @@ std::mutex BusManager::managerMutex;
 BusManager::BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit) :server(8080, std::bind(&BusManager::receiveData, this, std::placeholders::_1))//,syncCommunication(idShouldConnect, limit)
 {
     // Setup the signal handler for SIGINT
-    signal(SIGINT, BusManager::signalHandler);
 }
 
 // Static function to return a singleton instance
@@ -45,7 +44,7 @@ void BusManager::receiveData(Packet &p)
 // Sending according to broadcast variable
 ErrorCode BusManager::sendToClients(const Packet &packet)
 {
-    if(packet.header.isBroadcast)
+    if(packet.getIsBroadcast())
         return server.sendBroadcast(packet);
     return server.sendDestination(packet);
 }
@@ -59,16 +58,15 @@ Packet BusManager::checkCollision(Packet &currentPacket)
 // Implement a priority check according to the CAN bus
 Packet BusManager::packetPriority(Packet &a, Packet &b)
 {
-    return (a.header.SrcID < b.header.SrcID) ? a : b;
+    return (a.getSrcId() < b.getSrcId()) ? a : b;
 }
 
-// Static method to handle SIGINT signal
-void BusManager::signalHandler(int signum)
+//shut down the server
+void BusManager::stopConnection()
 {
     if (instance) {
-        instance->server.stopServer();  // Call the stopServer method
+        instance->server.stopServer(); // Stop server on interrupt
     }
-    exit(signum);
 }
 
 BusManager::~BusManager() {

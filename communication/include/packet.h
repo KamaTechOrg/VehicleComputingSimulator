@@ -1,49 +1,75 @@
-#pragma once
-#include <vector>
+#ifndef __PACKET_H__
+#define __PACKET_H__
+
 #include <cstring>
-#include <cstdint>
-#include <ctime>
-#include <cstdlib>
-#include <unordered_map>
-#include <iostream>
-#include <bitset>
-#include <cstdint>
-#include <iomanip>
+#include <string>
 #include <sstream>
+#include <iomanip>
+
 #define SIZE_PACKET 8
-class Packet
-{
+
+class Packet {
 public:
-    // Packet header containing various metadata fields
-    struct Header
-    {
-        uint32_t ID;      // Message ID
-        uint32_t PSN;     // Packet Sequence Number
-        uint32_t TPS;     // Total Packet Sum
-        uint32_t SrcID;   // Source ID
-        uint32_t DestID;  // Destination ID
-        uint8_t DLC;          // Data Length Code (0-8 bits)
-        uint16_t CRC;     // Cyclic Redundancy Check for error detection
-        int timestamp;    // Timestamp field
-        bool isBroadcast; // True for broadcast, false for unicas
-        bool passive;
-        bool RTR;
-    } header;
+  // Default constructor for Packet.
+  Packet() = default;
 
-    void *data[SIZE_PACKET];
+  // Constructor for sending message
+  Packet(uint32_t id, uint32_t PSN, uint32_t TPS, uint32_t srcId,
+         uint32_t destId, int DLC, bool RTR, bool isBroadcast,
+         const uint8_t *payload);
 
-    // Default constructor for Packet.
-    Packet() = default;
+  // Constructor for receiving message
+  Packet(uint32_t id);
 
-    // Constructor for sending message
-    Packet(uint32_t id, uint32_t psn, uint32_t tps, uint32_t srcID, uint32_t destID, void *data, uint8_t dlc, bool isBroadcast, bool RTR = false, bool passive = false);
+  // Destructor
+  ~Packet() = default;
 
-    // Constructor for receiving message
-    Packet(uint32_t id);
+  // Overloaded operator>
+  bool operator>(const Packet &other) const;
 
-    // Calculate CRC for the given data and length
-    uint16_t calculateCRC(const void *data, size_t length);
+  // Getters for accessing Header fields
+  uint32_t getId() const { return header.id; }
+  uint32_t getPSN() const { return header.PSN; }
+  uint32_t getTPS() const { return header.TPS; }
+  uint32_t getSrcId() const { return header.srcId; }
+  uint32_t getDestId() const { return header.destId; }
+  int getTimestamp() const { return header.timestamp; }
+  int getDLC() const { return header.DLC; }
+  uint16_t getCRC() const { return header.CRC; }
+  bool isRTR() const { return header.RTR; }
+  bool getIsPassive() const { return header.passive; }
+  bool getIsBroadcast() const { return header.isBroadcast; }
 
-    // A function to convert the data to hexa (logger)
-    std::string pointerToHex(const void *ptr, size_t size) const;
+  const uint8_t *getPayload() const { return payload; }
+
+  // Setters for modifying Header fields
+  void setIsPassive(bool p) { header.passive = p; }
+  void setTimestamp(int t) { header.timestamp = t; }
+
+  // CRC calculation
+  uint16_t calculateCRC() const;
+  bool validateCRC() const;
+
+  // A function to convert the data to hexa (logger)
+  std::string pointerToHex() const;
+
+private:
+  // Header structure within Packet
+  struct Header {
+    uint32_t id;      // Unique identifier for the message (4 bytes)
+    uint32_t PSN;     // Packet Sequence Number (4 bytes)
+    uint32_t TPS;     // Total Packet Sum (4 bytes)
+    uint32_t srcId;   // Source node ID (4 bytes)
+    uint32_t destId;  // Destination node ID (4 bytes)
+    int timestamp;    // Timestamp marking the packet's send time (4 bytes)
+    int DLC;          // Data Length Code (0-8 bytes) (4 bytes)
+    uint16_t CRC;     // Cyclic Redundancy Check (2 bytes)
+    bool RTR;         // Remote Transmission Request flag (1 byte)
+    bool passive;     // Passive state flag (1 byte)
+    bool isBroadcast; // Broadcast flag (1 byte)
+  } header;
+
+  uint8_t payload[SIZE_PACKET]; // Data payload (fixed size, up to SIZE_PACKET bytes)
 };
+
+#endif // __PACKET_H__

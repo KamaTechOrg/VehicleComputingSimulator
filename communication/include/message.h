@@ -6,21 +6,35 @@
 #include <cstdlib>
 #include <unordered_map>
 #include <iostream>
+#include <chrono>
 #include "packet.h"
 
-class Message
-{
+enum MessageType {
+    INITIAL_CONNECTION,           // Represents initial connection of a component to the server
+    ERROR_MESSAGE,                // Error message (highest priority)
+    ACK,                          // Acknowledgment message
+    OVERLOAD_MESSAGE,             // Indicates network overload
+    REMOTE_TRANSMISSION_REQUEST,  // Request for remote data (RTR)
+    DATA_MESSAGE                  // Regular data message (lowest priority)
+};
+
+
+
+class Message {
 private:
-    std::vector<Packet> packets;
-    uint32_t tps;
-                  
+    std::vector<Packet> packets;   
+    uint32_t tps;                 
+    uint32_t messageID;           
+
+    uint32_t generateMessageID(MessageType messageType, uint16_t srcID);
+
 public:
-    // Default
+    // Default constructor
     Message() = default;
 
     // Constructor for sending message
-    Message(uint32_t srcID, void *data, int dlc, bool isBroadcast, uint32_t destID = 0xFFFF);
-    
+    Message(uint32_t srcID, uint32_t destID, void* data, size_t size, MessageType messageType);
+
     // Constructor for receiving message
     Message(uint32_t tps);
 
@@ -31,8 +45,14 @@ public:
     bool isComplete() const;
 
     // Get the complete data of the message
-    void *completeData() const;
+    void* completeData() const;
 
     // Get the packets of the message
-    std::vector<Packet> &getPackets();
+    std::vector<Packet>& getPackets();
+
+    // Extract the MessageType from the message ID
+    static MessageType getMessageTypeFromID(uint32_t messageID);
+
+    // Returns a string representation of the MessageType enum value
+    static std::string getMessageTypeString(MessageType type);
 };
