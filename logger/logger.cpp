@@ -64,7 +64,11 @@ std::string logger::logLevelToString(LogLevel level) {
 }
 
 bool logger::shouldLog(LogLevel level) {
+<<<<<<< HEAD
   switch (LOG_LEVEL) {
+=======
+  switch (logLevel) {  
+>>>>>>> 062ac76... GUI:Inserting compilation variables for each processor
   case LogLevel::ERROR:
     return level == LogLevel::ERROR;
   case LogLevel::INFO:
@@ -76,6 +80,19 @@ bool logger::shouldLog(LogLevel level) {
   }
 }
 
+<<<<<<< HEAD
+=======
+void logger::setDebugMode(bool debugMode){
+  isDebugMode = debugMode;
+  if(isDebugMode==false){
+    logLevel=logger::LogLevel::INFO;
+  }
+  else{
+    logLevel=logger::LogLevel::DEBUG;
+  }
+}
+
+>>>>>>> 062ac76... GUI:Inserting compilation variables for each processor
 std::string logger::getElapsedTime() {
   auto now = std::chrono::system_clock::now();
   auto elapsed =

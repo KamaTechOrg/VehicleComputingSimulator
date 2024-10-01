@@ -12,7 +12,9 @@ class Compiler : public QThread {
     Q_OBJECT
 public:
     Compiler(QString cmakePath, bool *compileSuccessful,
-             QObject *parent = nullptr);
+             bool plug,QObject *parent = nullptr);
+    void setUserDefines(QString defines);
+    QString getUserDefines();
 
 protected:
     void run() override;
@@ -22,7 +24,9 @@ signals:
 
 private:
     QString cmakePath;
+    QString userDefines;
     bool *compileSuccessful;
+    bool plug;
 };
 
 #endif  // COMPILER_H
