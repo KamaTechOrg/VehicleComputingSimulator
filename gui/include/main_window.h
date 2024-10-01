@@ -60,7 +60,12 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
-    //void runDebug();
+    void startControlConditonsDebug();
+    void startControlDebug();
+    void startImgProcessingDebug();
+    void startCommunicationDebug();
+    void startDebug(QString program,QString buildDir);
+
     QLineEdit *getTimeInput() const
     {
         return timeInput;

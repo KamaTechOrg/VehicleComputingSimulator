@@ -33,15 +33,17 @@ public:
     QMap<KeyPermission, bool> getSelectedPermissionsMap() const;
     static bool addingNewProcess;
     
+    QString getPlugins() const;
+    bool isValid() const;
     void setId(int id);
     void setName(const QString &name);
     void setExecutionFile(const QString &executableFile);
     void setQEMUPlatform(const QString &qemuPlatform);
     void setCMakeProject(const QString &cmakeProject);
     void setSecurityPermissions(const QMap<KeyPermission, bool>& permissions);
-
-    bool isValid() const;
+    void setPlugins(const QString &plugins);
     QString permToString(KeyPermission perm) const;
+    QLineEdit *pluginsEdit;
 
 private slots:
     bool validateAndAccept();

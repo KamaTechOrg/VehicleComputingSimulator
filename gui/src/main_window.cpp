@@ -52,10 +52,12 @@
 
 int sizeSquare = 120;
 int rotationTimerIntervals = 100;
+bool flag=false;
 logger MainWindow::guiLogger("gui");
 const QString LOG_FILE_BUS_MANAGER_PATH =  "../../main_bus/build/shared_log_file_name.txt";
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new DbManager(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), 
+    timer(nullptr),sqlDataManager(new DbManager(this))
 {
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -110,20 +112,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     dataHandler = new DbManager(this);
     QPushButton *historyButton = new QPushButton("Show Simulation History", this);
     
-    connect(historyButton, &QPushButton::clicked, this, &MainWindow::openHistoryWindow);
+    connect(historyButton, &QPushButton::clicked, this,
+            &MainWindow::openHistoryWindow);
     connect(addProcessButton, &QPushButton::clicked, this,
             &MainWindow::createNewProcess);
     connect(compileButton, &QPushButton::clicked, this, [this]() 
     {
-    debugCheckBox->setVisible(true);
+        compileProjects();
     });
 
     connect(debugCheckBox, &QCheckBox::toggled, this, [this](bool checked) 
     {
-    MainWindow::guiLogger.isDebugMode = checked; 
-    MainWindow::guiLogger.setDebugMode(checked); 
-    compileProjects();
+        MainWindow::guiLogger.isDebugMode = checked; 
+        MainWindow::guiLogger.setDebugMode(checked); 
     });
+
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
     connect(timerButton, &QPushButton::clicked, this,
@@ -170,8 +173,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     // Add the loading label to the toolbox layout (under the buttons)
     toolboxLayout->addWidget(loadingLabel);
     toolboxLayout->addWidget(compileButton);
-    debugCheckBox->setVisible(false);
+    debugCheckBox->setVisible(true);
     toolboxLayout->addWidget(debugCheckBox);
+    toolboxLayout->addWidget(compileButton);
     toolboxLayout->addWidget(runButton);
     runButton->setEnabled(false);
     toolboxLayout->addWidget(endButton);
@@ -181,8 +185,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     toolboxLayout->addWidget(logOutput);
     toolboxLayout->addWidget(chooseButton);
     toolboxLayout->addWidget(historyButton);
-    
-
 
     workspace = new QWidget(this);
     workspace->setStyleSheet("background-color: white;");
@@ -200,7 +202,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         // Remove the file if it exists
         if (file.remove()) {
             guiLogger.logMessage(logger::LogLevel::INFO, "Existing sensors.json file removed.");
-        } else {
+        } 
+        else {
             guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to remove sensors.json file.");
         }
     }
@@ -233,7 +236,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "HSM", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -247,7 +250,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "../../control/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "Main", "../test/dummy_program2/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -275,6 +278,64 @@ MainWindow::~MainWindow()
     }
 }
 
+void MainWindow::startControlConditonsDebug() {
+    QString program = "../../control/your_control_program"; 
+    QString buildDir = "../../control-build_conditons";
+    startDebug(program,buildDir);
+}
+
+void MainWindow::startControlDebug() {
+    QString program = "../../control/your_control_program"; 
+    QString buildDir = "../../control";
+    startDebug(program,buildDir);
+}
+
+void MainWindow::startImgProcessingDebug() {
+    QString program = "../../control/your_control_program"; 
+    QString buildDir = "../../img_processing";
+    startDebug(program,buildDir);
+}
+
+void MainWindow::startCommunicationDebug() {
+    QString program = "../../control/your_control_program"; 
+    QString buildDir = "../../communication";
+    startDebug(program,buildDir);
+}
+
+void MainWindow::startDebug(QString program,QString buildDir) {
+    QStringList arguments;
+    arguments << "--debug";
+    QDir buildDirectory(buildDir);
+    if (!buildDirectory.exists()) {
+        if (!buildDirectory.mkpath(buildDirectory.absolutePath())) {
+            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                             "Failed to create build directory: " +
+                                             buildDirectory.absolutePath().toStdString());
+            return;
+        }
+    }
+    QProcess cmakeProcess;
+    cmakeProcess.setWorkingDirectory(buildDirectory.absolutePath());
+    cmakeProcess.start("cmake",arguments);
+    if (!cmakeProcess.waitForFinished()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                         "Failed to run CMake: " + 
+                                         cmakeProcess.readAllStandardError()
+                                         .toStdString());
+        return;
+    }
+    QProcess makeProcess;
+    makeProcess.setWorkingDirectory(buildDirectory.absolutePath());
+    makeProcess.start("make");
+    if (!makeProcess.waitForFinished()) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                         "Failed to compile process: " + 
+                                         makeProcess.readAllStandardError().toStdString());
+        return;
+    }
+
+}
+    
 void MainWindow::createNewProcess()
 {
     ProcessDialog dialog(this);
@@ -298,9 +359,17 @@ void MainWindow::createNewProcess()
                 "Non-unique ID entered: " + std::to_string(id));
             return;
         }
-        Process *newProcess =
-            new Process(id, dialog.getName(), dialog.getExecutionFile(),
-                        dialog.getQEMUPlatform(), dialog.getSelectedPermissionsMap());
+        Process *newProcess;
+        if (!dialog.pluginsEdit->text().isEmpty()) { 
+            newProcess = new Process(id, dialog.getName(), dialog.getExecutionFile(),
+                                     dialog.getQEMUPlatform(), dialog.getPlugins(),
+                                     dialog.getSelectedPermissionsMap());
+        } 
+        else {
+            newProcess = new Process(id, dialog.getName(), dialog.getExecutionFile(),
+                                     dialog.getQEMUPlatform(),
+                                     dialog.getSelectedPermissionsMap());
+        }
         addProcessSquare(newProcess);
         addId(id);
         MainWindow::guiLogger.logMessage(
@@ -311,7 +380,7 @@ void MainWindow::createNewProcess()
 
 void MainWindow::openDialog()
 {
-    QDialog dialog;
+    QDialog dialog;    
     dialog.setWindowTitle("Saving the simulation?");
     dialog.resize(300, 150);
 
@@ -351,19 +420,23 @@ void MainWindow::openDialog()
 
             QString logData =sqlDataManager->readLogFile(fullPath);
             if (logData.isEmpty()) {
-                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
+                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                        "Log data is empty!");
             }
 
             // BSON
             QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
             if (bsonData.isEmpty()) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                "BSON data is empty!");
             }  
 
             if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData, logData)) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                "Failed to insert data into the database.");
             } else {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                "Data successfully inserted into the database.");
             }
         });
 
@@ -385,7 +458,7 @@ Process *MainWindow::getProcessById(int id)
             return square->getProcess();
         }
     }
-    return nullptr;  // Return nullptr if the process with the given ID is not found
+    return nullptr; 
 }
 
 void MainWindow::addProcessSquare(Process *&process)
@@ -664,8 +737,6 @@ void MainWindow::setDefaultBackgroundImage()
         }
 
         // Add imageLabel to workspace and set the pixmap
-        //imageLabel->setPixmap(pixmap.scaled(workspace->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
         imageLabel->setPixmap(pixmap.scaled(workspace->size(),
                                             Qt::IgnoreAspectRatio,
                                             Qt::SmoothTransformation));
@@ -939,6 +1010,89 @@ void MainWindow::setCoreDumpLimit()
             "unlimited.");
     }
 }
+// void MainWindow::sendDebugArgumentToSpecificProcesses()
+// {
+//     bool isDebugMode = true; 
+
+//     QString communicationProcessPath = "/path/to/communication_process";
+//     compileProcessDebug(communicationProcessPath,isDebugMode,"CommunicationProcess");
+
+//     QString controlProcessPath = "/path/to/control_process";
+//     compileProcessDebug(controlProcessPath, isDebugMode,"ControlProcess");
+    
+//     QString communicationProcessPath = "/path/to/communication_process";
+//     compileProcessDebug(communicationProcessPath,isDebugMode,"CommunicationProcess");
+
+//     QString controlProcessPath = "/path/to/control_process";
+//     compileProcessDebug(controlProcessPath, isDebugMode,"ControlProcess");
+    
+//     QString communicationProcessPath = "/path/to/communication_process";
+//     compileAndRunProcess(communicationProcessPath,isDebugMode,"CommunicationProcess");
+
+//     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, 
+//                                      "Finished sending debug arguments to specified processes.");
+// }
+
+// void MainWindow::compileProcessDebug(const QString &executionFilePath, bool isDebugMode, const QString &processName)
+// {
+//   MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, 
+//                                      "Compiling process: " + processName.toStdString());
+
+//     QDir cmakeDir(QFileInfo(executionFilePath).absolutePath());
+//     QString buildDirPath = cmakeDir.absoluteFilePath("build");
+//     QDir buildDir(buildDirPath);
+
+//     if (!buildDir.exists()) {
+//         if (!buildDir.mkpath(buildDirPath)) {
+//             guiLogger.logMessage(logger::LogLevel::ERROR,
+//                                  "Failed to create build directory: " + 
+//                                  buildDirPath.toStdString());
+//             logOutput->append("Failed to create build directory: " + buildDirPath);
+//             return;
+//         }
+//     }
+
+//     QString cmakeCommand = "cmake .."; 
+//     QProcess cmakeProcess;
+//     cmakeProcess.setWorkingDirectory(buildDirPath);
+    
+//     if (isDebugMode) {
+//         cmakeCommand += " -DCMAKE_BUILD_TYPE=Debug";
+//     }
+
+//     cmakeProcess.start(cmakeCommand);
+
+//     if (!cmakeProcess.waitForFinished()) {
+//         guiLogger.logMessage(logger::LogLevel::ERROR,
+//                              "CMake failed for process: " + 
+//                              processName.toStdString());
+//         logOutput->append("CMake failed for process: " + 
+//                           processName);
+//         logOutput->append(cmakeProcess.readAllStandardError());
+//         return;
+//     }
+
+//     QString makeCommand = "make";
+//     QProcess makeProcess;
+//     makeProcess.setWorkingDirectory(buildDirPath);
+//     makeProcess.start(makeCommand);
+
+//     if (!makeProcess.waitForFinished()) {
+//         guiLogger.logMessage(logger::LogLevel::ERROR,
+//                              "Make failed for process: " + 
+//                              processName.toStdString());
+//         logOutput->append("Make failed for process: " + 
+//                           processName);
+//         logOutput->append(makeProcess.readAllStandardError());
+//         return;
+//     }
+
+//     guiLogger.logMessage(logger::LogLevel::INFO, 
+//                          "Compilation successful for process: " + 
+//                          processName.toStdString());
+//     logOutput->append("Compilation successful for process: " + 
+//                       processName);
+// }
 
 void MainWindow::compileProjects()
 {
@@ -948,6 +1102,7 @@ void MainWindow::compileProjects()
     // Disable the run button until compilation finishes
     runButton->setEnabled(false);
     setCoreDumpLimit();
+
     // Clear previous running processes
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
@@ -960,19 +1115,23 @@ void MainWindow::compileProjects()
     bool compileSuccessful = true;  // Track if all compilations succeed
 
     QList<QThread *> threads;
-
     QSet<QString> uniquePaths;  // Set to hold unique paths
     for (DraggableSquare *square : squares) {
         QString executionFilePath = square->getProcess()->getExecutionFile();
+        if(square->getProcess()->getConstructorType()==Process::ParameterizedConstructor2)
+        {
+          QString Plug=square->getProcess()->getPluginsEdit();
+          flag=true;
+        }
         uniquePaths.insert(executionFilePath);
     }
 
     for (QString executionFilePath : uniquePaths) {
+        
         Compiler *compiler =
-            new Compiler(executionFilePath, &compileSuccessful, this);
+            new Compiler(executionFilePath, &compileSuccessful,flag,this);
         connect(compiler, &Compiler::logMessage, this,
-                [this](const QString &message)
-                {
+                [this](const QString &message) {
                     guiLogger.logMessage(logger::LogLevel::ERROR,
                                          message.toStdString());
                 });
@@ -1062,6 +1221,7 @@ void MainWindow::runProjects()
     showLoadingIndicator();
     updateTimer();
     QMetaObject::invokeMethod(this, "showSimulation", Qt::QueuedConnection, Q_ARG(bool, true));
+    // bool isDebugMode=debugCheckBox->isChecked();
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
         "MainWindow::runProjects Starting to run projects.");
@@ -1079,7 +1239,12 @@ void MainWindow::runProjects()
                 logger::LogLevel::ERROR,
                 "MainWindow::runProjects sh: " + executionFilePath.toStdString());
             QProcess *scriptProcess = new QProcess(this);
-            scriptProcess->start("bash", QStringList() << executionFilePath);
+            QStringList arguments;
+            arguments<<executionFilePath;
+            // if(isDebugMode){
+            //     arguments<<"--debug";
+            // }
+            scriptProcess->start("bash",arguments);
             if (!scriptProcess->waitForStarted()) {
                 MainWindow::guiLogger.logMessage(
                     logger::LogLevel::ERROR,
@@ -1181,6 +1346,13 @@ void MainWindow::runProjects()
             QString executablePath = buildDir.absoluteFilePath(exeFile);
             QProcess *runProcess = new QProcess(this);
             runProcess->setWorkingDirectory(buildDirPath);
+            QStringList runArguments;
+            // if (isDebugMode) {
+            //     runArguments << "--debug"; // 
+            // }
+
+            runProcess->start(executablePath, runArguments);
+
             connect(runProcess, &QProcess::readyReadStandardOutput,
                     [this, runProcess]()
                     {
