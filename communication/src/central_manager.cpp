@@ -1,37 +1,21 @@
 #include "../include/central_manager.h"
 #include <iostream>
 #include <stdexcept>
+#include "../include/central_manager.h"
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <cstdio>
+#include <memory>
+#include <stdexcept>
+#include <array>
+#include <string>
 
 CentralManager* CentralManager::instance = nullptr;
 std::vector<uint16_t> CentralManager::ports;
-
-// Initializing the ports of the busses
-std::unordered_map<uint32_t, uint16_t> CentralManager::assignPorts(std::vector<uint32_t>& ids)
-{
-    std::unordered_map<uint32_t, uint16_t> idToPort;
-    int basePort = 8080;
-    for (const int id : ids) {
-        while (!isPortAvailable(basePort))
-            basePort++;
-
-        CentralManager::ports.push_back(basePort);
-        idToPort[id] = basePort;
-        basePort++;
-    }
-
-    return idToPort;
-}
-
-// Checking if the port is free
-bool CentralManager::isPortAvailable(uint16_t port)
-{
-    std::string command = "netstat -an | grep :" + std::to_string(port) + " > /dev/null";
-    int result = std::system(command.c_str());
-    if((std::find(CentralManager::ports.begin(),CentralManager::ports.end(),port) != CentralManager::ports.end()))
-        return false;
-    
-    return (result != 0);
-}
 
 // Singleton instance retrieval
 CentralManager* CentralManager::getInstance()
@@ -45,6 +29,12 @@ CentralManager* CentralManager::getInstance()
 // Singleton pattern: private constructor
 CentralManager::CentralManager() : running(false)
 {
+    NetworkInfo::loadProcessConfig("../config.json");
+    ports = NetworkInfo::getPorts();
+    processIds = NetworkInfo::getProcessIds();
+    maxCriticalProcessID = NetworkInfo::getMaxCriticalProcessID();
+    
+    //std::cout<<"IP:"<<getLocalIPAddress()<<std::endl;
     if (CentralManager::ports.empty())
         throw std::invalid_argument("Ports vector cannot be empty.");
 
@@ -94,7 +84,7 @@ ErrorCode CentralManager::registerBusManager(const uint16_t port)
     return ErrorCode::SUCCESS;      
 }
 
-ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint32_t port, bool isConnected)
+ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint16_t port, bool isConnected)
 {
     if(!running.load())
         return ErrorCode::NOT_RUNNING;

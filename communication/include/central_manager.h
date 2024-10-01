@@ -12,11 +12,13 @@
 #include "error_code.h"
 #include "Imanager.h"
 #include "sync_communication.h"
-
+#include "network_info.h"
 class CentralManager:IManager{
 private:
     static CentralManager* instance;
     static std::vector<uint16_t> ports;
+    std::vector<uint32_t> processIds;
+    int maxCriticalProcessID;
     Gateway* gateway;
     std::atomic<bool> running;
     
@@ -39,12 +41,6 @@ private:
 
 public:
     static CentralManager* getInstance();
-
-    // Initializing the ports of the busses
-    static std::unordered_map<uint32_t, uint16_t> assignPorts(std::vector<uint32_t>& ids);
-
-    // Checking if the port is free
-    static bool isPortAvailable(uint16_t port);
 
     //connect centeral manager
     ErrorCode startConnection() override;
