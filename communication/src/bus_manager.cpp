@@ -9,7 +9,6 @@ BusManager::BusManager(uint16_t port, std::function<ErrorCode(Packet&)> recieved
 ErrorCode BusManager::startConnection()
 {
     ErrorCode isConnected = server.startConnection();
-    //syncCommunication.notifyProcess()
     return isConnected;
 }
 
@@ -19,12 +18,7 @@ ErrorCode BusManager::receiveMessage(Packet &packet)
     ErrorCode res = sendMessage(packet);
     if (res == ErrorCode::INVALID_CLIENT_ID)
         recievedMessageCallback(packet);
-    // Checking the case of collision and priority in functions : checkCollision,packetPriority
-    // Packet* resolvedPacket = checkCollision(*p);
-    // if (resolvedPacket)
-    //     server.sendToClients(*resolvedPacket);
     return res;
-
 }
 
 ErrorCode BusManager::updateProcessID(const uint32_t processID, const uint16_t port, bool isConnected)
@@ -35,7 +29,7 @@ ErrorCode BusManager::updateProcessID(const uint32_t processID, const uint16_t p
 // Sending according to broadcast variable
 ErrorCode BusManager::sendMessage(const Packet &packet)
 {
-    if(packet.header.isBroadcast)
+    if(packet.getIsBroadcast())
         return server.sendBroadcast(packet);
     return server.sendDestination(packet);
 }
@@ -49,7 +43,7 @@ Packet BusManager::checkCollision(Packet &currentPacket)
 // Implement a priority check according to the CAN bus
 Packet BusManager::packetPriority(Packet &a, Packet &b)
 {
-    return (a.header.SrcID < b.header.SrcID) ? a : b;
+    return (a.getSrcId() < b.getSrcId()) ? a : b;
 }
 
 ErrorCode BusManager::closeConnection()

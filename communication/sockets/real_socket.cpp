@@ -81,14 +81,14 @@ ssize_t RealSocket::recv(int sockfd, void *buf, size_t len, int flags)
     const Packet *p = static_cast<const Packet *>(buf);
 
     if (valread < 0)
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("Error occurred: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string(" Error occurred: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
     else if (valread == 0)
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("Connection closed: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string(" connection closed: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
     else {
-        if (!p->header.DLC)
-            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Received ID for connection: " + std::to_string(p->header.SrcID));
+        if (!p->getDLC())
+            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string("received packet number: ") + std::to_string(p->getPSN()) + std::string(", of messageId: ") + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " ID for connection: " + std::to_string(p->getSrcId()));
         else
-            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("Received packet number: ") + std::to_string(p->header.PSN) + std::string(", of messageId: ") + std::to_string(p->header.ID) + " Data: " + p->pointerToHex(p->data,p->header.DLC));
+            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string("received packet number: ") + std::to_string(p->getPSN()) + std::string(", of messageId: ") + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " Data: " + p->pointerToHex());
     }
 
     return valread;
@@ -100,12 +100,12 @@ ssize_t RealSocket::send(int sockfd, const void *buf, size_t len, int flags)
     const Packet *p = static_cast<const Packet *>(buf);
     if (sendAns <= 0)
     {
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet number: " + std::to_string(p->getPSN()) + ", of messageId: " + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)));
     }
-    if (!p->header.DLC)
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Sending ID for connection: " + std::to_string(p->header.SrcID));
+    if (!p->getDLC())
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet number: " + std::to_string(p->getPSN()) + ", of messageId: " + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " ID for connection: " + std::to_string(p->getSrcId()));
     else
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + " Data: " + p->pointerToHex(p->data,p->header.DLC));
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet number: " + std::to_string(p->getPSN()) + ", of messageId: " + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " Data: " + p->pointerToHex());
     return sendAns;
 }
 

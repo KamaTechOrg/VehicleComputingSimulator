@@ -64,10 +64,15 @@ public:
     ErrorCode startConnection();
     
     // Sends a message to manager
-    ErrorCode sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast);
+    ErrorCode sendMessage(void *data, size_t dataSize, uint32_t destID,
+                          uint32_t srcID,
+                          MessageType messageType = MessageType::DATA_MESSAGE);
     
     // Sends a message to manager - Async
-    void sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(ErrorCode)> passSend, bool isBroadcast);
+    void sendMessageAsync(void *data, size_t dataSize, uint32_t destID,
+                          uint32_t srcID,
+                          std::function<void(ErrorCode)> sendCallback,
+                          MessageType messageType = MessageType::DATA_MESSAGE);
 
     // Destructor
     ~Communication();
