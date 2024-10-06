@@ -1,9 +1,16 @@
 #include <Arduino.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
+
+#include "../../../communication/src/communication.h"
 
 #define MAX_NORMAL_VALUE 125
 #define REASONABLE_GAP 20
 #define INVALID_CONTINUITY 6
+#define WAIT_TIME 1000
+#define SRC_ID 8
+#define MSG_SIZE 64
 
 using namespace std;
 
@@ -32,16 +39,65 @@ String data =
 
 int currentIndex, lastCommaIndex, countLoop, countInvalid;
 int average, previousValue;
+bool status;
+float scaleValue;
+Communication *com;
+
+void sendMessage(string message, int speed)
+{
+    std::vector<uint8_t> buffer;
+    buffer.push_back(static_cast<uint8_t>(status ? 1 : 0));
+
+    int i = 0;
+    for (;i < message.size() &&  i < MSG_SIZE; buffer.push_back(static_cast<uint8_t>(message[i])), i++ )
+        ;
+    for (; i < MSG_SIZE; buffer.push_back(0), i++)
+        ; 
+
+    uint8_t intFieldBytes[4];
+    std::memcpy(intFieldBytes, &speed, sizeof(int32_t));
+   
+    // std::cout << std::dec << std::endl; 
+    // buffer.push_back(intFieldBytes[3]);  // Most significant byte
+    // buffer.push_back(intFieldBytes[2]);
+    // buffer.push_back(intFieldBytes[1]);
+    // buffer.push_back(intFieldBytes[0]);  // Least significant byte   
+
+    int32_t flags = speed;
+    uint8_t flagsBytes[4];
+    std::memcpy(flagsBytes, &flags, sizeof(int32_t));
+    buffer.insert(buffer.end(), flagsBytes, flagsBytes + 4) ;
+
+    com->sendMessage(buffer.data(), buffer.size(), 1, SRC_ID, false);
+}
+
+void handleMesseage(uint32_t senderId , void *data)
+{
+    string  mesagge = static_cast<char *>(data);
+    Serial.println("data recieved");
+    Serial.println(mesagge.c_str());
+
+    if(mesagge == "slow down")
+        scaleValue *= 0.95;
+    else if(mesagge == "speed up")
+        scaleValue *= 1.05;
+
+    free(data);
+}
 
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Hello, ESP32!");
+    Serial.println("speed sonsor");
     currentIndex = 0;
     lastCommaIndex = -1;
     countLoop = 0;
     average = 0;
     previousValue = -1;
+    status = true;
+    scaleValue = 1;
+    com = new Communication(SRC_ID,handleMesseage);
+    com->startConnection();
 }
 
 void loop()
@@ -54,7 +110,7 @@ void loop()
             nextCommaIndex = data.length();
 
         String numberStr = data.substring(currentIndex, nextCommaIndex);
-        int currentValue = numberStr.toInt();
+        int currentValue = numberStr.toInt() * scaleValue;
 
         Serial.println(currentValue);
 
@@ -63,18 +119,20 @@ void loop()
         if (currentValue > MAX_NORMAL_VALUE) {
             countInvalid++;
             if (countInvalid > INVALID_CONTINUITY) {
+                status = false;
                 Serial.println("");
                 Serial.println("send error:");
-                Serial.print("---");
-                Serial.print(currentValue);
-                Serial.println("---");
+                Serial.println(("--- " + std::to_string(currentValue) + " ---").c_str());
                 Serial.println("");
                 countLoop = 0;
                 average = 0;
+                sendMessage("high speed",currentValue);
+        
             }
         }
         else {
             countInvalid = 0;
+            status = true;
             if ((abs(currentValue - previousValue) < REASONABLE_GAP) ||
                 previousValue == -1) {
                 average += currentValue;
@@ -91,13 +149,14 @@ void loop()
     if (countLoop == 20) {
         Serial.println("");
         Serial.println("send:");
-        Serial.print("---");
-        Serial.print((average / 20));
-        Serial.println("---");
+        Serial.println(("--- " + std::to_string((average / 20)) + " ---").c_str());
         Serial.println("");
+
+        sendMessage("average current speed",(average/20));
 
         countLoop = 0;
         average = 0;
+
     }
-    delay(1000);
+    delay(WAIT_TIME);
 }
