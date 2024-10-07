@@ -138,8 +138,9 @@ void Frames::updateFrames()
     if (activeLogEntries.empty()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                          "Finished processing log entries.");
-        emit this->simulationFinished();
+        // emit this->simulationFinished();
         timer->stop();
+        clearFrames();
     }
 
     update();
@@ -213,9 +214,9 @@ void Frames::stopFrames()
 void Frames::clearFrames()
 {
     timer->stop();
-    framesMat.clear();
     activeLogEntries.clear();
     update();
+    repaint();
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Simulation finished and frames cleared");
 }

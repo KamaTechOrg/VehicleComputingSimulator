@@ -700,18 +700,20 @@ void MainWindow::openImageDialog()
     }
 }
 
-void MainWindow::showSimulation()
+void MainWindow::showSimulation(bool isRealTime)
 {
-    if (isSimulationRunning) {
-        frames->stopFrames();
-        isSimulationRunning = false;
-        showSimulationButton->setText("Resume\nSimulation");
-    }
-    else {
+    if (isRealTime) {
+        if (timer) {
+            timer->stop();
+            delete timer;
+            timer = nullptr;
+        }
+        timeLabel->show();
+        timeInput->clear();
         QString filePath = "log_file.log";
         logHandler.readLogFile(filePath);
-        logHandler.analyzeLogEntries(this, "simulation_state.bson");
-        frames = new Frames(logHandler);
+        logHandler.analyzeLogEntries(this, &squares, nullptr);
+        frames = new Frames(logHandler);  // Initialize Frames
         QLayout *oldLayout = workspace->layout();
         if (oldLayout) {
             delete oldLayout;
@@ -720,9 +722,44 @@ void MainWindow::showSimulation()
         framesLayout->addWidget(frames);
         workspace->setLayout(framesLayout);
         frames->startFrames();
-        isSimulationRunning = true;
-        showSimulationButton->setText(
-            "Pause\nSimulation");
+    }
+    else {
+        if(!isSimulationRunning){
+            QVariantMap record = dataHandler->getRecordById(offlineId);
+            QString logData;
+            if (!record.isEmpty())
+                logData = record["log_data"].toString();
+            if (!logData.isEmpty()) {
+                logHandler.readLogFile(logData);
+                QByteArray bsonData = record["bson_data"].toByteArray();
+                bsonDocument = bson_new_from_data(
+                    reinterpret_cast<const uint8_t *>(bsonData.constData()),
+                    bsonData.size());
+                logHandler.analyzeLogEntries(this, nullptr, bsonDocument);
+
+                frames = new Frames(logHandler);  // Initialize Frames
+
+                QLayout *oldLayout = workspace->layout();
+                if (oldLayout) {
+                    delete oldLayout;
+                }
+
+                QVBoxLayout *framesLayout = new QVBoxLayout(workspace);
+                framesLayout->addWidget(frames);
+                workspace->setLayout(framesLayout);
+
+                frames->startFrames();
+                isSimulationRunning = true;
+            }
+            else {
+                MainWindow::guiLogger.logMessage(
+                    logger::LogLevel::ERROR,
+                    "Failed to retrieve log data from database");
+            }
+        }
+        else{
+            frames->stopFrames();
+        }
     }
 }
 
@@ -755,6 +792,7 @@ void MainWindow::loadSelectedSimulation(const QList<QVariantMap> &simulations,
     for (const auto &sim : simulations) {
         if (sim["input_string"].toString() == selectedSimulation) {
             int simulationId = sim["id"].toInt();
+            offlineId = simulationId;
             QByteArray bsonData = sim["bson_data"].toByteArray();
             SimulationStateManager *state = new SimulationStateManager();
             bsonDocument = bson_new_from_data(
@@ -762,7 +800,6 @@ void MainWindow::loadSelectedSimulation(const QList<QVariantMap> &simulations,
                 bsonData.size());
             if (bsonDocument)
                 state->loadSimulationState(bsonDocument);
-
             for (auto sq : squares) {
                 delete (sq);
             }
