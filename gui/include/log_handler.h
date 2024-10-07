@@ -1,7 +1,6 @@
 #ifndef LOGHANDLER_H
 #define LOGHANDLER_H
 
-#include "draggable_square.h"
 #include <QDateTime>
 #include <QDockWidget>
 #include <QJsonObject>
@@ -9,15 +8,16 @@
 #include <QString>
 #include <QTime>
 #include <QVector>
+#include <bson/bson.h>
+#include "draggable_square.h"
 
 class LogHandler {
+    friend class TestLogHandler;
 public:
     struct LogEntry {
         QDateTime timestamp;
         int srcId;
         int dstId;
-        QString payload;
-        QString status;  // SEND/RECEIVE
 
         bool operator<(const LogEntry &other) const
         {
@@ -26,18 +26,21 @@ public:
     };
 
     void readLogFile(const QString &fileName);
-    void sortLogEntries();
-    void analyzeLogEntries(QMainWindow *mainWindow, const QString &jsonFileName,
-                           bool realTime = false);
+    void analyzeLogEntries(QMainWindow *mainWindow,
+                    QVector<DraggableSquare*> *squares ,
+                        bson_t* bsonObj);//const bson_t *bsonObject=nullptr);
     QVector<LogHandler::LogEntry> getLogEntries();
     const QMap<int, DraggableSquare *> &getProcessSquares() const;
+    void sortLogEntries();
+    static bool end;
 
 private:
     QVector<LogEntry> logEntries;
     QMap<int, DraggableSquare *>
-        processSquares;  // Track process squares by their IDs
+        processSquares;
     QMap<int, QMap<int, int>>
-        communicationCounts;  // Track communication counts between process pairs
+        communicationCounts;
+    LogEntry parseLogLine(const QString &line);
 };
 
 #endif  // LOGHANDLER_H
