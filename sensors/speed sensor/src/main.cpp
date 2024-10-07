@@ -77,9 +77,9 @@ void loop()
     if (countLoop == SENDING_TIME) {
         // Serial.println("\n send:");
         // Serial.println(("--- " + std::to_string((average / 20)) + " --- \n").c_str());
-        speedLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / 20));
+        speedLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / SENDING_TIME));
 
-        sendMessage("average current speed",(average/20));
+        sendMessage("average current speed",(average/SENDING_TIME));
 
         countLoop = 0;
         average = 0;
