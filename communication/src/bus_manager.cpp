@@ -45,13 +45,42 @@ void BusManager::checkCollision(Packet &currentPacket)
     }
     else {
         if (lastPacket->getTimestamp() == currentPacket.getTimestamp()) {
+            RealSocket::log.logMessage(
+                logger::LogLevel::INFO, "Handled collision between packet from SRC " 
+                                        + std::to_string(lastPacket->getSrcId())
+                                        + " to DST " + std::to_string(lastPacket->getDestId())
+                                        + ", (packet number: " + std::to_string(lastPacket->getPSN())
+                                        + " of messageId " + std::to_string(lastPacket->getId())
+                                        + ") and packet from SRC " + std::to_string(currentPacket.getSrcId())
+                                        + " to DST " + std::to_string(currentPacket.getDestId())
+                                        + ", (packet number: " + std::to_string(currentPacket.getPSN())
+                                        + " of messageId " + std::to_string(currentPacket.getId())
+                                        + ")."
+            );
+
             // Same timestamp indicates potential collision, check priority
-            Packet *prioritizedPacket =
-                packetPriority(*lastPacket, currentPacket);
+            Packet* prioritizedPacket = packetPriority(*lastPacket, currentPacket);
+
+            // Log the result once and determine the lost packet
+            Packet* lostPacket = (prioritizedPacket == &currentPacket) ? lastPacket : &currentPacket;
+
+            // Update the last packet if current has priority
             if (prioritizedPacket == &currentPacket) {
-                delete lastPacket; // Replace last packet if current packet has priority
+                delete lastPacket; // Replace last packet
                 lastPacket = new Packet(currentPacket);
             }
+
+            RealSocket::log.logMessage(
+                logger::LogLevel::INFO, "Packet from SRC "
+                                        + std::to_string(prioritizedPacket->getSrcId()) 
+                                        + " to DST " + std::to_string(prioritizedPacket->getDestId())
+                                        + ", (packet number: " + std::to_string(prioritizedPacket->getPSN())
+                                        + " of messageId " + std::to_string(prioritizedPacket->getId())
+                                        + " ) won the collision. Packet from SRC " + std::to_string(lostPacket->getSrcId())
+                                        + " to DST " + std::to_string(lostPacket->getDestId())
+                                        + ", (packet number: " + std::to_string(lostPacket->getPSN())
+                                        + " of messageId " + std::to_string(lostPacket->getId()) + ") was lost."
+            );
         }
     }
 }
@@ -75,15 +104,20 @@ Packet *BusManager::packetPriority(Packet &a, Packet &b)
 void BusManager::startCollisionTimer()
 {
     stopFlag = false;
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Starting collision timer thread."); // לוג לפני התחלת ה-thread
+
     collisionTimerThread = std::thread([this]() {
         while (!stopFlag) {
-            GlobalClock::waitForNextTick();
-            if (!stopFlag) {
+            GlobalClock::waitForNextTick(); // מחכה לשעון
+
+            if (!stopFlag)
                 checkLastPacket(); // Check and send last packet if necessary
-            }
         }
+        
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Collision timer thread stopping."); // לוג כאשר ה-thread מפסיק
     });
 }
+
 
 // Checks the last packet and sends it if it hasn't been sent yet
 void BusManager::checkLastPacket()

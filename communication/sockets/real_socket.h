@@ -7,6 +7,7 @@
 #include "../include/packet.h"
 #include "Isocket.h"
 #include "../../logger/logger.h"
+#include "../include/message.h"
 
 class RealSocket : public ISocket
 {

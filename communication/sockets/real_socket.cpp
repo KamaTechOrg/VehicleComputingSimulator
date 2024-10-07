@@ -84,13 +84,9 @@ ssize_t RealSocket::recv(int sockfd, void *buf, size_t len, int flags)
         RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string(" Error occurred: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
     else if (valread == 0)
         RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string(" connection closed: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
-    else {
-        if (!p->getDLC())
-            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string("received packet number: ") + std::to_string(p->getPSN()) + std::string(", of messageId: ") + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " ID for connection: " + std::to_string(p->getSrcId()));
-        else
-            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string("received packet number: ") + std::to_string(p->getPSN()) + std::string(", of messageId: ") + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " Data: " + p->pointerToHex());
-    }
-
+    else
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), std::string("received packet type: ") + Message::getMessageTypeString(Message::getMessageTypeFromID(p->getId())) +std::string(" number: ") + std::to_string(p->getPSN()) + std::string(", of messageId: ") + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + ( p->getDLC() ? " Data: " + Packet::pointerToHex(p->getPayload(),p->getDLC()):""));
+        
     return valread;
 }
 
@@ -99,16 +95,13 @@ ssize_t RealSocket::send(int sockfd, const void *buf, size_t len, int flags)
     int sendAns = ::send(sockfd, buf, len, flags);
     const Packet *p = static_cast<const Packet *>(buf);
     if (sendAns <= 0)
-    {
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet number: " + std::to_string(p->getPSN()) + ", of messageId: " + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)));
-    }
-    if (!p->getDLC())
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet number: " + std::to_string(p->getPSN()) + ", of messageId: " + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " ID for connection: " + std::to_string(p->getSrcId()));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "Error occurred while sending packet type: " + Message::getMessageTypeString(Message::getMessageTypeFromID(p->getId())) + ", number: " + std::to_string(p->getPSN()) + " ,of messageId: " + std::to_string(p->getId()) + ", error: " + std::string(strerror(errno)));
     else
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet number: " + std::to_string(p->getPSN()) + ", of messageId: " + std::to_string(p->getId()) + std::string(" ") + std::string(strerror(errno)) + " Data: " + p->pointerToHex());
-    return sendAns;
-}
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->getSrcId()), std::to_string(p->getDestId()), "sending packet type: " + Message::getMessageTypeString(Message::getMessageTypeFromID(p->getId())) + ", number: " + std::to_string(p->getPSN()) + " ,of messageId: " + std::to_string(p->getId()) + (p->getDLC() ? ", Data: " + Packet::pointerToHex(p->getPayload(), p->getDLC()) : ""));
 
+    return sendAns;
+}            
+            
 int RealSocket::close(int fd)
 {
     RealSocket::log.logMessage(logger::LogLevel::INFO, "Close socket number: " + std::to_string(fd));

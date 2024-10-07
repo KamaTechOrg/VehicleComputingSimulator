@@ -50,9 +50,8 @@ public:
   uint16_t calculateCRC() const;
   bool validateCRC() const;
 
-  // A function to convert the data to hexa (logger)
-  std::string pointerToHex() const;
-
+  // Static function to convert raw data to hexadecimal
+  static std::string pointerToHex(const void* data, size_t size);
 private:
   // Header structure within Packet
   struct Header {

@@ -213,7 +213,7 @@ class Communication {
      * 
      * @param packet The packet object associated with the acknowledgment error.
      */
-    void handleACKError(Packet &packet);
+    void handleACKError();
 
     /**
      * @brief Handles reception errors by updating the Reception Error Counter (REC).

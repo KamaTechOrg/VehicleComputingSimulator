@@ -11,6 +11,7 @@
 #include <csignal>
 #include <pthread.h>
 #include <limits> 
+#include "../sockets/real_socket.h"
 
 #define SHM_NAME "/clock__shm"
 #define TICK_DURATION std::chrono::milliseconds(50) // Define the tick duration

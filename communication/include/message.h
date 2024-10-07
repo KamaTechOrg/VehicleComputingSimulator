@@ -55,4 +55,10 @@ public:
 
     // Returns a string representation of the MessageType enum value
     static std::string getMessageTypeString(MessageType type);
+
+    // Get the message ID
+    uint32_t getMessageID() const
+    {
+        return messageID;
+    }
 };
