@@ -37,9 +37,7 @@ void sendMessage(string message, int speed)
     for (; i < MSG_SIZE; buffer.push_back(0), i++)
         ; 
 
-    uint8_t intFieldBytes[4];
-    std::memcpy(intFieldBytes, &speed, sizeof(int32_t)); 
-
+   
     int32_t flags = speed;
     uint8_t flagsBytes[4];
     std::memcpy(flagsBytes, &flags, sizeof(int32_t));

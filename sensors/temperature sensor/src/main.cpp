@@ -1,27 +1,29 @@
-#include <Arduino.h>
-#include <iostream>
-
-#define MAX_NORMAL_VALUE 60
-#define REASONABLE_GAP 10
-#define INVALID_CONTINUITY 3
-#define WAIT_TIME 500
+#include "data_definitions.h"
 
 using namespace std;
 
-String data = "46,19,20,21,21,39,19,23,22,22,18,18,19,17,16,50,75,19,21,20,20,20,20,20,19,21,60,21,20,16,21,0,16,19,18,19,19,19,19,20,19,19,54,18,18,17,16,16,16,18,18,18,18,37,18,19,17,19,17,18,18,17,18,15,16,16,17,15,17,15,19,18,19,20,20,21,20,19,19,19,16,19,80,20,21,20,25,19,20,21,21,23,20,21,20,21,20,0,20,22,21,24,23,0,24,25,24,24,23,23,23,21,21,21,20,19,18,19,18,74,18,18,21,19,19,21,22,23,24,25,25,22,24,20,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,2,4,6,8,11,13,13,0,14,14,15,15,14,17,62,22,23,26,29,31,33,35,35,35,35,36,36,37,37,37,38,38,39,39,38,76,38,38,37,36,36,35,35,35,71,0,37,38,39,39,40,41,42,43,43,42,41,40,39,38,37,35,34,33,32,30,28,27,27,28,0,27,26,27,26,106,27,28,28,29,30,30,31,125,31,31,32,33,34,34,36,37,38,39,39,0,42,43,44,173,44,44,44,46,47,48,49,49,50,50,49,50,49,49,50,50,52,52,51,49,49,49,48,47,46,45,44,43,42,41,40,40,39,38,38,38,38,38,38,39,40,40,40,40,41,41,41,41,41,40,40,39,39,39,39,39,39,36,38,39,40,41,170,44,91,47,49,49,54,55,56,55,162,56,58,0,61,59,58,58,58,53,50,50,49,50,50,45,41,41,44,45,43,40,37,40,41,40,40,42,38,36,37,36,72,38,40,36,32,29,28,24,24,22,19,22,24,23,20,18,19,34,15,17,17,18,19,58,20,20,21,20,15,13,16,17,18,19,20,20,21,21,22,22,23,24,23,23,72,25,27,25,22,20,56,20,20,19,19,18,76,17,16,17,16,16,17,20,18,15,16,19,20,16,16,18,20,21,22,22,23,23,24,82,29,30,31,32,33,33,34,35,106,36,35,35,36,35,35,34,34,34,35,36,36,36,34,33,33,33,29,24,23,24,99,25,26,24,20,18,19,21,23,23,22,22,24,25,25,24,24,26,26,26,25,23,22,23,23,24,25,25,25,24,24,25,21,21,21,23,22,22,22,21,23,94,25,31,37,38,39,124,43,44,175,44,44,44,45,45,45,44,44,43,43,41,39,38,37,37,35,33,92,28,25,27,30,31,31,30,30,31,0,30,30,30,30,30,30,30,30,30,30,30,30,30,30,29,27,25,26,27,27,27,28,29,30,32,33,32,98,32,32,33,34,34,35,39,40,40,41,40,41,165,41,41,41,41,41,40,40,119,40,40,39,39,0,38,38,38,38,38,39,39,40,40,40,41,41,41,41,82,41,41,41,42,42,42,42,42,42,42,126,42,43,43,44,45,46,48,49,50,203,52,162,57,52,53,53,54,54,55,54,54,54,53,51,98,49,50,48,45,47,49,48,48,49,50,50,46,47,47,44,130,45,46,47,48,48,49,50,50,51,53,54,56,54,100,49,46,45,42,35,32,32,33,32,33,68,34,35,109,37,38,156,40,40,40,40,40,41,40,41,41,43,42,171,43,44,42,39,40,39,41,38,39,40,41,41,39,42,42,40,40,40,39,42,40,39,77,38,0,109,36,36,36,36,37,37,36,37,37,37,36,36,39,36,37,36,35,34,35,33,32,32,31,31,31,31,30,30,31,30,29,29,58,0,29,28,26,26,26,80,27,29,29,0,31,32,67,34,34,35,36,35,35,35,34,35,35,35,36,35,35,35,34,34,34,34,34,35,35,36,37,38,38,39,40,40,41,42,42,43,44,45,45,46,47,47,48,50,51,52,51,47,42,38,34,35,35,34,34,33,33,34,35,34,35,34,33,32,32,98,32,33,32,29,28,30,29,29,30,89,30,31,122,30,29,28,28,27,27,28,29,28,28,29,29,29,29,29,0,29,30,31,31,29,31,30,30,30,29,29,29,0,29,28,27,27,27,27,27,27,28,27,27,29,29,29,30,30,30,31,31,31,32,32,31,30,29,28,28,27,27,28,0,29,29,31";
-
 int currentIndex, lastCommaIndex, countLoop, countInvalid;
 int average, previousValue;
+bool status;
+float scaleValue;
+Communication *com;
+logger *temperatureLog;
+
 
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Hello, ESP32!");
-    currentIndex = 0;
-    lastCommaIndex = -1;
-    countLoop = 0;
-    average = 0;
-    previousValue = -1;
+    currentIndex = countLoop = average = countInvalid = 0 ;
+    lastCommaIndex = previousValue = -1;
+    scaleValue = 1;
+    status = true;
+    com = new Communication(SRC_ID,handleMesseage);
+    com->startConnection();
+    temperatureLog = new logger("temperature sensor");
+    //temperatureLog->logMessage(logger::LogLevel::INFO,"temperature sensor");
+    Serial.println("temperature sensor");
+
+
 }
 
 void loop()
@@ -34,31 +36,35 @@ void loop()
             nextCommaIndex = data.length();
 
         String numberStr = data.substring(currentIndex, nextCommaIndex);
-        int currentValue = numberStr.toInt();  
-
+        int currentValue = numberStr.toInt() * scaleValue;
+        //temperatureLog->logMessage(logger::LogLevel::DEBUG,"currentValue: " + to_string(currentValue));
         Serial.println(currentValue);
 
         currentIndex = nextCommaIndex + 1;
 
         if (currentValue > MAX_NORMAL_VALUE) {
             countInvalid++;
+            //temperatureLog->logMessage(logger::LogLevel::DEBUG, "invalid value " + to_string(currentValue) + " " + to_string(countInvalid) +" times" );
+
             if (countInvalid > INVALID_CONTINUITY) {
-                Serial.println("");
-                Serial.println("send error:");
-                Serial.print("---");
-                Serial.print(currentValue);
-                Serial.println("---");
-                Serial.println("");
+                status = false;
+                Serial.println("\n send error:");
+                Serial.println(("--- " + std::to_string(currentValue) + " --- \n").c_str());
+                //temperatureLog->logMessage(logger::LogLevel::ERROR, "send error:" +to_string(currentValue));
                 countLoop = 0;
                 average = 0;
+                sendMessage(currentValue);
+        
             }
         }
         else {
             countInvalid = 0;
+            status = true;
             if ((abs(currentValue - previousValue) < REASONABLE_GAP) ||
                 previousValue == -1) {
                 average += currentValue;
                 previousValue = currentValue;
+                //temperatureLog->logMessage(logger::LogLevel::INFO,"unlikely gap, previous value: " + to_string(previousValue) + " current value: " + to_string(currentValue));
             }
             else {
                 average += previousValue;
@@ -68,16 +74,16 @@ void loop()
     else {
         currentIndex = 0;
     }
-    if (countLoop == 20) {
-        Serial.println("");
-        Serial.println("send:");
-        Serial.print("---");
-        Serial.print((average / 20));
-        Serial.println("---");
-        Serial.println("");
+    if (countLoop == SENDING_TIME) {
+        Serial.println("\n send:");
+        Serial.println(("--- " + std::to_string((average / 20)) + " --- \n").c_str());
+        //temperatureLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / SENDING_TIME));
+
+        sendMessage((average/SENDING_TIME));
 
         countLoop = 0;
         average = 0;
+
     }
     delay(WAIT_TIME);
 }
