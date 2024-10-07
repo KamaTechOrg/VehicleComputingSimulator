@@ -81,8 +81,9 @@ public:
     }
     static logger guiLogger;
 
+
 private slots:
-    void showSimulation();
+    void showSimulation(bool isRealTime = false);
     void loadSimulation();
 
 public slots:
@@ -148,6 +149,7 @@ private:
     Frames *frames;
     QPushButton *showSimulationButton;
     bson_t *bsonDocument;
+    int offlineId = -1;
 };
 
 #endif  // MAIN_WINDOW_H

@@ -10,69 +10,79 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QBuffer>
 #include "log_handler.h"
 #include "draggable_square.h"
 #include "simulation_state_manager.h"
 #include "main_window.h"
 
-QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
-{
-    return logEntries;
-}
 
-void LogHandler::readLogFile(const QString &fileName)
+bool LogHandler::end = false;
+
+void LogHandler::readLogFile(const QString &fileContent)
 {
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (fileContent.isEmpty()) {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::ERROR,
-            "Cannot open file: " + fileName.toStdString());
+            "File content is empty.");
         return;
     }
 
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
-        "File successfully opened: " + fileName.toStdString());
+        "File content successfully loaded.");
 
-    QByteArray fileData = file.readAll();
-    file.close();
+    QByteArray byteArray = fileContent.toUtf8();
+    QBuffer buffer(&byteArray);
+    buffer.open(QIODevice::ReadOnly);
+    
+    QTextStream in(&buffer);
 
-    QList<QByteArray> lines = fileData.split('\n');
-    for (const QByteArray &line : lines) {
-        QString trimmedLine = QString(line).trimmed();
-        QStringList fields = trimmedLine.split(' ');
+    while (!LogHandler::end && !in.atEnd()) {
+        QString line = in.readLine().trimmed();
 
-        if (fields.size() < 6) {
-            MainWindow::guiLogger.logMessage(
-                logger::LogLevel::DEBUG,
-                "Skipping malformed line: " + trimmedLine.toStdString());
+        if (line.isEmpty()) {
             continue;
         }
 
-        LogEntry entry;
-        QString dateString = fields[0].trimmed();
-        QString timeString = fields[1].trimmed();
+        if (line.contains("SRC") && line.contains("DST")) {
+            LogEntry entry = parseLogLine(line);
 
-        QString dateTimeString = dateString + " " + timeString;
-        entry.timestamp =
-            QDateTime::fromString(dateTimeString, "yyyy-MM-dd HH:mm:ss.zzz");
-        if (!entry.timestamp.isValid()) {
-            MainWindow::guiLogger.logMessage(
-                logger::LogLevel::ERROR,
-                "Skipping line with invalid timestamp: " +
-                    trimmedLine.toStdString());
-            continue;
+            if (entry.srcId != -1) {
+                logEntries.push_back(entry);
+            }
         }
-
-        entry.srcId = fields[2].trimmed().toInt();
-        entry.dstId = fields[3].trimmed().toInt();
-        entry.payload = fields[4].trimmed();
-        entry.status = fields[5].trimmed();
-        logEntries.push_back(entry);
     }
 
-    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                     "Log file successfully read.");
+    buffer.close();
+}
+
+
+LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
+{
+    LogEntry entry;
+    QStringList fields = line.split(' ');
+    if (fields.size() < 12) {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "Skipping malformed line: " + line.toStdString());
+        entry.srcId = -1; 
+        return entry;
+    }
+
+    QString timestampStr = fields[0];
+    timestampStr.chop(2);
+    qint64 nanoseconds = timestampStr.toLongLong();
+    entry.timestamp = QDateTime::fromMSecsSinceEpoch(nanoseconds / 1000000);
+
+    entry.srcId = fields[3].toInt();
+    entry.dstId = fields[5].toInt();
+    return entry;
+}
+
+QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
+{
+    return logEntries;
 }
 
 void LogHandler::sortLogEntries()
@@ -80,108 +90,112 @@ void LogHandler::sortLogEntries()
     std::sort(logEntries.begin(), logEntries.end());
 }
 
-void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
-                                   const QString &jsonFileName, bool realTime)
+void LogHandler::analyzeLogEntries(QMainWindow *mainWindow, QVector<DraggableSquare*> *squares, bson_t* bsonObj)
 {
-    if (realTime) {
-        // if the simulation runs time the squares are present on the window
-        /// Otherwise, quarters are reloaded according to the data in Gison
-        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                         "Analyzing log entries in real-time.");
-    }
-    else {
-        MainWindow::guiLogger.logMessage(
-            logger::LogLevel::INFO, "Analyzing log entries from JSON file: " +
-                                        jsonFileName.toStdString());
-
-        SimulationStateManager stateManager;
-        QJsonObject jsonObject =
-            stateManager.loadSimulationState(jsonFileName.toStdString());
-        if (jsonObject.isEmpty()) {
-            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                             "Failed to load JSON data");
-            return;
+    if (squares) {
+        for (const auto& square : *squares) {
+            processSquares.insert(square->getId(), square);
         }
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Analyzing log entries in real-time.");
+        return;
+    }
 
-        MainWindow::guiLogger.logMessage(
-            logger::LogLevel::INFO,
-            "Successfully loaded simulation data from: " +
-                jsonFileName.toStdString());
+    if (!bsonObj) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "BSON object is null.");
+        return;
+    }
 
-        // Update process map with JSON data
-        QJsonArray processesArray = jsonObject["squares"].toArray();
-        for (const QJsonValue &value : processesArray) {
-            QJsonObject processObject = value.toObject();
-            int id = processObject["id"].toInt();
-            QString name = processObject["name"].toString();
-            QString cmakeProject = processObject["CMakeProject"].toString();
-            QString qemuPlatform = processObject["QEMUPlatform"].toString();
-            int x = processObject["position"].toObject()["x"].toInt();
-            int y = processObject["position"].toObject()["y"].toInt();
-            int width = processObject["width"].toInt();
-            int height = processObject["height"].toInt();
-            QJsonObject permissionsObj = processObject["securityPermissions"].toObject();
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Analyzing log entries from BSON object.");
 
-            QMap<KeyPermission, bool> permissionsMap;
-            for (auto key : permissionsObj.keys()) {
-                KeyPermission perm = static_cast<KeyPermission>(key.toInt()); // Ensure correct conversion
-                bool value = permissionsObj[key].toBool();
-                permissionsMap.insert(perm, value);
+    bson_iter_t iter;
+    if (!bson_iter_init(&iter, bsonObj) || !bson_iter_find(&iter, "squares") || !BSON_ITER_HOLDS_ARRAY(&iter)) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Invalid BSON structure or missing 'squares' array.");
+        return;
+    }
+
+    const uint8_t *arrayData;
+    uint32_t arrayLength;
+    
+    bson_iter_array(&iter, &arrayLength, &arrayData);
+    if (arrayData == nullptr || arrayLength == 0) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "BSON array data is invalid or empty.");
+        return;
+    }
+
+    bson_t array;
+    bson_iter_t arrayIter;
+    if (bson_init_static(&array, arrayData, arrayLength) && bson_iter_init(&arrayIter, &array)) {
+        while (bson_iter_next(&arrayIter)) {
+            const uint8_t* docData = nullptr;
+            uint32_t docLength = 0;
+
+            bson_iter_document(&arrayIter, &docLength, &docData);
+            if (docData == nullptr || docLength == 0) {
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Invalid BSON document data.");
+                continue;
             }
 
-            Process *process =
-                new Process(id, name, cmakeProject, qemuPlatform, permissionsMap);
-            DraggableSquare *square =
-                new DraggableSquare(mainWindow, "", width, height);
-            square->setProcess(process);
-            square->move(x, y);
-            processSquares.insert(id, square);
+            bson_t document;
+            bson_init_static(&document, docData, docLength);
+
+            int id = -1, x = 0, y = 0, width = 0, height = 0;
+            QString name, cmakeProject, qemuPlatform;
+            QMap<KeyPermission, bool> permissionsMap;
+
+            bson_iter_t docIter;
+            bson_iter_init(&docIter, &document);
+            while (bson_iter_next(&docIter)) {
+                const char* key = bson_iter_key(&docIter);
+                if (strcmp(key, "id") == 0) id = bson_iter_int32(&docIter);
+                else if (strcmp(key, "name") == 0) name = QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
+                else if (strcmp(key, "CMakeProject") == 0) cmakeProject = QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
+                else if (strcmp(key, "QEMUPlatform") == 0) qemuPlatform = QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
+                else if (strcmp(key, "position") == 0) {
+                    bson_iter_t posIter;
+                    bson_iter_recurse(&docIter, &posIter);
+                    while (bson_iter_next(&posIter)) {
+                        if (strcmp(bson_iter_key(&posIter), "x") == 0) x = bson_iter_int32(&posIter);
+                        else if (strcmp(bson_iter_key(&posIter), "y") == 0) y = bson_iter_int32(&posIter);
+                    }
+                }
+                else if (strcmp(key, "width") == 0) width = bson_iter_int32(&docIter);
+                else if (strcmp(key, "height") == 0) height = bson_iter_int32(&docIter);
+                else if (strcmp(key, "securityPermissions") == 0) {
+                    bson_iter_t permIter;
+                    bson_iter_recurse(&docIter, &permIter);
+                    QMap<KeyPermission, bool> permissionsMap;
+
+                    while (bson_iter_next(&permIter)) {
+                        QString permKey = QString::fromUtf8(bson_iter_key(&permIter));
+                        bool conversionOk = false;
+                        int permInt = permKey.toInt(&conversionOk);
+
+                        if (!conversionOk) {
+                            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to convert permission key to integer.");
+                            continue;
+                        }
+                        KeyPermission perm = static_cast<KeyPermission>(permInt);                        
+                        bool value = bson_iter_bool(&permIter);
+                        permissionsMap.insert(perm, value);
+                    }
+
+                }
+            }
+
+            if (id != -1) {
+                Process* process = new Process(id, name, cmakeProject, qemuPlatform, permissionsMap);
+                DraggableSquare* square = new DraggableSquare(mainWindow, "", width, height);
+                square->setProcess(process);
+                square->move(x, y);
+                processSquares.insert(id, square);
+            }
         }
+    } else {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to initialize BSON array.");
+        return;
     }
 
-    MainWindow::guiLogger.logMessage(
-        logger::LogLevel::INFO,
-        "Size of logEntries: " + std::to_string(logEntries.size()));
-
-    for (const auto &logEntry : logEntries) {
-        int srcId = logEntry.srcId;
-        int dstId = logEntry.dstId;
-
-        if (!processSquares.contains(srcId) || !processSquares.contains(dstId))
-            continue;
-
-        DraggableSquare *srcSquare = processSquares[srcId];
-        DraggableSquare *dstSquare = processSquares[dstId];
-
-        QString color = "background-color: yellow;";  // Default color
-        if (communicationCounts.contains(srcId) &&
-            communicationCounts[srcId].contains(dstId)) {
-            int count = communicationCounts[srcId][dstId];
-            int colorIntensity = qMin(
-                count * 25, 255);  // Increase color intensity based on count
-            color = QString("background-color: rgb(%1, %1, 255);")
-                        .arg(colorIntensity);
-        }
-
-        srcSquare->setSquareColor(color);
-        dstSquare->setSquareColor(color);
-
-        MainWindow::guiLogger.logMessage(
-            logger::LogLevel::DEBUG,
-            "Updated square colors for srcId: " + std::to_string(srcId) +
-                " dstId: " + std::to_string(dstId));
-
-        // Increase communication count
-        communicationCounts[srcId][dstId]++;
-    }
-    for (QMap<int, DraggableSquare *>::iterator it = processSquares.begin();
-         it != processSquares.end(); ++it) {
-        // Access key and value
-        int key = it.key();
-        DraggableSquare *square = it.value();
-        square
-            ->print();  // For example, a call to the print function we defined
-    }
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Size of logEntries: " + std::to_string(logEntries.size()));
 }
 
 const QMap<int, DraggableSquare *> &LogHandler::getProcessSquares() const
