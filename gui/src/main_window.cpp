@@ -152,7 +152,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Main", "../../control/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
