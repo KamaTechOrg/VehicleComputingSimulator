@@ -2,26 +2,30 @@
 
 Scheduler::Scheduler()
 {
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Scheduler created.");
 }
 
 Scheduler::~Scheduler()
 {
     stopAllTimers();
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Scheduler destroyed and all timers stopped.");
 }
 
 void Scheduler::stopAllTimers()
 {
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Stopping all timers.");
     for (auto &future : futures)
     {
         if (future.valid())
-        {
             future.wait(); // Wait for all threads to finish
-        }
     }
 }
 
 void Scheduler::startRetransmissionTimer(int packetID, Callback callback, std::shared_ptr<std::promise<bool>> ackPromise)
 {
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Starting retransmission timer for packet of message ID: "
+                                                        + std::to_string(packetID));
+
     // Promise to manage the lifecycle of the thread itself
     std::promise<void> threadCompletionPromise;
     
@@ -35,9 +39,7 @@ void Scheduler::startRetransmissionTimer(int packetID, Callback callback, std::s
     std::thread([this, packetID, callback, threadCompletionPromise = std::move(threadCompletionPromise), ackPromise]() mutable
                 {
                     int retryCount = 0;
-                    
                     {
-                        // Lock the mutex to synchronize access to shared data (ackReceived)
                         std::unique_lock<std::mutex> lock(mutex);
 
                         // Wait for an ACK or timeout
@@ -45,6 +47,9 @@ void Scheduler::startRetransmissionTimer(int packetID, Callback callback, std::s
                                         { return ackReceived[packetID]; }))
                         {
                             // ACK received within the timeout period
+                            RealSocket::log.logMessage(logger::LogLevel::DEBUG, "ACK received for packet of message ID: "
+                                                                                + std::to_string(packetID));
+
                             clearPacketData(packetID); // Clear packet data
                             
                             // Set both promises to indicate success and thread completion
@@ -57,6 +62,9 @@ void Scheduler::startRetransmissionTimer(int packetID, Callback callback, std::s
                             // Timeout occurred, retransmit the packet
                             retryCounts[packetID]++;
                             retryCount = retryCounts[packetID];
+                            RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Retransmitting packet of message ID: "
+                                                                                 + std::to_string(packetID)
+                                                                                 + ", retry count: " + std::to_string(retryCount));
                         }
                     }
                     
@@ -73,6 +81,9 @@ void Scheduler::receiveACK(int packetID)
 {
     std::unique_lock<std::mutex> lock(mutex);
     ackReceived[packetID] = true;
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "ACK received for packet of message ID: "
+                                                        + std::to_string(packetID)
+                                                        + ". Notifying all waiting threads.");
     cv.notify_all(); // Notify all waiting threads
 }
 
@@ -80,4 +91,6 @@ void Scheduler::clearPacketData(int packetID)
 {
     ackReceived.erase(packetID);
     retryCounts.erase(packetID);
+    RealSocket::log.logMessage(logger::LogLevel::DEBUG, "Cleared data for packet of message ID: "
+                                                        + std::to_string(packetID));
 }

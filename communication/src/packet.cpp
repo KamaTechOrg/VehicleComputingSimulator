@@ -104,16 +104,15 @@ bool Packet::validateCRC() const
     return calculateCRC() == header.CRC;
 }
 
-// A function to convert the data to hexa (logger)
-std::string Packet::pointerToHex() const
+// Static function to convert raw data to hexadecimal
+std::string Packet::pointerToHex(const void* data, size_t size)
 {
     std::ostringstream oss; // Stream for constructing the hexadecimal output
-    const uint8_t* data = getPayload(); // Get the payload data
-    int dlc = getDLC(); // Get the data length code (DLC)
+    const uint8_t* byteData = static_cast<const uint8_t*>(data); // Cast the void* to uint8_t* for byte-wise access
 
-    for (int i = 0; i < dlc; ++i) {
-        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data[i]);
+    for (size_t i = 0; i < size; ++i) {
+        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byteData[i]);
     }
 
-    return oss.str(); // Return the hex string representation of the payload
+    return oss.str(); // Return the hex string representation of the data
 }
