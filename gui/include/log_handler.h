@@ -25,7 +25,7 @@ public:
         }
     };
 
-    void readLogFile(const QString &fileName);
+    void readLogFile(const QString &fileName, bool isRealTime = false);
     void analyzeLogEntries(QMainWindow *mainWindow,
                     QVector<DraggableSquare*> *squares ,
                         bson_t* bsonObj);//const bson_t *bsonObject=nullptr);
