@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include "nlohmann/json.hpp"
 #include "manager.h"
 #include "alert.h"
@@ -7,7 +7,7 @@
 #define ESC 27
 #define NUM_OF_TRACKING 10
 
-using json=nlohmann::json;
+using json = nlohmann::json;
 using namespace std;
 using namespace cv;
 
@@ -36,7 +36,7 @@ void Manager::init()
         LogManager::logErrorMessage(ErrorType::IMAGE_ERROR, "image not found");
         return;
     }
-    Distance &distance = Distance::getInstance(calibrationImage);
+    distance.setFocalLength(calibrationImage);
     iterationCnt = 1;
     bool isCuda = false;
     detector.init(isCuda);
@@ -83,8 +83,6 @@ void Manager::mainDemo()
                 obj["is_travel"].is_boolean()) {
                 isTravel = obj["is_travel"];
             }
-            // Get the distance instance and set the focal length
-            Distance &distance = Distance::getInstance();
             distance.setFocalLength(focalLength);
             runOnVideo(path, isTravel);
         }
@@ -109,7 +107,7 @@ void Manager::runOnVideo(string videoPath, bool isTravel)
         throw runtime_error("video not found");
         return;
     }
-    //run on video
+    // run on video
     while (1) {
         capture >> frame;
         if (frame.empty()) {
@@ -122,21 +120,28 @@ void Manager::runOnVideo(string videoPath, bool isTravel)
     }
 }
 
-bool Manager::isDetect(bool isTravel)
+bool Manager::isDetect()
 {
     if (!isTravel || iterationCnt == 1)
         return true;
     return false;
 }
 
-bool Manager::isResetTracker(bool isTravel)
+bool Manager::isResetTracker()
 {
     if (isTravel && iterationCnt == 1)
         return true;
     return false;
 }
 
-bool Manager::isTrack(bool isTravel)
+bool Manager::isTrack()
+{
+    if (isTravel && iterationCnt > 1)
+        return true;
+    return false;
+}
+
+bool Manager::isCalcVelocity()
 {
     if (isTravel && iterationCnt > 1)
         return true;
@@ -145,68 +150,73 @@ bool Manager::isTrack(bool isTravel)
 
 int Manager::processing(const Mat &newFrame, bool isTravel)
 {
-    Distance &distance = Distance::getInstance();
+    this->isTravel = isTravel;
     currentFrame = make_shared<Mat>(newFrame);
-    if (isDetect(isTravel)) {
+    if (isDetect()) {
         // send the frame to detect
         detector.detect(this->currentFrame, isTravel);
         this->currentOutput = detector.getOutput();
     }
 
-    if (isResetTracker(isTravel)) {
+    if (isResetTracker()) {
         // prepare the tracker
         dynamicTracker.startTracking(this->currentFrame, this->currentOutput);
     }
 
-    if (isTrack(isTravel)) {
+    if (isTrack()) {
         // send the frame to track
         dynamicTracker.tracking(this->currentFrame, this->currentOutput);
     }
 
     // add distance to detection objects
     distance.findDistance(this->currentOutput);
-    velocity.returnVelocities(this->currentOutput);
-    #ifdef DETECT_SUN
-        sunDetector.detectSun(this->currentFrame);
-    #endif
+    if (isCalcVelocity()) {
+        velocity.returnVelocities(this->currentOutput);
+    }
+#ifdef DETECT_SUN
+    sunDetector.detectSun(this->currentFrame);
+#endif
 
     // send allerts to main control
-    vector<vector<uint8_t>> alerts = alerter.sendAlerts(this->currentOutput);
-    sendAlerts(alerts);
+    if (isCalcVelocity()) {
+        vector<vector<uint8_t>> alerts =
+            alerter.sendAlerts(this->currentOutput);
+        sendAlerts(alerts);
+    }
 
     // update of the iterationCnt
     if (isTravel) {
         iterationCnt = iterationCnt % NUM_OF_TRACKING + 1;
     }
 
-    #ifdef LANE_DETECT
-        laneDetector.manageLaneDetector(this->currentFrame);
-    #endif
-    // visual
-    #ifdef SHOW_FRAMES
-        if (drawOutput() == 27)
-            return -1;
-        return 1;
-    #endif
+#ifdef LANE_DETECT
+    laneDetector.manageLaneDetector(this->currentFrame);
+#endif
+// visual
+#ifdef SHOW_FRAMES
+    if (drawOutput() == 27)
+        return -1;
+    return 1;
+#endif
 }
 
 int Manager::drawOutput()
 {
-    Distance &distance = Distance::getInstance();
     dynamicTracker.drawTracking(currentFrame, currentOutput);
     distance.drawDistance(currentFrame, currentOutput);
-    velocity.drawVelocity(currentFrame, currentOutput);
-    #ifdef DETECT_SUN
-        sunDetector.drowSun(currentFrame);
-    #endif
-    #ifdef LANE_DETECT
-        laneDetector.drawLane(currentFrame);
-    #endif
+    if (isCalcVelocity())
+        velocity.drawVelocity(currentFrame, currentOutput);
+#ifdef DETECT_SUN
+    sunDetector.drowSun(currentFrame);
+#endif
+#ifdef LANE_DETECT
+    laneDetector.drawLane(currentFrame);
+#endif
 
     // Legend
     int legendX = 10, legendY = 10;
 
-    //Draw a black border around the legend
+    // Draw a black border around the legend
     rectangle(*currentFrame, Point(legendX - 10, legendY - 10),
               Point(legendX + 162, legendY + 72), Scalar(0, 0, 0), 2);
 

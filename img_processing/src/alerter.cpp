@@ -1,6 +1,6 @@
-#include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include "alerter.h"
 #include "alert.h"
 #include "manager.h"
@@ -31,7 +31,7 @@ vector<vector<uint8_t>> Alerter::sendAlerts(
         if (isSendAlert(objectInformation)) {
             vector<uint8_t> alertBuffer = makeAlertBuffer(
                 objectInformation.type, objectInformation.distance,
-                objectInformation.velocity);
+                objectInformation.velocity.value());
             alerts.push_back(alertBuffer);
         }
     }

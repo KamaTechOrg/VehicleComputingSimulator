@@ -1,11 +1,11 @@
+#include <gtest/gtest.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
-#include <gtest/gtest.h>
-#include "velocity.h"
-#include "dynamic_tracker.h"
 #include "detector.h"
 #include "distance.h"
+#include "dynamic_tracker.h"
+#include "velocity.h"
 
 using namespace std;
 using namespace cv;
@@ -19,9 +19,8 @@ TEST(TVelocity, calculate_TVelocity)
     if (calibrationImage.empty()) {
         throw runtime_error("Could not open or find the image");
     }
-
-    Distance &distance = Distance::getInstance(calibrationImage);
-
+    Distance distance;
+    distance.setFocalLength(calibrationImage);
     Detector detector;
     DynamicTracker tracker;
     Velocity velocity;
@@ -58,7 +57,8 @@ TEST(TVelocity, calculate_TVelocity)
                 Point textPosition((*trackingOutput)[i].position.x,
                                    (*trackingOutput)[i].position.y - 10);
 
-                // putText(*frame1, "Speed: " + std::to_string((*trackingOutput)[i].speed), textPosition,
+                // putText(*frame1, "Speed: " +
+                // std::to_string((*trackingOutput)[i].speed), textPosition,
                 /// FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
                 putText(
                     *frame1,

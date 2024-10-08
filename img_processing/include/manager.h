@@ -3,14 +3,14 @@
 
 #include <opencv2/opencv.hpp>
 #include "alerter.h"
+#include "communication.h"
 #include "detector.h"
 #include "distance.h"
-#include "lane_detector.h"
 #include "dynamic_tracker.h"
+#include "lane_detector.h"
 #include "log_manager.h"
-#include "velocity.h"
-#include "communication.h"
 #include "sun_detector.h"
+#include "velocity.h"
 
 class Manager {
    public:
@@ -32,6 +32,7 @@ class Manager {
     Detector detector;
     Velocity velocity;
     DynamicTracker dynamicTracker;
+    Distance distance;
     Alerter alerter;
     SunDetector sunDetector;
     LaneDetector laneDetector;
@@ -39,14 +40,17 @@ class Manager {
     int iterationCnt;
     uint32_t destID;
     uint32_t processID;
+    bool isTravel;
 
     // Moves the current image to the prevFrame
     // and clears the memory of the currentFrame;
     void prepareForTheNext();
     int drawOutput();
-    bool isDetect(bool isTravel);
-    bool isResetTracker(bool isTravel);
-    bool isTrack(bool isTravel);
+    bool isDetect();
+    bool isResetTracker();
+    bool isTrack();
+    bool isCalcVelocity();
+
     void sendAlerts(std::vector<std::vector<uint8_t>> &alerts);
     void runOnVideo(std::string videoPath, bool isTravel);
     int readIdFromJson(const char *target);

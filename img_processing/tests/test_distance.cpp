@@ -1,10 +1,9 @@
 #include <gtest/gtest.h>
 #include <opencv2/opencv.hpp>
 #include "detector.h"
-#include "manager.h"
 #include "distance.h"
-#include "manager.h"
 #include "log_manager.h"
+#include "manager.h"
 
 using namespace std;
 using namespace cv;
@@ -21,8 +20,8 @@ TEST(DistanceTest, DistanceWithCalibration)
         throw runtime_error("Could not open or find the image");
     }
 
-    Distance &distance = Distance::getInstance(calibrationImage);
-
+    Distance distance;
+    distance.setFocalLength(calibrationImage);
     // Load a real image from file
     string imagePath2 = "../tests/images/parking_car.JPG";
     Mat carImage;

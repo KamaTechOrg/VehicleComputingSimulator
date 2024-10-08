@@ -2,13 +2,13 @@
 #ifndef __LANE_DETECTION__
 #define __LANE_DETECTION__
 
-#define _USE_MATH_DEFINES
 #include <cmath>
-#include "regression.h"
-#include "log_manager.h"
 #include <opencv2/highgui.hpp>
 #include <stdexcept>
+#include "regression.h"
+#include "log_manager.h"
 
+#define _USE_MATH_DEFINES
 #define CAR_IN_IMAGE 80
 
 struct LaneDrawingInfo {
