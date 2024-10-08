@@ -3,6 +3,12 @@
 #include "manager.h"
 #include "alert.h"
 
+#include <iostream>
+#include <fstream>
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 using namespace std;
 using namespace cv;
 
@@ -41,40 +47,48 @@ void Manager::init()
 
 void Manager::mainDemo()
 {
-    string filePath = "../data.txt";
-    // open the file
-    ifstream file(filePath);
+    string path;
+    int focalLength;
+    bool isTravel;
+    // Open the JSON file
+    // Open the JSON file
+    std::ifstream file("../data.json");
+
     if (!file.is_open()) {
-        LogManager::logErrorMessage(ErrorType::FILE_ERROR);
+        std::cerr << "Failed to open the file." << std::endl;
         return;
     }
-    string line;
-    // run over the file and read the lines
-    while (getline(file, line)) {
-        // intialize the iteration cnt
-        iterationCnt = 1;
-        istringstream iss(line);
-        string videoPath;
-        double focalLength;
-        // read the parameters
-        if (getline(iss, videoPath, '|') && iss >> focalLength) {
-            // Trim leading and trailing whitespaces from videoPath
-            videoPath.erase(0, videoPath.find_first_not_of(" \t\n\r\f\v"));
-            videoPath.erase(videoPath.find_last_not_of(" \t\n\r\f\v") + 1);
+
+    // Read the content of the file into a JSON object
+    json jsonData;
+    file >> jsonData;
+
+    // Check if the JSON data is an array
+    if (jsonData.is_array()) {
+        // Iterate over each object in the array
+        for (const auto &obj : jsonData) {
+            iterationCnt = 1;
+            if (obj.find("path") != obj.end() && obj["path"].is_string()) {
+                path = obj["path"];
+            }
+
+            if (obj.find("focal_length") != obj.end() &&
+                obj["focal_length"].is_number_integer()) {
+                focalLength = obj["focal_length"];
+            }
+
+            if (obj.find("is_travel") != obj.end() &&
+                obj["is_travel"].is_boolean()) {
+                isTravel = obj["is_travel"];
+            }
+            Distance &distance = Distance::getInstance();
+            distance.setFocalLength(focalLength);
+            runOnVideo(path, isTravel);
         }
-        else {
-            LogManager::logErrorMessage(ErrorType::VIDEO_ERROR);
-            return;
-        }
-        // intialize focal length
-        Distance &distance = Distance::getInstance();
-        distance.setFocalLength(focalLength);
-        runOnVideo(videoPath);
     }
-    cout << "finish reading data";
 }
 
-void Manager::runOnVideo(string videoPath)
+void Manager::runOnVideo(string videoPath, bool isTravel)
 {
     // Convert Windows file path to WSL file path format
     if (videoPath.length() >= 3 && videoPath[1] == ':') {
@@ -98,7 +112,7 @@ void Manager::runOnVideo(string videoPath)
             LogManager::logInfoMessage(InfoType::MEDIA_FINISH);
             break;
         }
-        int result = processing(frame, true);
+        int result = processing(frame, isTravel);
         if (result == -1)
             return;
     }
