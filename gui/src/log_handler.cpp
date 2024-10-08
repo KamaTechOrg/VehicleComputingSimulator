@@ -19,7 +19,7 @@
 
 bool LogHandler::end = false;
 
-void LogHandler::readLogFile(const QString &fileContent)
+void LogHandler::readLogFile(const QString &fileContent, bool isRealTime)
 {
     if (fileContent.isEmpty()) {
         MainWindow::guiLogger.logMessage(

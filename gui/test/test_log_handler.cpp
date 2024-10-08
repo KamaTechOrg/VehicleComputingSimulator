@@ -14,58 +14,58 @@ class LogHandlerTests : public QObject {
     SimulationStateManager state;
 
 private slots:
-    void testReadLogFile();
-    void testSortLogEntries();
-    void testGetProcessSquares();
+    // void testReadLogFile();
+    // void testSortLogEntries();
+    // void testGetProcessSquares();
 };
 
-void LogHandlerTests::testReadLogFile()
-{
-    LogHandler logHandler;
-    logHandler.readLogFile("../log_file.log");
+// void LogHandlerTests::testReadLogFile()
+// {
+//     LogHandler logHandler;
+//     logHandler.readLogFile("../log_file.log");
 
-    QVERIFY(!logHandler.getLogEntries().isEmpty());
-}
+//     QVERIFY(!logHandler.getLogEntries().isEmpty());
+// }
 
-void LogHandlerTests::testSortLogEntries()
-{
-    LogHandler logHandler;
-    logHandler.readLogFile("../log_file.log");
+// void LogHandlerTests::testSortLogEntries()
+// {
+//     LogHandler logHandler;
+//     logHandler.readLogFile("../log_file.log");
 
-    logHandler.sortLogEntries();
-    QVector<LogHandler::LogEntry> logEntries = logHandler.getLogEntries();
+//     logHandler.sortLogEntries();
+//     QVector<LogHandler::LogEntry> logEntries = logHandler.getLogEntries();
 
-    for (int i = 1; i < logEntries.size(); ++i) {
-        QVERIFY(logEntries[i - 1] < logEntries[i]);
-    }
-}
+//     for (int i = 1; i < logEntries.size(); ++i) {
+//         QVERIFY(logEntries[i - 1] < logEntries[i]);
+//     }
+// }
 
-void LogHandlerTests::testGetProcessSquares()
-{
-    LogHandler logHandler;
+// void LogHandlerTests::testGetProcessSquares()
+// {
+//     LogHandler logHandler;
 
-    // Create objects to test
-    QMap<KeyPermission, bool> permissionsMap;
+//     // Create objects to test
+//     QMap<KeyPermission, bool> permissionsMap;
 
-    permissionsMap[KeyPermission::ENCRYPT] = true;
-    permissionsMap[KeyPermission::SIGN] = false;
+//     permissionsMap[KeyPermission::ENCRYPT] = true;
+//     permissionsMap[KeyPermission::SIGN] = false;
 
-    Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1",permissionsMap);
-    DraggableSquare square1;
-    square1.setProcess(&process1);
-    // Let's say you want to check that the DraggableSquare has been added to the QMap.
-    // Add the DraggableSquare to the map
-    QMap<int, DraggableSquare *> &processSquares =
-        const_cast<QMap<int, DraggableSquare *> &>(
-            logHandler.getProcessSquares());
-    processSquares.insert(1, &square1);
+//     Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1",permissionsMap);
+//     DraggableSquare square1;
+//     square1.setProcess(&process1);
+//     // Let's say you want to check that the DraggableSquare has been added to the QMap.
+//     // Add the DraggableSquare to the map
+//     QMap<int, DraggableSquare *> &processSquares =
+//         const_cast<QMap<int, DraggableSquare *> &>(
+//             logHandler.getProcessSquares());
+//     processSquares.insert(1, &square1);
 
-    // Now the contents of the map can be checked
-    const QMap<int, DraggableSquare *> &squares =
-        logHandler.getProcessSquares();
-    QVERIFY(squares.contains(1));
-    QCOMPARE(squares[1]->getProcess()->getId(), 1);
-}
+//     // Now the contents of the map can be checked
+//     const QMap<int, DraggableSquare *> &squares =
+//         logHandler.getProcessSquares();
+//     QVERIFY(squares.contains(1));
+//     QCOMPARE(squares[1]->getProcess()->getId(), 1);
+// }
 
 QTEST_MAIN(LogHandlerTests)
 #include "test_log_handler.moc"

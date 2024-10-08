@@ -215,21 +215,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "HSM", "../../user1/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "LogsDb", "../../user2/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "Main", "../../user3/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -327,10 +327,11 @@ void MainWindow::openDialog()
             QString simulationName =input->text();
             inputDialog.close();
             QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
-            QString logFilePath = "../log_file.log";       
+            QString filePath = "../../main_bus/build/shared_log_file_name.txt";
+            QString fullPath = getPathLogBus(filePath);  
             QString bsonFilePath = "simulation_state.bson";     //  BSON
 
-            QString logData =sqlDataManager->readLogFile(logFilePath);
+            QString logData =sqlDataManager->readLogFile(fullPath);
             if (logData.isEmpty()) {
                         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
             }
@@ -700,18 +701,41 @@ void MainWindow::openImageDialog()
     }
 }
 
+QString MainWindow::getPathLogBus(const QString &pathFile)
+{
+    QString path;
+    
+    QFile file(pathFile);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        path = in.readLine();
+        guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Successful to open file: " + pathFile.toStdString());
+        file.close();
+    } else {
+        guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Unable to open file: " + pathFile.toStdString());
+    }
+
+    QString fullPath = "../../main_bus/build/" + path;
+    
+    if (!QFile::exists(fullPath)) {
+        guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "File does not exist: " + fullPath.toStdString());
+    }
+
+    return fullPath;
+}
+
 void MainWindow::showSimulation(bool isRealTime)
 {
     if (isRealTime) {
-        if (timer) {
-            timer->stop();
-            delete timer;
-            timer = nullptr;
-        }
-        timeLabel->show();
-        timeInput->clear();
-        QString filePath = "log_file.log";
-        logHandler.readLogFile(filePath);
+        QString filePath = "../../main_bus/build/shared_log_file_name.txt";
+        QString fullPath = getPathLogBus(filePath);
+        logHandler.readLogFile(fullPath);
         logHandler.analyzeLogEntries(this, &squares, nullptr);
         frames = new Frames(logHandler);  // Initialize Frames
         QLayout *oldLayout = workspace->layout();
