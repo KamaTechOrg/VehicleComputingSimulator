@@ -12,7 +12,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(include ../logger ../communication/include ../communication/sockets)
 
 # Check if SHOW_FRAMES flag is set
-option(SHOW_FRAMES "Enable showing frames" OFF)
+option(SHOW_FRAMES "Enable showing frames" ON)
 if(SHOW_FRAMES)
     add_definitions(-DSHOW_FRAMES)
 endif()
