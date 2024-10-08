@@ -16,47 +16,70 @@
 #include "simulation_state_manager.h"
 #include "main_window.h"
 
-
 bool LogHandler::end = false;
 
 void LogHandler::readLogFile(const QString &fileContent, bool isRealTime)
 {
-    if (fileContent.isEmpty()) {
-        MainWindow::guiLogger.logMessage(
-            logger::LogLevel::ERROR,
-            "File content is empty.");
-        return;
-    }
-
-    MainWindow::guiLogger.logMessage(
-        logger::LogLevel::INFO,
-        "File content successfully loaded.");
-
-    QByteArray byteArray = fileContent.toUtf8();
-    QBuffer buffer(&byteArray);
-    buffer.open(QIODevice::ReadOnly);
-    
-    QTextStream in(&buffer);
-
-    while (!LogHandler::end && !in.atEnd()) {
-        QString line = in.readLine().trimmed();
-
-        if (line.isEmpty()) {
-            continue;
+    if (!isRealTime) {
+        if (fileContent.isEmpty()) {
+            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                             "File content is empty.");
+            return;
         }
 
-        if (line.contains("SRC") && line.contains("DST")) {
-            LogEntry entry = parseLogLine(line);
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                         "File content successfully loaded.");
 
-            if (entry.srcId != -1) {
-                logEntries.push_back(entry);
+        QByteArray byteArray = fileContent.toUtf8();
+        QBuffer buffer(&byteArray);
+        buffer.open(QIODevice::ReadOnly);
+
+        QTextStream in(&buffer);
+
+        while (!LogHandler::end && !in.atEnd()) {
+            QString line = in.readLine().trimmed();
+
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            if (line.contains("SRC") && line.contains("DST")) {
+                LogEntry entry = parseLogLine(line);
+
+                if (entry.srcId != -1) { //Assuming -1 indicate an invalid entry.
+                    logEntries.push_back(entry);
+                }
             }
         }
+
+        buffer.close();
     }
+    else {
+        QFile file(fileContent);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::ERROR,
+                "Cannot open file: " + fileContent.toStdString());
+            return;
+        }
 
-    buffer.close();
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "File successfully opened: " + fileContent.toStdString());
+
+        QTextStream in(&file);
+        while (!LogHandler::end) {
+            QString line = in.readLine().trimmed();
+            if (line.contains("SRC") && line.contains("DST")) {
+                LogEntry entry = parseLogLine(line);
+                if (entry.srcId != -1) {
+                    logEntries.push_back(entry);
+                }
+            }
+        }
+        file.close();
+    }
 }
-
 
 LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
 {
@@ -66,7 +89,7 @@ LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::DEBUG,
             "Skipping malformed line: " + line.toStdString());
-        entry.srcId = -1; 
+        entry.srcId = -1;
         return entry;
     }
 
@@ -83,9 +106,9 @@ LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
     return entry;
 }
 
-QVector<LogHandler::LogEntry> LogHandler::getLogEntries()
+QVector<LogHandler::LogEntry> *LogHandler::getLogEntries()
 {
-    return logEntries;
+    return &logEntries;
 }
 
 void LogHandler::sortLogEntries()
@@ -93,13 +116,16 @@ void LogHandler::sortLogEntries()
     std::sort(logEntries.begin(), logEntries.end());
 }
 
-void LogHandler::analyzeLogEntries(QMainWindow *mainWindow, QVector<DraggableSquare*> *squares, bson_t* bsonObj)
+void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
+                                   QVector<DraggableSquare *> *squares,
+                                   bson_t *bsonObj)
 {
     if (squares) {
-        for (const auto& square : *squares) {
+        for (const auto &square : *squares) {
             processSquares.insert(square->getId(), square);
         }
-        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Analyzing log entries in real-time.");
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                         "Analyzing log entries in real-time.");
         return;
     }
 
