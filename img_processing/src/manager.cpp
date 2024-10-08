@@ -160,12 +160,15 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
 
     // visual
     drawOutput();
-    imshow("aaa", *currentFrame);
-    int key = cv::waitKey(1);
-    if (key == 27) {
-        return -1;
-    }
-    return 1;
+    #ifdef SHOW_FRAMES
+        drawOutput();
+        imshow("aaa", *currentFrame);
+        int key = cv::waitKey(1);
+        if (key == 27) {
+            return -1;
+        }
+        return 1;
+    #endif
 }
 
 void Manager::drawOutput()
