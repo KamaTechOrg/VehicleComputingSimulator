@@ -24,8 +24,8 @@ Frames::Frames(LogHandler &logHandler, QWidget *parent)
     createSequentialIds();
     fillFramesMat();
 
-    if (!logHandler.getLogEntries().isEmpty()) {
-        differenceTime = logHandler.getLogEntries().first().timestamp.msecsTo(
+    if (!(*(logHandler.getLogEntries())).isEmpty()) {
+        differenceTime = (*(logHandler.getLogEntries())).first().timestamp.msecsTo(
             QDateTime::currentDateTime());
     }
     timer = new QTimer(this);
@@ -45,7 +45,7 @@ void Frames::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    for (const auto &log : logHandler.getLogEntries()) {
+    for (const auto &log : *(logHandler.getLogEntries())) {
         int dstId = idMapping[log.dstId];
         int srcId = idMapping[log.srcId];
 
@@ -119,7 +119,7 @@ void Frames::updateFrames()
                                     std::to_string(activeLogEntries.size()));
 
     // Increase thickness for new log entries
-    for (const LogHandler::LogEntry &logEntry : logHandler.getLogEntries()) {
+    for (const LogHandler::LogEntry &logEntry : *(logHandler.getLogEntries())) {
         if (logEntry.timestamp <= currentTime &&
             logEntry.timestamp >= currentTime.addSecs(-logEntryExpirySecs)) {
             if (idMapping[logEntry.srcId] < framesMat.size() &&
@@ -135,7 +135,7 @@ void Frames::updateFrames()
         }
     }
     // Check if all log entries have been processed
-    if (activeLogEntries.empty()) {
+    if (activeLogEntries.empty() && LogHandler::end) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                          "Finished processing log entries.");
         // emit this->simulationFinished();
