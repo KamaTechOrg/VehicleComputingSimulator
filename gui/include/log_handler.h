@@ -27,9 +27,10 @@ public:
 
     void readLogFile(const QString &fileName, bool isRealTime = false);
     void analyzeLogEntries(QMainWindow *mainWindow,
-                    QVector<DraggableSquare*> *squares ,
-                        bson_t* bsonObj);//const bson_t *bsonObject=nullptr);
-    QVector<LogHandler::LogEntry> getLogEntries();
+                           QVector<DraggableSquare *> *squares,
+                           bson_t *bsonObj);
+
+    QVector<LogHandler::LogEntry>* getLogEntries();
     const QMap<int, DraggableSquare *> &getProcessSquares() const;
     void sortLogEntries();
     static bool end;

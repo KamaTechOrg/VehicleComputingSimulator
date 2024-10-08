@@ -41,6 +41,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFileSystemWatcher>
+#include <QtConcurrent/QtConcurrent>
 #include "process.h"
 #include "main_window.h"
 #include "draggable_square.h"
@@ -555,6 +556,7 @@ void MainWindow::endProcesses()
             });
         }
     }
+    delete frames;
     runningProcesses.clear();
     openDialog();
 }
@@ -736,7 +738,9 @@ void MainWindow::showSimulation(bool isRealTime)
     if (isRealTime) {
         QString filePath = LOG_FILE_BUS_MANAGER_PATH;
         QString fullPath = getPathLogBus(filePath);
-        logHandler.readLogFile(fullPath);
+        QFuture<void> future = QtConcurrent::run([this, fullPath]() {
+            logHandler.readLogFile(fullPath, true);
+        });
         logHandler.analyzeLogEntries(this, &squares, nullptr);
         frames = new Frames(logHandler);  // Initialize Frames
         QLayout *oldLayout = workspace->layout();
@@ -1041,6 +1045,7 @@ void MainWindow::runProjects()
     disableButtonsExceptEnd();
     showLoadingIndicator();
     updateTimer();
+    QMetaObject::invokeMethod(this, "showSimulation", Qt::QueuedConnection, Q_ARG(bool, true));
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
         "MainWindow::runProjects Starting to run projects.");
