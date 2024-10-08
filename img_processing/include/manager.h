@@ -9,6 +9,8 @@
 #include "log_manager.h"
 #include "velocity.h"
 #include "communication.h"
+#include "sun_detector.h"
+
 class Manager {
    public:
     static logger imgLogger;
@@ -30,6 +32,7 @@ class Manager {
     Velocity velocity;
     DynamicTracker dynamicTracker;
     Alerter alerter;
+    SunDetector sunDetector;
     int iterationCnt;
     uint32_t destID;
     uint32_t processID;

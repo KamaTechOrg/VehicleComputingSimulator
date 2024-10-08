@@ -20,7 +20,7 @@ add_library(CommunicationLib STATIC ../communication/src/communication.cpp ../co
 
 configure_file( ${CMAKE_BINARY_DIR}/config.json COPYONLY)
 # create test executable
-add_executable(runTests tests/main.cpp tests/test_serialize.cpp tests/test_detector.cpp tests/test_dynamic_tracker.cpp tests/test_distance.cpp tests/test_manager.cpp tests/test_velocity.cpp)
+add_executable(runTests tests/main.cpp tests/test_serialize.cpp tests/test_detector.cpp tests/test_dynamic_tracker.cpp tests/test_distance.cpp tests/test_manager.cpp tests/test_velocity.cpp tests/test_sun_detector.cpp)
 target_link_libraries(runTests ImageProcessingLib ${OpenCV_LIBS} ${GTEST_LIBRARIES} pthread CommunicationLib)
 
 #adding tests

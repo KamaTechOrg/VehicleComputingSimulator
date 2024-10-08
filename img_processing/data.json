@@ -8,5 +8,10 @@
         "path": "../tests/images/close_cars.mov",
         "focal_length": 2000,
         "is_travel": true
+    },
+    {
+        "path": "../tests/images/sun_in_street.mov",
+        "focal_length": 1000,
+        "is_travel": true
     }
 ]
