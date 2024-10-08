@@ -38,6 +38,8 @@ void Manager::init()
     detector.init(isCuda);
     dynamicTracker.init();
     velocity.init(0.04);
+    laneDetector.init();
+    longTime = 0;
 }
 
 void Manager::mainDemo()
@@ -159,11 +161,13 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
         iterationCnt = iterationCnt % NUM_OF_TRACKING + 1;
     }
 
+    #ifdef LANE_DETECT
+    laneDetector.manageLaneDetector(this->currentFrame);
+    #endif
     // visual
-    drawOutput();
     #ifdef SHOW_FRAMES
         drawOutput();
-        imshow("aaa", *currentFrame);
+        imshow("currentFrame", *currentFrame);
         int key = cv::waitKey(1);
         if (key == ESC) {
             return -1;
@@ -239,6 +243,10 @@ void Manager::drawOutput()
               Point(legendX + 10, legendY + 55), Scalar(255, 0, 0), FILLED);
     putText(*currentFrame, "velocity", Point(legendX + 15, legendY + 50),
             FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 255, 255), 1);
+
+    #ifdef LANE_DETECT
+    laneDetector.drawLanesOnImage(currentFrame);
+    #endif  
 }
 
 void Manager::sendAlerts(vector<vector<uint8_t>> &alerts)

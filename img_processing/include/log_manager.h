@@ -12,7 +12,8 @@ enum class ErrorType {
     FILE_ERROR,
     DETECTION_ERROR,
     TRACKING_ERROR,
-    MODEL_ERROR
+    MODEL_ERROR,
+    SIZE_ERROR
 };
 
 enum class InfoType {
@@ -29,7 +30,10 @@ enum class InfoType {
     MODE
 };
 
-enum class DebugType { PRINT };
+enum class DebugType { 
+    PRINT,
+    DRAW_PREV 
+};
 
 class LogManager {
    public:

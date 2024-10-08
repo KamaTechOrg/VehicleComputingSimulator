@@ -5,6 +5,7 @@
 #include "alerter.h"
 #include "detector.h"
 #include "distance.h"
+#include "lane_detector.h"
 #include "dynamic_tracker.h"
 #include "log_manager.h"
 #include "velocity.h"
@@ -30,6 +31,8 @@ class Manager {
     Velocity velocity;
     DynamicTracker dynamicTracker;
     Alerter alerter;
+    LaneDetector laneDetector;
+    int longTime;
     int iterationCnt;
     uint32_t destID;
     uint32_t processID;
