@@ -52,6 +52,7 @@
 int sizeSquare = 120;
 int rotationTimerIntervals = 100;
 logger MainWindow::guiLogger("gui");
+const QString LOG_FILE_BUS_MANAGER_PATH =  "../../main_bus/build/shared_log_file_name.txt";
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sqlDataManager(new DbManager(this))
 {
@@ -327,10 +328,11 @@ void MainWindow::openDialog()
             QString simulationName =input->text();
             inputDialog.close();
             QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
-            QString logFilePath = "../log_file.log";       
+            QString filePath = LOG_FILE_BUS_MANAGER_PATH;
+            QString fullPath = getPathLogBus(filePath);  
             QString bsonFilePath = "simulation_state.bson";     //  BSON
 
-            QString logData =sqlDataManager->readLogFile(logFilePath);
+            QString logData =sqlDataManager->readLogFile(fullPath);
             if (logData.isEmpty()) {
                         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
             }
@@ -700,18 +702,41 @@ void MainWindow::openImageDialog()
     }
 }
 
+QString MainWindow::getPathLogBus(const QString &pathFile)
+{
+    QString path;
+    
+    QFile file(pathFile);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        path = in.readLine();
+        guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "Successful to open file: " + pathFile.toStdString());
+        file.close();
+    } else {
+        guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "Unable to open file: " + pathFile.toStdString());
+    }
+
+    QString fullPath = "../../main_bus/build/" + path;
+    
+    if (!QFile::exists(fullPath)) {
+        guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "File does not exist: " + fullPath.toStdString());
+    }
+
+    return fullPath;
+}
+
 void MainWindow::showSimulation(bool isRealTime)
 {
     if (isRealTime) {
-        if (timer) {
-            timer->stop();
-            delete timer;
-            timer = nullptr;
-        }
-        timeLabel->show();
-        timeInput->clear();
-        QString filePath = "log_file.log";
-        logHandler.readLogFile(filePath);
+        QString filePath = LOG_FILE_BUS_MANAGER_PATH;
+        QString fullPath = getPathLogBus(filePath);
+        logHandler.readLogFile(fullPath);
         logHandler.analyzeLogEntries(this, &squares, nullptr);
         frames = new Frames(logHandler);  // Initialize Frames
         QLayout *oldLayout = workspace->layout();

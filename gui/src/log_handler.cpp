@@ -19,7 +19,7 @@
 
 bool LogHandler::end = false;
 
-void LogHandler::readLogFile(const QString &fileContent)
+void LogHandler::readLogFile(const QString &fileContent, bool isRealTime)
 {
     if (fileContent.isEmpty()) {
         MainWindow::guiLogger.logMessage(
@@ -73,7 +73,10 @@ LogHandler::LogEntry LogHandler::parseLogLine(const QString &line)
     QString timestampStr = fields[0];
     timestampStr.chop(2);
     qint64 nanoseconds = timestampStr.toLongLong();
-    entry.timestamp = QDateTime::fromMSecsSinceEpoch(nanoseconds / 1000000);
+    const qint64 nanosecondsPerMillisecond = 1000000;
+    qint64 milliseconds = nanoseconds / nanosecondsPerMillisecond;
+
+    entry.timestamp = QDateTime::fromMSecsSinceEpoch(milliseconds);
 
     entry.srcId = fields[3].toInt();
     entry.dstId = fields[5].toInt();

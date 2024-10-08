@@ -113,6 +113,7 @@ private:
     void rotateImage();     // Function to handle rotation
     void setDefaultBackgroundImage();
     void openDialog();
+    QString getPathLogBus(const QString &pathFile);
     void loadSelectedSimulation(const QList<QVariantMap> &simulations,
                                 const QString &selectedSimulation);   
     void openDependencySelectionProject();  // Function that handles launching the second project
