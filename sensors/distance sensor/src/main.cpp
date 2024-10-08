@@ -3,8 +3,8 @@
 using namespace std;
 
 int currentIndex, lastCommaIndex, countLoop, countInvalid;
-int average, previousValue;
-float scaleValue;
+int previousValue;
+float scaleValue, average;
 Communication *com;
 logger *distanceLog;
 
@@ -18,10 +18,8 @@ void setup()
     com = new Communication(SRC_ID,handleMesseage);
     com->startConnection();
     distanceLog = new logger("distance sensor");
-    distanceLog->logMessage(logger::LogLevel::INFO,"distance sensor");
-    //Serial.println("distance sensor");
-
-
+    //distanceLog->logMessage(logger::LogLevel::INFO,"distance sensor");
+    Serial.println("distance sensor");
 }
 
 void loop()
@@ -42,7 +40,7 @@ void loop()
 
         if (currentValue < MIN_NORMAL_VALUE) {
             countInvalid++;
-            distanceLog->logMessage(logger::LogLevel::DEBUG, "invalid value " + to_string(currentValue) + " " + to_string(countInvalid) +" times" );
+           // distanceLog->logMessage(logger::LogLevel::DEBUG, "invalid value " + to_string(currentValue) + " " + to_string(countInvalid) +" times" );
 
             if (countInvalid > INVALID_CONTINUITY) {
                 Serial.println("\n send error:");
@@ -73,7 +71,7 @@ void loop()
     if (countLoop == SENDING_TIME) {
         Serial.println("\n send:");
         Serial.println(("--- " + std::to_string((average / SENDING_TIME)) + " --- \n").c_str());
-        //distanceLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / 20));
+        //distanceLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / SENDING_TIME));
 
         sendMessage("average current distance",(average/SENDING_TIME));
 

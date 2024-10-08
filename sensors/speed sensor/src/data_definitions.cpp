@@ -31,6 +31,11 @@ void sendMessage(string message, int speed)
     std::vector<uint8_t> buffer;
     buffer.push_back(static_cast<uint8_t>(status ? 1 : 0));
 
+    int32_t flags =  static_cast<int32_t>(speed);
+    uint8_t flagsBytes[4];
+    std::memcpy(flagsBytes, &flags, sizeof(int32_t));
+    buffer.insert(buffer.end(), flagsBytes, flagsBytes + 4) ;
+
     int i = 0;
     for (;i < message.size() &&  i < MSG_SIZE; buffer.push_back(static_cast<uint8_t>(message[i])), i++ )
         ;
@@ -38,11 +43,7 @@ void sendMessage(string message, int speed)
         ; 
 
    
-    int32_t flags = speed;
-    uint8_t flagsBytes[4];
-    std::memcpy(flagsBytes, &flags, sizeof(int32_t));
-    buffer.insert(buffer.end(), flagsBytes, flagsBytes + 4) ;
-
+  
     speedLog->logMessage(logger::LogLevel::INFO,"send message: "+ message +" to main control" );
     com->sendMessage(buffer.data(), buffer.size(), 1, SRC_ID, false);
 }
@@ -50,9 +51,9 @@ void sendMessage(string message, int speed)
 void handleMesseage(uint32_t senderId , void *data)
 {
     string  message = static_cast<char *>(data);
-    speedLog->logMessage(logger::LogLevel::INFO,"i got message: "+ message +" from id: " + to_string(senderId));
-    // Serial.println("data recieved");
-    // Serial.println(message.c_str());
+    //speedLog->logMessage(logger::LogLevel::INFO,"i got message: "+ message +" from id: " + to_string(senderId));
+    Serial.println("data recieved");
+    Serial.println(message.c_str());
 
     if(message == "slow down")
         scaleValue *= 0.95;

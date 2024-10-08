@@ -76,7 +76,7 @@ void loop()
     }
     if (countLoop == SENDING_TIME) {
         Serial.println("\n send:");
-        Serial.println(("--- " + std::to_string((average / 20)) + " --- \n").c_str());
+        Serial.println(("--- " + std::to_string((average / SENDING_TIME)) + " --- \n").c_str());
         //temperatureLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / SENDING_TIME));
 
         sendMessage((average/SENDING_TIME));

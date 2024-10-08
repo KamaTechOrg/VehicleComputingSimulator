@@ -15,7 +15,7 @@
 #define INVALID_CONTINUITY 6
 #define WAIT_TIME 1000
 #define SRC_ID 8
-#define MSG_SIZE 64
+#define MSG_SIZE 280
 #define SENDING_TIME 20
 
 

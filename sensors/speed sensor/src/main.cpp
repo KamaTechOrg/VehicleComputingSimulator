@@ -20,8 +20,8 @@ void setup()
     com = new Communication(SRC_ID,handleMesseage);
     com->startConnection();
     speedLog = new logger("speed sensor");
-    speedLog->logMessage(logger::LogLevel::INFO,"speed sensor");
-    //Serial.println("speed sensor");
+    //speedLog->logMessage(logger::LogLevel::INFO,"speed sensor");
+    Serial.println("speed sensor");
 
 
 }
@@ -37,20 +37,20 @@ void loop()
 
         String numberStr = data.substring(currentIndex, nextCommaIndex);
         int currentValue = numberStr.toInt() * scaleValue;
-        speedLog->logMessage(logger::LogLevel::DEBUG,"currentValue: " + to_string(currentValue));
-         Serial.println(currentValue);
+        //speedLog->logMessage(logger::LogLevel::DEBUG,"currentValue: " + to_string(currentValue));
+        Serial.println(currentValue);
 
         currentIndex = nextCommaIndex + 1;
 
         if (currentValue > MAX_NORMAL_VALUE) {
             countInvalid++;
-            speedLog->logMessage(logger::LogLevel::DEBUG, "invalid value " + to_string(currentValue) + " " + to_string(countInvalid) +" times" );
+            //speedLog->logMessage(logger::LogLevel::DEBUG, "invalid value " + to_string(currentValue) + " " + to_string(countInvalid) +" times" );
 
             if (countInvalid > INVALID_CONTINUITY) {
                 status = false;
                 Serial.println("\n send error:");
                 Serial.println(("--- " + std::to_string(currentValue) + " --- \n").c_str());
-                speedLog->logMessage(logger::LogLevel::ERROR, "send error:" +to_string(currentValue));
+                //speedLog->logMessage(logger::LogLevel::ERROR, "send error:" +to_string(currentValue));
                 countLoop = 0;
                 average = 0;
                 sendMessage("high speed",currentValue);
@@ -64,7 +64,7 @@ void loop()
                 previousValue == -1) {
                 average += currentValue;
                 previousValue = currentValue;
-                speedLog->logMessage(logger::LogLevel::INFO,"unlikely gap, previous value: " + to_string(previousValue) + " current value: " + to_string(currentValue));
+                //speedLog->logMessage(logger::LogLevel::INFO,"unlikely gap, previous value: " + to_string(previousValue) + " current value: " + to_string(currentValue));
             }
             else {
                 average += previousValue;
@@ -75,9 +75,9 @@ void loop()
         currentIndex = 0;
     }
     if (countLoop == SENDING_TIME) {
-        // Serial.println("\n send:");
-        // Serial.println(("--- " + std::to_string((average / 20)) + " --- \n").c_str());
-        speedLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / SENDING_TIME));
+        Serial.println("\n send:");
+        Serial.println(("--- " + std::to_string((average / SENDING_TIME)) + " --- \n").c_str());
+        //speedLog->logMessage(logger::LogLevel::INFO,"send: " + to_string(average / SENDING_TIME));
 
         sendMessage("average current speed",(average/SENDING_TIME));
 

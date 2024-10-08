@@ -13,10 +13,10 @@
 #define MIN_NORMAL_VALUE 2
 #define REASONABLE_GAP 1.5
 #define INVALID_CONTINUITY 3
-#define WAIT_TIME 500
+#define WAIT_TIME 400
 #define SRC_ID 10
-#define MSG_SIZE 64
-#define SENDING_TIME 30
+#define MSG_SIZE 280
+#define SENDING_TIME 15
 
 // Data
 extern String data;

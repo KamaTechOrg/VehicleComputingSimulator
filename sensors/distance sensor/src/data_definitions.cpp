@@ -35,17 +35,20 @@ String data =
 
 void sendMessage(string message, float distance)
 {
+    Serial.println("dis:");
+    Serial.println(distance);
+
     std::vector<uint8_t> buffer;
+
+    uint8_t bytes[sizeof(float)];
+    std::memcpy(bytes, &distance, sizeof(float)); 
+    buffer.insert(buffer.end(), bytes, bytes + sizeof(float));
 
     int i = 0;
     for (;i < message.size() &&  i < MSG_SIZE; buffer.push_back(static_cast<uint8_t>(message[i])), i++ )
         ;
     for (; i < MSG_SIZE; buffer.push_back(0), i++)
         ; 
-
-    uint8_t tempBytes[4];
-    std::memcpy(tempBytes, &distance, sizeof(float));
-    buffer.insert(buffer.end(), tempBytes, tempBytes + 4);
 
     //distanceLog->logMessage(logger::LogLevel::INFO,"send message: "+ message +" to main control" );
     com->sendMessage(buffer.data(), buffer.size(), 1, SRC_ID, false);
