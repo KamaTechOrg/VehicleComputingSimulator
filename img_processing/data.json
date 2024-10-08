@@ -1,0 +1,12 @@
+[
+    {
+        "path": "C:/Users/user1/Desktop/day/sun/sun_in_street.mov",
+        "focal_length": 1500,
+        "is_travel": true
+    },
+    {
+        "path": "C:/Users/user1/Desktop/day/close_cars/road.mov",
+        "focal_length": 2000,
+        "is_travel": true
+    }
+]
