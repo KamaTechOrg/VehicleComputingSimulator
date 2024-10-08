@@ -454,7 +454,7 @@ bool LaneDetector::drawLanes(std::vector<Vec4i> lines)
     return true;
 }
 
-void LaneDetector::drawLanesOnImage(std::shared_ptr<cv::Mat> img)
+void LaneDetector::drawLane(shared_ptr<Mat> img)
 {
     // Draw a transverse line 120 pixels above the bottom of the image
     cv::line(*img, cv::Point(0, img->rows - CAR_IN_IMAGE),

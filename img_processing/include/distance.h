@@ -11,6 +11,8 @@ class Distance {
     void findDistance(std::vector<ObjectInformation> &objectInformation);
     static Distance &getInstance(const cv::Mat &image = cv::Mat());
     void setFocalLength(double focalLength);
+    void drawDistance(const std::shared_ptr<cv::Mat> image,
+                      const std::vector<ObjectInformation> &objects) const;
 
    private:
     static Distance *instance;

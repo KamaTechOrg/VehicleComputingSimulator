@@ -24,7 +24,7 @@ class LaneDetector {
    public:
     void init();
     void manageLaneDetector(std::shared_ptr<cv::Mat> frame);
-    void drawLanesOnImage(std::shared_ptr<cv::Mat> img);
+    void drawLane(std::shared_ptr<cv::Mat> img);
 
    private:
     std::shared_ptr<cv::Mat> image;

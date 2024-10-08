@@ -32,7 +32,7 @@ TEST(TLaneDetector, CheckRun)
         auto sharedFrame = make_shared<Mat>(frame);
 
         laneDetector.manageLaneDetector(sharedFrame);
-        laneDetector.drawLanesOnImage(sharedFrame);
+        laneDetector.drawLane(sharedFrame);
 
         imshow("lane-detection",*sharedFrame);
         if (waitKey() == 27) break;
