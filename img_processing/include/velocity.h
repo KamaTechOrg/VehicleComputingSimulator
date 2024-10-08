@@ -9,6 +9,8 @@ class Velocity {
     Velocity() {}
     void returnVelocities(std::vector<ObjectInformation> &objects);
     void init(double frameTimeDiff);
+    void drawVelocity(std::shared_ptr<cv::Mat> image,
+                      std::vector<ObjectInformation> &objects);
 
    private:
     double frameTimeDiff;

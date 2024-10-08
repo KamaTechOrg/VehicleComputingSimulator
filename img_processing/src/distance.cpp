@@ -136,3 +136,29 @@ void Distance::addDistance(float distance, ObjectInformation &obj)
     obj.prevDistances.push_back(distance);
     obj.distance = distance;
 }
+
+void Distance::drawDistance(shared_ptr<Mat> image,
+                            vector<ObjectInformation> &objects)
+{
+    int fontFace = FONT_HERSHEY_SIMPLEX;
+    double fontScale = 0.6;
+    int thickness = 2;
+    int baseline = 0;
+    // Calculate text sizes
+    Size distanceTextSize =
+        getTextSize("distance", fontFace, fontScale, thickness, &baseline);
+    for (auto &obj : objects) {
+        std::stringstream ssDistance;
+        ssDistance << std::fixed << std::setprecision(2) << obj.distance;
+
+        Point distanceTextOrg(obj.position.x + 5,
+                              obj.position.y - distanceTextSize.height - 10);
+
+        // Draw outline for distance text
+        putText(*image, ssDistance.str(), distanceTextOrg, fontFace, fontScale,
+                Scalar(0, 0, 0), thickness + 3);
+        // Write the distance text
+        putText(*image, ssDistance.str(), distanceTextOrg, fontFace, fontScale,
+                Scalar(255, 255, 255), thickness);
+    }
+}

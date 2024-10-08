@@ -159,82 +159,45 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
     }
 
     // visual
-    drawOutput();
-    imshow("aaa", *currentFrame);
-    int key = cv::waitKey(1);
-    if (key == 27) {
+    if (drawOutput() == 27)
         return -1;
-    }
     return 1;
 }
 
-void Manager::drawOutput()
+int Manager::drawOutput()
 {
-    for (ObjectInformation objectInformation : currentOutput) {
-        int topLeftX = objectInformation.position.x;
-        int topLeftY = objectInformation.position.y;
-
-        // Draw rectangle around object
-        Scalar boxColor =
-            (objectInformation.distance < (alerter.MIN_LEGAL_DISTANCE))
-                ? Scalar(0, 0, 255)
-                : Scalar(0, 255, 0);
-        rectangle(*currentFrame, objectInformation.position, boxColor, 2);
-
-        // Define text for distance and velocity
-        std::stringstream ssDistance, ssVelocity;
-        ssDistance << std::fixed << std::setprecision(2)
-                   << objectInformation.distance;
-        ssVelocity << std::fixed << std::setprecision(2)
-                   << objectInformation.velocity;
-
-        std::string distanceText = ssDistance.str();
-        std::string velocityText = ssVelocity.str();
-
-        // Font properties
-        int fontFace = FONT_HERSHEY_SIMPLEX;
-        double fontScale = 0.6;
-        int thickness = 1;
-        int baseline = 0;
-
-        // Calculate text sizes
-        Size distanceTextSize = getTextSize(distanceText, fontFace, fontScale,
-                                            thickness, &baseline);
-        Size velocityTextSize = getTextSize(velocityText, fontFace, fontScale,
-                                            thickness, &baseline);
-
-        // Positions for the texts
-        Point distanceTextOrg(topLeftX + 5, topLeftY - velocityTextSize.height -
-                                                7);         // Above the object
-        Point velocityTextOrg(topLeftX + 5, topLeftY - 5);  // Above the object
-
-        // Draw outline for distance text
-        putText(*currentFrame, distanceText, distanceTextOrg, fontFace,
-                fontScale, Scalar(0, 0, 0), thickness + 2);
-        // Write the distance text
-        putText(*currentFrame, distanceText, distanceTextOrg, fontFace,
-                fontScale, Scalar(255, 255, 255), thickness);
-
-        // Draw outline for velocity text
-        putText(*currentFrame, velocityText, velocityTextOrg, fontFace,
-                fontScale, Scalar(0, 0, 0), thickness + 2);
-        // Write the velocity text
-        putText(*currentFrame, velocityText, velocityTextOrg, fontFace,
-                fontScale, Scalar(255, 0, 0), thickness);
-    }
+    Distance &distance = Distance::getInstance();
+    dynamicTracker.drawTracking(currentFrame, currentOutput);
+    distance.drawDistance(currentFrame, currentOutput);
+    velocity.drawVelocity(currentFrame, currentOutput);
 
     // Legend
     int legendX = 10, legendY = 10;
-    putText(*currentFrame, "Legend:", Point(legendX, legendY),
+
+    //Draw a black border around the legend
+    rectangle(*currentFrame, Point(legendX - 10, legendY - 10),
+              Point(legendX + 162, legendY + 72), Scalar(0, 0, 0), 2);
+
+    // Draw a black rectangle as background for the legend
+    rectangle(*currentFrame, Point(legendX - 8, legendY - 8),
+              Point(legendX + 160, legendY + 70), Scalar(150, 150, 150),
+              FILLED);
+
+    // Draw the legend text and colors
+    putText(*currentFrame, "Legend:", Point(legendX, legendY + 7),
             FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 255, 255), 1);
-    rectangle(*currentFrame, Point(legendX, legendY + 10),
-              Point(legendX + 10, legendY + 30), Scalar(255, 255, 255), FILLED);
-    putText(*currentFrame, "Distance", Point(legendX + 15, legendY + 25),
+    rectangle(*currentFrame, Point(legendX, legendY + 17),
+              Point(legendX + 10, legendY + 37), Scalar(255, 255, 255), FILLED);
+    putText(*currentFrame, "Distance", Point(legendX + 15, legendY + 37),
             FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 255, 255), 1);
-    rectangle(*currentFrame, Point(legendX, legendY + 35),
-              Point(legendX + 10, legendY + 55), Scalar(255, 0, 0), FILLED);
-    putText(*currentFrame, "velocity", Point(legendX + 15, legendY + 50),
+    rectangle(*currentFrame, Point(legendX, legendY + 47),
+              Point(legendX + 10, legendY + 62), Scalar(255, 255, 0), FILLED);
+    putText(*currentFrame, "Velocity", Point(legendX + 15, legendY + 62),
             FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 255, 255), 1);
+
+    imshow("Output", *currentFrame);
+    int key = waitKey(1);
+    return key;
 }
 
 void Manager::sendAlerts(vector<vector<uint8_t>> &alerts)

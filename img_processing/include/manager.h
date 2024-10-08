@@ -37,7 +37,7 @@ class Manager {
     // Moves the current image to the prevFrame
     // and clears the memory of the currentFrame;
     void prepareForTheNext();
-    void drawOutput();
+    int drawOutput();
     bool isDetect(bool isTravel);
     bool isResetTracker(bool isTravel);
     bool isTrack(bool isTravel);
