@@ -10,6 +10,7 @@
 #include "log_manager.h"
 #include "velocity.h"
 #include "communication.h"
+#include "sun_detector.h"
 
 class Manager {
    public:
@@ -32,6 +33,7 @@ class Manager {
     Velocity velocity;
     DynamicTracker dynamicTracker;
     Alerter alerter;
+    SunDetector sunDetector;
     LaneDetector laneDetector;
     int longTime;
     int iterationCnt;

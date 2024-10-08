@@ -166,7 +166,7 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
     // add distance to detection objects
     distance.findDistance(this->currentOutput);
     velocity.returnVelocities(this->currentOutput);
-
+    sunDetector.detectSun(this->currentFrame);
     // send allerts to main control
     vector<vector<uint8_t>> alerts = alerter.sendAlerts(this->currentOutput);
     sendAlerts(alerts);
@@ -258,6 +258,8 @@ void Manager::drawOutput()
               Point(legendX + 10, legendY + 55), Scalar(255, 0, 0), FILLED);
     putText(*currentFrame, "velocity", Point(legendX + 15, legendY + 50),
             FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 255, 255), 1);
+    
+    sunDetector.drowSun(this->currentFrame);
 
 #ifdef LANE_DETECT
     laneDetector.drawLanesOnImage(currentFrame);
