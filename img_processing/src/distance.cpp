@@ -10,28 +10,10 @@
 using namespace std;
 using namespace cv;
 
-Distance *Distance::instance = nullptr;
-
-Distance::Distance(const cv::Mat &image)
+void Distance::setFocalLength(const Mat &image)
 {
     findFocalLength(image);
 }
-
-Distance &Distance::getInstance(const cv::Mat &image)
-{
-    if (!instance) {
-        if (image.empty()) {
-            LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
-                                        "Could not load image");
-            throw std::runtime_error(
-                "Could not load image. Distance instance creation failed.");
-        }
-        else
-            instance = new Distance(image);
-    }
-    return *instance;
-}
-
 void Distance::setFocalLength(double focalLength)
 {
     this->focalLength = focalLength;

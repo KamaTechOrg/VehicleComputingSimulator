@@ -19,9 +19,8 @@ TEST(TVelocity, calculate_TVelocity)
     if (calibrationImage.empty()) {
         throw runtime_error("Could not open or find the image");
     }
-
-    Distance &distance = Distance::getInstance(calibrationImage);
-
+    Distance distance;
+    distance.setFocalLength(calibrationImage);
     Detector detector;
     DynamicTracker tracker;
     Velocity velocity;

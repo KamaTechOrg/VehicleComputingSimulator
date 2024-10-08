@@ -21,8 +21,8 @@ TEST(DistanceTest, DistanceWithCalibration)
         throw runtime_error("Could not open or find the image");
     }
 
-    Distance &distance = Distance::getInstance(calibrationImage);
-
+    Distance distance;
+    distance.setFocalLength(calibrationImage);
     // Load a real image from file
     string imagePath2 = "../tests/images/parking_car.JPG";
     Mat carImage;

@@ -31,7 +31,7 @@ void Manager::init()
         LogManager::logErrorMessage(ErrorType::IMAGE_ERROR, "image not found");
         return;
     }
-    Distance &distance = Distance::getInstance(calibrationImage);
+    distance.setFocalLength(calibrationImage);
     iterationCnt = 1;
     bool isCuda = false;
     detector.init(isCuda);
@@ -67,7 +67,6 @@ void Manager::mainDemo()
             return;
         }
         // intialize focal length
-        Distance &distance = Distance::getInstance();
         distance.setFocalLength(focalLength);
         runOnVideo(videoPath);
     }
@@ -104,21 +103,28 @@ void Manager::runOnVideo(string videoPath)
     }
 }
 
-bool Manager::isDetect(bool isTravel)
+bool Manager::isDetect()
 {
     if (!isTravel || iterationCnt == 1)
         return true;
     return false;
 }
 
-bool Manager::isResetTracker(bool isTravel)
+bool Manager::isResetTracker()
 {
     if (isTravel && iterationCnt == 1)
         return true;
     return false;
 }
 
-bool Manager::isTrack(bool isTravel)
+bool Manager::isTrack()
+{
+    if (isTravel && iterationCnt > 1)
+        return true;
+    return false;
+}
+
+bool Manager::isCalcVelocity()
 {
     if (isTravel && iterationCnt > 1)
         return true;
@@ -127,31 +133,36 @@ bool Manager::isTrack(bool isTravel)
 
 int Manager::processing(const Mat &newFrame, bool isTravel)
 {
-    Distance &distance = Distance::getInstance();
+    this->isTravel = isTravel;
     currentFrame = make_shared<Mat>(newFrame);
-    if (isDetect(isTravel)) {
+    if (isDetect()) {
         // send the frame to detect
         detector.detect(this->currentFrame, isTravel);
         this->currentOutput = detector.getOutput();
     }
 
-    if (isResetTracker(isTravel)) {
+    if (isResetTracker()) {
         // prepare the tracker
         dynamicTracker.startTracking(this->currentFrame, this->currentOutput);
     }
 
-    if (isTrack(isTravel)) {
+    if (isTrack()) {
         // send the frame to track
         dynamicTracker.tracking(this->currentFrame, this->currentOutput);
     }
 
     // add distance to detection objects
     distance.findDistance(this->currentOutput);
-    velocity.returnVelocities(this->currentOutput);
+    if (isCalcVelocity()) {
+        velocity.returnVelocities(this->currentOutput);
+    }
 
     // send allerts to main control
-    vector<vector<uint8_t>> alerts = alerter.sendAlerts(this->currentOutput);
-    sendAlerts(alerts);
+    if (isCalcVelocity()) {
+        vector<vector<uint8_t>> alerts =
+            alerter.sendAlerts(this->currentOutput);
+        sendAlerts(alerts);
+    }
 
     // update of the iterationCnt
     if (isTravel) {
@@ -166,10 +177,10 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
 
 int Manager::drawOutput()
 {
-    Distance &distance = Distance::getInstance();
     dynamicTracker.drawTracking(currentFrame, currentOutput);
     distance.drawDistance(currentFrame, currentOutput);
-    velocity.drawVelocity(currentFrame, currentOutput);
+    if (isCalcVelocity())
+        velocity.drawVelocity(currentFrame, currentOutput);
 
     // Legend
     int legendX = 10, legendY = 10;
