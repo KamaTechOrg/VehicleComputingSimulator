@@ -46,3 +46,5 @@ add_test_with_working_dir(UserInteractionTests user_interaction_tests.cpp)
 add_test_with_working_dir(LogHandlerTests test_log_handler.cpp)
 add_test_with_working_dir(TestFrames test_frames.cpp)
 add_test_with_working_dir(DbManagerTest test_db_manager.cpp)
+
+add_definitions(-DDISABLE_TEST_GET_PROCESS_SQUARES)
