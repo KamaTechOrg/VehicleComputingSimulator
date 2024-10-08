@@ -7,7 +7,6 @@ class Alerter {
    public:
     std::vector<std::vector<uint8_t>> sendAlerts(
         const std::vector<ObjectInformation> &output);
-    void makeFileJSON();
     static const int MIN_LEGAL_DISTANCE = 5000;
 
    private:

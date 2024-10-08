@@ -33,9 +33,3 @@
 //         da.getObjectDistance() == afterDeserialization.getObjectDistance() &&
 //         da.getRelativeVelocity() == afterDeserialization.getRelativeVelocity());
 // }
-
-// TEST(DetectionAlert, create_file_json)
-// {
-//     Alerter alerter;
-//     alerter.makeFileJSON();
-// }
