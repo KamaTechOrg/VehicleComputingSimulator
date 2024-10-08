@@ -27,7 +27,6 @@ class Alert {
     float getObjectDistance() const;
     float getRelativeVelocity() const;
     std::vector<uint8_t> serialize();
-    void deserialize(const char *buffer);
 
    private:
     AlertDetails alertDetails;
