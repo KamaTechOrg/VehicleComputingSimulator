@@ -23,6 +23,12 @@ if(LANE_DETECT)
     add_definitions(-DLANE_DETECT)
 endif()
 
+# Check if DETECT_SUN flag is set
+option(DETECT_SUN "detect sun" ON)
+if(DETECT_SUN)
+    add_definitions(-DDETECT_SUN)
+endif()
+
 # make the library with the src files
 file(GLOB SOURCES "src/*.cpp" "../logger/*.cpp" "tests/utils.cpp" "../communication/src/*.cpp" "../communication/sockets/*.cpp")
 add_library(ImageProcessingLib ${SOURCES})
