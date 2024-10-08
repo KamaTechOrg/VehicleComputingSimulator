@@ -42,7 +42,7 @@ class Manager {
     bool isResetTracker(bool isTravel);
     bool isTrack(bool isTravel);
     void sendAlerts(std::vector<std::vector<uint8_t>> &alerts);
-    void runOnVideo(std::string videoPath);
+    void runOnVideo(std::string videoPath, bool isTravel);
     int readIdFromJson(const char *target);
 };
 #endif  //__MANAGER_H__
