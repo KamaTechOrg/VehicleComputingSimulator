@@ -6,8 +6,6 @@
 #include "object_type_enum.h"
 
 #define MAX_PREV_DISTANCES_SIZE 10
-#define MAX_PREV_VELOCITIES_SIZE 2
-
 struct ObjectInformation {
     int id;
     ObjectType type;
@@ -15,7 +13,6 @@ struct ObjectInformation {
     cv::Rect position;
     std::deque<float> prevDistances;
     float distance;
-    std::deque<float> prevVelocities;
     std::optional<float> velocity = std::nullopt;
 };
 

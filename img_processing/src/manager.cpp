@@ -105,7 +105,7 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
     // add distance to detection objects
     distance.findDistance(this->currentOutput);
     if (isCalcVelocity()) {
-        velocity.returnVelocities(this->currentOutput);
+        velocity.calculateVelocities(this->currentOutput);
     }
 #ifdef DETECT_SUN
     sunDetector.detectSun(this->currentFrame);
