@@ -9,6 +9,7 @@ logger::logger(std::string componentName)
 {
     logger::componentName=componentName;
 }
+
 void logger::initializeLogFile()
 {
     if (isInitialized) return;
