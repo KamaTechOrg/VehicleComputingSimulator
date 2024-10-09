@@ -1,7 +1,8 @@
-#define NUM_OF_TRACKING 10
-
 #include "manager.h"
 #include "alert.h"
+
+#define ESC 27
+#define NUM_OF_TRACKING 10
 
 using namespace std;
 using namespace cv;
@@ -164,7 +165,7 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
         drawOutput();
         imshow("aaa", *currentFrame);
         int key = cv::waitKey(1);
-        if (key == 27) {
+        if (key == ESC) {
             return -1;
         }
         return 1;
