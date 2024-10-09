@@ -1,5 +1,6 @@
 #include "../include/crypto_api.h"
 #include "../include/general.h"
+#include "../include/debug_utils.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -191,7 +192,7 @@ size_t CryptoClient::getSignatureLength()
  */
 size_t CryptoClient::getSignedDataLength(size_t inLen)
 {
-  return inLen + getSignatureLength();
+  return inLen + getSignatureLength() + sizeof(SHAAlgorithm::SHA_256);
 }
 
 /**
@@ -201,7 +202,7 @@ size_t CryptoClient::getSignedDataLength(size_t inLen)
  */
 size_t CryptoClient::getVerifiedDataLength(size_t inLen)
 {
-  return inLen - getSignatureLength();
+  return inLen - getSignatureLength() - sizeof(SHAAlgorithm::SHA_256);
 }
 
 
@@ -225,11 +226,11 @@ CK_RV CryptoClient::sign(int senderId, void *in, size_t inLen, uint8_t* &out,
   crypto::SignResponse response;
   crypto::SignRequest request1;
   grpc::ClientContext context1;
-  size_t i = 0, counter = inLen/MAX_BLOCK + inLen % MAX_BLOCK > 0;
+  size_t i = 0, counter = (inLen + MAX_BLOCK-1)/MAX_BLOCK;
   if(counter == 1){
     request1.set_sender_id(senderId);
     request1.set_data(
-        std::string(reinterpret_cast<const char *>(in), inLen%MAX_BLOCK));
+        std::string(reinterpret_cast<const char *>(in), inLen % MAX_BLOCK));
     request1.set_counter(inLen / MAX_BLOCK + inLen % MAX_BLOCK > 0 ? 1 : 0);
     status = stub_->signUpdate(&context1, request1, &response);
     if (!status.ok()) {
@@ -240,16 +241,16 @@ CK_RV CryptoClient::sign(int senderId, void *in, size_t inLen, uint8_t* &out,
       return CKR_FUNCTION_FAILED;
     }
   }
-    
   for (; i < inLen / MAX_BLOCK; i++) {
     chunks.push_back(new std::uint8_t[MAX_BLOCK]);
     memcpy(chunks[i], (unsigned char *)in + i * MAX_BLOCK, MAX_BLOCK);
     outData.insert(outData.end(), chunks[i], chunks[i] + MAX_BLOCK);
   }
-
+  if(inLen % MAX_BLOCK){
   chunks.push_back(new std::uint8_t[inLen % MAX_BLOCK]);
   memcpy(chunks[i], (unsigned char *)in + i * MAX_BLOCK, inLen % MAX_BLOCK);
   outData.insert(outData.end(), chunks[i], chunks[i] + inLen % MAX_BLOCK);
+  }
   
   for (size_t i = 0; i < chunks.size(); ++i) {
     crypto::SignRequest request;
@@ -271,11 +272,13 @@ CK_RV CryptoClient::sign(int senderId, void *in, size_t inLen, uint8_t* &out,
 
       return CKR_FUNCTION_FAILED;
     }
-  }
-
+ }
   std::vector<unsigned char> signatureunsigned(response.signature().begin(), response.signature().end());
-  memcpy((uint8_t *)out, response.signature().data(),response.signature().size());
-  memcpy((uint8_t*)out + response.signature().size(), outData.data(), outData.size());
+  uint8_t* metadataPtr = (uint8_t*)out;
+  memcpy(metadataPtr, &hashFunc, sizeof(hashFunc));
+  metadataPtr += sizeof(hashFunc);
+  memcpy((uint8_t *)metadataPtr, response.signature().data(),response.signature().size());
+  memcpy((uint8_t*)metadataPtr + response.signature().size(), outData.data(), outData.size());
 
   for (auto ptr : chunks)
     delete[] ptr;
@@ -296,25 +299,31 @@ CK_RV CryptoClient::sign(int senderId, void *in, size_t inLen, uint8_t* &out,
  * @return CK_RV Status code indicating the success or failure of the operation.
  */
 CK_RV CryptoClient::verify(int senderId, int recieverId, void *in, size_t inLen,
-                           void *out, size_t &outLen, SHAAlgorithm hashFunc,
+                           void *out, size_t &outLen,
                            std::string keyId) {
                             crypto::VerifyResponse response;
+     
+    uint8_t* metadataPtr = (uint8_t*)in;
+    SHAAlgorithm hashFunc;
+    memcpy(&hashFunc, metadataPtr, sizeof(hashFunc));
+    metadataPtr += sizeof(hashFunc);
     grpc::ClientContext context1;
     grpc::Status status;
     crypto::VerifyRequest request1;
     size_t signatureLength = getSignatureLength();
     uint8_t *signature = new uint8_t[signatureLength];
-    memcpy(signature, in, signatureLength);
-    inLen -= signatureLength;
-    in = (uint8_t*)in + signatureLength;
-    size_t counter = inLen/MAX_BLOCK + inLen % MAX_BLOCK > 0;
+    memcpy(signature, metadataPtr, signatureLength);
+    inLen -= signatureLength + sizeof(hashFunc);
+    metadataPtr += signatureLength;
+    size_t counter = (inLen + MAX_BLOCK -1)/MAX_BLOCK;
     std::vector<std::uint8_t *> chunks;
     if(counter == 1){
         request1.set_sender_id(senderId);
         request1.set_data(
-        std::string(reinterpret_cast<const char *>(in), inLen % MAX_BLOCK));
+        std::string(reinterpret_cast<const char *>(metadataPtr), inLen % MAX_BLOCK));
         request1.set_receiver_id(recieverId);
         request1.set_counter(counter);
+        request1.set_hash_func(static_cast<crypto::SHAAlgorithm>(hashFunc));
         request1.set_signature(signature, signatureLength);
         status = stub_->verifyUpdate(&context1, request1, &response);
         if (!status.ok()) {
@@ -325,17 +334,17 @@ CK_RV CryptoClient::verify(int senderId, int recieverId, void *in, size_t inLen,
           return CKR_FUNCTION_FAILED;
         }
     }
-
     size_t i = 0;
     for (; i < inLen / MAX_BLOCK; i++) {
         chunks.push_back(new std::uint8_t[MAX_BLOCK]);
-        memcpy(chunks[i], (uint8_t*)in  + i * MAX_BLOCK,
+        memcpy(chunks[i], metadataPtr  + i * MAX_BLOCK,
            MAX_BLOCK);
+        
     }
-
     chunks.push_back(new std::uint8_t[inLen % MAX_BLOCK]);
-    memcpy(chunks[i], (uint8_t*)in + i * MAX_BLOCK,inLen % MAX_BLOCK);
-    for (size_t i = 0; i < chunks.size(); ++i) {
+    memcpy(chunks[i], metadataPtr + i * MAX_BLOCK,inLen % MAX_BLOCK);
+
+    for (i = 0; i < chunks.size(); ++i) {
         crypto::VerifyRequest request;
         request.set_sender_id(senderId);
         request.set_receiver_id(recieverId);
@@ -343,8 +352,9 @@ CK_RV CryptoClient::verify(int senderId, int recieverId, void *in, size_t inLen,
         request.set_key_id(keyId);
         request.set_data(
         std::string(reinterpret_cast<const char *>(chunks[i]), MAX_BLOCK));
-        if(i == chunks.size() - 1)
+        if(i == chunks.size() - 1){
             request.set_signature(signature, signatureLength);
+        }
         grpc::ClientContext context;
         if (i == chunks.size() - 1)
            status = stub_->verifyFinalize(&context, request, &response);
@@ -359,7 +369,7 @@ CK_RV CryptoClient::verify(int senderId, int recieverId, void *in, size_t inLen,
            return CKR_SIGNATURE_INVALID;
         }
     }
-    memcpy(out, in, outLen);
+    memcpy(out, metadataPtr, outLen);
     
     for (auto ptr : chunks)
        delete[] ptr;
@@ -415,10 +425,9 @@ std::string CryptoClient::getPublicRSAKeyByUserId(int userId)
  @param dataLen The length of the input data.
  @return The length of the encrypted data. If the RPC call fails, returns -1.
 */
-size_t CryptoClient::getECCencryptedLength(size_t dataLen)
+size_t CryptoClient::getECCencryptedLength()
 {
     crypto::GetLengthRequest request;
-    request.set_in_len(dataLen);
     crypto::GetLengthResponse response;
     grpc::ClientContext context;
     grpc::Status status = stub_->getECCencryptedLength(&context, request, &response);
@@ -436,10 +445,9 @@ size_t CryptoClient::getECCencryptedLength(size_t dataLen)
  @param dataLen The length of the input data.
  @return The length of the encrypted data. If the RPC call fails, returns -1.
 */
-size_t CryptoClient::getECCdecryptedLength(size_t dataLen)
+size_t CryptoClient::getECCdecryptedLength()
 {
     crypto::GetLengthRequest request;
-    request.set_in_len(dataLen);
     crypto::GetLengthResponse response;
     grpc::ClientContext context;
     grpc::Status status = stub_->getECCDecryptedLength(&context, request, &response);
@@ -511,7 +519,6 @@ CK_RV CryptoClient::ECCdecrypt(int receiverId, std::string keyId, void *in, size
     
     return CKR_OK;
 }
-
 /**
  Gets the length of the data when encrypted using RSA.
  @param dataLen The length of the input data.
@@ -524,14 +531,13 @@ size_t CryptoClient::getRSAencryptedLength()
     grpc::ClientContext context;
     grpc::Status status = stub_->getRSAencryptedLength(&context, request, &response);
      if(!status.ok()){
-        log(logger::LogLevel::ERROR,"RPC getRSAencryptedLength failed");
+        log(logger::LogLevel::ERROR,"RPC getSignatureLength failed");
         
         return -1;
     }
 
     return response.len();
 };
-
 /**
  Gets the length of the data when decrypted using RSA.
  @param dataLen The length of the input data.
@@ -564,7 +570,7 @@ size_t CryptoClient::getRSAdecryptedLength()
 */
 CK_RV CryptoClient::RSAencrypt(int userId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t outLen)
-{
+                                        {
     crypto::AsymetricEncryptRequest request;
     request.set_senderid(userId);
     request.set_keyid(keyId);
@@ -592,7 +598,7 @@ CK_RV CryptoClient::RSAencrypt(int userId, std::string keyId, void *in, size_t i
  @return CKR_OK on success, or CKR_FUNCTION_FAILED if the RPC call fails.
 */
 CK_RV CryptoClient::RSAdecrypt(int userId, std::string keyId, void *in, size_t inLen,
-                 void *out, size_t *outLen)
+                 void *out, size_t &outLen)
 {
     crypto::AsymetricDecryptRequest request;
     request.set_receiverid(userId);
@@ -605,10 +611,11 @@ CK_RV CryptoClient::RSAdecrypt(int userId, std::string keyId, void *in, size_t i
         log(logger::LogLevel::ERROR,"RPC RSAdecrypt failed");
         return CKR_FUNCTION_FAILED;
     }
-    memcpy(out, response.decrypted_data().data(), *outLen);
+    memcpy(out, response.decrypted_data().data(), outLen);
     
     return CKR_OK;
 }
+
 
 /**
  Gets the length of the data chunk when encrypted using AES.
@@ -662,42 +669,55 @@ size_t CryptoClient::getAESdecryptedLength(size_t dataLen, bool isFirst, AESChai
 }
 
 /**
- Gets the length of the data input when encrypted using AES.
- @param dataLen The length of the chunk.
- @param chainingMode aes chaining mode.
- @return The length of the encrypted data. If the RPC call fails, returns -1.
-*/
-size_t CryptoClient::getAESencryptedLengthClient(size_t dataLen, AESChainingMode chainingMode)
-{
-    size_t length = 0;
-    for(int i = 0; i < dataLen / MAX_BLOCK; i++)
-      length += getAESencryptedLength(MAX_BLOCK,i == 0, chainingMode);
-    if(dataLen % MAX_BLOCK)
-      length += getAESencryptedLength(dataLen % MAX_BLOCK,dataLen < MAX_BLOCK, chainingMode);
-    
-    return length;
-}
-
-/**
  Gets the length of the data input when decrypted using AES.
  @param dataLen The length of the chunk.
  @param chainingMode aes chaining mode.
  @return The length of the decrypted data. If the RPC call fails, returns -1.
 */
-size_t CryptoClient::getAESdecryptedLengthClient(size_t dataLen, AESChainingMode chainingMode)
+size_t CryptoClient::getAESencryptedLengthClient(size_t dataLen, AESChainingMode chainingMode, AESKeyLength keyLength, AsymmetricFunction func, const std::string &keyId)
 {
+    size_t length = sizeof(keyLength) + sizeof(chainingMode) + sizeof(func) + keyId.length() + 1;
+    for (int i = 0; i < dataLen / MAX_BLOCK; i++)
+        length += getAESencryptedLength(MAX_BLOCK, i == 0, chainingMode);
+    if (dataLen % MAX_BLOCK)
+        length += getAESencryptedLength(dataLen % MAX_BLOCK, dataLen < MAX_BLOCK, chainingMode);
+
+    return length;
+}
+
+size_t CryptoClient::getAESdecryptedLengthClient(void* in ,size_t dataLen)
+{
+    uint8_t* metadataPtr = (uint8_t*)in;
+    AESKeyLength keyLength;
+    memcpy(&keyLength, metadataPtr, sizeof(keyLength));
+    metadataPtr += sizeof(keyLength);
+
+    AESChainingMode chainingMode;
+    memcpy(&chainingMode, metadataPtr, sizeof(chainingMode));
+    metadataPtr += sizeof(chainingMode);
+
+    AsymmetricFunction func;
+    memcpy(&func, metadataPtr, sizeof(func));
+    metadataPtr += sizeof(func);
+
+    std::string keyId((char*)metadataPtr);
+    metadataPtr += keyId.length() + 1;
+
+    size_t encryptedDataLen = dataLen - (metadataPtr - (uint8_t*)in);
+    uint8_t* encryptedData = metadataPtr;
+
     size_t encryptBlock = getAESencryptedLength(MAX_BLOCK, false, chainingMode);
-    size_t firstBlock = getAESencryptedLength( MAX_BLOCK, true, chainingMode);
+    size_t firstBlock = getAESencryptedLength(MAX_BLOCK, true, chainingMode);
 
     size_t length = 0;
-    length += dataLen < firstBlock? getAESdecryptedLength(dataLen,  true, chainingMode): getDecryptedLen( firstBlock, true, chainingMode);
-    if(dataLen > firstBlock){
-        for(int i = 0; i < (dataLen - firstBlock) / encryptBlock; i++)
-           length += getAESdecryptedLength( encryptBlock, i == 0, chainingMode);   
+    length += dataLen < firstBlock ? getAESdecryptedLength(dataLen, true, chainingMode) : getDecryptedLen(firstBlock, true, chainingMode);
+    if (dataLen > firstBlock) {
+        for (int i = 0; i < (dataLen - firstBlock) / encryptBlock; i++)
+            length += getAESdecryptedLength(encryptBlock, i == 0, chainingMode);
     }
-    if((dataLen - firstBlock) % encryptBlock && dataLen > firstBlock)
-      length += getAESdecryptedLength( (dataLen - firstBlock) % encryptBlock,  false, chainingMode);
-    
+    if ((dataLen - firstBlock) % encryptBlock && dataLen > firstBlock)
+        length += getAESdecryptedLength((dataLen - firstBlock) % encryptBlock, false, chainingMode);
+
     return length;
 }
 
@@ -715,32 +735,32 @@ size_t CryptoClient::getAESdecryptedLengthClient(size_t dataLen, AESChainingMode
  @param keyId The ID of the key to be used for encryption.
  @return CKR_OK on success, or CKR_FUNCTION_FAILED if the RPC call fails.
 */
-CK_RV CryptoClient::AESencrypt(int senderId, int recieverId, void *in, size_t inLen,
+CK_RV CryptoClient::AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
                  void *&out, unsigned int &outLen, AsymmetricFunction func,
                  AESKeyLength keyLength, AESChainingMode chainingMode,
                  std::string keyId)
 {
     std::vector<std::uint8_t*> chunks;
     size_t i = 0;
-    for(; i < inLen / MAX_BLOCK ; i++){
-        chunks.push_back(new std::uint8_t[ MAX_BLOCK ]);
-        memcpy(chunks[i], (unsigned char*)in + i * MAX_BLOCK,  MAX_BLOCK);
+    for (; i < inLen / MAX_BLOCK; i++) {
+        chunks.push_back(new std::uint8_t[MAX_BLOCK]);
+        memcpy(chunks[i], (unsigned char*)in + i * MAX_BLOCK, MAX_BLOCK);
     }
 
     chunks.push_back(new std::uint8_t[inLen % MAX_BLOCK]);
     memcpy(chunks[i], (unsigned char*)in + i * MAX_BLOCK, inLen % MAX_BLOCK);
 
-    std::vector<std::uint8_t> outData; 
-    int count=0;
-    for(const auto& chunk : chunks){
+    std::vector<std::uint8_t> outData;
+    int count = 0;
+    for (const auto& chunk : chunks) {
         count++;
         crypto::AESEncryptRequest request;
         request.set_isfirst(count == 1);
         request.set_key_length(static_cast<crypto::AESKeyLength>(keyLength));
         request.set_sender_id(senderId);
         request.set_key_id(keyId);
-        request.set_receiver_id(recieverId);
-        request.set_data(std::string(reinterpret_cast<const char*>(chunk), (count==chunks.size() && inLen % MAX_BLOCK != 0)?  inLen % MAX_BLOCK : MAX_BLOCK));
+        request.set_receiver_id(receiverId);
+        request.set_data(std::string(reinterpret_cast<const char*>(chunk), (count == chunks.size() && inLen % MAX_BLOCK != 0) ? inLen % MAX_BLOCK : MAX_BLOCK));
         request.set_counter((inLen + MAX_BLOCK - 1) / MAX_BLOCK);
         request.set_func(static_cast<crypto::AsymmetricFunction>(func));
         request.set_chainingmode(static_cast<crypto::AESChainingMode>(chainingMode));
@@ -751,8 +771,8 @@ CK_RV CryptoClient::AESencrypt(int senderId, int recieverId, void *in, size_t in
         grpc::Status status = stub_->AESencrypt(&context, request, &response);
 
         if (!status.ok()) {
-            log(logger::LogLevel::ERROR,"RPC AESencrypt failed");
-            for (auto ptr : chunks) 
+            log(logger::LogLevel::ERROR, "RPC AESencrypt failed");
+            for (auto ptr : chunks)
                 delete[] ptr;
 
             return CKR_FUNCTION_FAILED;
@@ -760,12 +780,30 @@ CK_RV CryptoClient::AESencrypt(int senderId, int recieverId, void *in, size_t in
 
         outData.insert(outData.end(), response.encrypted_data().data(), response.encrypted_data().data() + response.encrypted_data().length());
     }
-    memcpy(out, outData.data(), outLen);
 
-    for (auto ptr : chunks) 
+    // Add the metadata to the output
+    size_t metadataSize = sizeof(keyLength) + sizeof(chainingMode) + sizeof(func) + keyId.length() + 1;
+    outLen = outData.size() + metadataSize;
+    out = new uint8_t[outLen];
+
+    // Copy the metadata
+    uint8_t* metadataPtr = (uint8_t*)out;
+    memcpy(metadataPtr, &keyLength, sizeof(keyLength));
+    metadataPtr += sizeof(keyLength);
+    memcpy(metadataPtr, &chainingMode, sizeof(chainingMode));
+    metadataPtr += sizeof(chainingMode);
+    memcpy(metadataPtr, &func, sizeof(func));
+    metadataPtr += sizeof(func);
+    strcpy((char*)metadataPtr, keyId.c_str());
+    metadataPtr += keyId.length() + 1;
+
+    // Copy the encrypted data
+    memcpy(metadataPtr, outData.data(), outData.size());
+
+    for (auto ptr : chunks)
         delete[] ptr;
 
-    return CKR_OK; 
+    return CKR_OK;
 }
 
 /**
@@ -776,40 +814,50 @@ CK_RV CryptoClient::AESencrypt(int senderId, int recieverId, void *in, size_t in
  * @param inLen Length of the input data.
  * @param out Reference to a pointer where the decrypted output will be stored.
  * @param outLen Reference to the length of the decrypted output.
- * @param func The asymmetric function used for decryption.
- * @param aesKeyLength The length of the AES key.
- * @param chainingMode The chaining mode used for AES.
- * @param keyId The ID of the key used for decryption.
  * @return CK_RV Status of the operation (CKR_OK on success).
 */
-CK_RV CryptoClient::AESdecrypt(int senderId, int recieverId, uint8_t *in, size_t inLen,
-                                uint8_t *&out, size_t &outLen,
-                               AsymmetricFunction func,
-                               AESKeyLength aesKeyLength, AESChainingMode chainingMode,
-                                std::string keyId) 
+CK_RV CryptoClient::AESdecrypt(int senderId, int receiverId, void *in, size_t inLen, void *&out, size_t &outLen)
 {
+    // Extract the metadata
+    uint8_t* metadataPtr = (uint8_t*)in;
+    AESKeyLength keyLength;
+    memcpy(&keyLength, metadataPtr, sizeof(keyLength));
+    metadataPtr += sizeof(keyLength);
+
+    AESChainingMode chainingMode;
+    memcpy(&chainingMode, metadataPtr, sizeof(chainingMode));
+    metadataPtr += sizeof(chainingMode);
+
+    AsymmetricFunction func;
+    memcpy(&func, metadataPtr, sizeof(func));
+    metadataPtr += sizeof(func);
+
+    std::string keyId((char*)metadataPtr);
+    metadataPtr += keyId.length() + 1;
+
+    size_t encryptedDataLen = inLen - (metadataPtr - (uint8_t*)in);
+    uint8_t* encryptedData = metadataPtr;
+
     size_t encryptBlock = getAESencryptedLength(MAX_BLOCK, false, chainingMode);
     size_t firstBlock = getAESencryptedLength(MAX_BLOCK, true, chainingMode);
-    size_t counter = inLen > firstBlock ? (1+ (inLen - firstBlock)/encryptBlock + ((inLen - firstBlock)%encryptBlock?1 :0)): 1;
-    std::vector<std::uint8_t *> chunks;
+    size_t counter = encryptedDataLen > firstBlock ? (1 + (encryptedDataLen - firstBlock) / encryptBlock + ((encryptedDataLen - firstBlock) % encryptBlock ? 1 : 0)) : 1;
+    std::vector<std::uint8_t*> chunks;
     size_t i = 0;
-    if (inLen> firstBlock) {
+    if (encryptedDataLen > firstBlock) {
         chunks.push_back(new std::uint8_t[firstBlock]);
-        memcpy(chunks[i], in , firstBlock);
+        memcpy(chunks[i], encryptedData, firstBlock);
         i++;
-        for (; i < 1+ (inLen - firstBlock) / encryptBlock; i++) {
+        for (; i < 1 + (encryptedDataLen - firstBlock) / encryptBlock; i++) {
             chunks.push_back(new std::uint8_t[encryptBlock]);
-            memcpy(chunks[i], (uint8_t*)in + ((i - 1) * encryptBlock) + firstBlock,  encryptBlock);
+            memcpy(chunks[i], encryptedData + ((i - 1) * encryptBlock) + firstBlock, encryptBlock);
         }
-        if((inLen - firstBlock) % encryptBlock != 0 ){
-          chunks.push_back(new std::uint8_t[((inLen - firstBlock) % encryptBlock)]);
-          memcpy(chunks[i], (unsigned char *)in + (i > 0? (((i - 1) * encryptBlock) +  firstBlock): 0),
-         ((inLen - firstBlock) % encryptBlock));
+        if ((encryptedDataLen - firstBlock) % encryptBlock != 0) {
+            chunks.push_back(new std::uint8_t[((encryptedDataLen - firstBlock) % encryptBlock)]);
+            memcpy(chunks[i], encryptedData + (i > 0 ? (((i - 1) * encryptBlock) + firstBlock) : 0), ((encryptedDataLen - firstBlock) % encryptBlock));
         }
-    }
-    else{
-      chunks.push_back(new std::uint8_t[inLen]);
-      memcpy(chunks[i], (unsigned char *)in,inLen );
+    } else {
+        chunks.push_back(new std::uint8_t[encryptedDataLen]);
+        memcpy(chunks[i], encryptedData, encryptedDataLen);
     }
     std::vector<std::uint8_t> outData;
     bool isFirst = true;
@@ -821,37 +869,34 @@ CK_RV CryptoClient::AESdecrypt(int senderId, int recieverId, uint8_t *in, size_t
         request.set_sender_id(senderId);
         request.set_chainingmode(static_cast<crypto::AESChainingMode>(chainingMode));
         request.set_func(static_cast<crypto::AsymmetricFunction>(func));
-        request.set_key_length(static_cast<crypto::AESKeyLength>(aesKeyLength));
-        request.set_receiver_id(recieverId);
+        request.set_key_length(static_cast<crypto::AESKeyLength>(keyLength));
+        request.set_receiver_id(receiverId);
         request.set_isfirst(isFirst);
-        if(isFirst)
-           request.set_data_in(std::string(
-          reinterpret_cast<const char *>(chunk),inLen > firstBlock? firstBlock: inLen));
-        else 
-           request.set_data_in(std::string(
-          reinterpret_cast<const char *>(chunk), (count == chunks.size() && (inLen - firstBlock) % encryptBlock)? (inLen - firstBlock) % encryptBlock: encryptBlock));
-    
+        if (isFirst)
+            request.set_data_in(std::string(reinterpret_cast<const char *>(chunk), encryptedDataLen > firstBlock ? firstBlock : encryptedDataLen));
+        else
+            request.set_data_in(std::string(reinterpret_cast<const char *>(chunk), (count == chunks.size() && (encryptedDataLen - firstBlock) % encryptBlock) ? (encryptedDataLen - firstBlock) % encryptBlock : encryptBlock));
+
         isFirst = false;
         request.set_counter(chunks.size());
         crypto::AESDecryptResponse response;
         grpc::ClientContext context;
         grpc::Status status = stub_->AESdecrypt(&context, request, &response);
         if (!status.ok()) {
-            log(logger::LogLevel::ERROR,"RPC decrypt failed");
+            log(logger::LogLevel::ERROR, "RPC decrypt failed");
             for (auto ptr : chunks)
                 delete[] ptr;
-      
+
             return CKR_FUNCTION_FAILED;
         }
-        outData.insert(outData.end(), response.decrypted_data().data(),
-                   response.decrypted_data().data() +
-                       response.decrypted_data().length());
+        outData.insert(outData.end(), response.decrypted_data().data(), response.decrypted_data().data() + response.decrypted_data().length());
     }
     outLen = outData.size();
+    out = new uint8_t[outLen];
     memcpy(out, outData.data(), outLen);
     for (auto ptr : chunks)
-       delete[] ptr;
-  
+        delete[] ptr;
+
     return CKR_OK;
 }
 

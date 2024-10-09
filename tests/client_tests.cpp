@@ -9,7 +9,7 @@ protected:
     CryptoClient client;
     int senderId = 1;
     int receiverId = 2;
-    size_t messageLen = 3000;
+    size_t messageLen = 2590;
     CryptoConfig config;
 
     CryptoClientTest()
@@ -49,23 +49,24 @@ TEST_F(CryptoClientTest, SignVerify)
     size_t signedMessageLen = client.getSignedDataLength(messageLen);
     uint8_t* signedMessage = new uint8_t[signedMessageLen];
     SHAAlgorithm hashFunc = SHA_256;
+    auto rsaKeysPair = client.generateRSAKeyPair(receiverId, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
+    std::string publicKey = client.getPublicRSAKeyByUserId(receiverId);
 
-    auto rsaKeysPair = client.generateRSAKeyPair(senderId, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
     size_t verifiedMessageLen = client.getVerifiedDataLength(signedMessageLen);
     unsigned char verifiedMessage[verifiedMessageLen];
 
-    CK_RV signResult = client.sign(senderId, message, messageLen, signedMessage, signedMessageLen, hashFunc, rsaKeysPair.second);
+    CK_RV signResult = client.sign(senderId, message, messageLen, signedMessage, signedMessageLen, hashFunc, publicKey);
     ASSERT_EQ(signResult, CKR_OK);
 
-    CK_RV verifyResult = client.verify(senderId, receiverId, signedMessage, signedMessageLen, verifiedMessage, verifiedMessageLen, hashFunc, rsaKeysPair.first);
+    CK_RV verifyResult = client.verify(senderId, receiverId, signedMessage, signedMessageLen, verifiedMessage, verifiedMessageLen, rsaKeysPair.second);
     ASSERT_EQ(verifyResult, CKR_OK);
-
+    ASSERT_EQ(memcmp(message, verifiedMessage, messageLen),0);
     delete[] signedMessage;
 }
 
 TEST_F(CryptoClientTest, RSAEncryptDecrypt) 
 {
-    auto rsaKeyPair = client.generateRSAKeyPair(receiverId, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
+    auto rsaKeyPair = client.generateRSAKeyPair(senderId, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
     ASSERT_FALSE(rsaKeyPair.first.empty() || rsaKeyPair.second.empty());
 
     const char* inputData = "Hello, World!";
@@ -73,13 +74,12 @@ TEST_F(CryptoClientTest, RSAEncryptDecrypt)
     size_t encryptedDataLenRSA = client.getRSAencryptedLength();
     uint8_t* encryptedDataRSA = new uint8_t[encryptedDataLenRSA];
 
-    CK_RV rsaEncryptResult = client.RSAencrypt(senderId, rsaKeyPair.first, (void*)inputData, inputDataLen, encryptedDataRSA, encryptedDataLenRSA);
+    CK_RV rsaEncryptResult = client.RSAencrypt(senderId, rsaKeyPair.second, (void*)inputData, inputDataLen, encryptedDataRSA, encryptedDataLenRSA);
     ASSERT_EQ(rsaEncryptResult, CKR_OK);
-
     size_t decryptedDataLenRSA = client.getRSAdecryptedLength();
     uint8_t* decryptedDataRSA = new uint8_t[decryptedDataLenRSA];
-
-    CK_RV rsaDecryptResult = client.RSAdecrypt(receiverId, rsaKeyPair.second, encryptedDataRSA, encryptedDataLenRSA, decryptedDataRSA, &decryptedDataLenRSA);
+    std::string publicKey = client.getPublicRSAKeyByUserId(senderId);
+    CK_RV rsaDecryptResult = client.RSAdecrypt(receiverId, publicKey, encryptedDataRSA, encryptedDataLenRSA, decryptedDataRSA, decryptedDataLenRSA);
     ASSERT_EQ(rsaDecryptResult, CKR_OK);
     ASSERT_FALSE(memcmp(inputData, decryptedDataRSA, inputDataLen));
 
@@ -87,22 +87,23 @@ TEST_F(CryptoClientTest, RSAEncryptDecrypt)
     delete[] decryptedDataRSA;
 }
 
-TEST_F(CryptoClientTest, ECCEncryptDecrypt) {
-    
+
+TEST_F(CryptoClientTest, ECCEncryptDecrypt) 
+{
     const char* inputData = "Hello, World!";
     size_t inputDataLen = strlen(inputData);
+    auto eccKey = client.generateECCKeyPair(senderId, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
+    size_t encryptedDataLenECC = client.getECCencryptedLength();
+    uint8_t encryptedDataECC[encryptedDataLenECC];
 
-    auto eccKey = client.generateECCKeyPair(receiverId, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
-    uint8_t encryptedDataECC[client.getECCencryptedLength(1)];
-    size_t encryptedDataLenECC = sizeof(encryptedDataECC);
-
-    CK_RV eccEncryptResult = client.ECCencrypt(senderId, eccKey.first, (void*)inputData, inputDataLen, encryptedDataECC, encryptedDataLenECC);
+    CK_RV eccEncryptResult = client.ECCencrypt(senderId, eccKey.second, (void*)inputData, inputDataLen, encryptedDataECC, encryptedDataLenECC);
     ASSERT_EQ(eccEncryptResult, CKR_OK);
-
+    
+    std::string publicKeyId = client.getPublicECCKeyByUserId(senderId);
+    size_t decryptedDataLenECC = client.getECCdecryptedLength();
     uint8_t decryptedDataECC[inputDataLen];
-    size_t decryptedDataLenECC = sizeof(decryptedDataECC);
-
-    CK_RV eccDecryptResult = client.ECCdecrypt(receiverId, eccKey.second, encryptedDataECC, encryptedDataLenECC, decryptedDataECC, decryptedDataLenECC);
+    CK_RV eccDecryptResult = client.ECCdecrypt(receiverId, publicKeyId, encryptedDataECC, encryptedDataLenECC, decryptedDataECC, decryptedDataLenECC);
+    
     ASSERT_EQ(eccDecryptResult, CKR_OK);
     ASSERT_FALSE(memcmp(inputData, decryptedDataECC, inputDataLen));
 }
@@ -119,7 +120,7 @@ TEST_F(CryptoClientTest, AESncryptDecrypt)
         KeyPermission::VERIFY, KeyPermission::EXPORTABLE};
     AESChainingMode chainingMode = mode;  
     std::string keyId = client.generateAESKey(senderId, keyLength, permissions, receiverId);
-    size_t encryptedLength = client.getAESencryptedLengthClient(inputDataLen, mode);
+    size_t encryptedLength = client.getAESencryptedLengthClient(inputDataLen, mode, keyLength,RSA,keyId);
     void* encryptedData = new uint8_t[encryptedLength];
     // Encrypt the data
     CK_RV result = client.AESencrypt(senderId, receiverId, (void *)inputData, inputDataLen,
@@ -130,11 +131,10 @@ TEST_F(CryptoClientTest, AESncryptDecrypt)
 
     // Decrypt the data
     size_t decryptedLength =
-       client.getAESdecryptedLengthClient(encryptedLength, mode);
+       client.getAESdecryptedLengthClient(encryptedData, encryptedLength);
     uint8_t* decryptedData = new uint8_t[inputDataLen];
     result = client.AESdecrypt(senderId, receiverId,(uint8_t*) encryptedData, encryptedLength,
-                         decryptedData, decryptedLength, RSA,
-                         keyLength, mode, keyId);
+    (void*&)decryptedData, decryptedLength);
     EXPECT_EQ(result, CKR_OK);
     EXPECT_EQ(memcmp(inputData, decryptedData, inputDataLen), 0);
 
