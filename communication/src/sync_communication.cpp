@@ -76,28 +76,35 @@ ErrorCode SyncCommunication::registerProcess(uint32_t processId)
 { 
     auto findProcessId = std::find(processIDs.begin(), processIDs.end(), processId);
 
-    if (findProcessId == processIDs.end())
+    if (findProcessId == processIDs.end()) {
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, " Synchronization : Invalid ID for connection: " + std::to_string(processId));
         return ErrorCode::INVALID_ID;
+    }
 
     // Register the process if it's critical
-    if (processId < maxCriticalProcessID)
+    if (processId < maxCriticalProcessID) {
         registeredCriticalProcesses.fetch_add(1);
-    
+        RealSocket::log.logMessage(logger::LogLevel::INFO, "Critical process registered. Current count: " + std::to_string(registeredCriticalProcesses.load()));
+    }
+
     registeredProcessesCount.fetch_add(1);
-    std::cout << "registeredProcessesCount "<<registeredProcessesCount.load()<< std::endl;
-    std::cout << "registeredCriticalProcesses "<<registeredCriticalProcesses.load()<< std::endl;
-    std::cout << "criticalProcessesCount "<<criticalProcessesCount.load()<< std::endl;
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Total registered processes count updated: " + std::to_string(registeredProcessesCount.load()));
 
     // If all critical processes are registered, release them
-    if (registeredCriticalProcesses.load() != criticalProcessesCount.load()) 
+    if (registeredCriticalProcesses.load() != criticalProcessesCount.load()) {
+        RealSocket::log.logMessage(logger::LogLevel::INFO, "Not all critical processes are registered yet. Waiting for synchronization: " + std::to_string(processId));
         return ErrorCode::NOT_SYNCHRONIZED;
-
+    }
+    
     {
         std::lock_guard<std::mutex> lock(mutexCV);
         critical_ready = true;
+        RealSocket::log.logMessage(logger::LogLevel::INFO, "All critical processes are registered. Notifying all threads.");
     }
-    cv.notify_all();
 
+    cv.notify_all();
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Process ID " + std::to_string(processId) + " successfully registered");
+    
     return ErrorCode::SUCCESS;
 }
 
@@ -105,9 +112,11 @@ ErrorCode SyncCommunication::registerProcess(uint32_t processId)
 void SyncCommunication::handle_timeout(int signum)
 {
     if (registeredCriticalProcesses < criticalProcessesCount) {
-        std::cout<<"timeout"<<std::endl;
+        RealSocket::log.logMessage(logger::LogLevel::INFO, "Timeout: Not all critical processes are registered. Registered: " 
+            + std::to_string(registeredCriticalProcesses.load()) + ", Expected: " + std::to_string(criticalProcessesCount.load()));
         //MainWindow::endProcesses();
-    }
+    } else
+        RealSocket::log.logMessage(logger::LogLevel::INFO, "Timeout: All critical processes are already registered. No action taken.");
 }
 
 SyncCommunication::~SyncCommunication()

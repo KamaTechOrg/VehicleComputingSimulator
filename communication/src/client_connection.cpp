@@ -47,7 +47,7 @@ ErrorCode ClientConnection::loadServerConfig(const std::string& filePath)
 // Requesting a connection to the server
 ErrorCode ClientConnection::connectToServer(uint32_t processID)
 {
-    ErrorCode result = loadServerConfig("..//config.json");
+    ErrorCode result = loadServerConfig("../config.json");
     if (result != ErrorCode::SUCCESS)
         return result;
     
@@ -72,7 +72,9 @@ ErrorCode ClientConnection::connectToServer(uint32_t processID)
         socketInterface->close(clientSocket);
         return ErrorCode::SEND_FAILED;
     }
-    
+
+    connected.exchange(true);
+
     ssize_t bytesRecv = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent < sizeof(Packet)) {
         socketInterface->close(clientSocket);
@@ -99,7 +101,11 @@ ErrorCode ClientConnection::sendPacket(const Packet &packet)
     //If send executed before start
     if (!connected.load())
         return ErrorCode::CONNECTION_FAILED;
-        
+
+#ifndef ESP32
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+#endif
+
     ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent==0) {
         closeConnection();
@@ -116,6 +122,11 @@ void ClientConnection::receivePacket()
 {
     while (connected.load()) {
         Packet packet;
+
+#ifdef ESP32
+          delay(100);
+#endif
+        std::memset(&packet, 0, sizeof(Packet));
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
         if (valread==0)
             break;

@@ -1,4 +1,21 @@
 #include "../include/packet.h"
+
+// Default constructor
+Packet::Packet() {
+    header.ID = 0;
+    header.PSN = 0;
+    header.TPS = 0;
+    header.SrcID = 0;
+    header.DestID = 0;
+    header.DLC = 0;
+    header.CRC = 0;
+    header.timestamp = 0;
+    header.isBroadcast = false;
+    header.passive = false;
+    header.RTR = false;
+    std::memset(data, 0, sizeof(data));
+}
+
 // Constructor to initialize Packet for sending
 Packet::Packet(uint32_t id, uint32_t psn, uint32_t tps, uint32_t srcID, uint32_t destID, void *data, uint8_t dlc, bool isBroadcast, bool RTR, bool passive)
 {

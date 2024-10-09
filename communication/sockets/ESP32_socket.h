@@ -164,25 +164,24 @@ public:
     }
 
     ssize_t recv(int sockfd, void *buf, size_t len, int flags) override
-{
-    ssize_t res = lwip_recv(sockfd, buf, len, flags);
-    const Packet *p = static_cast<const Packet *>(buf);
+    {
+        ssize_t res = lwip_recv(sockfd, buf, len, flags);
+        const Packet *p = static_cast<const Packet *>(buf);
 
-    if (res < 0) {
-        log.logMessage(logger::LogLevel::ERROR, "Error in socket " + std::to_string(sockfd) + ": " + std::string(strerror(errno)) + " (SrcID: " + std::to_string(p->header.SrcID) + ", DestID: " + std::to_string(p->header.DestID) + ")");
-    } else if (res == 0) {
-        log.logMessage(logger::LogLevel::INFO, "Connection closed in socket " + std::to_string(sockfd) + ": " + std::string(strerror(errno)) + " (SrcID: " + std::to_string(p->header.SrcID) + ", DestID: " + std::to_string(p->header.DestID) + ")");
-    } else {
-        if (!p->header.DLC) {
-            log.logMessage(logger::LogLevel::INFO, "Received packet number " + std::to_string(p->header.PSN) + " of messageId: " + std::to_string(p->header.ID) + " (SrcID: " + std::to_string(p->header.SrcID) + ")");
+        if (res < 0) {
+            log.logMessage(logger::LogLevel::ERROR, "Error in socket " + std::to_string(sockfd) + ": " + std::string(strerror(errno)) + " (SrcID: " + std::to_string(p->header.SrcID) + ", DestID: " + std::to_string(p->header.DestID) + ")");
+        } else if (res == 0) {
+            log.logMessage(logger::LogLevel::INFO, "Connection closed in socket " + std::to_string(sockfd) + ": " + std::string(strerror(errno)) + " (SrcID: " + std::to_string(p->header.SrcID) + ", DestID: " + std::to_string(p->header.DestID) + ")");
         } else {
-            log.logMessage(logger::LogLevel::INFO, "Received packet number " + std::to_string(p->header.PSN) + " of messageId: " + std::to_string(p->header.ID) + " Data: " + p->pointerToHex(p->data, p->header.DLC) + " (SrcID: " + std::to_string(p->header.SrcID) + ", DestID: " + std::to_string(p->header.DestID) + ")");
+            if (!p->header.DLC) {
+                log.logMessage(logger::LogLevel::INFO, "Received packet number " + std::to_string(p->header.PSN) + " of messageId: " + std::to_string(p->header.ID) + " (SrcID: " + std::to_string(p->header.SrcID) + ")");
+            } else {
+                log.logMessage(logger::LogLevel::INFO, "Received packet number " + std::to_string(p->header.PSN) + " of messageId: " + std::to_string(p->header.ID) + " Data: " + p->pointerToHex(p->data, p->header.DLC) + " (SrcID: " + std::to_string(p->header.SrcID) + ", DestID: " + std::to_string(p->header.DestID) + ")");
+            }
         }
+
+        return res;
     }
-
-    return res;
-}
-
 
     ssize_t send(int sockfd, const void *buf, size_t len, int flags) override
     {
@@ -198,6 +197,8 @@ public:
 
     int close(int sockfd) override
     {
+        log.logMessage(logger::LogLevel::INFO, "close socket number: " + std::to_string(sockfd));
+        lwip_shutdown(sockfd, SHUT_RDWR);
         return lwip_close(sockfd);
     }
 

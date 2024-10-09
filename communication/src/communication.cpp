@@ -16,9 +16,8 @@ Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, voi
 // Sends the client to connect to server
 ErrorCode Communication::startConnection()
 {
-    //Waiting for manager
-    //syncCommunication.isManagerRunning()
     ErrorCode isConnected = client.connectToServer(processID);
+
     //Increases the shared memory and blocks the process - if not all are connected
     return isConnected;
 }
@@ -42,6 +41,9 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
     
     for (auto &packet : msg.getPackets()) {
         ErrorCode res = client.sendPacket(packet);
+#ifdef ESP32
+          delay(80);
+#endif
         if (res != ErrorCode::SUCCESS)
             return res;
     }
@@ -87,10 +89,6 @@ void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destI
 // Accepts the packet from the client and checks..
 void Communication::receivePacket(Packet &p)
 {
-#ifdef ESP32
-    Serial.println("dlc of received packet");
-    Serial.println(std::to_string(p.header.DLC).c_str());
-#endif
     if (checkDestId(p)) {
         if (validCRC(p))
             handlePacket(p);
@@ -147,13 +145,7 @@ void Communication::addPacketToMessage(const Packet &p)
 
     if (receivedMessages[messageId].isComplete()) {
         void *completeData = receivedMessages[messageId].completeData();
-#ifdef ESP32
-    Serial.println("in if - before passData");
-#endif
         passData(p.header.SrcID, completeData);
-#ifdef ESP32
-    Serial.println("in if - after passData");
-#endif
         receivedMessages.erase(messageId); // Removing the message once completed
     }
 }
