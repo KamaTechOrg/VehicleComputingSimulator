@@ -12,7 +12,9 @@
 #include "general.h"
 #include "sha256.h"
 
-
+int getCountFromEncryptions(int userID);
+int getCountFromDecryptions(int userID);
+int getCountFromHashing(int userID);
 CK_RV bootSystem(
     const std::map<int, std::vector<KeyPermission>> &usersIdspermissions);
 // generate key pair to each coponnet cinfigure the

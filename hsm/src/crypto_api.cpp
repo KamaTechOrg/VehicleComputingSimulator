@@ -18,6 +18,31 @@ constexpr size_t BITS_IN_BYTE = 8;
 constexpr size_t ECC_CIPHER_LENGTH = 512;
 constexpr size_t ECC_MAX_DECRYPTED_LENGTH = 256;
 
+int getCountFromEncryptions(int userID) 
+{
+    auto it = mapToInMiddleEncryptions.find(userID);
+    if (it != mapToInMiddleEncryptions.end()) 
+        return it->second.second;
+    
+    return 0;
+}
+
+int getCountFromDecryptions(int userID)
+{
+    auto it = mapToInMiddleDecryptions.find(userID);
+    if (it != mapToInMiddleDecryptions.end())
+        return it->second.second;
+    return 0;
+}
+
+int getCountFromHashing(int userID)
+{
+    auto it = mapToInMiddleHashing.find(userID);
+    if (it != mapToInMiddleHashing.end())
+        return it->second.second;
+    return 0;
+}
+
 std::string keyPermissionToString(KeyPermission permission)
 {
     switch (permission) {

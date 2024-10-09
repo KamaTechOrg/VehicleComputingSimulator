@@ -46,5 +46,7 @@ RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && \
 # בנה את הפרויקט באמצעות CMake ו-Make
 RUN cmake .. -DUSE_SYCL=OFF -DUSE_DEBUG=OFF
 RUN make
+WORKDIR /app
+EXPOSE 50051
 # פקודה להריץ את השרת (אופציונלי)
-CMD ["./grpc_server"]
+CMD ["./build/grpc_server"]

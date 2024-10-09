@@ -7,6 +7,7 @@
 
 class CryptoServiceServer final : public crypto::CryptoService::Service {
 public:
+
     grpc::Status bootSystem(grpc::ServerContext* context, const crypto::BootSystemRequest* request, crypto::Empty* response) override;
     grpc::Status addProccess(grpc::ServerContext* context, const crypto::AddProcessRequest* request, crypto::Empty* response) override;
     grpc::Status configure(grpc::ServerContext* context, const crypto::ConfigureRequest* request, crypto::Empty* response) override;
@@ -40,4 +41,7 @@ public:
     grpc::Status signFinalize(grpc::ServerContext* context, const crypto::SignRequest* request, crypto::SignResponse* response) override;
     grpc::Status verifyUpdate(grpc::ServerContext* context, const crypto::VerifyRequest* request, crypto::VerifyResponse* response) override;
     grpc::Status verifyFinalize(grpc::ServerContext* context, const crypto::VerifyRequest* request, crypto::VerifyResponse* response) override;
+    private:
+        static const size_t HSM_ID = 1; 
+
 };

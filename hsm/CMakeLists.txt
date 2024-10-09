@@ -58,7 +58,7 @@ include_directories(${Protobuf_INCLUDE_DIRS} ${GRPC_INCLUDE_DIRS})
 file(GLOB LOGGER_SOURCES "logger/*.cpp")
 add_library(logger STATIC ${LOGGER_SOURCES})
 # Add the executable
-add_executable(grpc_server ${SOURCES} ${PROTO_SRCS})
+add_executable(grpc_server src/my_logger.cpp ${SOURCES} ${PROTO_SRCS})
 # Link against protobuf, gRPC, GMP, and logger libraries
 target_link_libraries(grpc_server ${Protobuf_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} gRPC::grpc++ logger)
 # Ensure that protobuf and gRPC code generation is properly configured

@@ -2,15 +2,16 @@
 #define __TEMP_HSM_H__
 
 #include "aes.h"
+#include "debug_utils.h"
 #include "ecc.h"
 #include "general.h"
 #include "rsa.h"
+#include <algorithm>
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <memory>
-
 constexpr size_t RSA_KEY_SIZE = 1024;
 
 const std::string AES_KEY_ID = "AESKey";
@@ -173,8 +174,15 @@ class TempHsm {
     }
     CryptoConfig getUserConfig(int userId)
     {
-        return usersConfig[userId];
+        // Check if the user exists in the configuration map
+        if (usersConfig.find(userId) != usersConfig.end()) {
+            return usersConfig[userId];  // Return user config if found
+        } else {
+            log(logger::LogLevel::ERROR, "User ID " + std::to_string(userId) + " not found in configuration.");
+            throw std::runtime_error("User config not found for user ID: " + std::to_string(userId));
+        }
     }
+
     AsymmetricFunction getAssymetricFunctionByUserId(int userId)
     {
         return usersConfig[userId].asymmetricFunction;
@@ -219,5 +227,4 @@ class TempHsm {
     std::unordered_map<std::string, Point> eccPublicKeys;
     std::unordered_map<std::string, mpz_class> eccPrivateKeys;
 };
-
 #endif  // __TEMP_HSM_H__
