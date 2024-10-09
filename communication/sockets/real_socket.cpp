@@ -9,9 +9,9 @@ int RealSocket::socket(int domain, int type, int protocol)
     int sockFd = ::socket(domain, type, protocol);
     if (sockFd < 0)
     {
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, "socket creation error: " + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Socket creation error: " + std::string(strerror(errno)));
     }
-    RealSocket::log.logMessage(logger::LogLevel::INFO, "create a client socket: " + std::to_string(sockFd) + std::string(" ") + std::string(strerror(errno)));
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Create a socket: " + std::to_string(sockFd));
     return sockFd;
 }
 
@@ -20,11 +20,11 @@ int RealSocket::setsockopt(int sockfd, int level, int optname, const void *optva
     int sockopt = ::setsockopt(sockfd, level, optname, optval, optlen);
     if (sockopt)
     {
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, "setsockopt failed: " + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, "Setsockopt failed: " + std::string(strerror(errno)));
         close(sockfd);
     }
 
-    RealSocket::log.logMessage(logger::LogLevel::INFO, "create a server socket: " + std::to_string(sockfd));
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Create a server socket: " + std::to_string(sockfd));
     return sockopt;
 }
 
@@ -59,7 +59,7 @@ int RealSocket::accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
         RealSocket::log.logMessage(logger::LogLevel::ERROR, "Accept failed: " + std::string(strerror(errno)));
     }
 
-    RealSocket::log.logMessage(logger::LogLevel::INFO, "connection succeed to client socket number: " + std::to_string(sockfd));
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Connection succeed to socket number: " + std::to_string(sockfd));
     return newSocket;
 }
 
@@ -71,7 +71,7 @@ int RealSocket::connect(int sockfd, const struct sockaddr *addr, socklen_t addrl
         RealSocket::log.logMessage(logger::LogLevel::ERROR, "process", "server", "Connection Failed: " + std::string(strerror(errno)));
     }
 
-    RealSocket::log.logMessage(logger::LogLevel::INFO, "process", "server", "connection succeed: " + std::string(strerror(errno)));
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "process", "server", "Connection succeed ");
     return connectAns;
 }
 
@@ -81,16 +81,15 @@ ssize_t RealSocket::recv(int sockfd, void *buf, size_t len, int flags)
     const Packet *p = static_cast<const Packet *>(buf);
 
     if (valread < 0)
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string(" Error occurred: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("Error occurred: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
     else if (valread == 0)
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string(" connection closed: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("Connection closed: in socket ") + std::to_string(sockfd) + std::string(" ") + std::string(strerror(errno)));
     else {
         if (!p->header.DLC)
-            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("received packet number: ") + std::to_string(p->header.PSN) + std::string(", of messageId: ") + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)) + " ID for connection: " + std::to_string(p->header.SrcID));
+            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Received ID for connection: " + std::to_string(p->header.SrcID));
         else
-            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("received packet number: ") + std::to_string(p->header.PSN) + std::string(", of messageId: ") + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)) + " Data: " + p->pointerToHex(p->data,p->header.DLC));
+            RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), std::string("Received packet number: ") + std::to_string(p->header.PSN) + std::string(", of messageId: ") + std::to_string(p->header.ID) + " Data: " + p->pointerToHex(p->data,p->header.DLC));
     }
-        
 
     return valread;
 }
@@ -101,18 +100,18 @@ ssize_t RealSocket::send(int sockfd, const void *buf, size_t len, int flags)
     const Packet *p = static_cast<const Packet *>(buf);
     if (sendAns <= 0)
     {
-        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)));
+        RealSocket::log.logMessage(logger::LogLevel::ERROR, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)));
     }
     if (!p->header.DLC)
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)) + " ID for connection: " + std::to_string(p->header.SrcID));
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Sending ID for connection: " + std::to_string(p->header.SrcID));
     else
-        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + std::string(" ") + std::string(strerror(errno)) + " Data: " + p->pointerToHex(p->data,p->header.DLC));
+        RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(p->header.SrcID), std::to_string(p->header.DestID), "Sending packet number: " + std::to_string(p->header.PSN) + ", of messageId: " + std::to_string(p->header.ID) + " Data: " + p->pointerToHex(p->data,p->header.DLC));
     return sendAns;
 }
 
 int RealSocket::close(int fd)
 {
-    RealSocket::log.logMessage(logger::LogLevel::INFO, "close socket number: " + std::to_string(fd));
+    RealSocket::log.logMessage(logger::LogLevel::INFO, "Close socket number: " + std::to_string(fd));
     shutdown(fd, SHUT_RDWR);
     return ::close(fd);
 }

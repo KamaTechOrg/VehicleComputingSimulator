@@ -16,6 +16,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "error_code.h"
+#include "real_socket.h"
 
 class SyncCommunication
 {

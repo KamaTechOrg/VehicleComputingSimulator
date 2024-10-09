@@ -87,6 +87,7 @@ ErrorCode ServerConnection::stopServer()
             if(resClose < 0)
                 allClosed = ErrorCode::CLOSE_FAILED;
         }
+
         sockets.clear();
     }
     {
@@ -95,7 +96,6 @@ ErrorCode ServerConnection::stopServer()
             if (th.joinable())
                 th.join();
     }
-
     delete socketInterface;
 
     return allClosed;
@@ -126,7 +126,6 @@ void ServerConnection::handleClient(int clientSocket)
     
     // send callback to manager - new process connected
     receiveNewProcessIDCallback(clientID, port, true);
-
     {
         std::unique_lock<std::mutex> lock(SyncCommunication::mutexCV);
         SyncCommunication::cv.wait(lock, [] { return SyncCommunication::critical_ready; });
@@ -139,7 +138,7 @@ void ServerConnection::handleClient(int clientSocket)
         return;
     }
    
-    while (running) {
+    while (running.load()) { 
         int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
         if (valread == 0)
             break;
@@ -158,6 +157,7 @@ void ServerConnection::handleClient(int clientSocket)
             socketInterface->close(*it);
             sockets.erase(it);
         }
+
     }
     {
         std::lock_guard<std::mutex> lock(IDMapMutex);
