@@ -30,46 +30,37 @@ TEST(TVelocity, calculate_TVelocity)
     VideoCapture capture("../tests/images/one_car.mp4");
     Mat frame;
     capture.read(frame);
-    int cnt = 0;
     while (!frame.empty()) {
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
-        auto detectionOutput = make_shared<vector<ObjectInformation>>();
-        auto trackingOutput = make_shared<vector<ObjectInformation>>();
+        
+        // reset objects
+        auto output = vector<ObjectInformation>();
         detector.detect(f1, true);
-        *detectionOutput = detector.getOutput();
-        *trackingOutput = detector.getOutput();
-        tracker.startTracking(f1, *detectionOutput);
+        output = detector.getOutput();
+        output = detector.getOutput();
+        tracker.startTracking(f1, output);
+        
+        // after reset we not calc velocity
+        capture.read(frame);
+        if (frame.empty())
+                return;
+        shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
+        tracker.tracking(frame1, output);
+        distance.findDistance(output);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 9; i++) {
             capture.read(frame);
-            cnt++;
             if (frame.empty())
                 return;
             shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
-            tracker.tracking(frame1, *trackingOutput);
-            distance.findDistance(*trackingOutput);
-            velocity.returnVelocities(*trackingOutput);
-
-            for (int i = 0; i < (*trackingOutput).size(); i++) {
-                rectangle(*frame1, (*trackingOutput)[i].position,
-                          Scalar(256, 0, 0), 2);
-
-                Point textPosition((*trackingOutput)[i].position.x,
-                                   (*trackingOutput)[i].position.y - 10);
-
-                // putText(*frame1, "Speed: " + std::to_string((*trackingOutput)[i].speed), textPosition,
-                /// FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
-                putText(
-                    *frame1,
-                    "Speed: " + std::to_string((*trackingOutput)[i].distance),
-                    textPosition, FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0),
-                    2);
-            }
-            imshow("frame", *frame1);
-            waitKey(0);
-            cout << cnt << endl;
+            tracker.tracking(frame1, output);
+            distance.findDistance(output);
+            velocity.returnVelocities(output);
+            if(output.size()==1)
+                LogManager::logDebugMessage(DebugType::PRINT,
+                    std::to_string(output[0].velocity.value()));
+         
         }
         capture.read(frame);
-        cnt++;
     }
 }

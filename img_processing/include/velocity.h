@@ -2,6 +2,7 @@
 #define __VELOCITY_H__
 
 #include <opencv2/opencv.hpp>
+#include <numeric>
 #include "object_information_struct.h"
 
 class Velocity {
@@ -9,13 +10,13 @@ class Velocity {
     Velocity() {}
     void returnVelocities(std::vector<ObjectInformation> &objects);
     void init(double frameTimeDiff);
-    void drawVelocity(std::shared_ptr<cv::Mat> image,
-                      std::vector<ObjectInformation> &objects);
+    void drawVelocity(const std::shared_ptr<cv::Mat> image,
+                      const std::vector<ObjectInformation> &objects) const;
 
    private:
     double frameTimeDiff;
     void calculateVelocity(ObjectInformation &object);
-    float averageDistanceChange(ObjectInformation obj) const;
-    void updateVelocity(float newVelocity, ObjectInformation &obj);
+    float averageDistanceChange(const ObjectInformation &obj) const;
+    void smoothAndUpdateVelocity(float newVelocity, ObjectInformation &obj);
 };
 #endif  //__VELOCITY_H__

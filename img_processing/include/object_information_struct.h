@@ -6,7 +6,7 @@
 #include <optional>
 
 #define MAX_PREV_DISTANCES_SIZE 10
-#define MAX_PREV_VELOCITIES_SIZE 2
+#define MAX_PREV_VELOCITIES_SIZE 10
 
 struct ObjectInformation {
     int id;
