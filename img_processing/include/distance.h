@@ -9,16 +9,13 @@
 class Distance {
    public:
     void findDistance(std::vector<ObjectInformation> &objectInformation);
-    static Distance &getInstance(const cv::Mat &image = cv::Mat());
+    void setFocalLength(const cv::Mat &image);
     void setFocalLength(double focalLength);
+    void drawDistance(std::shared_ptr<cv::Mat> image,
+                      std::vector<ObjectInformation> &objects);
 
    private:
-    static Distance *instance;
     double focalLength;
-
-    Distance(const cv::Mat &image);
-    Distance(const Distance &) = delete;
-    Distance &operator=(const Distance &) = delete;
     void findFocalLength(const cv::Mat &image);
     void addDistance(float distance, ObjectInformation &obj);
 };

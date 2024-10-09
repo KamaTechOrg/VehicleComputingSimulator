@@ -3,6 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 #include "object_type_enum.h"
+#include <optional>
 
 #define MAX_PREV_DISTANCES_SIZE 10
 #define MAX_PREV_VELOCITIES_SIZE 2
@@ -15,7 +16,7 @@ struct ObjectInformation {
     std::deque<float> prevDistances;
     float distance;
     std::deque<float> prevVelocities;
-    float velocity;
+    std::optional<float> velocity = std::nullopt;
 };
 
 #endif  // __OBJECT_INFORMATION_STRUCT_H__

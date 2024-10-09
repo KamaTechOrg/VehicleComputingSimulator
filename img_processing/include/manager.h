@@ -29,18 +29,22 @@ class Manager {
     Detector detector;
     Velocity velocity;
     DynamicTracker dynamicTracker;
+    Distance distance;
     Alerter alerter;
     int iterationCnt;
     uint32_t destID;
     uint32_t processID;
+    bool isTravel;
 
     // Moves the current image to the prevFrame
     // and clears the memory of the currentFrame;
     void prepareForTheNext();
-    void drawOutput();
-    bool isDetect(bool isTravel);
-    bool isResetTracker(bool isTravel);
-    bool isTrack(bool isTravel);
+    int drawOutput();
+    bool isDetect();
+    bool isResetTracker();
+    bool isTrack();
+    bool isCalcVelocity();
+
     void sendAlerts(std::vector<std::vector<uint8_t>> &alerts);
     void runOnVideo(std::string videoPath);
     int readIdFromJson(const char *target);

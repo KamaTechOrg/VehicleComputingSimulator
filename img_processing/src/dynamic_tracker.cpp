@@ -56,3 +56,15 @@ void DynamicTracker::tracking(const shared_ptr<Mat> &frame,
         failedCount.erase(failedCount.begin() + idx);
     }
 }
+
+void DynamicTracker::drawTracking(shared_ptr<Mat> image,
+                                  vector<ObjectInformation> &objects)
+{
+    for (const auto &objectInformation : objects) {
+        Scalar boxColor =
+            (objectInformation.distance < (Alerter::MIN_LEGAL_DISTANCE))
+                ? Scalar(0, 0, 255)
+                : Scalar(0, 255, 0);
+        rectangle(*image, objectInformation.position, boxColor, 2);
+    }
+}

@@ -82,3 +82,42 @@ void Velocity::updateVelocity(float newVelocity, ObjectInformation &obj)
             .pop_front();  // Remove the oldest velocity if the deque exceeds the limit
     }
 }
+
+void Velocity::drawVelocity(std::shared_ptr<Mat> image,
+                            std::vector<ObjectInformation> &objects)
+{
+    // Font properties
+    int fontFace = FONT_HERSHEY_SIMPLEX;
+    double fontScale = 0.6;
+    int thickness = 2;
+    int baseline = 0;
+
+    // Calculate text sizes
+    Size velocityTextSize =
+        getTextSize("velocity", fontFace, fontScale, thickness, &baseline);
+
+    for (auto &obj : objects) {
+        // Check if velocity has a value
+        if (obj.velocity.has_value()) {
+            std::stringstream ssVelocity;
+            ssVelocity << std::fixed << std::setprecision(2)
+                       << obj.velocity.value();
+
+            Point velocityTextOrg(obj.position.x + 5, obj.position.y - 7);
+
+            // Draw outline for velocity text
+            putText(*image, ssVelocity.str(), velocityTextOrg, fontFace,
+                    fontScale, Scalar(0, 0, 0), thickness + 3);
+            // Write the velocity text
+            putText(*image, ssVelocity.str(), velocityTextOrg, fontFace,
+                    fontScale, Scalar(255, 255, 0), thickness);
+        }
+        else {
+            // Optional: Handle the case where velocity is not set
+            // For example, you can draw a placeholder or skip drawing.
+            Point velocityTextOrg(obj.position.x + 5, obj.position.y - 7);
+            putText(*image, "N/A", velocityTextOrg, fontFace, fontScale,
+                    Scalar(255, 0, 0), thickness);  // Draw "N/A" in red
+        }
+    }
+}
