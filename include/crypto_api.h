@@ -17,7 +17,7 @@ public:
 CryptoClient(std::shared_ptr<grpc::Channel> channel)
       : stub_(crypto::CryptoService::NewStub(channel)) {}
 CryptoClient()
-      : stub_(crypto::CryptoService::NewStub(grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()))) {}
+:stub_(crypto::CryptoService::NewStub(grpc::CreateChannel((std::string(std::getenv("GRPC_SERVER_HOST"))+ ":50051"), grpc::InsecureChannelCredentials()))) {}
 //config
 CK_RV configure(int userId, CryptoConfig config);
 CK_RV bootSystem(const std::map<int,std::vector<KeyPermission>>

@@ -17,7 +17,7 @@ src/debug_utils.cpp
 
 # VS Code files
 .vscode/
-
+.devcontainer/
 # binary files
 *.o
 *.a
