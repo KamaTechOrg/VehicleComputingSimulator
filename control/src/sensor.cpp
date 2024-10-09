@@ -1,11 +1,56 @@
 #include "sensor.h"
 using namespace std;
 
+// Function that running until the timeout is reached and activate the update.
+void Sensor::delayedFunction()
+{
+    while (timerCounter > 0) {
+        this_thread::sleep_for(chrono::milliseconds(1000)); // Sleep for 1 second
+        timerCounter.fetch_sub(1); // Atomically decrement the timer
+        cout << "Time left: " << timerCounter.load() << " seconds" << endl;
+    }
+    updateDefualtValues();
+}
+
+// Function that activate or reset the timer
+void Sensor::startOrResetTimer()
+{
+    lock_guard<mutex> lock(mtx);
+    if (timerCounter == 0) {
+        // Timer is not active, set the timer to 10 seconds and start it
+        timerCounter = timeForUpdate;
+        cout << "Starting new timer..." << endl;
+        timerThread = thread(&Sensor::delayedFunction, this);
+        timerThread.detach(); // Detach the thread so it can run independently
+    }
+    else {
+        // Timer is already running, just reset it to 10 seconds
+        timerCounter = timeForUpdate;
+        cout << "Timer is active, resetting to 10 seconds..." << endl;
+    }
+}
+
+// Function that update the fields to be the default values
+void Sensor::updateDefualtValues()
+{
+    for (auto field : fieldsMap) {
+        updateTrueRoots(field.second.name, field.second.defaultValue, parser->getFieldType(field.second.type));
+    }
+    
+    // TODO: check if the default value have to send a message
+    GlobalProperties &instanceGP = GlobalProperties::getInstance();
+    for (int cId : instanceGP.trueConditions)
+        instanceGP.conditions[cId]->activateActions();
+}
+
 // C-tor initializes the id member variable.
 Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
 {
+    timeForUpdate = 10;
+    timerCounter = 0;
+
     parser = new PacketParser(jsonFilePath);
-    std::vector<Field> tempFields = parser->getFields();
+    vector<Field> tempFields = parser->getFields();
 
     for (auto field : tempFields) {
         if (field.type == "bit_field") 
@@ -22,11 +67,12 @@ Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
 
 void Sensor::handleMessage(void *msg)
 {
+    startOrResetTimer(); // Starts the timer
+
     parser->setBuffer(msg);
 
     for (auto field : fieldsMap) {
         string fieldName = field.first;
-        GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "Processing field: " + fieldName);
 
         updateTrueRoots(fieldName, parser->getFieldValue(fieldName),
                         parser->getFieldType(field.second.type));
@@ -36,6 +82,8 @@ void Sensor::handleMessage(void *msg)
 //Updates the condition status according to the received field and returns the  list of the full conditions whose root is true
 void Sensor::updateTrueRoots(string field, FieldValue value, FieldType type)
 {
+    GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "Processing field: " + field);
+
     // Update the field value in the sensor
     this->fields[field].first = value;
 
