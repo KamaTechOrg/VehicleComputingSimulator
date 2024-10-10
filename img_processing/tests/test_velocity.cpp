@@ -32,18 +32,16 @@ TEST(TVelocity, calculate_TVelocity)
     capture.read(frame);
     while (!frame.empty()) {
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
-        
+
         // reset objects
         auto output = vector<ObjectInformation>();
-        detector.detect(f1, true);
-        output = detector.getOutput();
-        output = detector.getOutput();
+        detector.detect(f1, true, output);
         tracker.startTracking(f1, output);
-        
+
         // after reset we not calc velocity
         capture.read(frame);
         if (frame.empty())
-                return;
+            return;
         shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
         tracker.tracking(frame1, output);
         distance.findDistance(output);
@@ -56,10 +54,10 @@ TEST(TVelocity, calculate_TVelocity)
             tracker.tracking(frame1, output);
             distance.findDistance(output);
             velocity.calculateVelocities(output);
-            if(output.size()==1)
-                LogManager::logDebugMessage(DebugType::PRINT,
+            if (output.size() == 1)
+                LogManager::logDebugMessage(
+                    DebugType::PRINT,
                     std::to_string(output[0].velocity.value()));
-         
         }
         capture.read(frame);
     }

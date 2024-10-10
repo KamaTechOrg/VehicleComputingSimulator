@@ -88,8 +88,8 @@ int Manager::processing(const Mat &newFrame, bool isTravel)
     currentFrame = make_shared<Mat>(newFrame);
     if (isDetect()) {
         // send the frame to detect
-        detector.detect(this->currentFrame, isTravel);
-        this->currentOutput = detector.getOutput();
+        this->currentOutput.clear();
+        detector.detect(this->currentFrame, isTravel, this->currentOutput);
     }
 
     if (isResetTracker()) {

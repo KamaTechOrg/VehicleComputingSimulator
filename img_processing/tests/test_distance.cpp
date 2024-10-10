@@ -34,7 +34,7 @@ TEST(DistanceTest, DistanceWithCalibration)
 
     // Wrap it in a shared_ptr
     shared_ptr<Mat> frame = make_shared<Mat>(carImage);
-
+    vector<ObjectInformation> output;
     // Create Detector instance
     Detector detector;
 
@@ -42,10 +42,7 @@ TEST(DistanceTest, DistanceWithCalibration)
     detector.init(false);
 
     // Perform detection
-    detector.detect(frame, false);
-
-    // Get output
-    vector<ObjectInformation> output = detector.getOutput();
+    detector.detect(frame, false, output);
 
     // Check if output is not empty
     ASSERT_FALSE(output.empty());

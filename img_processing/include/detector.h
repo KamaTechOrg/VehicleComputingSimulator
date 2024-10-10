@@ -9,15 +9,14 @@
 class Detector {
    public:
     void init(bool isCuda);
-    std::vector<ObjectInformation> getOutput() const;
-    void detect(const std::shared_ptr<cv::Mat> &frame, bool isTravel);
+    void detect(const std::shared_ptr<cv::Mat> &frame, bool isTravel,
+                std::vector<ObjectInformation> &output);
     int getIdCounter();
 
    private:
     int helperForDetect;
     std::shared_ptr<cv::Mat> prevFrame;
     std::shared_ptr<cv::Mat> currentFrame;
-    std::vector<ObjectInformation> output;
     cv::dnn::Net net;
     const float INPUT_WIDTH = 640.0;
     const float INPUT_HEIGHT = 640.0;
@@ -28,9 +27,10 @@ class Detector {
     cv::Mat formatYolov5(const std::shared_ptr<cv::Mat> &frame);
     void loadNet(bool isCuda);
     bool isValidObjectType(int value) const;
-    void detectChanges();
+    void detectChanges(std::vector<ObjectInformation> &output);
     void detectObjects(const std::shared_ptr<cv::Mat> &frame,
-                       const cv::Point &position);
+                       const cv::Point &position,
+                       std::vector<ObjectInformation> &output);
     std::vector<cv::Rect> findDifference();
     std::vector<cv::Rect> unionOverlappingRectangels(
         std::vector<cv::Rect> allChanges);

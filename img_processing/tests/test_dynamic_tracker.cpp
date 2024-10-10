@@ -53,14 +53,13 @@ TEST(Track, twoCars)
     }
     shared_ptr<Mat> prevFrame = make_shared<Mat>(img1);
     shared_ptr<Mat> currentFrame = make_shared<Mat>(img2);
-    auto prevOutput = vector<ObjectInformation>();
     auto detectionOutput = vector<ObjectInformation>();
     auto trackingOutput = vector<ObjectInformation>();
-    detector.detect(prevFrame, true);
-    prevOutput = detector.getOutput();
-    detector.detect(currentFrame, true);
-    detectionOutput = detector.getOutput();
-    trackingOutput = detector.getOutput();
+    detectionOutput.clear();
+    detector.detect(prevFrame, true, detectionOutput);
+    trackingOutput = detectionOutput;
+    detectionOutput.clear();
+    detector.detect(currentFrame, true, detectionOutput);
 
     // check time - start
     auto start = std::chrono::high_resolution_clock::now();
@@ -100,8 +99,8 @@ TEST(Track, track_video)
     while (!frame.empty()) {
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
         auto output = vector<ObjectInformation>();
-        detector.detect(f1, true);
-        output = detector.getOutput();
+        output.clear();
+        detector.detect(f1, true, output);
         vector<Scalar> colours = {
             Scalar(255, 0, 0),     // Blue
             Scalar(0, 255, 0),     // Green
@@ -120,21 +119,21 @@ TEST(Track, track_video)
             rectangle(frame, (output)[i].position, colours[i]);
         }
         cv::imshow("output", frame);
-        // cv::waitKey(0);
+        cv::waitKey(0);
         for (int i = 0; i < 10; i++) {
             capture.read(frame);
             if (frame.empty()) {
                 LogManager::logInfoMessage(InfoType::MEDIA_FINISH);
                 return;
             }
-            // auto start = std::chrono::high_resolution_clock::now();
+            auto start = std::chrono::high_resolution_clock::now();
             shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
             tracker.tracking(frame1, output);
             for (int j = 0; j < (output).size(); j++) {
                 rectangle(frame, (output)[j].position, colours[j]);
             }
             cv::imshow("output", frame);
-            // cv::waitKey(0);
+            cv::waitKey(0);
         }
         capture.read(frame);
     }
@@ -155,8 +154,7 @@ TEST(Track, calculate_execution_time)
     for (int z = 0; z < 5; z++) {
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
         auto output = vector<ObjectInformation>();
-        detector.detect(f1, true);
-        output = detector.getOutput();
+        detector.detect(f1, true, output);
         tracker.startTracking(f1, output);
 
         for (int i = 0; i < 10; i++) {
@@ -180,12 +178,13 @@ TEST(Track, calculate_execution_time)
     VideoCapture capture1("../tests/images/one_car.mp4");
     frame;
     capture1.read(frame);
-
+    vector<ObjectInformation> detectorOutput;
     //check time - start
     start = std::chrono::high_resolution_clock::now();
     for (int z = 0; z < 50; z++) {
         std::shared_ptr<cv::Mat> f = std::make_shared<cv::Mat>(frame);
-        detector.detect(f, true);
+        detectorOutput.clear();
+        detector.detect(f, true, detectorOutput);
         capture1.read(frame);
     }
     // check time - end
@@ -210,9 +209,9 @@ TEST(Track, calculate_iou)
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
         auto detectionOutput = vector<ObjectInformation>();
         auto trackingOutput = vector<ObjectInformation>();
-        detector.detect(f1, true);
-        detectionOutput = detector.getOutput();
-        trackingOutput = detector.getOutput();
+        detectionOutput.clear();
+        detector.detect(f1, true, detectionOutput);
+        trackingOutput = detectionOutput;
         tracker.startTracking(f1, detectionOutput);
 
         for (int i = 0; i < 50; i++) {
@@ -223,8 +222,8 @@ TEST(Track, calculate_iou)
             }
             shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
             tracker.tracking(frame1, trackingOutput);
-            detector.detect(f1, true);
-            detectionOutput = detector.getOutput();
+            detectionOutput.clear();
+            detector.detect(f1, true, detectionOutput);
             rectangle(*frame1, trackingOutput[0].position, Scalar(256, 0, 0),
                       3);
             rectangle(*frame1, detectionOutput[0].position, Scalar(0, 0, 256),
@@ -252,18 +251,18 @@ TEST(Track, track_with_few_detection)
     shared_ptr<Mat> f1 = make_shared<Mat>(frame);
     auto detectionOutput = vector<ObjectInformation>();
     auto trackingOutput = vector<ObjectInformation>();
-    detector.detect(f1, true);
-    detectionOutput = detector.getOutput();
-    trackingOutput = detector.getOutput();
-    tracker.startTracking(f1, detectionOutput);
+    detectionOutput.clear();
+    detector.detect(f1, true, detectionOutput);
+    trackingOutput = detectionOutput;
+    tracker.startTracking(f1, trackingOutput);
     int cnt = 0;
 
     while (!frame.empty()) {
         capture.read(frame);
         shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
         tracker.tracking(frame1, trackingOutput);
-        detector.detect(f1, true);
-        detectionOutput = detector.getOutput();
+        detectionOutput.clear();
+        detector.detect(f1, true, detectionOutput);
 
         for (int i = 0; i < trackingOutput.size(); i++) {
             Rect pos = trackingOutput[i].position;
@@ -302,9 +301,9 @@ TEST(Track, calculate_detection_per_frames)
         shared_ptr<Mat> f1 = make_shared<Mat>(frame);
         auto detectionOutput = vector<ObjectInformation>();
         auto trackingOutput = vector<ObjectInformation>();
-        detector.detect(f1, true);
-        detectionOutput = detector.getOutput();
-        trackingOutput = detector.getOutput();
+        detectionOutput.clear();
+        detector.detect(f1, true, detectionOutput);
+        trackingOutput = detectionOutput;
         tracker.startTracking(f1, detectionOutput);
 
         for (int i = 0; i < 20; i++) {
@@ -316,8 +315,8 @@ TEST(Track, calculate_detection_per_frames)
             }
             shared_ptr<Mat> frame1 = make_shared<Mat>(frame);
             tracker.tracking(frame1, trackingOutput);
-            detector.detect(f1, true);
-            detectionOutput = detector.getOutput();
+            detectionOutput.clear();
+            detector.detect(f1, true, detectionOutput);
 
             for (int i = 0; i < trackingOutput.size(); i++) {
                 rectangle(*frame1, trackingOutput[i].position,
