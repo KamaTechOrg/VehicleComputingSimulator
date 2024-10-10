@@ -61,7 +61,8 @@ Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
         else {
             GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, field.name + " : " + field.type);
             fieldsMap[field.name] = field;
-        }  
+        } 
+        msgLength += field.size;
     }
 }
 

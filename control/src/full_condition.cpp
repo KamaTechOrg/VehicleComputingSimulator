@@ -178,6 +178,20 @@ FullCondition::FullCondition(string condition,
     currentSensor = nullptr;
 }
 
+bool encryptData(void *data, int dataLen, uint8_t encryptedData, size_t encryptedLength, uint32_t receiverId, uint32_t myId)
+{
+    GlobalProperties &instanceGP = GlobalProperties::getInstance();
+
+    // Encrypt the data
+    CK_RV encryptResult = instanceGP.client.encrypt(receiverId, myId, data, dataLen, encryptedData, encryptedLength);
+    // Check if encryption was successful
+    if (encryptResult != CKR_OK)
+        return false;
+    // Copy the encrypted data back to the original buffer
+    memset(data, encryptedData, encryptedLength);
+    return true;
+}
+
 // Fuction that activates all actions in the vector
 void FullCondition::activateActions()
 {
@@ -188,7 +202,17 @@ void FullCondition::activateActions()
         const char *message = action.second.c_str();
         size_t dataSize = strlen(message) + 1;
         uint32_t destID = action.first;
-        instanceGP.comm->sendMessage((void *)message, dataSize, destID,
+
+        // Get the length of the encrypted data
+        size_t encryptedLength = instanceGP.client.getEncryptedLenClient(instanceGP.srcID, dataSize);
+        uint8_t encryptedData[encryptedLength];
+
+        if (encryptData(message, dataSize, encryptedData, encryptedLength, destID, instanceGP.srcID))
+                    instanceGP.controlLogger->logMessage(logger::LogLevel::INFO, "The message encrypted successfully");
+        else
+                    instanceGP.controlLogger->logMessage(logger::LogLevel::ERROR, "The message encryption failed");
+
+        instanceGP.comm->sendMessage(encryptedData, encryptedLength, destID,
                                      instanceGP.srcID, false);
     }
 }

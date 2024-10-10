@@ -18,6 +18,12 @@ include_directories(${BSON_INCLUDE_DIRS})
 file(GLOB SOURCES "src/*.cpp")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
+# # Path to local communication directory
+# set(COMMUNICATION_PATH "${CMAKE_SOURCE_DIR}/../communication")
+
+# # Add communication
+# add_subdirectory(${COMMUNICATION_PATH} ${CMAKE_BINARY_DIR}/communication)
+
 file(GLOB SOURCES_COMMUNICATION "../communication/src/*.cpp")
 file(GLOB HEADERS_COMMUNICATION "../communication/include/*.h")
 file(GLOB SOCKETS_COMMUNICATIONS "../communication/sockets/*.*" )

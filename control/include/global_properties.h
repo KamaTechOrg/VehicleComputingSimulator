@@ -48,6 +48,8 @@ public:
     uint32_t srcID = 1;
     // Creating the communication object with the callback function to process the data
     Communication *comm;
+
+    CryptoClient client;
     
     static logger controlLogger;
 };
