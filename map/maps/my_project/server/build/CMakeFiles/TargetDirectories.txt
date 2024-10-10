@@ -1,0 +1,4 @@
+/home/stefans/client_grpc/VehicleComputingSimulator/img/img/my_project/server/build/CMakeFiles/grpc_server.dir
+/home/stefans/client_grpc/VehicleComputingSimulator/img/img/my_project/server/build/CMakeFiles/proto_gen.dir
+/home/stefans/client_grpc/VehicleComputingSimulator/img/img/my_project/server/build/CMakeFiles/edit_cache.dir
+/home/stefans/client_grpc/VehicleComputingSimulator/img/img/my_project/server/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package image_service;
+
+// הודעת הבקשה עם הקואורדינטות
+message ImageRequest {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+// הודעת התגובה עם התמונה כ-data
+message ImageResponse {
+  bytes image_data = 1;
+}
+
+// השירות עצמו
+service ImageService {
+  rpc GetImage(ImageRequest) returns (ImageResponse);
+}
