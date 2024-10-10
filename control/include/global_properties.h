@@ -13,6 +13,7 @@
 #include "input.h"
 #include "full_condition.h"
 #include "sensor.h"
+#include "../../hsm-client/include/crypto_api.h"
 
 #include "../../communication/include/communication.h"
 #include "../../logger/logger.h"

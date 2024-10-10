@@ -76,7 +76,7 @@ size_t getDecryptedLen(int senderId, size_t encryptedLength, bool isfirst);
 size_t getDecryptedLenClient(int senderId, size_t encryptedLengt);
 size_t getEncryptedLenClient(int senderId, size_t encryptedLength);
 
-CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
+CK_RV encrypt(int senderId, int receiverId,const void *in, size_t inLen, void *out,
               size_t &outLen);
 CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
               size_t &outLen);

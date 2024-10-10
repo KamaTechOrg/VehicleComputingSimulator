@@ -997,7 +997,7 @@ size_t CryptoClient::getDecryptedLenClient(int senderId, size_t encryptedLength)
  * @param outLen Reference to the length of the encrypted output.
  * @return CK_RV Status of the operation (CKR_OK on success).
  */
-CK_RV CryptoClient::encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
+CK_RV CryptoClient::encrypt(int senderId, int receiverId,const void *in, size_t inLen, void *out,
             size_t &outLen)
 {
     crypto::EncryptResponse response;

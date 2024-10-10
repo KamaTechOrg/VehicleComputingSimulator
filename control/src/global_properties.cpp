@@ -10,7 +10,7 @@ bool decryptData(void *data, int dataLen, uint32_t senderId, uint32_t myId)
     CK_RV decryptResult = instanceGP.client.decrypt(senderId, myId, data, encryptedLength, decryptedData, decryptedLength);
     if (decryptResult != CKR_OK || decryptedLength != dataLen)
         return  false;
-    memset(data, decryptedData, decryptedLength);
+    memcpy(data, decryptedData, decryptedLength);
     return true;
 }
 
@@ -25,9 +25,9 @@ void handleMesseage(uint32_t senderId,void *data)
     instanceGP.comm->sendMessage((void*)msg, dataSize, senderId, instanceGP.srcID, false);
 
     if (decryptData(data, instanceGP.sensors[senderId]->msgLength, senderId, instanceGP.srcID))
-        instanceGP.controlLogger->logMessage(logger::LogLevel::INFO, "The message dycrypted successfully");
+        instanceGP.controlLogger.logMessage(logger::LogLevel::INFO, "The message dycrypted successfully");
     else
-        instanceGP.controlLogger->logMessage(logger::LogLevel::ERROR, "The message dycryption failed");
+        instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR, "The message dycryption failed");
     
     instanceGP.sensors[senderId]->handleMessage(data);
 

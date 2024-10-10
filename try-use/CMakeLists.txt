@@ -51,7 +51,7 @@ include_directories(${Protobuf_INCLUDE_DIRS} ${GRPC_INCLUDE_DIRS})
 # Add the executable
 add_executable(try_use main.cpp ${CMAKE_SOURCE_DIR}/../hsm-client/src/crypto_api.cpp ../hsm-client/src/general.cpp ../logger/logger.cpp ${PROTO_SRCS})
 # Link against protobuf, gRPC, and OpenCV libraries
-target_link_libraries(try_use ${Protobuf_LIBRARIES} gRPC::grpc++ ${OpenCV_LIBS})
+target_link_libraries(try_use ${Protobuf_LIBRARIES} gRPC::grpc++)
 # Ensure that protobuf and gRPC code generation is properly configured
 add_custom_target(proto_gen ALL
     DEPENDS ${PROTO_SRCS} ${PROTO_HDRS}
