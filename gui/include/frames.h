@@ -9,6 +9,7 @@
 #include <QPen>
 #include <QSet>
 #include <QString>
+#include <QElapsedTimer>
 #include <vector>
 
 class Frames : public QWidget {
@@ -41,7 +42,9 @@ public:
     void createSequentialIds();
     void stopFrames();
     void startFrames();
+    void resumeFrames();
     void clearFrames();
+    bool running;
 
 public slots:
     void updateFrames();
@@ -59,6 +62,8 @@ private:
     QMap<int, int> idMapping;
     qint64 differenceTime;
     QTimer *timer;
+    QElapsedTimer startTime;
+    int pausedTime = 0;
     QString generateRandomColor();
 };
 

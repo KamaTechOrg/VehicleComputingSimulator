@@ -16,7 +16,7 @@ const int alphaValue = 12;
 
 // Constructor to initialize Frames with a LogHandler reference
 Frames::Frames(LogHandler &logHandler, QWidget *parent)
-    : logHandler(logHandler), QWidget(parent), differenceTime(0)
+    : logHandler(logHandler), QWidget(parent), differenceTime(0), running(false)
 {
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Initializing Frames");
@@ -200,15 +200,29 @@ void Frames::startFrames()
     connect(timer, &QTimer::timeout, this, &Frames::updateFrames);
     timer->setInterval(timerIntervalMs);
     timer->start();
+    running = true;
+    startTime.start();
+}
+
+void Frames::resumeFrames()
+{
+    if (!running) {
+        differenceTime += pausedTime;
+
+        timer->start();
+        running = true;
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Simulation resumed");
+    }
 }
 
 void Frames::stopFrames()
 {
     if (timer->isActive()) {
         timer->stop();
-        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
-                                         "Simulation paused");
+        pausedTime = startTime.elapsed();
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Simulation paused");
     }
+    running = false;
 }
 
 void Frames::clearFrames()

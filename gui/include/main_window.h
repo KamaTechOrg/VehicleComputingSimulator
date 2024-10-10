@@ -85,6 +85,8 @@ public:
 private slots:
     void showSimulation(bool isRealTime = false);
     void loadSimulation();
+    void toggleStartPause();
+
 
 public slots:
     void updateShowSimulationButton();
@@ -145,7 +147,6 @@ private:
     DbManager *sqlDataManager;
     DbManager *dataHandler;   // Pointer to DbManager
     HistoryWindow *historyWindow; // Pointer to history window
-    bool isSimulationRunning = false;
     Frames *frames;
     QPushButton *showSimulationButton;
     bson_t *bsonDocument;

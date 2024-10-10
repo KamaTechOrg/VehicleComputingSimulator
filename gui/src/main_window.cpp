@@ -70,8 +70,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     timeLabel = new QLabel("Enter time in seconds:", this);
     logOutput = new QTextEdit(this);
     QPushButton *chooseButton = new QPushButton("Choose Image", this);
-    QPushButton *showSimulationButton =
-        new QPushButton("Show\nSimulation", this);
+    showSimulationButton = new QPushButton("Show\nSimulation", this);
     showSimulationButton->setStyleSheet(
         "QPushButton {"
         "border: 2px solid #8f8f91;"
@@ -126,8 +125,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     // Create and set up the loading spinner (static PNG)
     loadingLabel = new QLabel(this);
     // Set up the loading spinner (rotating static image)
-    loadingLabel->setFixedSize(80, 80);  // Set smaller fixed size (adjust as needed)
-    loadingLabel->setScaledContents(true);  // Make sure the image scales with the label
+    loadingLabel->setFixedSize(
+        80, 80);  // Set smaller fixed size (adjust as needed)
+    loadingLabel->setScaledContents(
+        true);  // Make sure the image scales with the label
     loadingPixmap = QPixmap("../loading.png");  // Path to the PNG image
     loadingLabel->setPixmap(loadingPixmap);
     loadingLabel->setAlignment(Qt::AlignCenter);
@@ -215,21 +216,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt",
+                    "QEMUPlatform", allPermissions);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt",
+                    "QEMUPlatform", allPermissions);
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt",
+                    "QEMUPlatform", allPermissions);
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -244,9 +248,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     checkJsonFileAndSetButtons();
 
     // Connect to the directoryChanged event
-    connect(watcher, &QFileSystemWatcher::directoryChanged, this, [this]() {
-        checkJsonFileAndSetButtons();
-    });
+    connect(watcher, &QFileSystemWatcher::directoryChanged, this,
+            [this]() { checkJsonFileAndSetButtons(); });
 }
 
 MainWindow::~MainWindow()
@@ -280,9 +283,9 @@ void MainWindow::createNewProcess()
                 "Non-unique ID entered: " + std::to_string(id));
             return;
         }
-        Process *newProcess =
-            new Process(id, dialog.getName(), dialog.getExecutionFile(),
-                        dialog.getQEMUPlatform(), dialog.getSelectedPermissionsMap());
+        Process *newProcess = new Process(
+            id, dialog.getName(), dialog.getExecutionFile(),
+            dialog.getQEMUPlatform(), dialog.getSelectedPermissionsMap());
         addProcessSquare(newProcess);
         addId(id);
         MainWindow::guiLogger.logMessage(
@@ -298,7 +301,7 @@ void MainWindow::openDialog()
     dialog.resize(300, 150);
 
     QLabel *label = new QLabel("Save the simulation?");
-    label->setAlignment(Qt::AlignCenter); 
+    label->setAlignment(Qt::AlignCenter);
     QPushButton *yesButton = new QPushButton("Yes");
     QPushButton *noButton = new QPushButton("No");
 
@@ -307,8 +310,7 @@ void MainWindow::openDialog()
     layout->addWidget(noButton);
     dialog.setLayout(layout);
 
-    QObject::connect(yesButton, &QPushButton::clicked, [&]()
-    {
+    QObject::connect(yesButton, &QPushButton::clicked, [&]() {
         dialog.close();
         QDialog inputDialog;
         inputDialog.setWindowTitle("insert simulation name");
@@ -322,39 +324,46 @@ void MainWindow::openDialog()
         inputLayout->addWidget(saveButton);
         inputDialog.setLayout(inputLayout);
 
-        QObject::connect(saveButton, &QPushButton::clicked, [&]()
-        {
-            QString simulationName =input->text();
+        QObject::connect(saveButton, &QPushButton::clicked, [&]() {
+            QString simulationName = input->text();
             inputDialog.close();
-            QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
-            QString logFilePath = "../log_file.log";       
-            QString bsonFilePath = "simulation_state.bson";     //  BSON
+            QMessageBox::information(
+                nullptr, "save",
+                "The name of the simulation is saved: " + simulationName);
+            QString logFilePath = "../log_file.log";
+            QString bsonFilePath = "simulation_state.bson";  //  BSON
 
-            QString logData =sqlDataManager->readLogFile(logFilePath);
+            QString logData = sqlDataManager->readLogFile(logFilePath);
             if (logData.isEmpty()) {
-                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Log data is empty!");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                                 "Log data is empty!");
             }
 
             // BSON
-            QByteArray bsonData =sqlDataManager->readBsonFile(bsonFilePath);
+            QByteArray bsonData = sqlDataManager->readBsonFile(bsonFilePath);
             if (bsonData.isEmpty()) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"BSON data is empty!");
-            }  
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+                                                 "BSON data is empty!");
+            }
 
-            if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData, logData)) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,"Failed to insert data into the database.");
-            } else {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,"Data successfully inserted into the database.");
+            if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData,
+                                                      logData)) {
+                MainWindow::guiLogger.logMessage(
+                    logger::LogLevel::ERROR,
+                    "Failed to insert data into the database.");
+            }
+            else {
+                MainWindow::guiLogger.logMessage(
+                    logger::LogLevel::INFO,
+                    "Data successfully inserted into the database.");
             }
         });
 
         inputDialog.exec();
     });
 
-    QObject::connect(noButton, &QPushButton::clicked, [&]()
-    {
-        dialog.close();
-    });
+    QObject::connect(noButton, &QPushButton::clicked,
+                     [&]() { dialog.close(); });
 
     dialog.exec();
 }
@@ -386,11 +395,14 @@ void MainWindow::addProcessSquare(Process *&process)
     createProcessConfigFile(process->getId(), process->getExecutionFile());
     QString jsonFilePath = runScriptAndGetJsonPath(process->getExecutionFile());
     if (jsonFilePath.isEmpty()) {
-            guiLogger.logMessage(logger::LogLevel::DEBUG,
-                         "Failed to run script and retrieve JSON file path.");
-    } else {
+        guiLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "Failed to run script and retrieve JSON file path.");
+    }
+    else {
         // Update the JSON file with the new process
-        updateProcessJsonFile(process->getId(), process->getName(), jsonFilePath);
+        updateProcessJsonFile(process->getId(), process->getName(),
+                              jsonFilePath);
     }
 }
 
@@ -414,11 +426,14 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
     QString jsonFilePath = runScriptAndGetJsonPath(process->getExecutionFile());
 
     if (jsonFilePath.isEmpty()) {
-            guiLogger.logMessage(logger::LogLevel::DEBUG,
-                         "Failed to run script and retrieve JSON file path.");
-    } else {
+        guiLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "Failed to run script and retrieve JSON file path.");
+    }
+    else {
         // Update the JSON file with the new process
-        updateProcessJsonFile(process->getId(), process->getName(), jsonFilePath);
+        updateProcessJsonFile(process->getId(), process->getName(),
+                              jsonFilePath);
     }
 }
 
@@ -477,14 +492,13 @@ void MainWindow::updateTimer()
         }
 
         timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this, time]() mutable
-        {
-
+        connect(timer, &QTimer::timeout, this, [this, time]() mutable {
             if (time > 0) {
                 time--;
                 timeInput->setText(QString::number(time));
                 timeInput->setAlignment(Qt::AlignCenter);  // Keep text centered
-            } else {
+            }
+            else {
                 timerTimeout();
             }
         });
@@ -503,7 +517,7 @@ void MainWindow::endProcesses()
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
         "MainWindow::endProcesses()   Ending processes");
-    
+
     if (timer) {
         timer->stop();
         delete timer;
@@ -589,18 +603,16 @@ void MainWindow::showTimerInput()
     timeInput->setFont(font);
 
     // Connect to textChanged signal to ensure text stays centered
-    connect(timeInput, &QLineEdit::textChanged, this, [this]()
-    {
-        timeInput->setAlignment(Qt::AlignCenter);
-    });
+    connect(timeInput, &QLineEdit::textChanged, this,
+            [this]() { timeInput->setAlignment(Qt::AlignCenter); });
 
     // Set input validator to ensure only numbers are entered
-    QIntValidator* validator = new QIntValidator(0, 999999, this);
+    QIntValidator *validator = new QIntValidator(0, 999999, this);
     timeInput->setValidator(validator);
 
-    guiLogger.logMessage(
-        logger::LogLevel::DEBUG,
-        "showTimerInput() called: Timer input elements are shown and centered.");
+    guiLogger.logMessage(logger::LogLevel::DEBUG,
+                         "showTimerInput() called: Timer input elements are "
+                         "shown and centered.");
 }
 
 void MainWindow::timerTimeout()
@@ -724,7 +736,7 @@ void MainWindow::showSimulation(bool isRealTime)
         frames->startFrames();
     }
     else {
-        if(!isSimulationRunning){
+        if (logHandler.getProcessSquares().isEmpty()) {
             QVariantMap record = dataHandler->getRecordById(offlineId);
             QString logData;
             if (!record.isEmpty())
@@ -749,16 +761,17 @@ void MainWindow::showSimulation(bool isRealTime)
                 workspace->setLayout(framesLayout);
 
                 frames->startFrames();
-                isSimulationRunning = true;
+                showSimulationButton->setText("Pause");
+
             }
             else {
                 MainWindow::guiLogger.logMessage(
-                    logger::LogLevel::ERROR,
-                    "Failed to retrieve log data from database");
+                logger::LogLevel::ERROR,
+                "Failed to retrieve log data from database");
             }
         }
-        else{
-            frames->stopFrames();
+        else {
+            toggleStartPause();
         }
     }
 }
@@ -807,12 +820,12 @@ void MainWindow::loadSelectedSimulation(const QList<QVariantMap> &simulations,
             squarePositions.clear();
             if (!state->data.squares.empty()) {
                 for (auto sqr : state->data.squares) {
-                    Process *process =
-                        new Process(sqr->getProcess()->getId(),
-                                    sqr->getProcess()->getName(),
-                                    sqr->getProcess()->getExecutionFile(),
-                                    sqr->getProcess()->getQEMUPlatform(),
-                                    sqr->getProcess()->getSecurityPermissions());
+                    Process *process = new Process(
+                        sqr->getProcess()->getId(),
+                        sqr->getProcess()->getName(),
+                        sqr->getProcess()->getExecutionFile(),
+                        sqr->getProcess()->getQEMUPlatform(),
+                        sqr->getProcess()->getSecurityPermissions());
                     addProcessSquare(process, sqr->pos(), sqr->width(),
                                      sqr->height(), sqr->styleSheet());
                     addId(sqr->getId());
@@ -926,8 +939,7 @@ void MainWindow::compileProjects()
         Compiler *compiler =
             new Compiler(executionFilePath, &compileSuccessful, this);
         connect(compiler, &Compiler::logMessage, this,
-                [this](const QString &message)
-                {
+                [this](const QString &message) {
                     guiLogger.logMessage(logger::LogLevel::ERROR,
                                          message.toStdString());
                 });
@@ -1029,9 +1041,9 @@ void MainWindow::runProjects()
                 ", CMake path: " + executionFilePath.toStdString());
 
         if (executionFilePath.endsWith(".sh")) {
-             MainWindow::guiLogger.logMessage(
-                logger::LogLevel::ERROR,
-                "MainWindow::runProjects sh: " + executionFilePath.toStdString());
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::ERROR, "MainWindow::runProjects sh: " +
+                                             executionFilePath.toStdString());
             QProcess *scriptProcess = new QProcess(this);
             scriptProcess->start("bash", QStringList() << executionFilePath);
             if (!scriptProcess->waitForStarted()) {
@@ -1049,49 +1061,62 @@ void MainWindow::runProjects()
 
             connect(
                 scriptProcess, &QProcess::readyReadStandardOutput,
-                [this, scriptProcess]()
-                {
+                [this, scriptProcess]() {
                     logOutput->append(scriptProcess->readAllStandardOutput());
                 });
             connect(
                 scriptProcess, &QProcess::readyReadStandardError,
-                [this, scriptProcess]()
-                {
+                [this, scriptProcess]() {
                     logOutput->append(scriptProcess->readAllStandardError());
                 });
-           connect(
-            scriptProcess, &QProcess::errorOccurred,
-            [this, executionFilePath, scriptProcess, square]() {
-                qint64 pid = scriptProcess->processId();
+            connect(
+                scriptProcess, &QProcess::errorOccurred,
+                [this, executionFilePath, scriptProcess, square]() {
+                    qint64 pid = scriptProcess->processId();
 
-                // Extract the project directory from the CMakeLists.txt path
-                QString projectDir = QFileInfo(executionFilePath).absolutePath();
+                    // Extract the project directory from the CMakeLists.txt path
+                    QString projectDir =
+                        QFileInfo(executionFilePath).absolutePath();
 
-                // Get the executable name from the build directory
-                std::string executableName = QFileInfo(getExecutableName(projectDir + "/build")).fileName().toStdString();
-                
-                // Get the core dump path and backtrace file path
-                std::string coreDumpPath = getCoreDumpPath(pid, executableName);
-                std::string backtraceFilePath = projectDir.toStdString() + "/build/backtrace_" + std::to_string(pid) + ".txt";
-                
-                // Delay for core dump creation
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    // Get the executable name from the build directory
+                    std::string executableName =
+                        QFileInfo(getExecutableName(projectDir + "/build"))
+                            .fileName()
+                            .toStdString();
 
-                // Call createBacktrace with the correct executable path
-                bool success = createBacktrace(projectDir.toStdString() + "/build/" + executableName, coreDumpPath, backtraceFilePath);
+                    // Get the core dump path and backtrace file path
+                    std::string coreDumpPath =
+                        getCoreDumpPath(pid, executableName);
+                    std::string backtraceFilePath =
+                        projectDir.toStdString() + "/build/backtrace_" +
+                        std::to_string(pid) + ".txt";
 
-                if (success) {
-                    square->setDumpFilePath(QString::fromStdString(backtraceFilePath));
-                    square->setCrashIndicator(true);
+                    // Delay for core dump creation
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-                    MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                                    "Process crashed. Crash details in: " + backtraceFilePath);
+                    // Call createBacktrace with the correct executable path
+                    bool success = createBacktrace(
+                        projectDir.toStdString() + "/build/" + executableName,
+                        coreDumpPath, backtraceFilePath);
 
-                    if (square->getId() < 4) {
-                        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                                        "Error: Simulation stopped because an initial process crashed.");
-                        QTimer::singleShot(0, this, &MainWindow::endProcesses);
-                        QMessageBox msgBox;
+                    if (success) {
+                        square->setDumpFilePath(
+                            QString::fromStdString(backtraceFilePath));
+                        square->setCrashIndicator(true);
+
+                        MainWindow::guiLogger.logMessage(
+                            logger::LogLevel::ERROR,
+                            "Process crashed. Crash details in: " +
+                                backtraceFilePath);
+
+                        if (square->getId() < 4) {
+                            MainWindow::guiLogger.logMessage(
+                                logger::LogLevel::ERROR,
+                                "Error: Simulation stopped because an initial "
+                                "process crashed.");
+                            QTimer::singleShot(0, this,
+                                               &MainWindow::endProcesses);
+                            QMessageBox msgBox;
                             msgBox.setIcon(QMessageBox::Critical);
                             msgBox.setWindowTitle("CRITICAL ERROR!");
                             msgBox.setText(
@@ -1109,11 +1134,11 @@ void MainWindow::runProjects()
                                 "QLabel{min-width: 350px; font-size: 16px; "
                                 "text-align: center;}");
                             msgBox.exec();
+                        }
                     }
-                }
-            }
-        );
-        runningProcesses.append(qMakePair(scriptProcess, square->getProcess()->getId()));
+                });
+            runningProcesses.append(
+                qMakePair(scriptProcess, square->getProcess()->getId()));
         }
         else {
             QDir cmakeDir(QFileInfo(executionFilePath).absolutePath());
@@ -1136,13 +1161,11 @@ void MainWindow::runProjects()
             QProcess *runProcess = new QProcess(this);
             runProcess->setWorkingDirectory(buildDirPath);
             connect(runProcess, &QProcess::readyReadStandardOutput,
-                    [this, runProcess]()
-                    {
+                    [this, runProcess]() {
                         logOutput->append(runProcess->readAllStandardOutput());
                     });
             connect(runProcess, &QProcess::readyReadStandardError,
-                    [this, runProcess]()
-                    {
+                    [this, runProcess]() {
                         logOutput->append(runProcess->readAllStandardError());
                     });
             connect(
@@ -1244,12 +1267,11 @@ void MainWindow::editSquare(int id)
 
             QMap<KeyPermission, bool> currentPermissions =
                 square->getProcess()->getSecurityPermissions();
-            dialog.setSecurityPermissions(currentPermissions); 
+            dialog.setSecurityPermissions(currentPermissions);
 
             if (dialog.exec() == QDialog::Accepted && dialog.isValid()) {
                 Process *updatedProcess = new Process(
-                    dialog.getId(), dialog.getName(),
-                    dialog.getExecutionFile(),
+                    dialog.getId(), dialog.getName(), dialog.getExecutionFile(),
                     dialog.getQEMUPlatform(),
                     dialog.getSelectedPermissionsMap());
                 square->setProcess(updatedProcess);
@@ -1259,7 +1281,9 @@ void MainWindow::editSquare(int id)
                 // Remove the old proces from the JSON file
                 deleteProcessFromJsonFile(id);
                 // Update the JSON file with the new details
-                updateProcessJsonFile(updatedProcess->getId(), updatedProcess->getName(), updatedProcess->getExecutionFile());
+                updateProcessJsonFile(updatedProcess->getId(),
+                                      updatedProcess->getName(),
+                                      updatedProcess->getExecutionFile());
             }
             break;
         }
@@ -1325,7 +1349,8 @@ void MainWindow::createProcessConfigFile(int id, const QString &processPath)
     }
 }
 
-void MainWindow::updateProcessJsonFile(int id, const QString &name, const QString &pathToJson)
+void MainWindow::updateProcessJsonFile(int id, const QString &name,
+                                       const QString &pathToJson)
 {
     QFile file("sensors.json");
     QJsonObject processesObject;
@@ -1357,7 +1382,8 @@ void MainWindow::updateProcessJsonFile(int id, const QString &name, const QStrin
 void MainWindow::deleteProcessFromJsonFile(int id)
 {
     QFile file("sensors.json");
-    if (!file.exists()) return;
+    if (!file.exists())
+        return;
 
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // Load the existing JSON content
@@ -1381,7 +1407,7 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     QProcess *finishedProcess = qobject_cast<QProcess *>(sender());
     if (finishedProcess) {
-        int finishedProcessId =-1;
+        int finishedProcessId = -1;
         // Find the ID of the process that finished
         for (const QPair<QProcess *, int> &pair : runningProcesses) {
             if (pair.first == finishedProcess) {
@@ -1399,7 +1425,8 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
         // Remove the finished process based on ID from runningProcesses
         for (int i = 0; i < runningProcesses.size(); ++i) {
             if (runningProcesses[i].second == finishedProcessId) {
-                runningProcesses.removeAt(i);  // Remove the process with the matching ID
+                runningProcesses.removeAt(
+                    i);  // Remove the process with the matching ID
                 break;
             }
         }
@@ -1412,7 +1439,7 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 }
 
 // Disable all buttons except the "End" button
-void MainWindow::disableButtonsExceptEnd() 
+void MainWindow::disableButtonsExceptEnd()
 {
     compileButton->setEnabled(false);
     runButton->setEnabled(false);
@@ -1420,7 +1447,7 @@ void MainWindow::disableButtonsExceptEnd()
 }
 
 // Enable all buttons
-void MainWindow::enableAllButtons() 
+void MainWindow::enableAllButtons()
 {
     compileButton->setEnabled(true);
     runButton->setEnabled(true);
@@ -1443,14 +1470,15 @@ void MainWindow::rotateImage()
 }
 
 // Show the loading spinner with rotation
-void MainWindow::showLoadingIndicator() 
+void MainWindow::showLoadingIndicator()
 {
     loadingLabel->show();
-    rotationTimer->start(rotationTimerIntervals);  // Start the timer with ms intervals
+    rotationTimer->start(
+        rotationTimerIntervals);  // Start the timer with ms intervals
 }
 
 // Hide the loading spinner and stop the rotation
-void MainWindow::hideLoadingIndicator() 
+void MainWindow::hideLoadingIndicator()
 {
     rotationTimer->stop();
     loadingLabel->hide();
@@ -1467,14 +1495,15 @@ void MainWindow::openDependencySelectionProject()
 {
     // Define the build directory
     QString buildDir = "../../control-build_conditons/build";
-    
+
     // Check if the build directory exists, if not create it
     QDir dir(buildDir);
     if (!dir.exists()) {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
-            "Build directory does not exist. Creating build directory: " + buildDir.toStdString());
-        
+            "Build directory does not exist. Creating build directory: " +
+                buildDir.toStdString());
+
         if (!dir.mkpath(buildDir)) {
             MainWindow::guiLogger.logMessage(
                 logger::LogLevel::ERROR,
@@ -1510,51 +1539,58 @@ void MainWindow::openDependencySelectionProject()
     if (QProcess::startDetached(program, arguments, buildDir, &pid)) {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
-             "Second project started successfully with PID:" + QString::number(pid).toStdString());
-    } 
+            "Second project started successfully with PID:" +
+                QString::number(pid).toStdString());
+    }
     else {
-        MainWindow::guiLogger.logMessage(
-            logger::LogLevel::INFO,
-            "Failed to start the second project.");
+        MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+                                         "Failed to start the second project.");
     }
 }
 
-QString MainWindow::runScriptAndGetJsonPath(const QString& cmakeFilePath)
+QString MainWindow::runScriptAndGetJsonPath(const QString &cmakeFilePath)
 {
     // Derive the script path from the CMake file path
-    QString scriptPath = QFileInfo(cmakeFilePath).absolutePath() + "/create_json.sh"; // Adjusted path
+    QString scriptPath = QFileInfo(cmakeFilePath).absolutePath() +
+                         "/create_json.sh";  // Adjusted path
 
     // Set script permissions using QProcess
     QProcess chmodProcess;
     QStringList chmodArgs;
-    chmodArgs << "+x" << scriptPath; // Arguments for chmod
+    chmodArgs << "+x" << scriptPath;  // Arguments for chmod
     chmodProcess.start("chmod", chmodArgs);
 
     if (!chmodProcess.waitForFinished()) {
         guiLogger.logMessage(logger::LogLevel::ERROR,
-                             "Failed to set execute permissions for script: "
-                             + chmodProcess.errorString().toStdString());
-        return QString(); // Return empty if failed
+                             "Failed to set execute permissions for script: " +
+                                 chmodProcess.errorString().toStdString());
+        return QString();  // Return empty if failed
     }
 
     // Prepare arguments for the script: output directory and filename
-    QString outputDirectory = QFileInfo(cmakeFilePath).absolutePath(); // Set the output directory
-    QString outputFilename = "generated_json_file.json"; // Set the desired JSON filename
+    QString outputDirectory =
+        QFileInfo(cmakeFilePath).absolutePath();  // Set the output directory
+    QString outputFilename =
+        "generated_json_file.json";  // Set the desired JSON filename
     QStringList scriptArgs;
-    scriptArgs << outputDirectory << outputFilename; // Pass arguments to the script
+    scriptArgs << outputDirectory
+               << outputFilename;  // Pass arguments to the script
 
     // Execute the script
     QProcess scriptProcess;
-    scriptProcess.start(scriptPath, scriptArgs); // Use the updated start method
+    scriptProcess.start(scriptPath,
+                        scriptArgs);  // Use the updated start method
 
     if (!scriptProcess.waitForFinished()) {
         guiLogger.logMessage(logger::LogLevel::ERROR,
-                             "Failed to execute script: " 
-                             + scriptProcess.errorString().toStdString());
-        return QString(); // Return empty if failed
+                             "Failed to execute script: " +
+                                 scriptProcess.errorString().toStdString());
+        return QString();  // Return empty if failed
     }
 
-    QString jsonFilePath = outputDirectory + "/" + outputFilename;  // Update with actual generated file name
+    QString jsonFilePath =
+        outputDirectory + "/" +
+        outputFilename;  // Update with actual generated file name
     return jsonFilePath;
 }
 
@@ -1565,6 +1601,18 @@ void MainWindow::checkJsonFileAndSetButtons()
 
     compileButton->setEnabled(fileExists);
     runButton->setEnabled(fileExists);
+}
+
+void MainWindow::toggleStartPause()
+{
+    if (frames->running) {
+        frames->stopFrames();
+        showSimulationButton->setText("Resume");
+    }
+    else {
+        frames->resumeFrames();
+        showSimulationButton->setText("Pause");
+    }
 }
 
 #include "moc_main_window.cpp"
