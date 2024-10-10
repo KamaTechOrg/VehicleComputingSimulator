@@ -33,7 +33,7 @@ float Velocity::averageDistanceChange(ObjectInformation obj) const
     return totalChange / (obj.prevDistances.size() - 1);
 }
 
-//Function to update velocity while maintaining the last two velocities
+// Function to update velocity while maintaining the last two velocities
 void Velocity::updateVelocity(float newVelocity, ObjectInformation &obj)
 {
     // If we have at least one previous velocity
@@ -53,10 +53,12 @@ void Velocity::updateVelocity(float newVelocity, ObjectInformation &obj)
                 float secondLastVelocity =
                     obj.prevVelocities[obj.prevVelocities.size() - 2];
 
-                // Check if the new velocity matches the sign of the second-last velocity
+                // Check if the new velocity matches the sign of the second-last
+                // velocity
                 if ((newVelocity >= 0 && secondLastVelocity >= 0) ||
                     (newVelocity < 0 && secondLastVelocity < 0)) {
-                    // If the new velocity's sign matches the second-last velocity, we accept it
+                    // If the new velocity's sign matches the second-last velocity, we
+                    // accept it
                     obj.velocity = newVelocity;
                 }
                 else {
@@ -65,7 +67,8 @@ void Velocity::updateVelocity(float newVelocity, ObjectInformation &obj)
                 }
             }
             else {
-                // If there's only one previous velocity, we keep it as it’s unclear if the new one is valid
+                // If there's only one previous velocity, we keep it as it’s unclear if
+                // the new one is valid
                 obj.velocity = lastVelocity;
             }
         }
@@ -79,6 +82,46 @@ void Velocity::updateVelocity(float newVelocity, ObjectInformation &obj)
     // Keep only the last two velocities in the deque
     if (obj.prevVelocities.size() > MAX_PREV_VELOCITIES_SIZE) {
         obj.prevVelocities
-            .pop_front();  // Remove the oldest velocity if the deque exceeds the limit
+            .pop_front();  // Remove the oldest velocity if the deque
+                           // exceeds the limit
+    }
+}
+
+void Velocity::drawVelocity(const shared_ptr<Mat> image,
+                            const vector<ObjectInformation> &objects) const
+{
+    // Font properties
+    int fontFace = FONT_HERSHEY_SIMPLEX;
+    double fontScale = 0.6;
+    int thickness = 2;
+    int baseline = 0;
+
+    // Calculate text sizes
+    Size velocityTextSize =
+        getTextSize("velocity", fontFace, fontScale, thickness, &baseline);
+
+    for (auto &obj : objects) {
+        // Check if velocity has a value
+        if (obj.velocity.has_value()) {
+            std::stringstream ssVelocity;
+            ssVelocity << std::fixed << std::setprecision(2)
+                       << obj.velocity.value();
+
+            Point velocityTextOrg(obj.position.x + 5, obj.position.y - 7);
+
+            // Draw outline for velocity text
+            putText(*image, ssVelocity.str(), velocityTextOrg, fontFace,
+                    fontScale, Scalar(0, 0, 0), thickness + 3);
+            // Write the velocity text
+            putText(*image, ssVelocity.str(), velocityTextOrg, fontFace,
+                    fontScale, Scalar(255, 255, 0), thickness);
+        }
+        else {
+            // Optional: Handle the case where velocity is not set
+            // For example, you can draw a placeholder or skip drawing.
+            Point velocityTextOrg(obj.position.x + 5, obj.position.y - 7);
+            putText(*image, "N/A", velocityTextOrg, fontFace, fontScale,
+                    Scalar(255, 0, 0), thickness);  // Draw "N/A" in red
+        }
     }
 }
