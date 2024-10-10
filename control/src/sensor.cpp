@@ -84,7 +84,7 @@ void Sensor::handleMessage(void *msg)
 void Sensor::updateTrueRoots(string field, FieldValue value, FieldType type)
 {
     GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "Processing field: " + field);
-
+cout << field << ": ";
     // Update the field value in the sensor
     this->fields[field].first = value;
 
@@ -159,6 +159,7 @@ template <typename T>
 bool Sensor::applyComparison(T a, T b, OperatorTypes op)
 {
     GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "applyComparison");
+    cout << a << endl;
     switch (op) {
         case OperatorTypes::e:
             return a == b;

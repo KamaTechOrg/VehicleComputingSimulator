@@ -197,7 +197,7 @@ bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
 
     // Encrypt the data
     CK_RV encryptResult = instanceGP.client.encrypt(
-        receiverId, myId, data, dataLen, encryptedData, encryptedLength);
+        myId, receiverId, data, dataLen, encryptedData, encryptedLength);
     // Check if encryption was successful
     if (encryptResult != CKR_OK)
         return false;

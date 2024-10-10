@@ -4,17 +4,11 @@
 #include "input.h"
 #include "full_condition.h"
 #include "global_properties.h"
-// #include "../parser_json/src/packet_parser.h"
-#include "../../hsm-client/include/crypto_api.h"
 
 using namespace std;
 
 int main()
 {
-    CryptoClient client;
-    vector<KeyPermission> permissions={KeyPermission::DECRYPT};
-    CK_RV returnCode= client.addProccess(1, permissions);
-    cout<<returnCode<<endl;
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
     // Build the conditions from the bson file
     Input::s_buildConditions();
