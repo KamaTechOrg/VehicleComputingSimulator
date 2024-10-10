@@ -1,31 +1,25 @@
 cmake_minimum_required(VERSION 3.10)
-
 # Set the project name
-project(grpc_)
-
+project(try-use)  # ודא שהשורה הזו קיימת
+set(CMAKE_BUILD_TYPE Debug)
 # Specify C++ standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # Find Protobuf and gRPC packages
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
-find_package(GTest REQUIRED)
-file(GLOB SOURCES "src/*.cpp" )
-
+# # Find OpenCV package
+# find_package(OpenCV REQUIRED)
 # Specify the path to the proto files
 set(PROTO_FILES
-    ${CMAKE_SOURCE_DIR}/proto/encryption.proto
+    ${CMAKE_SOURCE_DIR}/../hsm-client/proto/encryption.proto 
 )
-
 # Paths to the protoc and grpc_cpp_plugin binaries
 set(PROTOC_PATH "/usr/local/bin/protoc")
 set(GRPC_CPP_PLUGIN_PATH "/usr/local/bin/grpc_cpp_plugin")
-
 # Specify output directory for generated files
 set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated")
 file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
-
 # Generate C++ source files from proto files
 foreach(proto_file ${PROTO_FILES})
     get_filename_component(proto_name ${proto_file} NAME_WE)
@@ -33,7 +27,7 @@ foreach(proto_file ${PROTO_FILES})
     # Protobuf C++ source files
     add_custom_command(
         OUTPUT ${PROTO_GEN_DIR}/${proto_name}.pb.cc ${PROTO_GEN_DIR}/${proto_name}.pb.h
-        COMMAND ${PROTOC_PATH} --cpp_out=${PROTO_GEN_DIR} --proto_path=${CMAKE_SOURCE_DIR}/proto ${proto_file}
+        COMMAND ${PROTOC_PATH} --cpp_out=${PROTO_GEN_DIR} --proto_path=${CMAKE_SOURCE_DIR}/proto --proto_path=${CMAKE_SOURCE_DIR}/../hsm-client/proto ${proto_file}
         DEPENDS ${proto_file}
         COMMENT "Generating protobuf code for ${proto_file}"
     )
@@ -41,7 +35,7 @@ foreach(proto_file ${PROTO_FILES})
     # gRPC C++ source files
     add_custom_command(
         OUTPUT ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.cc ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.h
-        COMMAND ${PROTOC_PATH} --grpc_out=${PROTO_GEN_DIR} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} --proto_path=${CMAKE_SOURCE_DIR}/proto ${proto_file}
+        COMMAND ${PROTOC_PATH} --grpc_out=${PROTO_GEN_DIR} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} --proto_path=${CMAKE_SOURCE_DIR}/proto --proto_path=${CMAKE_SOURCE_DIR}/../hsm-client/proto ${proto_file}
         DEPENDS ${proto_file}
         COMMENT "Generating gRPC code for ${proto_file}"
     )
@@ -49,33 +43,20 @@ foreach(proto_file ${PROTO_FILES})
     list(APPEND PROTO_SRCS ${PROTO_GEN_DIR}/${proto_name}.pb.cc ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.cc)
     list(APPEND PROTO_HDRS ${PROTO_GEN_DIR}/${proto_name}.pb.h ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.h)
 endforeach()
-
 # Include the generated files directory
 include_directories(${PROTO_GEN_DIR})
-
-# Include directories for protobuf and gRPC
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../hsm-client/include)
+# Include directories for protobuf, gRPC, and OpenCV
 include_directories(${Protobuf_INCLUDE_DIRS} ${GRPC_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../logger)
 # Add the executable
-add_executable(grpc_client ${SOURCES} ../logger/logger.cpp tests/client_tests.cpp ${PROTO_SRCS})
-
-# Link against protobuf and gRPC libraries
-target_link_libraries(grpc_client ${Protobuf_LIBRARIES} gRPC::grpc++)
-target_link_libraries(grpc_client
-    gtest gtest_main pthread
-)
+add_executable(try_use main.cpp ${CMAKE_SOURCE_DIR}/../hsm-client/src/crypto_api.cpp ../hsm-client/src/general.cpp ../logger/logger.cpp ${PROTO_SRCS})
+# Link against protobuf, gRPC, and OpenCV libraries
+target_link_libraries(try_use ${Protobuf_LIBRARIES} gRPC::grpc++ ${OpenCV_LIBS})
 # Ensure that protobuf and gRPC code generation is properly configured
 add_custom_target(proto_gen ALL
     DEPENDS ${PROTO_SRCS} ${PROTO_HDRS}
     COMMENT "Generating protobuf and gRPC code"
 )
-
 # Add dependencies to ensure proper build order
-add_dependencies(grpc_client proto_gen)
+add_dependencies(try_use proto_gen)
 
-# set the build state to debug
-set(CMAKE_BUILD_TYPE Debug)
-
-# or add specific flags if you need
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

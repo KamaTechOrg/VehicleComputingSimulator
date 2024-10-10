@@ -1,6 +1,7 @@
 #ifndef __GENERAL_H__
 #define __GENERAL_H__
-#include "../../logger/logger.h"
+#include "../logger/logger.h"
+
 typedef unsigned long CK_RV;
 
 /* Successful operation */
@@ -25,6 +26,10 @@ constexpr CK_RV CKR_DATA_TOO_LARGE = 0x00000080;          // 128
 constexpr CK_RV CKR_USER_NOT_AUTHORIZED = 0x00000100;     // 256
 /* Signature or hash did not match */
 constexpr CK_RV CKR_SIGNATURE_INVALID = 0x000000C0;       // 192
+/*user sent an empty buffer to be encrypted or decrypted*/
+constexpr CK_RV CKR_EMPTY_BUFFER = 0x00000200;            // 512
+/* User is not logged in or user does not exist */
+constexpr CK_RV CKR_USER_NOT_LOGGED_IN = 0x00000101;      // 257
 
 enum KeyPermission { VERIFY, SIGN, ENCRYPT, DECRYPT, EXPORTABLE };
 enum AsymmetricFunction { RSA, ECC };
@@ -49,7 +54,8 @@ struct CryptoConfig {
       : hashFunction(hashFunc), aesKeyLength(aesLen), aesChainingMode(aesMode),
         asymmetricFunction(asymFunc) {}
   CryptoConfig() {}
-}; 
+};  
 void log(logger::LogLevel level, const std::string &message);
 
+bool isValidAESKeyLength(AESKeyLength aesKeyLength);
 #endif // __GENERAL_H__
