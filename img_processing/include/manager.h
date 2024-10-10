@@ -19,9 +19,10 @@ class Manager {
     // Gets the currentFrame and sends it for detection and then tracking,
     // finally if necessary sends a alert
     int processing(const cv::Mat &newFrame, bool mode);
-    void mainDemo();
     // init all variabels and creat the instance of distance
     void init();
+    void setIterationCnt(int cnt);
+    Distance *getDistance();
 
    private:
     Communication communication;
@@ -50,9 +51,7 @@ class Manager {
     bool isResetTracker();
     bool isTrack();
     bool isCalcVelocity();
-
     void sendAlerts(std::vector<std::vector<uint8_t>> &alerts);
-    void runOnVideo(std::string videoPath, bool isTravel);
     int readIdFromJson(const char *target);
 };
 #endif  //__MANAGER_H__
