@@ -22,6 +22,7 @@ public:
     };
     logger(){}
     logger(std::string componentName);
+    ~logger();
     void logMessage(LogLevel level, const std::string &message);
     void logMessage(LogLevel level, std::string src, std::string dst, const std::string &message);
     void initializeLogFile();

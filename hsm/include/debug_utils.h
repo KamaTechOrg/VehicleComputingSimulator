@@ -25,5 +25,7 @@ void printEncryptedMessage(const EncryptedMessage& message) ;
 //Declaration of the debugLog functionvoid 
 void debugLog(const std::string& message, const std::string& functionName); // Macro for easier use
 #define DEBUG_LOG(msg) debugLog(msg, __func__)
+#define LOG_BUFFER_HEXA(buffer, len, message) logBufferHexa(buffer, len, message, __func__,__LINE__)
+void logBufferHexa(const void *voidBuffer, size_t len, const std::string &message, const char* callingFunction,int line);
 
 #endif //  __DEBUG_UTILS_H__

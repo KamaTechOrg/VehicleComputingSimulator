@@ -74,6 +74,7 @@ void Sensor::handleMessage(void *msg)
 
     for (auto field : fieldsMap) {
         string fieldName = field.first;
+        // cout<<get<float>(parser->getFieldValue(fieldName));
 
         updateTrueRoots(fieldName, parser->getFieldValue(fieldName),
                         parser->getFieldType(field.second.type));
@@ -83,6 +84,7 @@ void Sensor::handleMessage(void *msg)
 //Updates the condition status according to the received field and returns the  list of the full conditions whose root is true
 void Sensor::updateTrueRoots(string field, FieldValue value, FieldType type)
 {
+    
     GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "Processing field: " + field);
 cout << field << ": ";
     // Update the field value in the sensor

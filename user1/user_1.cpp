@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../communication/include/communication.h"
-#include "../../hsm-client/include/crypto_api.h"
+#include "crypto_api.h"
 
 #include <nlohmann/json.hpp>
 
@@ -58,16 +58,7 @@ int main() {
   uint32_t srcID = readIdFromJson();
   cout << "srcID: " << srcID << endl;
 
-
-  CryptoClient client;
-  CryptoConfig config(SHAAlgorithm::SHA_256, AESKeyLength::AES_128, AESChainingMode::ECB, AsymmetricFunction::RSA);
-  client.configure(srcID, config);
-  client.configure(destID, config);
-  client.bootSystem({{srcID, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE}},
-                      {destID, {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE}}});
-
-
-
+    CryptoClient client;
   // Creating the communication object with the callback function to process the
   // data
   Communication comm(srcID, processData);

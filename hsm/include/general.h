@@ -58,4 +58,5 @@ struct CryptoConfig {
 void log(logger::LogLevel level, const std::string &message);
 
 bool isValidAESKeyLength(AESKeyLength aesKeyLength);
+void signalHandler(int signum) ;
 #endif // __GENERAL_H__

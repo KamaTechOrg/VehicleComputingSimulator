@@ -6,59 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
-#----------------------------------------------------
 
-find_package(Protobuf REQUIRED)
-find_package(gRPC REQUIRED)
-# # Find OpenCV package
-# find_package(OpenCV REQUIRED)
-# Specify the path to the proto files
-set(PROTO_FILES
-    ${CMAKE_SOURCE_DIR}/../hsm-client/proto/encryption.proto 
-)
-# Paths to the protoc and grpc_cpp_plugin binaries
-set(PROTOC_PATH "/usr/local/bin/protoc")
-set(GRPC_CPP_PLUGIN_PATH "/usr/local/bin/grpc_cpp_plugin")
-# Specify output directory for generated files
-set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated")
-file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
-# Generate C++ source files from proto files
-foreach(proto_file ${PROTO_FILES})
-    get_filename_component(proto_name ${proto_file} NAME_WE)
-    
-    # Protobuf C++ source files
-    add_custom_command(
-        OUTPUT ${PROTO_GEN_DIR}/${proto_name}.pb.cc ${PROTO_GEN_DIR}/${proto_name}.pb.h
-        COMMAND ${PROTOC_PATH} --cpp_out=${PROTO_GEN_DIR} --proto_path=${CMAKE_SOURCE_DIR}/proto --proto_path=${CMAKE_SOURCE_DIR}/../hsm-client/proto ${proto_file}
-        DEPENDS ${proto_file}
-        COMMENT "Generating protobuf code for ${proto_file}"
-    )
-    
-    # gRPC C++ source files
-    add_custom_command(
-        OUTPUT ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.cc ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.h
-        COMMAND ${PROTOC_PATH} --grpc_out=${PROTO_GEN_DIR} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_PATH} --proto_path=${CMAKE_SOURCE_DIR}/proto --proto_path=${CMAKE_SOURCE_DIR}/../hsm-client/proto ${proto_file}
-        DEPENDS ${proto_file}
-        COMMENT "Generating gRPC code for ${proto_file}"
-    )
-    
-    list(APPEND PROTO_SRCS ${PROTO_GEN_DIR}/${proto_name}.pb.cc ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.cc)
-    list(APPEND PROTO_HDRS ${PROTO_GEN_DIR}/${proto_name}.pb.h ${PROTO_GEN_DIR}/${proto_name}.grpc.pb.h)
-endforeach()
-
-# Include the generated files directory
-include_directories(${PROTO_GEN_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../hsm-client/include)
-# Include directories for protobuf, gRPC, and OpenCV
-include_directories(${Protobuf_INCLUDE_DIRS} ${GRPC_INCLUDE_DIRS})
-# Add the executable
-set(ADDITIONAL_SRC_FILES
-    ${CMAKE_SOURCE_DIR}/../hsm-client/src/crypto_api.cpp
-    ${CMAKE_SOURCE_DIR}/../hsm-client/src/general.cpp
-    ${CMAKE_SOURCE_DIR}/../logger/logger.cpp
-    ${PROTO_SRCS}
-)
-#----------------------------------------------------------------
 # # Path to local communication directory
 # set(HSM_CLIENT_PATH "${CMAKE_SOURCE_DIR}/../hsm-client")
 
@@ -71,17 +19,11 @@ file(GLOB SOCKETS_COMMUNICATIONS "../communication/sockets/*.*" )
 
 file(GLOB LOGGER "../logger/*.*")
 
+include(${CMAKE_SOURCE_DIR}/../hsm-client/use_hsm_client.cmake)
+configure_grpc_protos()
+
 # Main executable
-add_executable(${PROJECT_NAME} user_1.cpp ${SOURCES_COMMUNICATION} ${HEADERS_COMMUNICATION} ${SOCKETS_COMMUNICATIONS} ${LOGGER} ${ADDITIONAL_SRC_FILES} )
-target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARIES} gRPC::grpc++)
+add_executable(${PROJECT_NAME} user_1.cpp ${SOURCES_COMMUNICATION} ${HEADERS_COMMUNICATION} ${SOCKETS_COMMUNICATIONS} ${LOGGER}   ${HSM_CLIENT_SRCS})
+link_hsm_client_libraries(${PROJECT_NAME})
 
-
-#----
-add_custom_target(proto_gen ALL
-    DEPENDS ${PROTO_SRCS} ${PROTO_HDRS}
-    COMMENT "Generating protobuf and gRPC code"
-)
-# Add dependencies to ensure proper build order
-add_dependencies(${PROJECT_NAME} proto_gen)
-
-#----
+add_proto_dependencies(${PROJECT_NAME})

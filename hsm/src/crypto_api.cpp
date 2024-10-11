@@ -10,6 +10,8 @@
 #include "../logger/logger.h"
 #include "../include/debug_utils.h"
 
+
+
 std::map<int, std::pair<StreamAES *, size_t>> mapToInMiddleEncryptions;
 std::map<int, std::pair<StreamAES *, size_t>> mapToInMiddleDecryptions;
 std::map<int, std::pair<std::unique_ptr<IHash>, size_t>> mapToInMiddleHashing;
@@ -62,23 +64,30 @@ std::string permissionsToString(const std::vector<KeyPermission> &permissions)
 CK_RV bootSystem(
     const std::map<int, std::vector<KeyPermission>> &usersIdspermissions)
 {
-    log(logger::LogLevel::INFO,
-        "CryptoApi Boot System: Booting system started...");
+    log(logger::LogLevel::INFO, "Boot: Booting system started...");
+    
     for (const auto &[userId, permissions] : usersIdspermissions) {
         if (permissions.empty()) {
-            log(logger::LogLevel::ERROR, "User ID: " + std::to_string(userId) +
-                                             " did not send no permissions.");
+            log(logger::LogLevel::ERROR, "Boot: User ID: " + std::to_string(userId) +
+                                             " did not send any permissions.");
             return CKR_ARGUMENTS_BAD;
         }
+        
+        // Generate ECC and RSA key pairs
+        std::pair<std::string, std::string> eccIds = TempHsm::getInstance().generateECCKeyPair(userId, permissions);
+        std::pair<std::string, std::string> rsaIds = TempHsm::getInstance().generateRSAKeyPair(userId, permissions);
+
+        // Log the generated key IDs
         log(logger::LogLevel::INFO,
-            "Generating assymetric keys for User ID: " +
-                std::to_string(userId) +
-                ", Permissions: " + permissionsToString(permissions));
-        TempHsm::getInstance().generateECCKeyPair(userId, permissions);
-        TempHsm::getInstance().generateRSAKeyPair(userId, permissions);
+            "Boot: Generated asymmetric keys for User ID: " + std::to_string(userId) +
+            ". ECC Key IDs (Public, Private): (" + eccIds.first + ", " + eccIds.second + 
+            "), RSA Key IDs (Public, Private): (" + rsaIds.first + ", " + rsaIds.second + 
+            "), Permissions: " + permissionsToString(permissions));
     }
+    
     return CKR_OK;
 }
+
 
 /**
  * @brief Adds a user to the HSM by generating asymmetric keys for a user.
@@ -762,6 +771,8 @@ CK_RV performAESEncryption(int senderId, void *in, size_t inLen, void *out,
                            std::shared_ptr<unsigned char[]> symmetricKey,
                            AESKeyLength keyLength, size_t counter)
 {
+    LOG_BUFFER_HEXA(in, inLen,"this is the plain data");
+
     StreamAES *streamAES = FactoryManager::getInstance().create(chainingMode);
     mapToInMiddleEncryptions[senderId] = std::make_pair(streamAES, counter);
 
@@ -769,6 +780,7 @@ CK_RV performAESEncryption(int senderId, void *in, size_t inLen, void *out,
         reinterpret_cast<unsigned char *>(in), inLen,
         static_cast<unsigned char *>(out), outLen, symmetricKey.get(),
         keyLength);
+    LOG_BUFFER_HEXA(out, outLen,"this is the encrypted data");
 
     return CKR_OK;
 }
@@ -787,7 +799,7 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
         isFirstChunckForEncryption(senderId), keyLength);
 
     if (returnCode != CKR_OK) {
-        deleteFromMap(mapToInMiddleEncryptions, senderId);
+        deleteFromMap(mapToInMiddleEncryptions, senderId,"mapToInMiddleEncryptions");
         return returnCode;
     }
 
@@ -811,7 +823,7 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
                               out, getEncryptedLengthByAssymFunc(func), func);
 
             if (returnCode != CKR_OK) {
-                deleteFromMap(mapToInMiddleEncryptions, senderId);
+                deleteFromMap(mapToInMiddleEncryptions, senderId,"mapToInMiddleEncryptions");
                 return returnCode;
             }
         }
@@ -822,17 +834,23 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
                                   ENCRYPT);
         }
         //printBufferHexa(symmetricKey, symmetricKeyLen, "key retrieved for encrypting");
+        if(generateKeyFlag==true)
         log(logger::LogLevel::INFO,
             "Performing AES encryption for user id: " +
                 std::to_string(senderId) +
-                " for chunck of data number 1 with keyId: " + keyId);
+                " for chunck of data number 1 with keyId: " + keyId);//aes key
+                else
+                        log(logger::LogLevel::INFO,
+            "Performing AES encryption for user id: " +
+                std::to_string(senderId) +
+                " for chunck of data number 1");//receiver rsa public key
         // Perform AES encryption
         returnCode = performAESEncryption(
             senderId, in, inLen,
             static_cast<uint8_t *>(out) + encryptedKeyLength,
             outLen - encryptedKeyLength, chainingMode, key, keyLength, counter);
         if (returnCode != CKR_OK) {
-            deleteFromMap(mapToInMiddleEncryptions, senderId);
+            deleteFromMap(mapToInMiddleEncryptions, senderId,"mapToInMiddleEncryptions");
             return returnCode;
         }
     }
@@ -845,9 +863,13 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
                                mapToInMiddleEncryptions[senderId].second + 1) +
                 ".");
         //perform encryption
+    LOG_BUFFER_HEXA(in, inLen,"this is the plain data");
+
         mapToInMiddleEncryptions[senderId].first->encryptContinue(
             reinterpret_cast<unsigned char *>(in), inLen,
             static_cast<unsigned char *>(out), outLen);
+    LOG_BUFFER_HEXA(out, outLen,"this is the encrypted data");
+
     }
 
     //reduce a chunck from the chuncks counter
@@ -855,7 +877,7 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
 
     // If all chunks have been encrypted, erase the entry from the map
     if (mapToInMiddleEncryptions[senderId].second == 0) {
-        deleteFromMap(mapToInMiddleEncryptions, senderId);
+        deleteFromMap(mapToInMiddleEncryptions, senderId,"mapToInMiddleEncryptions");
         log(logger::LogLevel::INFO,
             "Successfully completed AES encryption for user id: " +
                 std::to_string(senderId) + " for all " +
@@ -872,6 +894,8 @@ CK_RV performAESDecryption(int receiverId, void *in, size_t inLen, void *out,
                            AESKeyLength keyLength, size_t counter,
                            bool generateKeyFlag)
 {
+    LOG_BUFFER_HEXA(in, inLen,"this is the encrypted data");
+
     StreamAES *streamAES = FactoryManager::getInstance().create(chainingMode);
     mapToInMiddleDecryptions[receiverId] = std::make_pair(streamAES, counter);
     unsigned int outLen2 = outLen;
@@ -887,6 +911,7 @@ CK_RV performAESDecryption(int receiverId, void *in, size_t inLen, void *out,
                 std::to_string(receiverId) + ". Error: " + e.what());
         return CKR_ARGUMENTS_BAD;
     }
+    LOG_BUFFER_HEXA(out, outLen,"this is the decrypted data");
 
     outLen = outLen2;
     return CKR_OK;
@@ -909,10 +934,10 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
         encryptedKeyLen;
 
     CK_RV error = logAndHandleErrors(
-        "AES Decryption", senderId, keyId, in, inLen - encryptedKeyLen, out,
+        "AES Decryption", receiverId, keyId, in, inLen - encryptedKeyLen, out,
         outLen, requiredLength, isFirstChunckForDecryption(receiverId), keyLength);
     if (error != CKR_OK) {
-        deleteFromMap(mapToInMiddleDecryptions, receiverId);
+        deleteFromMap(mapToInMiddleDecryptions, receiverId,"mapToInMiddleDecryptions");
         return error;
     }
 
@@ -935,7 +960,7 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
             offset = encryptedKeyLength;
 
             if (returnCode != CKR_OK) {
-                deleteFromMap(mapToInMiddleDecryptions, receiverId);
+                deleteFromMap(mapToInMiddleDecryptions, receiverId,"mapToInMiddleDecryptions");
                 return returnCode;
             }
         }
@@ -944,17 +969,23 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
             retrieveAESKeyByKeyId(receiverId, keyId, symmetricKey,
                                  DECRYPT);
         }
+        if(keyId!="")
         log(logger::LogLevel::INFO,
             "Performing AES decryption for user id: " +
                 std::to_string(receiverId) +
-                " for chunck of data number 1 with keyId: " + keyId + " .");
+                " for chunck of data number 1 with keyId: " + keyId + ".");
+                else
+                log(logger::LogLevel::INFO,
+            "Performing AES decryption for user id: " +
+                std::to_string(receiverId) +
+                " for chunck of data number 1.");
         // Perform AES decryption
         CK_RV error = performAESDecryption(
             receiverId, static_cast<unsigned char *>(in) + offset,
             inLen - offset, out, outLen, chainingMode, symmetricKey, keyLength,
             counter, generateKeyFlag);
         if (error != CKR_OK) {
-            deleteFromMap(mapToInMiddleDecryptions, receiverId);
+            deleteFromMap(mapToInMiddleDecryptions, receiverId,"mapToInMiddleDecryptions");
             return error;
         }
     }
@@ -968,15 +999,19 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
                 ".");
         unsigned int outLen2 = outLen;
         try {
+    LOG_BUFFER_HEXA(in, inLen,"this is the encrypted data");
+
             mapToInMiddleDecryptions[receiverId].first->decryptContinue(
                 reinterpret_cast<unsigned char *>(in), inLen,
                 static_cast<unsigned char *>(out), outLen2);
+    LOG_BUFFER_HEXA(out, outLen2,"this is the decrypted data");
+
         }
         catch (std::exception &e) {
             log(logger::LogLevel::ERROR,
                 "Failed to decrypt AES data for user id: " +
                     std::to_string(receiverId) + ". Error: " + e.what());
-            deleteFromMap(mapToInMiddleDecryptions, receiverId);
+            deleteFromMap(mapToInMiddleDecryptions, receiverId,"mapToInMiddleDecryptions");
             return CKR_ARGUMENTS_BAD;
         }
         outLen = outLen2;
@@ -986,7 +1021,7 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
 
     // If all chunks have been decrypted, erase the entry from the map
     if (mapToInMiddleDecryptions[receiverId].second == 0) {
-        deleteFromMap(mapToInMiddleDecryptions, receiverId);
+        deleteFromMap(mapToInMiddleDecryptions, receiverId,"mapToInMiddleDecryptions");
         log(logger::LogLevel::INFO,
             "Successfully completed AES decryption for user id: " +
                 std::to_string(receiverId) + " for all " +
@@ -1124,7 +1159,7 @@ CK_RV hashDataUpdate(int userId, void *data, size_t dataLen,
                      SHAAlgorithm hashfunc, int counter,
                      std::string signOrVerify)
 {
-    //printBufferHexa(static_cast<uint8_t *>(data), dataLen, "chunck to hash:");
+    LOG_BUFFER_HEXA(data, dataLen, "chunck to hash:");
     CK_RV returnCode = logAndHandleErrors("Digital Signature", userId, data, dataLen,
                                     isFirstChunckHash(userId));
     if (returnCode != CKR_OK)
@@ -1165,9 +1200,10 @@ CK_RV hashDataFinalize(int userId, void *out, size_t outLen)
         return CKR_SIGNATURE_INVALID;
 
     CK_RV returnCode = mapToInMiddleHashing[userId].first->finalize(result);
-    auto it = mapToInMiddleHashing.find(userId);
+    deleteFromMap(mapToInMiddleHashing,userId,"mapToInMiddleHashing");
+    // auto it = mapToInMiddleHashing.find(userId);
 
-    mapToInMiddleHashing.erase(userId);
+    // mapToInMiddleHashing.erase(userId);
     memcpy(out, result.data(), outLen);
 
     return returnCode;
@@ -1194,7 +1230,7 @@ CK_RV signUpdate(int senderId, void *data, size_t dataLen,
     CK_RV returnCode =
         hashDataUpdate(senderId, data, dataLen, hashfunc, counter, "Signing ");
     if (returnCode != CKR_OK)
-        deleteFromMap(mapToInMiddleHashing, senderId);
+        deleteFromMap(mapToInMiddleHashing, senderId,"mapToInMiddleHashing");
 
     return returnCode;
 }
@@ -1206,18 +1242,18 @@ CK_RV signFinalize(int senderId, void *signature, size_t signatureLen,
     size_t hashLen = getHashedMessageSize(hashfunc);
     std::vector<uint8_t> hash(hashLen);
     CK_RV returnCode = hashDataFinalize(senderId, hash.data(), hashLen);
-
+LOG_BUFFER_HEXA(hash.data(),hashLen,"hashed in sign finalize");
     if (returnCode != CKR_OK) {
-        deleteFromMap(mapToInMiddleHashing, senderId);
+       // deleteFromMap(mapToInMiddleHashing, senderId,"mapToInMiddleHashing");
         return returnCode;
     }
 
     returnCode = RSAencrypt(senderId, keyId, hash.data(), hashLen, signature,
                             signatureLen);
     //printBufferHexa(hash.data(), hashLen, "hash by sign finalize");
-    if (returnCode != CKR_OK)
-        deleteFromMap(mapToInMiddleHashing, senderId);
-
+    // if (returnCode != CKR_OK)
+     //   deleteFromMap(mapToInMiddleHashing, senderId,"mapToInMiddleHashing");
+LOG_BUFFER_HEXA(signature,signatureLen,"signature in sign finalize");
     return returnCode;
 }
 
@@ -1229,7 +1265,7 @@ CK_RV verifyUpdate(int recieverId, void *data, size_t dataLen,
     CK_RV returnCode = hashDataUpdate(recieverId, data, dataLen, hashFunc,
                                       counter, "Verifying ");
     if (returnCode != CKR_OK)
-        deleteFromMap(mapToInMiddleHashing, recieverId);
+        deleteFromMap(mapToInMiddleHashing, recieverId,"mapToInMiddleHashing");
 
     return returnCode;
 }
@@ -1243,9 +1279,11 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
     std::vector<uint8_t> hash(hashLen);
     CK_RV returnCode = hashDataFinalize(recieverId, hash.data(), hashLen);
     if (returnCode != CKR_OK) {
-        deleteFromMap(mapToInMiddleHashing, recieverId);
+      //  deleteFromMap(mapToInMiddleHashing, recieverId,"mapToInMiddleHashing");
         return returnCode;
     }
+LOG_BUFFER_HEXA(hash.data(),hashLen,"hashed in verify finalize");
+LOG_BUFFER_HEXA(signature,signatureLen,"signature in verify finalize");
 
     size_t decryptSignatureLen = rsaGetDecryptedLen(RSA_KEY_SIZE);
     std::vector<uint8_t> decryptSignature(decryptSignatureLen);
@@ -1254,10 +1292,10 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
                             getRSAdecryptedLength());
     //printBufferHexa(decryptSignature.data(), decryptSignatureLen, "decrypted signature by verify finalize");
     if (returnCode != CKR_OK) {
-        deleteFromMap(mapToInMiddleHashing, recieverId);
+       // deleteFromMap(mapToInMiddleHashing, recieverId,"mapToInMiddleHashing");
         return returnCode;
     }
-    // printBufferHexa(decryptSignature.data(), decryptSignatureLen, "decrypt signature");
+    LOG_BUFFER_HEXA(decryptSignature.data(), decryptSignatureLen, "decrypted signature in verify finalize");
         // printBufferHexa(hash.data(), hash.size(), "hash");
 
     //printBufferHexa(hash.data(), hashLen, "hash by verify finalize (before if)");
@@ -1270,8 +1308,8 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
                 std::to_string(recieverId) + ".");
     }
     
-    if (returnCode != CKR_OK)
-        deleteFromMap(mapToInMiddleHashing, recieverId);
+  //  if (returnCode != CKR_OK)
+        //deleteFromMap(mapToInMiddleHashing, recieverId,"mapToInMiddleHashing");
 
     return returnCode;
 }
@@ -1386,6 +1424,8 @@ CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
               size_t outLen, void *signature, size_t signatureLen,
               size_t counter)
 {
+    LOG_BUFFER_HEXA(in, inLen,"this is the plain data");
+
     CryptoConfig config;
 
     try {
@@ -1425,6 +1465,7 @@ CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
         if (returnCode != CKR_OK)
             return returnCode;
     }
+    LOG_BUFFER_HEXA(out, outLen,"this is the encrypted data");
 
     return CKR_OK;
 }
@@ -1450,6 +1491,8 @@ CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,
               void *signature, size_t signatureLen, void *out, size_t &outLen,
               size_t counter)
 {
+    LOG_BUFFER_HEXA(in, inLen,"this is the encrypted data");
+
     CryptoConfig config;
 
     try {
@@ -1466,12 +1509,12 @@ CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,
     CK_RV returnCode;
 
     //perform decryption
+
     returnCode = AESdecrypt(senderId, receiverId, in, inLen, out, outLen,
                             config.asymmetricFunction, config.aesKeyLength,
                             config.aesChainingMode, counter, true);
     if (returnCode != CKR_OK)
         return returnCode;
-
     //perform signature verification
     returnCode =
         verifyUpdate(receiverId, out, outLen, config.hashFunction, counter);
@@ -1486,6 +1529,8 @@ CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,
 
     if (returnCode != CKR_OK)
         return returnCode;
+    LOG_BUFFER_HEXA(out, outLen,"this is the decrypted data");
+
     return CKR_OK;
 }
 

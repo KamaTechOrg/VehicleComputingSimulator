@@ -10,6 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <csignal>
 #include "../include/debug_utils.h"
 
 grpc::Status CryptoServiceServer::bootSystem(grpc::ServerContext* context, const crypto::BootSystemRequest* request, crypto::Empty* response) 
@@ -455,13 +456,14 @@ void RunServer() {
     builder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-    std::cout << ":::Server listening on " << serverAddress << std::endl;
+    std::cout << "Server listening on " << serverAddress << std::endl;
 
     server->Wait();
     
 }
 
 int main(int argc, char** argv) {
+    signal(SIGINT, signalHandler);
     RunServer();
     return 0;
 }

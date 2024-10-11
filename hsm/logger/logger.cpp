@@ -1,5 +1,5 @@
 #include "logger.h"
-
+#include <iostream>
 std::string logger::logFileName;
 std::mutex logger::logMutex;
 std::chrono::system_clock::time_point logger::initTime=std::chrono::system_clock::now();
@@ -9,7 +9,10 @@ logger::logger(std::string componentName)
 {
     logger::componentName=componentName;
 }
-
+logger::~logger(){
+std::cout<<"clean up"<<std::endl;
+    cleanUp();
+}
 void logger::initializeLogFile()
 {
     if (isInitialized) return;
