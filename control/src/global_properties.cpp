@@ -1,15 +1,30 @@
 #include "global_properties.h"
 using namespace std;
 
-void handleMesseage(uint32_t senderId,void *data)
+
+void handleMesseage(uint32_t senderId, void *data)
 {
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
 
-    GlobalProperties::controlLogger.logMessage(logger::LogLevel::INFO, "Received message from id " + senderId);
+    GlobalProperties::controlLogger.logMessage(
+        logger::LogLevel::INFO, "Received message from id " + senderId);
 
-    char * msg = "I got message";
+    const char *msg = "I got message";
     size_t dataSize = strlen(msg) + 1;
-    instanceGP.comm->sendMessage((void*)msg, dataSize, senderId, instanceGP.srcID, false);
+    // instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
+    //                              instanceGP.srcID, false);
+
+    if (decryptData(data, instanceGP.sensors[senderId]->msgLength/8, senderId,
+                    instanceGP.srcID)){
+        instanceGP.controlLogger.logMessage(
+                    logger::LogLevel::INFO, "The message dycrypted successfully");
+    }
+    else {
+        instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR,
+                                            "The message dycryption failed");
+        instanceGP.sensors[senderId]->isUsingHSM = false;
+    }
+
     instanceGP.sensors[senderId]->handleMessage(data);
 
     for (int cId : instanceGP.trueConditions)
@@ -25,17 +40,21 @@ int readIdFromJson()
 
     // Check if the input is correct
     if (!f.is_open())
-        GlobalProperties::controlLogger.logMessage(logger::LogLevel::ERROR, "Failed to open config.json");
+        GlobalProperties::controlLogger.logMessage(
+            logger::LogLevel::ERROR, "Failed to open config.json");
     json *data = NULL;
 
     // Try parse to json type
     try {
         data = new json(json::parse(f));
         f.close();
-        GlobalProperties::controlLogger.logMessage(logger::LogLevel::INFO, "The id was successfully read from config.json");
+        GlobalProperties::controlLogger.logMessage(
+            logger::LogLevel::INFO,
+            "The id was successfully read from config.json");
     }
     catch (exception e) {
-        GlobalProperties::controlLogger.logMessage(logger::LogLevel::ERROR, e.what());
+        GlobalProperties::controlLogger.logMessage(logger::LogLevel::ERROR,
+                                                   e.what());
     }
 
     return (*data)["ID"];
@@ -45,10 +64,11 @@ int readIdFromJson()
 GlobalProperties::GlobalProperties()
 {
     controlLogger.logMessage(logger::LogLevel::INFO, "Initializing...");
-    
+
     // Build the sensors according the json file
     Input::s_buildSensors(sensors);
-    controlLogger.logMessage(logger::LogLevel::INFO, "Sensors built successfully");
+    controlLogger.logMessage(logger::LogLevel::INFO,
+                             "Sensors built successfully");
 
     srcID = readIdFromJson();
     // Creating the communication object with the callback function to process the data

@@ -48,6 +48,7 @@ Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
 {
     timeForUpdate = 10;
     timerCounter = 0;
+    isUsingHSM = true;
 
     parser = new PacketParser(jsonFilePath);
     vector<Field> tempFields = parser->getFields();
@@ -61,7 +62,8 @@ Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
         else {
             GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, field.name + " : " + field.type);
             fieldsMap[field.name] = field;
-        }  
+        } 
+        msgLength += field.size;
     }
 }
 
@@ -73,6 +75,7 @@ void Sensor::handleMessage(void *msg)
 
     for (auto field : fieldsMap) {
         string fieldName = field.first;
+        // cout<<get<float>(parser->getFieldValue(fieldName));
 
         updateTrueRoots(fieldName, parser->getFieldValue(fieldName),
                         parser->getFieldType(field.second.type));
@@ -82,8 +85,9 @@ void Sensor::handleMessage(void *msg)
 //Updates the condition status according to the received field and returns the  list of the full conditions whose root is true
 void Sensor::updateTrueRoots(string field, FieldValue value, FieldType type)
 {
+    
     GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "Processing field: " + field);
-
+cout << field << ": ";
     // Update the field value in the sensor
     this->fields[field].first = value;
 
@@ -158,6 +162,7 @@ template <typename T>
 bool Sensor::applyComparison(T a, T b, OperatorTypes op)
 {
     GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG, "applyComparison");
+    cout << a << endl;
     switch (op) {
         case OperatorTypes::e:
             return a == b;
