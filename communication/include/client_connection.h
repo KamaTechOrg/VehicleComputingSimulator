@@ -60,7 +60,7 @@ public:
     ErrorCode connectToServer(uint32_t processID);
 
     // Sends the packet to the manager-sync
-    ErrorCode sendPacket(const Packet &packet);
+    ErrorCode sendPacket(Packet &packet);
 
     // Waits for a message and forwards it to Communication
     void receivePacket();

@@ -15,6 +15,8 @@
 #include "Imanager.h"
 #include "sync_communication.h"
 #include "network_info.h"
+#include "../include/global_clock.h"
+
 class CentralManager:IManager{
 private:
     static CentralManager* instance;

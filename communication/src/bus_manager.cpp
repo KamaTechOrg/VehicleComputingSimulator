@@ -124,7 +124,9 @@ void BusManager::checkLastPacket()
 {
     std::lock_guard<std::mutex> lock(lastPacketMutex);
     if (lastPacket != nullptr) {
-        ErrorCode res = sendToClients(*lastPacket);
+        ErrorCode res = sendMessage(*lastPacket);
+        if (res == ErrorCode::INVALID_CLIENT_ID)
+            recievedMessageCallback(*lastPacket);
         delete lastPacket; // Clear last packet after sending
         lastPacket = nullptr;
     }

@@ -128,7 +128,7 @@ void Communication::sendMessageAsync(
     }).detach(); // Detach the thread
 }
 
-void Communication::receivePacket(Packet &packet)
+void Communication::receivePacket(const Packet &packet)
 {
     // Check if the bus is in BusOff state
     // If the system is in BusOff state, exit the function and do not process the packet
@@ -191,22 +191,22 @@ void Communication::receivePacket(Packet &packet)
 }
 
 // Checks if the packet is intended for him
-bool Communication::checkDestId(Packet &p)
+bool Communication::checkDestId(const Packet &packet)
 {
     // If the packet is a broadcast, it can be received by any node
     //Or if the destination ID matches, the packet is intended for this node
-    return p.getIsBroadcast() || p.getDestId() == processID;
+    return packet.getIsBroadcast() || packet.getDestId() == processID;
 }
 
 // Checks if the data is correct
-bool Communication::validCRC(const Packet &p)
+bool Communication::validCRC(const Packet &packet)
 {
     // Validate the CRC of the packet
     // This checks the integrity of the packet to ensure it hasn't been corrupted
     return packet.validateCRC();
 }
 
-void Communication::handleDataPacket(Packet &packet)
+void Communication::handleDataPacket(const Packet &packet)
 {
     RealSocket::log.logMessage(logger::LogLevel::INFO, "Handling data packet "
                                                         + std::to_string(packet.getPSN())
@@ -229,7 +229,7 @@ void Communication::handleDataPacket(Packet &packet)
     sendMessage(&packetId, sizeof(packetId), packet.getSrcId(), packet.getDestId(), MessageType::ACK);
 }
 
-void Communication::handleErrorPacket(Packet &packet)
+void Communication::handleErrorPacket(const Packet &packet)
 {
     RealSocket::log.logMessage(logger::LogLevel::INFO, "Handling error packet "
                                                         + std::to_string(packet.getPSN())
@@ -237,7 +237,7 @@ void Communication::handleErrorPacket(Packet &packet)
                                                         + std::to_string(packet.getId()) + ".");
 
     // Check if the error packet is intended for this node
-    if (packet.getDestId() == id) {
+    if (packet.getDestId() == processID) {
         // Handle the transmission error for this node
         handleTransmitError();
     }
@@ -247,7 +247,7 @@ void Communication::handleErrorPacket(Packet &packet)
     }
 }
 
-void Communication::handleAckPacket(Packet &packet)
+void Communication::handleAckPacket(const Packet &packet)
 {
     RealSocket::log.logMessage(logger::LogLevel::INFO, "Handling ACK packet "
                                                         + std::to_string(packet.getPSN())
@@ -266,7 +266,7 @@ void Communication::handleAckPacket(Packet &packet)
 }
 
 // Adding the packet to the complete message
-void Communication::addPacketToMessage(Packet &packet)
+void Communication::addPacketToMessage(const Packet &packet)
 {
     // Convert the packet ID to a string for lookup
     std::string messageId = std::to_string(packet.getId());
@@ -616,6 +616,8 @@ void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
 {
     if (callback == nullptr)
         throw std::invalid_argument("Invalid callback function: passDataCallback cannot be null");
+
+    this->passData = callback;
 }
 
 void Communication::setSignaleHandler()

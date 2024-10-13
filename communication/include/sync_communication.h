@@ -28,7 +28,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "error_code.h"
-#include "real_socket.h"
+#include "../sockets/real_socket.h"
 #endif
 
 class SyncCommunication
@@ -57,7 +57,7 @@ private:
     static int maxCriticalProcessID;
     static std::atomic<int> registeredProcessesCount;
     static std::vector<uint32_t> processIDs;
-    static const int timeout = 50;
+    static const int timeout = 200;
 };
 
 #endif // SYNS_COMMUNICATION_H

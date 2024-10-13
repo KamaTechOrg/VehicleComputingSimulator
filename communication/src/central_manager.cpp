@@ -15,6 +15,8 @@ CentralManager* CentralManager::getInstance()
 // Singleton pattern: private constructor
 CentralManager::CentralManager() : running(false)
 {
+    GlobalClock::startClock();
+
     ErrorCode res = NetworkInfo::loadProcessConfig("../config.json");
     if (res != ErrorCode::SUCCESS) {
         std::string errorMsg = "Failed to load process configuration from ../config.json. Error code: " + std::to_string(static_cast<int>(res));
@@ -106,7 +108,7 @@ ErrorCode CentralManager::updateProcessID(const uint32_t processID, const uint16
 // Receive a message from a specific bus and decide what to do with it
 ErrorCode CentralManager::receiveMessage(Packet& packet)
 {
-    if (needsTranslation(packet.header.SrcID, packet.header.DestID))
+    if (needsTranslation(packet.getSrcId(), packet.getDestId()))
         forwardToGateway(packet);
     return sendMessage(packet);
 }
@@ -114,30 +116,30 @@ ErrorCode CentralManager::receiveMessage(Packet& packet)
 // Send a message to a specific bus
 ErrorCode CentralManager::sendMessage(const Packet& packet)
 {
-    uint32_t destID = packet.header.DestID, destPort, srcPort;
+    uint32_t destID = packet.getDestId(), destPort, srcPort;
     BusManager* destBus;
     {
         std::lock_guard<std::mutex> lock(processToPortMutex);
         // Find the manager of destID
         if (processToPort.find(destID) == processToPort.end()){
-            RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), "Central Manager : destID not found: " + std::to_string(destID));
+            RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.getSrcId()), std::to_string(packet.getDestId()), "Central Manager : destID not found: " + std::to_string(destID));
             return ErrorCode::INVALID_ID;
         }
         
         destPort = processToPort[destID];
-        srcPort = processToPort[packet.header.SrcID];
+        srcPort = processToPort[packet.getSrcId()];
     }
     {
         std::lock_guard<std::mutex> managersLock(managersMutex);
         if (managers.find(destPort) == managers.end()){
-            RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), "Central Manager : destPort not found: " + std::to_string(destPort));
+            RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.getSrcId()), std::to_string(packet.getDestId()), "Central Manager : destPort not found: " + std::to_string(destPort));
             return ErrorCode::BUS_NOT_FOUND;
         }
         
         destBus = managers[destPort];
     }
 
-    RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), "Central Manager : On bus "+ std::to_string(srcPort) +" Passing to bus: " + std::to_string(destPort));
+    RealSocket::log.logMessage(logger::LogLevel::INFO, std::to_string(packet.getSrcId()), std::to_string(packet.getDestId()), "Central Manager : On bus "+ std::to_string(srcPort) +" Passing to bus: " + std::to_string(destPort));
     return destBus->sendMessage(packet);
 }
 
@@ -147,10 +149,10 @@ ErrorCode CentralManager::forwardToGateway(Packet& packet)
     std::lock_guard<std::mutex> lock(gatewayMutex);
     if (gateway) {
         gateway->translate(packet);
-        RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), "Central Manager : translate packet succeeded ");
+        RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(packet.getSrcId()), std::to_string(packet.getDestId()), "Central Manager : translate packet succeeded ");
         return ErrorCode::SUCCESS;
     } else
-        RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.header.SrcID), std::to_string(packet.header.DestID), "Central Manager : translate packet failed ");
+        RealSocket::log.logMessage(logger::LogLevel::ERROR,std::to_string(packet.getSrcId()), std::to_string(packet.getDestId()), "Central Manager : translate packet failed ");
         return ErrorCode::BUS_NOT_FOUND;
 }
 
@@ -180,6 +182,7 @@ ErrorCode CentralManager::closeConnection()
 // Static method to handle SIGINT signal
 void CentralManager::signalHandler(int signum)
 {
+    GlobalClock::stopClock();
     if (instance)
         instance->closeConnection();
 

@@ -12,7 +12,7 @@
 #include "../sockets/real_socket.h"
 // must be set
 #define MAX_ACK_TIMEOUT \
-    (20 * TICK_DURATION) ///< Maximum time to wait for ACK
+    (50 * TICK_DURATION) ///< Maximum time to wait for ACK
 
 /**
  * @class Scheduler

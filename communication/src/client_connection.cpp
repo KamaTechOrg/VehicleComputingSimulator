@@ -96,7 +96,7 @@ ErrorCode ClientConnection::connectToServer(uint32_t processID)
 }
 
 // Sends the packet to the manager-sync
-ErrorCode ClientConnection::sendPacket(const Packet &packet)
+ErrorCode ClientConnection::sendPacket(Packet &packet)
 {
     //If send executed before start
     if (!connected.load())

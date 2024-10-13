@@ -24,7 +24,7 @@
 #define THRESHOLD_TO_BUSOFF 256  ///< Threshold for entering BusOff state
 #define THRESHOLD_TO_PASSIVE 128 ///< Threshold for entering Passive state
 #define BUSOFF_RECOVERY_TIME (128 * TICK_DURATION)      ///< Time required to recover from BusOff state
-#define MAX_RETRANSMISSIONS 10 ///< Maximum allowed retransmissions for a packet
+#define MAX_RETRANSMISSIONS 3 ///< Maximum allowed retransmissions for a packet
 #define MAX_SIMULTANEOUS_MESSAGES 5 ///< Maximum number of messages allowed to be sent simultaneously
 
 // Enumeration for different error states of the communication
@@ -84,7 +84,7 @@ class Communication {
      * 
      * @param packet The packet object to be received and processed.
      */
-    void receivePacket(Packet &packet);
+    void receivePacket(const Packet &packet);
 
     /**
      * @brief Checks the destination ID of the packet.
@@ -96,7 +96,7 @@ class Communication {
      * @param packet The packet object containing destination information.
      * @return Returns true if the packet is a broadcast or if the destination ID matches the node's ID.
      */
-    bool checkDestId(Packet &packet);
+    bool checkDestId(const Packet &packet);
 
     /**
      * @brief Validates the CRC of the packet.
@@ -107,7 +107,7 @@ class Communication {
      * @param packet The packet object whose CRC is to be validated.
      * @return Returns true if the CRC is valid, false otherwise.
      */
-    bool validCRC(Packet &packet);
+    bool validCRC(const Packet &packet);
 
     /**
      * @brief Handles incoming data packets.
@@ -117,7 +117,7 @@ class Communication {
      * 
      * @param packet The data packet to be handled.
      */
-    void handleDataPacket(Packet &packet);
+    void handleDataPacket(const Packet &packet);
 
     /**
      * @brief Handles incoming error packets.
@@ -128,7 +128,7 @@ class Communication {
      * 
      * @param packet The error packet to be handled.
      */
-    void handleErrorPacket(Packet &packet);
+    void handleErrorPacket(const Packet &packet);
 
     /**
      * @brief Handles acknowledgment packets.
@@ -140,7 +140,7 @@ class Communication {
      * 
      * @param packet The acknowledgment packet to be handled.
      */
-    void handleAckPacket(Packet &packet);
+    void handleAckPacket(const Packet &packet);
 
     /**
      * @brief Adds a received packet to the corresponding message.
@@ -153,7 +153,7 @@ class Communication {
      * 
      * @param packet The packet to be added to the message.
      */
-    void addPacketToMessage(Packet &packet);
+    void addPacketToMessage(const Packet &packet);
 
     // BusOff recovery methods
 
@@ -403,8 +403,6 @@ public:
                           std::function<void(ErrorCode)> sendCallback,
                           MessageType messageType = MessageType::DATA_MESSAGE);
 
-    // Destructor
-    ~Communication();
 
     /**
      * @brief Retrieves the current state of the communication system.
