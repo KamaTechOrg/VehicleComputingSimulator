@@ -83,6 +83,8 @@ message GetWholeLength{
     int32 inLen = 2;
     bool isFirst = 3;
     string messageId = 4;
+    int32 userId = 5;
+
 
 }
 message GenerateAESKeyRequest {
@@ -224,7 +226,7 @@ message AESDecryptRequest {
     string keyId = 10;
     bool isFirst = 11;
     string messageId = 12;
-
+    int32 userId = 13;
 
 }
 message AESDecryptResponse {

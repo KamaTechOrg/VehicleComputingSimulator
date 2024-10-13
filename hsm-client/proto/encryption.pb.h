@@ -1825,6 +1825,7 @@ class GetWholeLength final :
     kSenderIdFieldNumber = 1,
     kInLenFieldNumber = 2,
     kIsFirstFieldNumber = 3,
+    kUserIdFieldNumber = 5,
   };
   // string messageId = 4;
   void clear_messageid();
@@ -1867,6 +1868,15 @@ class GetWholeLength final :
   void _internal_set_isfirst(bool value);
   public:
 
+  // int32 userId = 5;
+  void clear_userid();
+  ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
+  void set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_userid() const;
+  void _internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:crypto.GetWholeLength)
  private:
   class _Internal;
@@ -1878,6 +1888,7 @@ class GetWholeLength final :
   ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
   ::PROTOBUF_NAMESPACE_ID::int32 inlen_;
   bool isfirst_;
+  ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -5929,6 +5940,7 @@ class AESDecryptRequest final :
     kChainingModeFieldNumber = 8,
     kCounterFieldNumber = 9,
     kIsFirstFieldNumber = 11,
+    kUserIdFieldNumber = 13,
   };
   // bytes dataIn = 3;
   void clear_datain();
@@ -6058,6 +6070,15 @@ class AESDecryptRequest final :
   void _internal_set_isfirst(bool value);
   public:
 
+  // int32 userId = 13;
+  void clear_userid();
+  ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
+  void set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_userid() const;
+  void _internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:crypto.AESDecryptRequest)
  private:
   class _Internal;
@@ -6077,6 +6098,7 @@ class AESDecryptRequest final :
   int chainingmode_;
   ::PROTOBUF_NAMESPACE_ID::int64 counter_;
   bool isfirst_;
+  ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -7141,6 +7163,26 @@ inline void GetWholeLength::set_allocated_messageid(std::string* messageid) {
   messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
   // @@protoc_insertion_point(field_set_allocated:crypto.GetWholeLength.messageId)
+}
+
+// int32 userId = 5;
+inline void GetWholeLength::clear_userid() {
+  userid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetWholeLength::_internal_userid() const {
+  return userid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetWholeLength::userid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetWholeLength.userId)
+  return _internal_userid();
+}
+inline void GetWholeLength::_internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  userid_ = value;
+}
+inline void GetWholeLength::set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:crypto.GetWholeLength.userId)
 }
 
 // -------------------------------------------------------------------
@@ -10071,6 +10113,26 @@ inline void AESDecryptRequest::set_allocated_messageid(std::string* messageid) {
   messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
   // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.messageId)
+}
+
+// int32 userId = 13;
+inline void AESDecryptRequest::clear_userid() {
+  userid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_userid() const {
+  return userid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::userid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.userId)
+  return _internal_userid();
+}
+inline void AESDecryptRequest::_internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  userid_ = value;
+}
+inline void AESDecryptRequest::set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.userId)
 }
 
 // -------------------------------------------------------------------

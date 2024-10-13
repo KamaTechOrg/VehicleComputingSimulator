@@ -11,8 +11,7 @@ void printBufferHexa(const uint8_t *buffer, size_t len, std::string message)
 {
 #ifdef DEBUG
     std::cout << message << std::endl;
-    for (size_t i = 0; i < len; ++i)
-    {
+    for (size_t i = 0; i < len; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0')
                   << static_cast<int>(buffer[i]) << " ";
         // Print a new line every 16 bytes for better readability
@@ -25,21 +24,26 @@ void printBufferHexa(const uint8_t *buffer, size_t len, std::string message)
 #endif
 }
 
-void encryptStartPrintParams(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen, unsigned char* key, AESKeyLength keyLength)
+void encryptStartPrintParams(unsigned char block[], unsigned int inLen,
+                             unsigned char *&out, unsigned int &outLen,
+                             unsigned char *key, AESKeyLength keyLength)
 {
     printBufferHexa(block, inLen, "Block: ");
     printBufferHexa(key, 128, "Key: ");
-    std::cout << "inLen: " << inLen << ", outLen(before): " << outLen << std::endl;
+    std::cout << "inLen: " << inLen << ", outLen(before): " << outLen
+              << std::endl;
 }
 
-void encryptContinuePrintParams(unsigned char block[], unsigned int inLen, unsigned char*& out, unsigned int& outLen)
+void encryptContinuePrintParams(unsigned char block[], unsigned int inLen,
+                                unsigned char *&out, unsigned int &outLen)
 {
     printBufferHexa(block, inLen, "Block: ");
-    std::cout << "inLen: " << inLen << ", outLen(before): " << outLen << std::endl;
+    std::cout << "inLen: " << inLen << ", outLen(before): " << outLen
+              << std::endl;
 }
 
-
 // Definition of the debugLog function
-void debugLog(const std::string& message, const std::string& functionName) {
+void debugLog(const std::string &message, const std::string &functionName)
+{
     std::cout << "Function: " << functionName << " -> " << message << std::endl;
 }

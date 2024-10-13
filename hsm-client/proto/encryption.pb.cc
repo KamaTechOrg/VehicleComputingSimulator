@@ -136,7 +136,8 @@ constexpr GetWholeLength::GetWholeLength(
   : messageid_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , senderid_(0)
   , inlen_(0)
-  , isfirst_(false){}
+  , isfirst_(false)
+  , userid_(0){}
 struct GetWholeLengthDefaultTypeInternal {
   constexpr GetWholeLengthDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -492,7 +493,8 @@ constexpr AESDecryptRequest::AESDecryptRequest(
   , chainingmode_(0)
 
   , counter_(int64_t{0})
-  , isfirst_(false){}
+  , isfirst_(false)
+  , userid_(0){}
 struct AESDecryptRequestDefaultTypeInternal {
   constexpr AESDecryptRequestDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -602,6 +604,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_proto_2fencryption_2eproto::of
   PROTOBUF_FIELD_OFFSET(::crypto::GetWholeLength, inlen_),
   PROTOBUF_FIELD_OFFSET(::crypto::GetWholeLength, isfirst_),
   PROTOBUF_FIELD_OFFSET(::crypto::GetWholeLength, messageid_),
+  PROTOBUF_FIELD_OFFSET(::crypto::GetWholeLength, userid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::crypto::GenerateAESKeyRequest, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -826,6 +829,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_proto_2fencryption_2eproto::of
   PROTOBUF_FIELD_OFFSET(::crypto::AESDecryptRequest, keyid_),
   PROTOBUF_FIELD_OFFSET(::crypto::AESDecryptRequest, isfirst_),
   PROTOBUF_FIELD_OFFSET(::crypto::AESDecryptRequest, messageid_),
+  PROTOBUF_FIELD_OFFSET(::crypto::AESDecryptRequest, userid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::crypto::AESDecryptResponse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -844,30 +848,30 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 56, -1, -1, sizeof(::crypto::GetLengthRequest)},
   { 65, -1, -1, sizeof(::crypto::GetLengthResponse)},
   { 72, -1, -1, sizeof(::crypto::GetWholeLength)},
-  { 82, -1, -1, sizeof(::crypto::GenerateAESKeyRequest)},
-  { 93, -1, -1, sizeof(::crypto::GenerateAESKeyResponse)},
-  { 100, -1, -1, sizeof(::crypto::GenerateKeyPairRequest)},
-  { 109, -1, -1, sizeof(::crypto::GenerateKeyPairResponse)},
-  { 117, -1, -1, sizeof(::crypto::SignRequest)},
-  { 129, -1, -1, sizeof(::crypto::SignResponse)},
-  { 136, -1, -1, sizeof(::crypto::VerifyRequest)},
-  { 150, -1, -1, sizeof(::crypto::VerifyResponse)},
-  { 158, -1, -1, sizeof(::crypto::KeyRequest)},
-  { 167, -1, -1, sizeof(::crypto::KeyResponse)},
-  { 174, -1, -1, sizeof(::crypto::UserKeyPermissions)},
-  { 182, -1, -1, sizeof(::crypto::BootSystemRequest)},
-  { 190, -1, -1, sizeof(::crypto::Empty)},
-  { 196, -1, -1, sizeof(::crypto::CryptoConfig)},
-  { 207, -1, -1, sizeof(::crypto::ConfigureRequest)},
-  { 216, -1, -1, sizeof(::crypto::AddProcessRequest)},
-  { 225, -1, -1, sizeof(::crypto::EncryptRequest)},
-  { 237, -1, -1, sizeof(::crypto::EncryptResponse)},
-  { 245, -1, -1, sizeof(::crypto::DecryptRequest)},
-  { 258, -1, -1, sizeof(::crypto::DecryptResponse)},
-  { 265, -1, -1, sizeof(::crypto::AESEncryptRequest)},
-  { 281, -1, -1, sizeof(::crypto::AESEncryptResponse)},
-  { 288, -1, -1, sizeof(::crypto::AESDecryptRequest)},
-  { 306, -1, -1, sizeof(::crypto::AESDecryptResponse)},
+  { 83, -1, -1, sizeof(::crypto::GenerateAESKeyRequest)},
+  { 94, -1, -1, sizeof(::crypto::GenerateAESKeyResponse)},
+  { 101, -1, -1, sizeof(::crypto::GenerateKeyPairRequest)},
+  { 110, -1, -1, sizeof(::crypto::GenerateKeyPairResponse)},
+  { 118, -1, -1, sizeof(::crypto::SignRequest)},
+  { 130, -1, -1, sizeof(::crypto::SignResponse)},
+  { 137, -1, -1, sizeof(::crypto::VerifyRequest)},
+  { 151, -1, -1, sizeof(::crypto::VerifyResponse)},
+  { 159, -1, -1, sizeof(::crypto::KeyRequest)},
+  { 168, -1, -1, sizeof(::crypto::KeyResponse)},
+  { 175, -1, -1, sizeof(::crypto::UserKeyPermissions)},
+  { 183, -1, -1, sizeof(::crypto::BootSystemRequest)},
+  { 191, -1, -1, sizeof(::crypto::Empty)},
+  { 197, -1, -1, sizeof(::crypto::CryptoConfig)},
+  { 208, -1, -1, sizeof(::crypto::ConfigureRequest)},
+  { 217, -1, -1, sizeof(::crypto::AddProcessRequest)},
+  { 226, -1, -1, sizeof(::crypto::EncryptRequest)},
+  { 238, -1, -1, sizeof(::crypto::EncryptResponse)},
+  { 246, -1, -1, sizeof(::crypto::DecryptRequest)},
+  { 259, -1, -1, sizeof(::crypto::DecryptResponse)},
+  { 266, -1, -1, sizeof(::crypto::AESEncryptRequest)},
+  { 282, -1, -1, sizeof(::crypto::AESEncryptResponse)},
+  { 289, -1, -1, sizeof(::crypto::AESDecryptRequest)},
+  { 308, -1, -1, sizeof(::crypto::AESDecryptResponse)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -924,139 +928,140 @@ const char descriptor_table_protodef_proto_2fencryption_2eproto[] PROTOBUF_SECTI
   "cryptResponse\022\025\n\rdecryptedData\030\001 \001(\014\"F\n\020"
   "GetLengthRequest\022\020\n\010senderId\030\001 \001(\005\022\r\n\005in"
   "Len\030\002 \001(\005\022\021\n\tmessageId\030\003 \001(\t\" \n\021GetLengt"
-  "hResponse\022\013\n\003len\030\001 \001(\005\"U\n\016GetWholeLength"
+  "hResponse\022\013\n\003len\030\001 \001(\005\"e\n\016GetWholeLength"
   "\022\020\n\010senderId\030\001 \001(\005\022\r\n\005inLen\030\002 \001(\005\022\017\n\007isF"
-  "irst\030\003 \001(\010\022\021\n\tmessageId\030\004 \001(\t\"\243\001\n\025Genera"
-  "teAESKeyRequest\022\016\n\006userId\030\001 \001(\005\022*\n\013permi"
-  "ssions\030\002 \003(\0162\025.crypto.KeyPermission\022\'\n\tk"
-  "eyLength\030\003 \001(\0162\024.crypto.AESKeyLength\022\022\n\n"
-  "destUserId\030\004 \001(\005\022\021\n\tmessageId\030\005 \001(\t\"(\n\026G"
-  "enerateAESKeyResponse\022\016\n\006aesKey\030\001 \001(\t\"g\n"
-  "\026GenerateKeyPairRequest\022\016\n\006userId\030\001 \001(\005\022"
-  "*\n\013permissions\030\002 \003(\0162\025.crypto.KeyPermiss"
-  "ion\022\021\n\tmessageId\030\003 \001(\t\"@\n\027GenerateKeyPai"
-  "rResponse\022\021\n\tpublicKey\030\001 \001(\t\022\022\n\nprivateK"
-  "ey\030\002 \001(\t\"\210\001\n\013SignRequest\022\020\n\010senderId\030\001 \001"
-  "(\005\022\014\n\004data\030\002 \001(\014\022&\n\010hashFunc\030\003 \001(\0162\024.cry"
-  "pto.SHAAlgorithm\022\017\n\007counter\030\005 \001(\003\022\r\n\005key"
-  "Id\030\006 \001(\t\022\021\n\tmessageId\030\007 \001(\t\"!\n\014SignRespo"
-  "nse\022\021\n\tsignature\030\001 \001(\014\"\261\001\n\rVerifyRequest"
-  "\022\020\n\010senderId\030\001 \001(\005\022\022\n\nreceiverId\030\002 \001(\005\022\014"
-  "\n\004data\030\003 \001(\014\022\021\n\tsignature\030\004 \001(\014\022&\n\010hashF"
-  "unc\030\005 \001(\0162\024.crypto.SHAAlgorithm\022\r\n\005keyId"
-  "\030\006 \001(\t\022\017\n\007counter\030\007 \001(\005\022\021\n\tmessageId\030\010 \001"
-  "(\t\",\n\016VerifyResponse\022\r\n\005valid\030\001 \001(\010\022\013\n\003o"
-  "ut\030\002 \001(\014\"A\n\nKeyRequest\022\020\n\010senderId\030\001 \001(\005"
-  "\022\016\n\006userId\030\002 \001(\005\022\021\n\tmessageId\030\003 \001(\t\"\032\n\013K"
-  "eyResponse\022\013\n\003key\030\001 \001(\t\"P\n\022UserKeyPermis"
-  "sions\022\016\n\006userId\030\001 \001(\005\022*\n\013permissions\030\002 \003"
-  "(\0162\025.crypto.KeyPermission\"_\n\021BootSystemR"
-  "equest\0227\n\023usersIdsPermissions\030\001 \003(\0132\032.cr"
-  "ypto.UserKeyPermissions\022\021\n\tmessageId\030\005 \001"
-  "(\t\"\007\n\005Empty\"\343\001\n\014CryptoConfig\022*\n\014hashFunc"
-  "tion\030\001 \001(\0162\024.crypto.SHAAlgorithm\022*\n\014aesK"
-  "eyLength\030\002 \001(\0162\024.crypto.AESKeyLength\0220\n\017"
-  "aesChainingMode\030\003 \001(\0162\027.crypto.AESChaini"
-  "ngMode\0226\n\022asymmetricFunction\030\004 \001(\0162\032.cry"
-  "pto.AsymmetricFunction\022\021\n\tmessageId\030\005 \001("
-  "\t\"[\n\020ConfigureRequest\022\016\n\006userId\030\001 \001(\005\022$\n"
-  "\006config\030\002 \001(\0132\024.crypto.CryptoConfig\022\021\n\tm"
-  "essageId\030\003 \001(\t\"b\n\021AddProcessRequest\022\016\n\006u"
-  "serId\030\001 \001(\005\022*\n\013permissions\030\002 \003(\0162\025.crypt"
-  "o.KeyPermission\022\021\n\tmessageId\030\004 \001(\t\"y\n\016En"
-  "cryptRequest\022\020\n\010senderId\030\001 \001(\005\022\022\n\nreceiv"
-  "erId\030\002 \001(\005\022\014\n\004data\030\003 \001(\014\022\017\n\007counter\030\004 \001("
-  "\003\022\017\n\007isFirst\030\005 \001(\010\022\021\n\tmessageId\030\006 \001(\t\";\n"
-  "\017EncryptResponse\022\025\n\rencryptedData\030\001 \001(\014\022"
-  "\021\n\tsignature\030\002 \001(\014\"\225\001\n\016DecryptRequest\022\020\n"
-  "\010senderId\030\001 \001(\005\022\022\n\nreceiverId\030\002 \001(\005\022\025\n\re"
-  "ncryptedData\030\003 \001(\014\022\017\n\007counter\030\004 \001(\003\022\021\n\ts"
-  "ignature\030\005 \001(\014\022\017\n\007isFirst\030\006 \001(\010\022\021\n\tmessa"
-  "geId\030\007 \001(\t\"(\n\017DecryptResponse\022\025\n\rdecrypt"
-  "edData\030\001 \001(\014\"\215\002\n\021AESEncryptRequest\022\020\n\010se"
-  "nderId\030\001 \001(\005\022\022\n\nreceiverId\030\002 \001(\005\022\014\n\004data"
-  "\030\003 \001(\014\022(\n\004func\030\004 \001(\0162\032.crypto.Asymmetric"
-  "Function\022\017\n\007counter\030\005 \001(\003\022\r\n\005keyId\030\006 \001(\t"
-  "\022\'\n\tkeyLength\030\007 \001(\0162\024.crypto.AESKeyLengt"
-  "h\022-\n\014chainingMode\030\010 \001(\0162\027.crypto.AESChai"
-  "ningMode\022\017\n\007isFirst\030\t \001(\010\022\021\n\tmessageId\030\n"
-  " \001(\t\"+\n\022AESEncryptResponse\022\025\n\rencryptedD"
-  "ata\030\001 \001(\014\"\257\002\n\021AESDecryptRequest\022\020\n\010sende"
-  "rId\030\001 \001(\005\022\022\n\nreceiverId\030\002 \001(\005\022\016\n\006dataIn\030"
-  "\003 \001(\014\022\r\n\005inLen\030\004 \001(\005\022\017\n\007dataOut\030\005 \001(\014\022(\n"
-  "\004func\030\006 \001(\0162\032.crypto.AsymmetricFunction\022"
-  "\'\n\tkeyLength\030\007 \001(\0162\024.crypto.AESKeyLength"
-  "\022-\n\014chainingMode\030\010 \001(\0162\027.crypto.AESChain"
-  "ingMode\022\017\n\007counter\030\t \001(\003\022\r\n\005keyId\030\n \001(\t\022"
-  "\017\n\007isFirst\030\013 \001(\010\022\021\n\tmessageId\030\014 \001(\t\"+\n\022A"
-  "ESDecryptResponse\022\025\n\rdecrypteddata\030\001 \001(\014"
-  "*O\n\rKeyPermission\022\n\n\006VERIFY\020\000\022\010\n\004SIGN\020\001\022"
-  "\013\n\007ENCRYPT\020\002\022\013\n\007DECRYPT\020\003\022\016\n\nEXPORTABLE\020"
-  "\004*>\n\017AESChainingMode\022\007\n\003ECB\020\000\022\007\n\003CBC\020\001\022\007"
-  "\n\003CFB\020\002\022\007\n\003OFB\020\003\022\007\n\003CTR\020\004*&\n\022AsymmetricF"
-  "unction\022\007\n\003RSA\020\000\022\007\n\003ECC\020\001*(\n\014SHAAlgorith"
-  "m\022\n\n\006SHA256\020\000\022\014\n\010SHA3_512\020\001*5\n\014AESKeyLen"
-  "gth\022\013\n\007AES_128\020\000\022\013\n\007AES_192\020\001\022\013\n\007AES_256"
-  "\020\0022\231\021\n\rCryptoService\0226\n\nbootSystem\022\031.cry"
-  "pto.BootSystemRequest\032\r.crypto.Empty\0227\n\013"
-  "addProccess\022\031.crypto.AddProcessRequest\032\r"
-  ".crypto.Empty\0224\n\tconfigure\022\030.crypto.Conf"
-  "igureRequest\032\r.crypto.Empty\022O\n\016generateA"
-  "ESKey\022\035.crypto.GenerateAESKeyRequest\032\036.c"
-  "rypto.GenerateAESKeyResponse\022U\n\022generate"
-  "RSAKeyPair\022\036.crypto.GenerateKeyPairReque"
-  "st\032\037.crypto.GenerateKeyPairResponse\022U\n\022g"
-  "enerateECCKeyPair\022\036.crypto.GenerateKeyPa"
-  "irRequest\032\037.crypto.GenerateKeyPairRespon"
-  "se\022N\n\023getSignedDataLength\022\034.crypto.GetHa"
-  "shLengthRequest\032\031.crypto.GetLengthRespon"
-  "se\022L\n\025getECCencryptedLength\022\030.crypto.Get"
-  "LengthRequest\032\031.crypto.GetLengthResponse"
-  "\022L\n\025getECCDecryptedLength\022\030.crypto.GetLe"
-  "ngthRequest\032\031.crypto.GetLengthResponse\022L"
-  "\n\025getRSAencryptedLength\022\030.crypto.GetLeng"
-  "thRequest\032\031.crypto.GetLengthResponse\022L\n\025"
-  "getRSAdecryptedLength\022\030.crypto.GetLength"
-  "Request\032\031.crypto.GetLengthResponse\022O\n\025ge"
-  "tAESencryptedLength\022\033.crypto.GetAESLengt"
-  "hRequest\032\031.crypto.GetLengthResponse\022O\n\025g"
-  "etAESdecryptedLength\022\033.crypto.GetAESLeng"
-  "thRequest\032\031.crypto.GetLengthResponse\022D\n\017"
-  "getEncryptedLen\022\026.crypto.GetWholeLength\032"
-  "\031.crypto.GetLengthResponse\022D\n\017getDecrypt"
-  "edLen\022\026.crypto.GetWholeLength\032\031.crypto.G"
-  "etLengthResponse\0221\n\004sign\022\023.crypto.SignRe"
-  "quest\032\024.crypto.SignResponse\0227\n\006verify\022\025."
-  "crypto.VerifyRequest\032\026.crypto.VerifyResp"
-  "onse\022B\n\027getPublicECCKeyByUserId\022\022.crypto"
-  ".KeyRequest\032\023.crypto.KeyResponse\022B\n\027getP"
-  "ublicRSAKeyByUserId\022\022.crypto.KeyRequest\032"
-  "\023.crypto.KeyResponse\022O\n\nECCencrypt\022\037.cry"
-  "pto.AsymetricEncryptRequest\032 .crypto.Asy"
-  "metricEncryptResponse\022O\n\nECCdecrypt\022\037.cr"
-  "ypto.AsymetricDecryptRequest\032 .crypto.As"
-  "ymetricDecryptResponse\022O\n\nRSAencrypt\022\037.c"
-  "rypto.AsymetricEncryptRequest\032 .crypto.A"
-  "symetricEncryptResponse\022O\n\nRSAdecrypt\022\037."
-  "crypto.AsymetricDecryptRequest\032 .crypto."
-  "AsymetricDecryptResponse\022C\n\nAESencrypt\022\031"
-  ".crypto.AESEncryptRequest\032\032.crypto.AESEn"
-  "cryptResponse\022C\n\nAESdecrypt\022\031.crypto.AES"
-  "DecryptRequest\032\032.crypto.AESDecryptRespon"
-  "se\022:\n\007encrypt\022\026.crypto.EncryptRequest\032\027."
-  "crypto.EncryptResponse\022:\n\007decrypt\022\026.cryp"
-  "to.DecryptRequest\032\027.crypto.DecryptRespon"
-  "se\0227\n\nsignUpdate\022\023.crypto.SignRequest\032\024."
-  "crypto.SignResponse\0229\n\014signFinalize\022\023.cr"
-  "ypto.SignRequest\032\024.crypto.SignResponse\022="
-  "\n\014verifyUpdate\022\025.crypto.VerifyRequest\032\026."
-  "crypto.VerifyResponse\022\?\n\016verifyFinalize\022"
-  "\025.crypto.VerifyRequest\032\026.crypto.VerifyRe"
-  "sponseb\006proto3"
+  "irst\030\003 \001(\010\022\021\n\tmessageId\030\004 \001(\t\022\016\n\006userId\030"
+  "\005 \001(\005\"\243\001\n\025GenerateAESKeyRequest\022\016\n\006userI"
+  "d\030\001 \001(\005\022*\n\013permissions\030\002 \003(\0162\025.crypto.Ke"
+  "yPermission\022\'\n\tkeyLength\030\003 \001(\0162\024.crypto."
+  "AESKeyLength\022\022\n\ndestUserId\030\004 \001(\005\022\021\n\tmess"
+  "ageId\030\005 \001(\t\"(\n\026GenerateAESKeyResponse\022\016\n"
+  "\006aesKey\030\001 \001(\t\"g\n\026GenerateKeyPairRequest\022"
+  "\016\n\006userId\030\001 \001(\005\022*\n\013permissions\030\002 \003(\0162\025.c"
+  "rypto.KeyPermission\022\021\n\tmessageId\030\003 \001(\t\"@"
+  "\n\027GenerateKeyPairResponse\022\021\n\tpublicKey\030\001"
+  " \001(\t\022\022\n\nprivateKey\030\002 \001(\t\"\210\001\n\013SignRequest"
+  "\022\020\n\010senderId\030\001 \001(\005\022\014\n\004data\030\002 \001(\014\022&\n\010hash"
+  "Func\030\003 \001(\0162\024.crypto.SHAAlgorithm\022\017\n\007coun"
+  "ter\030\005 \001(\003\022\r\n\005keyId\030\006 \001(\t\022\021\n\tmessageId\030\007 "
+  "\001(\t\"!\n\014SignResponse\022\021\n\tsignature\030\001 \001(\014\"\261"
+  "\001\n\rVerifyRequest\022\020\n\010senderId\030\001 \001(\005\022\022\n\nre"
+  "ceiverId\030\002 \001(\005\022\014\n\004data\030\003 \001(\014\022\021\n\tsignatur"
+  "e\030\004 \001(\014\022&\n\010hashFunc\030\005 \001(\0162\024.crypto.SHAAl"
+  "gorithm\022\r\n\005keyId\030\006 \001(\t\022\017\n\007counter\030\007 \001(\005\022"
+  "\021\n\tmessageId\030\010 \001(\t\",\n\016VerifyResponse\022\r\n\005"
+  "valid\030\001 \001(\010\022\013\n\003out\030\002 \001(\014\"A\n\nKeyRequest\022\020"
+  "\n\010senderId\030\001 \001(\005\022\016\n\006userId\030\002 \001(\005\022\021\n\tmess"
+  "ageId\030\003 \001(\t\"\032\n\013KeyResponse\022\013\n\003key\030\001 \001(\t\""
+  "P\n\022UserKeyPermissions\022\016\n\006userId\030\001 \001(\005\022*\n"
+  "\013permissions\030\002 \003(\0162\025.crypto.KeyPermissio"
+  "n\"_\n\021BootSystemRequest\0227\n\023usersIdsPermis"
+  "sions\030\001 \003(\0132\032.crypto.UserKeyPermissions\022"
+  "\021\n\tmessageId\030\005 \001(\t\"\007\n\005Empty\"\343\001\n\014CryptoCo"
+  "nfig\022*\n\014hashFunction\030\001 \001(\0162\024.crypto.SHAA"
+  "lgorithm\022*\n\014aesKeyLength\030\002 \001(\0162\024.crypto."
+  "AESKeyLength\0220\n\017aesChainingMode\030\003 \001(\0162\027."
+  "crypto.AESChainingMode\0226\n\022asymmetricFunc"
+  "tion\030\004 \001(\0162\032.crypto.AsymmetricFunction\022\021"
+  "\n\tmessageId\030\005 \001(\t\"[\n\020ConfigureRequest\022\016\n"
+  "\006userId\030\001 \001(\005\022$\n\006config\030\002 \001(\0132\024.crypto.C"
+  "ryptoConfig\022\021\n\tmessageId\030\003 \001(\t\"b\n\021AddPro"
+  "cessRequest\022\016\n\006userId\030\001 \001(\005\022*\n\013permissio"
+  "ns\030\002 \003(\0162\025.crypto.KeyPermission\022\021\n\tmessa"
+  "geId\030\004 \001(\t\"y\n\016EncryptRequest\022\020\n\010senderId"
+  "\030\001 \001(\005\022\022\n\nreceiverId\030\002 \001(\005\022\014\n\004data\030\003 \001(\014"
+  "\022\017\n\007counter\030\004 \001(\003\022\017\n\007isFirst\030\005 \001(\010\022\021\n\tme"
+  "ssageId\030\006 \001(\t\";\n\017EncryptResponse\022\025\n\rencr"
+  "yptedData\030\001 \001(\014\022\021\n\tsignature\030\002 \001(\014\"\225\001\n\016D"
+  "ecryptRequest\022\020\n\010senderId\030\001 \001(\005\022\022\n\nrecei"
+  "verId\030\002 \001(\005\022\025\n\rencryptedData\030\003 \001(\014\022\017\n\007co"
+  "unter\030\004 \001(\003\022\021\n\tsignature\030\005 \001(\014\022\017\n\007isFirs"
+  "t\030\006 \001(\010\022\021\n\tmessageId\030\007 \001(\t\"(\n\017DecryptRes"
+  "ponse\022\025\n\rdecryptedData\030\001 \001(\014\"\215\002\n\021AESEncr"
+  "yptRequest\022\020\n\010senderId\030\001 \001(\005\022\022\n\nreceiver"
+  "Id\030\002 \001(\005\022\014\n\004data\030\003 \001(\014\022(\n\004func\030\004 \001(\0162\032.c"
+  "rypto.AsymmetricFunction\022\017\n\007counter\030\005 \001("
+  "\003\022\r\n\005keyId\030\006 \001(\t\022\'\n\tkeyLength\030\007 \001(\0162\024.cr"
+  "ypto.AESKeyLength\022-\n\014chainingMode\030\010 \001(\0162"
+  "\027.crypto.AESChainingMode\022\017\n\007isFirst\030\t \001("
+  "\010\022\021\n\tmessageId\030\n \001(\t\"+\n\022AESEncryptRespon"
+  "se\022\025\n\rencryptedData\030\001 \001(\014\"\277\002\n\021AESDecrypt"
+  "Request\022\020\n\010senderId\030\001 \001(\005\022\022\n\nreceiverId\030"
+  "\002 \001(\005\022\016\n\006dataIn\030\003 \001(\014\022\r\n\005inLen\030\004 \001(\005\022\017\n\007"
+  "dataOut\030\005 \001(\014\022(\n\004func\030\006 \001(\0162\032.crypto.Asy"
+  "mmetricFunction\022\'\n\tkeyLength\030\007 \001(\0162\024.cry"
+  "pto.AESKeyLength\022-\n\014chainingMode\030\010 \001(\0162\027"
+  ".crypto.AESChainingMode\022\017\n\007counter\030\t \001(\003"
+  "\022\r\n\005keyId\030\n \001(\t\022\017\n\007isFirst\030\013 \001(\010\022\021\n\tmess"
+  "ageId\030\014 \001(\t\022\016\n\006userId\030\r \001(\005\"+\n\022AESDecryp"
+  "tResponse\022\025\n\rdecrypteddata\030\001 \001(\014*O\n\rKeyP"
+  "ermission\022\n\n\006VERIFY\020\000\022\010\n\004SIGN\020\001\022\013\n\007ENCRY"
+  "PT\020\002\022\013\n\007DECRYPT\020\003\022\016\n\nEXPORTABLE\020\004*>\n\017AES"
+  "ChainingMode\022\007\n\003ECB\020\000\022\007\n\003CBC\020\001\022\007\n\003CFB\020\002\022"
+  "\007\n\003OFB\020\003\022\007\n\003CTR\020\004*&\n\022AsymmetricFunction\022"
+  "\007\n\003RSA\020\000\022\007\n\003ECC\020\001*(\n\014SHAAlgorithm\022\n\n\006SHA"
+  "256\020\000\022\014\n\010SHA3_512\020\001*5\n\014AESKeyLength\022\013\n\007A"
+  "ES_128\020\000\022\013\n\007AES_192\020\001\022\013\n\007AES_256\020\0022\231\021\n\rC"
+  "ryptoService\0226\n\nbootSystem\022\031.crypto.Boot"
+  "SystemRequest\032\r.crypto.Empty\0227\n\013addProcc"
+  "ess\022\031.crypto.AddProcessRequest\032\r.crypto."
+  "Empty\0224\n\tconfigure\022\030.crypto.ConfigureReq"
+  "uest\032\r.crypto.Empty\022O\n\016generateAESKey\022\035."
+  "crypto.GenerateAESKeyRequest\032\036.crypto.Ge"
+  "nerateAESKeyResponse\022U\n\022generateRSAKeyPa"
+  "ir\022\036.crypto.GenerateKeyPairRequest\032\037.cry"
+  "pto.GenerateKeyPairResponse\022U\n\022generateE"
+  "CCKeyPair\022\036.crypto.GenerateKeyPairReques"
+  "t\032\037.crypto.GenerateKeyPairResponse\022N\n\023ge"
+  "tSignedDataLength\022\034.crypto.GetHashLength"
+  "Request\032\031.crypto.GetLengthResponse\022L\n\025ge"
+  "tECCencryptedLength\022\030.crypto.GetLengthRe"
+  "quest\032\031.crypto.GetLengthResponse\022L\n\025getE"
+  "CCDecryptedLength\022\030.crypto.GetLengthRequ"
+  "est\032\031.crypto.GetLengthResponse\022L\n\025getRSA"
+  "encryptedLength\022\030.crypto.GetLengthReques"
+  "t\032\031.crypto.GetLengthResponse\022L\n\025getRSAde"
+  "cryptedLength\022\030.crypto.GetLengthRequest\032"
+  "\031.crypto.GetLengthResponse\022O\n\025getAESencr"
+  "yptedLength\022\033.crypto.GetAESLengthRequest"
+  "\032\031.crypto.GetLengthResponse\022O\n\025getAESdec"
+  "ryptedLength\022\033.crypto.GetAESLengthReques"
+  "t\032\031.crypto.GetLengthResponse\022D\n\017getEncry"
+  "ptedLen\022\026.crypto.GetWholeLength\032\031.crypto"
+  ".GetLengthResponse\022D\n\017getDecryptedLen\022\026."
+  "crypto.GetWholeLength\032\031.crypto.GetLength"
+  "Response\0221\n\004sign\022\023.crypto.SignRequest\032\024."
+  "crypto.SignResponse\0227\n\006verify\022\025.crypto.V"
+  "erifyRequest\032\026.crypto.VerifyResponse\022B\n\027"
+  "getPublicECCKeyByUserId\022\022.crypto.KeyRequ"
+  "est\032\023.crypto.KeyResponse\022B\n\027getPublicRSA"
+  "KeyByUserId\022\022.crypto.KeyRequest\032\023.crypto"
+  ".KeyResponse\022O\n\nECCencrypt\022\037.crypto.Asym"
+  "etricEncryptRequest\032 .crypto.AsymetricEn"
+  "cryptResponse\022O\n\nECCdecrypt\022\037.crypto.Asy"
+  "metricDecryptRequest\032 .crypto.AsymetricD"
+  "ecryptResponse\022O\n\nRSAencrypt\022\037.crypto.As"
+  "ymetricEncryptRequest\032 .crypto.Asymetric"
+  "EncryptResponse\022O\n\nRSAdecrypt\022\037.crypto.A"
+  "symetricDecryptRequest\032 .crypto.Asymetri"
+  "cDecryptResponse\022C\n\nAESencrypt\022\031.crypto."
+  "AESEncryptRequest\032\032.crypto.AESEncryptRes"
+  "ponse\022C\n\nAESdecrypt\022\031.crypto.AESDecryptR"
+  "equest\032\032.crypto.AESDecryptResponse\022:\n\007en"
+  "crypt\022\026.crypto.EncryptRequest\032\027.crypto.E"
+  "ncryptResponse\022:\n\007decrypt\022\026.crypto.Decry"
+  "ptRequest\032\027.crypto.DecryptResponse\0227\n\nsi"
+  "gnUpdate\022\023.crypto.SignRequest\032\024.crypto.S"
+  "ignResponse\0229\n\014signFinalize\022\023.crypto.Sig"
+  "nRequest\032\024.crypto.SignResponse\022=\n\014verify"
+  "Update\022\025.crypto.VerifyRequest\032\026.crypto.V"
+  "erifyResponse\022\?\n\016verifyFinalize\022\025.crypto"
+  ".VerifyRequest\032\026.crypto.VerifyResponseb\006"
+  "proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_proto_2fencryption_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_proto_2fencryption_2eproto = {
-  false, false, 5814, descriptor_table_protodef_proto_2fencryption_2eproto, "proto/encryption.proto", 
+  false, false, 5846, descriptor_table_protodef_proto_2fencryption_2eproto, "proto/encryption.proto", 
   &descriptor_table_proto_2fencryption_2eproto_once, nullptr, 0, 33,
   schemas, file_default_instances, TableStruct_proto_2fencryption_2eproto::offsets,
   file_level_metadata_proto_2fencryption_2eproto, file_level_enum_descriptors_proto_2fencryption_2eproto, file_level_service_descriptors_proto_2fencryption_2eproto,
@@ -3217,8 +3222,8 @@ GetWholeLength::GetWholeLength(const GetWholeLength& from)
       GetArenaForAllocation());
   }
   ::memcpy(&senderid_, &from.senderid_,
-    static_cast<size_t>(reinterpret_cast<char*>(&isfirst_) -
-    reinterpret_cast<char*>(&senderid_)) + sizeof(isfirst_));
+    static_cast<size_t>(reinterpret_cast<char*>(&userid_) -
+    reinterpret_cast<char*>(&senderid_)) + sizeof(userid_));
   // @@protoc_insertion_point(copy_constructor:crypto.GetWholeLength)
 }
 
@@ -3226,8 +3231,8 @@ void GetWholeLength::SharedCtor() {
 messageid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&senderid_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&isfirst_) -
-    reinterpret_cast<char*>(&senderid_)) + sizeof(isfirst_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&userid_) -
+    reinterpret_cast<char*>(&senderid_)) + sizeof(userid_));
 }
 
 GetWholeLength::~GetWholeLength() {
@@ -3260,8 +3265,8 @@ void GetWholeLength::Clear() {
 
   messageid_.ClearToEmpty();
   ::memset(&senderid_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&isfirst_) -
-      reinterpret_cast<char*>(&senderid_)) + sizeof(isfirst_));
+      reinterpret_cast<char*>(&userid_) -
+      reinterpret_cast<char*>(&senderid_)) + sizeof(userid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -3301,6 +3306,14 @@ const char* GetWholeLength::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE
           auto str = _internal_mutable_messageid();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "crypto.GetWholeLength.messageId"));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 userId = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
+          userid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -3362,6 +3375,12 @@ failure:
         4, this->_internal_messageid(), target);
   }
 
+  // int32 userId = 5;
+  if (this->_internal_userid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(5, this->_internal_userid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -3400,6 +3419,11 @@ size_t GetWholeLength::ByteSizeLong() const {
     total_size += 1 + 1;
   }
 
+  // int32 userId = 5;
+  if (this->_internal_userid() != 0) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_userid());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
 }
 
@@ -3434,6 +3458,9 @@ void GetWholeLength::MergeFrom(const GetWholeLength& from) {
   if (from._internal_isfirst() != 0) {
     _internal_set_isfirst(from._internal_isfirst());
   }
+  if (from._internal_userid() != 0) {
+    _internal_set_userid(from._internal_userid());
+  }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -3459,8 +3486,8 @@ void GetWholeLength::InternalSwap(GetWholeLength* other) {
       &other->messageid_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(GetWholeLength, isfirst_)
-      + sizeof(GetWholeLength::isfirst_)
+      PROTOBUF_FIELD_OFFSET(GetWholeLength, userid_)
+      + sizeof(GetWholeLength::userid_)
       - PROTOBUF_FIELD_OFFSET(GetWholeLength, senderid_)>(
           reinterpret_cast<char*>(&senderid_),
           reinterpret_cast<char*>(&other->senderid_));
@@ -9321,8 +9348,8 @@ AESDecryptRequest::AESDecryptRequest(const AESDecryptRequest& from)
       GetArenaForAllocation());
   }
   ::memcpy(&senderid_, &from.senderid_,
-    static_cast<size_t>(reinterpret_cast<char*>(&isfirst_) -
-    reinterpret_cast<char*>(&senderid_)) + sizeof(isfirst_));
+    static_cast<size_t>(reinterpret_cast<char*>(&userid_) -
+    reinterpret_cast<char*>(&senderid_)) + sizeof(userid_));
   // @@protoc_insertion_point(copy_constructor:crypto.AESDecryptRequest)
 }
 
@@ -9333,8 +9360,8 @@ keyid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlread
 messageid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&senderid_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&isfirst_) -
-    reinterpret_cast<char*>(&senderid_)) + sizeof(isfirst_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&userid_) -
+    reinterpret_cast<char*>(&senderid_)) + sizeof(userid_));
 }
 
 AESDecryptRequest::~AESDecryptRequest() {
@@ -9373,8 +9400,8 @@ void AESDecryptRequest::Clear() {
   keyid_.ClearToEmpty();
   messageid_.ClearToEmpty();
   ::memset(&senderid_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&isfirst_) -
-      reinterpret_cast<char*>(&senderid_)) + sizeof(isfirst_));
+      reinterpret_cast<char*>(&userid_) -
+      reinterpret_cast<char*>(&senderid_)) + sizeof(userid_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -9485,6 +9512,14 @@ const char* AESDecryptRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
           auto str = _internal_mutable_messageid();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "crypto.AESDecryptRequest.messageId"));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 userId = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 104)) {
+          userid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -9601,6 +9636,12 @@ failure:
         12, this->_internal_messageid(), target);
   }
 
+  // int32 userId = 13;
+  if (this->_internal_userid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(13, this->_internal_userid(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -9688,6 +9729,11 @@ size_t AESDecryptRequest::ByteSizeLong() const {
     total_size += 1 + 1;
   }
 
+  // int32 userId = 13;
+  if (this->_internal_userid() != 0) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_userid());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
 }
 
@@ -9746,6 +9792,9 @@ void AESDecryptRequest::MergeFrom(const AESDecryptRequest& from) {
   if (from._internal_isfirst() != 0) {
     _internal_set_isfirst(from._internal_isfirst());
   }
+  if (from._internal_userid() != 0) {
+    _internal_set_userid(from._internal_userid());
+  }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -9786,8 +9835,8 @@ void AESDecryptRequest::InternalSwap(AESDecryptRequest* other) {
       &other->messageid_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(AESDecryptRequest, isfirst_)
-      + sizeof(AESDecryptRequest::isfirst_)
+      PROTOBUF_FIELD_OFFSET(AESDecryptRequest, userid_)
+      + sizeof(AESDecryptRequest::userid_)
       - PROTOBUF_FIELD_OFFSET(AESDecryptRequest, senderid_)>(
           reinterpret_cast<char*>(&senderid_),
           reinterpret_cast<char*>(&other->senderid_));
