@@ -1,7 +1,6 @@
 #include "global_properties.h"
 using namespace std;
 
-
 void handleMesseage(uint32_t senderId, void *data)
 {
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
@@ -14,10 +13,10 @@ void handleMesseage(uint32_t senderId, void *data)
     // instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
     //                              instanceGP.srcID, false);
 
-    if (decryptData(data, instanceGP.sensors[senderId]->msgLength/8, senderId,
-                    instanceGP.srcID)){
+    if (decryptData(data, instanceGP.sensors[senderId]->msgLength / 8,
+                    senderId)) {
         instanceGP.controlLogger.logMessage(
-                    logger::LogLevel::INFO, "The message dycrypted successfully");
+            logger::LogLevel::INFO, "The message dycrypted successfully");
     }
     else {
         instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR,
@@ -96,3 +95,4 @@ void GlobalProperties::resetInstance()
 // Static member to hold the single instance of `GlobalProperties`
 unique_ptr<GlobalProperties> GlobalProperties::instance = nullptr;
 logger GlobalProperties::controlLogger("Control");
+CryptoClient GlobalProperties::client(GlobalProperties::getInstance().srcID);

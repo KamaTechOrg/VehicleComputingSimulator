@@ -2,8 +2,8 @@
 using namespace std;
 
 // Tests a condition by resetting global state and updating sensor values
-void testCondition(string condition, int sensorId, string field, FieldValue value,
-                   FieldType type)
+void testCondition(string condition, int sensorId, string field,
+                   FieldValue value, FieldType type)
 {
     // Resets counters and existing conditions, recreates the `GlobalProperties` instance
     FullCondition::s_counter = 0;

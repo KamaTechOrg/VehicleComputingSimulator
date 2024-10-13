@@ -82,8 +82,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
     // Create and set up the loading spinner (static PNG)
     loadingLabel = new QLabel(this);
     // Set up the loading spinner (rotating static image)
-    loadingLabel->setFixedSize(80, 80);  // Set smaller fixed size (adjust as needed)
-    loadingLabel->setScaledContents(true);  // Make sure the image scales with the label
+    loadingLabel->setFixedSize(
+        80, 80);  // Set smaller fixed size (adjust as needed)
+    loadingLabel->setScaledContents(
+        true);  // Make sure the image scales with the label
     loadingPixmap = QPixmap("../loading.png");  // Path to the PNG image
     loadingLabel->setPixmap(loadingPixmap);
     loadingLabel->setAlignment(Qt::AlignCenter);
@@ -98,7 +100,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
-    toolboxLayout->addWidget(loadingLabel); // Add the loading label to the toolbox layout (under the buttons)
+    toolboxLayout->addWidget(
+        loadingLabel);  // Add the loading label to the toolbox layout (under the buttons)
     toolboxLayout->addWidget(compileButton);
     toolboxLayout->addWidget(runButton);
     runButton->setEnabled(false);
@@ -130,29 +133,30 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr)
         "  border-radius: 10px;"                  // Rounded corners
         "}";
 
-    Process *mainProcess =
-        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform");
+    Process *mainProcess = new Process(
+        id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         mainProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
-    Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform");
+    Process *hsmProcess = new Process(
+        id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt",
+                    "QEMUPlatform");
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
-    Process *busManagerProcess =
-        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform");
+    Process *busManagerProcess = new Process(
+        id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -293,12 +297,12 @@ void MainWindow::updateTimer()
 
         timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, [this, time]() mutable {
-
             if (time > 0) {
                 time--;
                 timeInput->setText(QString::number(time));
                 timeInput->setAlignment(Qt::AlignCenter);  // Keep text centered
-            } else {
+            }
+            else {
                 timerTimeout();
             }
         });
@@ -380,17 +384,16 @@ void MainWindow::showTimerInput()
     timeInput->setFont(font);
 
     // Connect to textChanged signal to ensure text stays centered
-    connect(timeInput, &QLineEdit::textChanged, this, [this]() {
-        timeInput->setAlignment(Qt::AlignCenter);
-    });
+    connect(timeInput, &QLineEdit::textChanged, this,
+            [this]() { timeInput->setAlignment(Qt::AlignCenter); });
 
     // Set input validator to ensure only numbers are entered
-    QIntValidator* validator = new QIntValidator(0, 999999, this);
+    QIntValidator *validator = new QIntValidator(0, 999999, this);
     timeInput->setValidator(validator);
 
-    guiLogger.logMessage(
-        logger::LogLevel::DEBUG,
-        "showTimerInput() called: Timer input elements are shown and centered.");
+    guiLogger.logMessage(logger::LogLevel::DEBUG,
+                         "showTimerInput() called: Timer input elements are "
+                         "shown and centered.");
 }
 
 void MainWindow::timerTimeout()
@@ -460,7 +463,7 @@ void MainWindow::showSimulation()
     logHandler.readLogFile(filePath);
     logHandler.analyzeLogEntries(this, "simulation_state.bson");
 
-    Frames* frames = new Frames(logHandler);  // Initialize Frames
+    Frames *frames = new Frames(logHandler);  // Initialize Frames
     QVBoxLayout *framesLayout = new QVBoxLayout(workspace);
     framesLayout->addWidget(frames);
     workspace->setLayout(framesLayout);
@@ -766,7 +769,7 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     QProcess *finishedProcess = qobject_cast<QProcess *>(sender());
     if (finishedProcess) {
-        int finishedProcessId =-1;
+        int finishedProcessId = -1;
         // Find the ID of the process that finished
         for (const QPair<QProcess *, int> &pair : runningProcesses) {
             if (pair.first == finishedProcess) {
@@ -784,7 +787,8 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
         // Remove the finished process based on ID from runningProcesses
         for (int i = 0; i < runningProcesses.size(); ++i) {
             if (runningProcesses[i].second == finishedProcessId) {
-                runningProcesses.removeAt(i);  // Remove the process with the matching ID
+                runningProcesses.removeAt(
+                    i);  // Remove the process with the matching ID
                 break;
             }
         }
@@ -797,7 +801,7 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 }
 
 // Disable all buttons except the "End" button
-void MainWindow::disableButtonsExceptEnd() 
+void MainWindow::disableButtonsExceptEnd()
 {
     compileButton->setEnabled(false);
     runButton->setEnabled(false);
@@ -805,14 +809,15 @@ void MainWindow::disableButtonsExceptEnd()
 }
 
 // Enable all buttons
-void MainWindow::enableAllButtons() 
+void MainWindow::enableAllButtons()
 {
     compileButton->setEnabled(true);
     runButton->setEnabled(true);
     timerButton->setEnabled(true);
 }
 
-void MainWindow::rotateImage() {
+void MainWindow::rotateImage()
+{
     // Rotate the pixmap by the current angle
     QTransform transform;
     transform.rotate(rotationAngle);
@@ -822,17 +827,21 @@ void MainWindow::rotateImage() {
     loadingLabel->setPixmap(rotatedPixmap);
 
     // Increment the rotation angle for the next frame
-    rotationAngle = (rotationAngle + 10) % 360;  // Rotate by 10 degrees each time
+    rotationAngle =
+        (rotationAngle + 10) % 360;  // Rotate by 10 degrees each time
 }
 
 // Show the loading spinner with rotation
-void MainWindow::showLoadingIndicator() {
+void MainWindow::showLoadingIndicator()
+{
     loadingLabel->show();
-    rotationTimer->start(rotationTimerIntervals);  // Start the timer with ms intervals
+    rotationTimer->start(
+        rotationTimerIntervals);  // Start the timer with ms intervals
 }
 
 // Hide the loading spinner and stop the rotation
-void MainWindow::hideLoadingIndicator() {
+void MainWindow::hideLoadingIndicator()
+{
     rotationTimer->stop();
     loadingLabel->hide();
 }

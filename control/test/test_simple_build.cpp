@@ -106,7 +106,8 @@ TEST(OrAndCondition, ComplexConditionTest)
     int num = 800;
     FieldValue fv = num;
     testCondition(
-        "|([8]&(=(Status,true),=(Speed,500),=(Message,\"aaa\")),[8]=(Speed,800))",
+        "|([8]&(=(Status,true),=(Speed,500),=(Message,\"aaa\")),[8]=(Speed,800)"
+        ")",
         8, "Speed", fv, FieldType::SIGNED_INT);
 
     GlobalProperties &instanceGP = GlobalProperties::getInstance();

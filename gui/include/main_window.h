@@ -47,11 +47,12 @@ public:
     void timerTimeout();
     void openImageDialog();
     void createProcessConfigFile(int id, const QString &processPath);
-    void disableButtonsExceptEnd();  // Disable all buttons except the "End" button
-    void enableAllButtons();         // Re-enable all buttons
-    void showLoadingIndicator();     // Show loading animation (spinner)
-    void hideLoadingIndicator();     // Hide loading animation (spinner)
-  
+    void
+    disableButtonsExceptEnd();    // Disable all buttons except the "End" button
+    void enableAllButtons();      // Re-enable all buttons
+    void showLoadingIndicator();  // Show loading animation (spinner)
+    void hideLoadingIndicator();  // Hide loading animation (spinner)
+
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -97,8 +98,9 @@ private:
     void runProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
-    void rotateImage();     // Function to handle rotation
-    void openSecondProject();  // Function that handles launching the second project
+    void rotateImage();  // Function to handle rotation
+    void
+    openSecondProject();  // Function that handles launching the second project
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;

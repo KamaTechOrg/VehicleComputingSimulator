@@ -110,8 +110,7 @@ TEST(AndInAndCondition, SameOperatorsConditionTest)
     // Check correct update
     bool status = true;
     fv = status;
-    instanceGP.sensors[8]->updateTrueRoots("Status", fv,
-                                           FieldType::BOOLEAN);
+    instanceGP.sensors[8]->updateTrueRoots("Status", fv, FieldType::BOOLEAN);
     EXPECT_EQ(instanceGP.trueConditions.size(), 1);
 }
 
@@ -145,7 +144,8 @@ TEST(ComplexOrInOrCondition, SameOperatorsConditionTest)
     FieldValue fv = num;
     // Creates a `FullCondition` object with the given parameters
     testCondition(
-        "|([8]&(=(Speed,800),!=(Msg,aaa)),[8]|(=(Speed,500),|(=(Status,true),=(Msg,goog))))",
+        "|([8]&(=(Speed,800),!=(Msg,aaa)),[8]|(=(Speed,500),|(=(Status,true),=("
+        "Msg,goog))))",
         8, "Speed", fv, FieldType::SIGNED_INT);
 
     GlobalProperties &instanceGP = GlobalProperties::getInstance();

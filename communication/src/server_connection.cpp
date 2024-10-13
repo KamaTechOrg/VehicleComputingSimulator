@@ -3,7 +3,10 @@
 #include "../include/server_connection.h"
 
 // Constructor
-ServerConnection::ServerConnection(int port, std::function<void(Packet&)> callback, ISocket* socketInterface) {
+ServerConnection::ServerConnection(int port,
+                                   std::function<void(Packet &)> callback,
+                                   ISocket *socketInterface)
+{
     setPort(port);
     setReceiveDataCallback(callback);
     setSocketInterface(socketInterface);
@@ -20,17 +23,20 @@ ErrorCode ServerConnection::startConnection()
 
     // Setting the socket to allow reuse of address and port
     int opt = 1;
-    int setSockOptRes = socketInterface->setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+    int setSockOptRes = socketInterface->setsockopt(serverSocket, SOL_SOCKET,
+                                                    SO_REUSEADDR | SO_REUSEPORT,
+                                                    &opt, sizeof(opt));
     if (setSockOptRes) {
         socketInterface->close(serverSocket);
         return ErrorCode::SOCKET_FAILED;
     }
-    
+
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
 
-    int bindRes = socketInterface->bind(serverSocket, (struct sockaddr *)&address, sizeof(address));
+    int bindRes = socketInterface->bind(
+        serverSocket, (struct sockaddr *)&address, sizeof(address));
     if (bindRes < 0) {
         socketInterface->close(serverSocket);
         return ErrorCode::BIND_FAILED;
@@ -41,7 +47,7 @@ ErrorCode ServerConnection::startConnection()
         socketInterface->close(serverSocket);
         return ErrorCode::LISTEN_FAILED;
     }
-    
+
     running = true;
     mainThread = std::thread(&ServerConnection::startThread, this);
     mainThread.detach();
@@ -53,28 +59,30 @@ ErrorCode ServerConnection::startConnection()
 void ServerConnection::startThread()
 {
     while (running) {
-        int clientSocket = socketInterface->accept(serverSocket, nullptr, nullptr);
+        int clientSocket =
+            socketInterface->accept(serverSocket, nullptr, nullptr);
         if (!clientSocket)
             continue;
-        
-        if(clientSocket<0){
+
+        if (clientSocket < 0) {
             stopServer();
             return;
         }
         // Opens a new thread for handleClient - listening to messages from the process
         {
             std::lock_guard<std::mutex> lock(threadMutex);
-            clientThreads.emplace_back(&ServerConnection::handleClient, this, clientSocket);
-        } 
+            clientThreads.emplace_back(&ServerConnection::handleClient, this,
+                                       clientSocket);
+        }
     }
 }
 
 // Closes the sockets and the threads
 void ServerConnection::stopServer()
 {
-    if(!running)
+    if (!running)
         return;
-        
+
     running = false;
     socketInterface->close(serverSocket);
     {
@@ -95,14 +103,15 @@ void ServerConnection::stopServer()
 void ServerConnection::handleClient(int clientSocket)
 {
     Packet packet;
-    int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
+    int valread =
+        socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
 
     //implement according to CAN bus
     if (valread <= 0)
         return;
-    
+
     uint32_t clientID = packet.header.SrcID;
-    if(!isValidId(clientID))
+    if (!isValidId(clientID))
         return;
 
     {
@@ -116,23 +125,24 @@ void ServerConnection::handleClient(int clientSocket)
     }
 
     while (running) {
-        int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
+        int valread =
+            socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
         if (valread == 0)
             break;
 
-        if(valread < 0)
-           continue;
-     
+        if (valread < 0)
+            continue;
+
         receiveDataCallback(packet);
     }
 
     {
-    // If the process is no longer connected
-    std::lock_guard<std::mutex> lock(socketMutex);
-    auto it = std::find(sockets.begin(), sockets.end(), clientSocket);
-    socketInterface->close(*it);
-    if (it != sockets.end())
-        sockets.erase(it);
+        // If the process is no longer connected
+        std::lock_guard<std::mutex> lock(socketMutex);
+        auto it = std::find(sockets.begin(), sockets.end(), clientSocket);
+        socketInterface->close(*it);
+        if (it != sockets.end())
+            sockets.erase(it);
     }
     {
         std::lock_guard<std::mutex> lock(IDMapMutex);
@@ -164,16 +174,17 @@ ErrorCode ServerConnection::sendDestination(const Packet &packet)
     int targetSocket = getClientSocketByID(packet.header.DestID);
     if (targetSocket == -1)
         return ErrorCode::INVALID_CLIENT_ID;
-    
-    ssize_t bytesSent = socketInterface->send(targetSocket, &packet, sizeof(Packet), 0);
+
+    ssize_t bytesSent =
+        socketInterface->send(targetSocket, &packet, sizeof(Packet), 0);
     if (!bytesSent)
         return ErrorCode::SEND_FAILED;
 
-    if (bytesSent<0){
+    if (bytesSent < 0) {
         //closeConnection();
         return ErrorCode::CONNECTION_FAILED;
     }
-    
+
     return ErrorCode::SUCCESS;
 }
 
@@ -182,10 +193,11 @@ ErrorCode ServerConnection::sendBroadcast(const Packet &packet)
 {
     std::lock_guard<std::mutex> lock(socketMutex);
     for (int sock : sockets) {
-        ssize_t bytesSent = socketInterface->send(sock, &packet, sizeof(Packet), 0);
+        ssize_t bytesSent =
+            socketInterface->send(sock, &packet, sizeof(Packet), 0);
         if (bytesSent < sizeof(Packet))
             return ErrorCode::SEND_FAILED;
-        if (bytesSent<0){
+        if (bytesSent < 0) {
             //closeConnection();
             return ErrorCode::CONNECTION_FAILED;
         }
@@ -195,25 +207,32 @@ ErrorCode ServerConnection::sendBroadcast(const Packet &packet)
 }
 
 // Sets the server's port number, throws an exception if the port is invalid.
-void ServerConnection::setPort(int port) {
+void ServerConnection::setPort(int port)
+{
     if (port <= 0 || port > 65535)
-        throw std::invalid_argument("Invalid port number: Port must be between 1 and 65535.");
+        throw std::invalid_argument(
+            "Invalid port number: Port must be between 1 and 65535.");
 
     this->port = port;
 }
 
 // Sets the callback for receiving data, throws an exception if the callback is null.
-void ServerConnection::setReceiveDataCallback(std::function<void(Packet&)> callback) {
+void ServerConnection::setReceiveDataCallback(
+    std::function<void(Packet &)> callback)
+{
     if (!callback) {
-        throw std::invalid_argument("Invalid callback function: callback cannot be null.");
+        throw std::invalid_argument(
+            "Invalid callback function: callback cannot be null.");
     }
     this->receiveDataCallback = callback;
 }
 
 // Sets the socket interface, throws an exception if the socketInterface is null.
-void ServerConnection::setSocketInterface(ISocket* socketInterface) {
+void ServerConnection::setSocketInterface(ISocket *socketInterface)
+{
     if (socketInterface == nullptr) {
-        throw std::invalid_argument("Invalid socket interface: socketInterface cannot be null.");
+        throw std::invalid_argument(
+            "Invalid socket interface: socketInterface cannot be null.");
     }
     this->socketInterface = socketInterface;
 }
@@ -229,22 +248,22 @@ int ServerConnection::isRunning()
     return running;
 }
 
-std::vector<int>* ServerConnection::getSockets()
+std::vector<int> *ServerConnection::getSockets()
 {
     return &sockets;
 }
 
-std::mutex* ServerConnection::getSocketMutex()
+std::mutex *ServerConnection::getSocketMutex()
 {
     return &socketMutex;
 }
 
-std::mutex* ServerConnection::getIDMapMutex()
+std::mutex *ServerConnection::getIDMapMutex()
 {
     return &IDMapMutex;
 }
 
-std::map<int, uint32_t>* ServerConnection::getClientIDMap()
+std::map<int, uint32_t> *ServerConnection::getClientIDMap()
 {
     return &clientIDMap;
 }

@@ -28,12 +28,14 @@ public:
 
     // Variables for the timer functions
     int timeForUpdate;
-    std::atomic<int> timerCounter; // Flag to indicate the remaining time in seconds
+    std::atomic<int>
+        timerCounter;  // Flag to indicate the remaining time in seconds
     std::mutex mtx;
     std::thread timerThread;
 
     // Contains the current values of various fields and a list of basic conditions associated with each field
-    std::map<std::string, std::pair<FieldValue, std::vector<BasicCondition *>>> fields;
+    std::map<std::string, std::pair<FieldValue, std::vector<BasicCondition *>>>
+        fields;
 
     // C-tor initializes the id member variable.
     Sensor(int id, string name, string jsonFilePath);

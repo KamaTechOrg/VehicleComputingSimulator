@@ -3,7 +3,10 @@
 
 Process::Process(int id, const QString &name, const QString &executionFile,
                  const QString &qemuPlatform)
-    : id(id), name(name), executionFile(executionFile), qemuPlatform(qemuPlatform)
+    : id(id),
+      name(name),
+      executionFile(executionFile),
+      qemuPlatform(qemuPlatform)
 {
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,

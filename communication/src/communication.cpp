@@ -1,11 +1,13 @@
 #include "../include/communication.h"
 #include <future>
 
-Communication* Communication::instance = nullptr;
+Communication *Communication::instance = nullptr;
 
 // Constructor
-Communication::Communication(uint32_t id, void (*passDataCallback)(uint32_t, void *)) : 
-    client(std::bind(&Communication::receivePacket, this, std::placeholders::_1))
+Communication::Communication(uint32_t id,
+                             void (*passDataCallback)(uint32_t, void *))
+    : client(
+          std::bind(&Communication::receivePacket, this, std::placeholders::_1))
 {
     setId(id);
     setPassDataCallback(passDataCallback);
@@ -29,7 +31,9 @@ ErrorCode Communication::startConnection()
 }
 
 // Sends a message sync
-ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, bool isBroadcast)
+ErrorCode Communication::sendMessage(void *data, size_t dataSize,
+                                     uint32_t destID, uint32_t srcID,
+                                     bool isBroadcast)
 {
     if (dataSize == 0)
         return ErrorCode::INVALID_DATA_SIZE;
@@ -41,30 +45,37 @@ ErrorCode Communication::sendMessage(void *data, size_t dataSize, uint32_t destI
         return ErrorCode::CONNECTION_FAILED;
 
     Message msg(srcID, data, dataSize, isBroadcast, destID);
-    
+
     //Sending the message to logger
-    RealSocket::log.logMessage(logger::LogLevel::INFO,std::to_string(srcID),std::to_string(destID),"Complete message:" + msg.getPackets().at(0).pointerToHex(data, dataSize));
-    
+    RealSocket::log.logMessage(
+        logger::LogLevel::INFO, std::to_string(srcID), std::to_string(destID),
+        "Complete message:" +
+            msg.getPackets().at(0).pointerToHex(data, dataSize));
+
     for (auto &packet : msg.getPackets()) {
         ErrorCode res = client.sendPacket(packet);
         if (res != ErrorCode::SUCCESS)
             return res;
     }
 
-    return ErrorCode::SUCCESS;  
+    return ErrorCode::SUCCESS;
 }
 
 // Sends a message Async
-void Communication::sendMessageAsync(void *data, size_t dataSize, uint32_t destID, uint32_t srcID, std::function<void(ErrorCode)> sendCallback, bool isBroadcast)
+void Communication::sendMessageAsync(
+    void *data, size_t dataSize, uint32_t destID, uint32_t srcID,
+    std::function<void(ErrorCode)> sendCallback, bool isBroadcast)
 {
     std::promise<ErrorCode> resultPromise;
     std::future<ErrorCode> resultFuture = resultPromise.get_future();
 
-    std::thread([this, data, dataSize, destID, srcID, isBroadcast, &resultPromise]() {
-        ErrorCode res = this->sendMessage(data, dataSize, destID, srcID, isBroadcast);
+    std::thread([this, data, dataSize, destID, srcID, isBroadcast,
+                 &resultPromise]() {
+        ErrorCode res =
+            this->sendMessage(data, dataSize, destID, srcID, isBroadcast);
         resultPromise.set_value(res);
     }).detach();
-    
+
     ErrorCode res = resultFuture.get();
     sendCallback(res);
 }
@@ -121,7 +132,8 @@ void Communication::addPacketToMessage(Packet &p)
     // If the message already exists, we will add the packet
     if (receivedMessages.find(messageId) != receivedMessages.end()) {
         receivedMessages[messageId].addPacket(p);
-    } else {
+    }
+    else {
         // If the message does not exist, we will create a new message
         Message msg(p.header.TPS);
         msg.addPacket(p);
@@ -132,7 +144,8 @@ void Communication::addPacketToMessage(Packet &p)
     if (receivedMessages[messageId].isComplete()) {
         void *completeData = receivedMessages[messageId].completeData();
         passData(p.header.SrcID, completeData);
-        receivedMessages.erase(messageId); // Removing the message once completed
+        receivedMessages.erase(
+            messageId);  // Removing the message once completed
     }
 }
 
@@ -141,7 +154,7 @@ void Communication::signalHandler(int signum)
 {
     if (instance)
         instance->client.closeConnection();
-    
+
     exit(signum);
 }
 
@@ -153,12 +166,14 @@ void Communication::setId(uint32_t newId)
 void Communication::setPassDataCallback(void (*callback)(uint32_t, void *))
 {
     if (callback == nullptr)
-        throw std::invalid_argument("Invalid callback function: passDataCallback cannot be null");
-    
+        throw std::invalid_argument(
+            "Invalid callback function: passDataCallback cannot be null");
+
     passData = callback;
 }
 
 //Destructor
-Communication::~Communication() {
+Communication::~Communication()
+{
     instance = nullptr;
 }

@@ -1,17 +1,23 @@
 #include "../include/bus_manager.h"
 
-BusManager* BusManager::instance = nullptr;
+BusManager *BusManager::instance = nullptr;
 std::mutex BusManager::managerMutex;
 
 //Private constructor
-BusManager::BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit) :server(8080, std::bind(&BusManager::receiveData, this, std::placeholders::_1))//,syncCommunication(idShouldConnect, limit)
+BusManager::BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit)
+    : server(8080,
+             std::bind(&BusManager::receiveData, this,
+                       std::placeholders::
+                           _1))  //,syncCommunication(idShouldConnect, limit)
 {
     // Setup the signal handler for SIGINT
     signal(SIGINT, BusManager::signalHandler);
 }
 
 // Static function to return a singleton instance
-BusManager* BusManager::getInstance(std::vector<uint32_t> idShouldConnect, uint32_t limit) {
+BusManager *BusManager::getInstance(std::vector<uint32_t> idShouldConnect,
+                                    uint32_t limit)
+{
     if (instance == nullptr) {
         // Lock the mutex to prevent multiple threads from creating instances simultaneously
         std::lock_guard<std::mutex> lock(managerMutex);
@@ -25,7 +31,6 @@ BusManager* BusManager::getInstance(std::vector<uint32_t> idShouldConnect, uint3
 // Sends to the server to listen for requests
 ErrorCode BusManager::startConnection()
 {
-    
     ErrorCode isConnected = server.startConnection();
     //syncCommunication.notifyProcess()
     return isConnected;
@@ -45,7 +50,7 @@ void BusManager::receiveData(Packet &p)
 // Sending according to broadcast variable
 ErrorCode BusManager::sendToClients(const Packet &packet)
 {
-    if(packet.header.isBroadcast)
+    if (packet.header.isBroadcast)
         return server.sendBroadcast(packet);
     return server.sendDestination(packet);
 }
@@ -71,6 +76,7 @@ void BusManager::signalHandler(int signum)
     exit(signum);
 }
 
-BusManager::~BusManager() {
+BusManager::~BusManager()
+{
     instance = nullptr;
 }

@@ -32,8 +32,9 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     layout->addWidget(executableFileLabel);
     layout->addWidget(executionFile);
 
-    QPushButton *selectExecutableFileButton = new QPushButton("Select Executable File", this);
-    layout->addWidget(selectExecutableFileButton);  
+    QPushButton *selectExecutableFileButton =
+        new QPushButton("Select Executable File", this);
+    layout->addWidget(selectExecutableFileButton);
 
     QLabel *qemuPlatformLabel = new QLabel("QEMU Platform:");
     qemuPlatformCombo = new QComboBox(this);
@@ -85,15 +86,17 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     connect(okButton, &QPushButton::clicked, this,
             &ProcessDialog::validateAndAccept);
     connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
-    connect(selectExecutableFileButton, &QPushButton::clicked, this, &ProcessDialog::selectExecutableFile);
+    connect(selectExecutableFileButton, &QPushButton::clicked, this,
+            &ProcessDialog::selectExecutableFile);
 
     setLayout(layout);
 }
 
 void ProcessDialog::selectExecutableFile()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Select Executable File", "", 
-                                                    "Executable Files (*.sh *.cmake);;Text Files (*.txt)");
+    QString fileName = QFileDialog::getOpenFileName(
+        this, "Select Executable File", "",
+        "Executable Files (*.sh *.cmake);;Text Files (*.txt)");
     if (!fileName.isEmpty()) {
         executionFile->setText(fileName);  // Update the renamed QLineEdit
     }
@@ -179,11 +182,13 @@ void ProcessDialog::setQEMUPlatform(const QString &qemuPlatform)
     }
 }
 
-void ProcessDialog::setupPermissionCheckboxes() {
-    QStringList permissions = { "Verify", "Sign", "Encrypt", "Decrypt", "Exportable" };
-    
+void ProcessDialog::setupPermissionCheckboxes()
+{
+    QStringList permissions = {"Verify", "Sign", "Encrypt", "Decrypt",
+                               "Exportable"};
+
     for (int i = 0; i < permissions.size(); ++i) {
-        KeyPermission perm = static_cast<KeyPermission>(i);  
-        permissionCheckboxes[perm] = new QCheckBox(permissions[i], this);  
+        KeyPermission perm = static_cast<KeyPermission>(i);
+        permissionCheckboxes[perm] = new QCheckBox(permissions[i], this);
     }
 }

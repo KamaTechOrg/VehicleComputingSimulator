@@ -8,14 +8,16 @@ using ::testing::_;
 using ::testing::Return;
 
 class ClientTest : public ::testing::Test {
-protected:
+   protected:
     MockSocket mockSocket;
-    ClientConnection* client;
+    ClientConnection *client;
 
-    void SetUp() override {
+    void SetUp() override
+    {
         ON_CALL(mockSocket, socket(::testing::_, ::testing::_, ::testing::_))
             .WillByDefault(::testing::Return(1));
-        ON_CALL(mockSocket, setsockopt(::testing::_, ::testing::_, ::testing::_, ::testing::NotNull(), ::testing::_))
+        ON_CALL(mockSocket, setsockopt(::testing::_, ::testing::_, ::testing::_,
+                                       ::testing::NotNull(), ::testing::_))
             .WillByDefault(::testing::Return(0));
         ON_CALL(mockSocket, bind(::testing::_, ::testing::_, ::testing::_))
             .WillByDefault(::testing::Return(0));
@@ -23,48 +25,47 @@ protected:
             .WillByDefault(::testing::Return(0));
         ON_CALL(mockSocket, connect(_, _, _))
             .WillByDefault(::testing::Return(0));
-        ON_CALL(mockSocket, close(_))
-            .WillByDefault(::testing::Return(0));
+        ON_CALL(mockSocket, close(_)).WillByDefault(::testing::Return(0));
 
-        ON_CALL(mockSocket, socket(_, _, _))
-        .WillByDefault(Return(1)); 
-    
-        ON_CALL(mockSocket, setsockopt(_, _, _, _, _))
-        .WillByDefault(Return(0));
-    
-        ON_CALL(mockSocket, connect(_, _, _))
-        .WillByDefault(Return(0));
-    
+        ON_CALL(mockSocket, socket(_, _, _)).WillByDefault(Return(1));
+
+        ON_CALL(mockSocket, setsockopt(_, _, _, _, _)).WillByDefault(Return(0));
+
+        ON_CALL(mockSocket, connect(_, _, _)).WillByDefault(Return(0));
+
         ON_CALL(mockSocket, send(_, _, _, _))
-        .WillByDefault(Return(44));  // ודא ששליחה מחזירה הצלחה
-    
+            .WillByDefault(Return(44));  // ודא ששליחה מחזירה הצלחה
+
         ON_CALL(mockSocket, close(_))
-        .WillByDefault(Return(0));  // close מחזיר הצלחה
+            .WillByDefault(Return(0));  // close מחזיר הצלחה
 
-        EXPECT_CALL(mockSocket, close(_)).Times(1);  // מצפה ש-close תוקרא פעם אחת
-
+        EXPECT_CALL(mockSocket, close(_))
+            .Times(1);  // מצפה ש-close תוקרא פעם אחת
 
         Packet packet;
         ON_CALL(mockSocket, send(_, _, _, _))
             .WillByDefault(::testing::Return(sizeof(Packet)));
 
-        client = new ClientConnection([](Packet &){}, &mockSocket);
+        client = new ClientConnection([](Packet &) {}, &mockSocket);
     }
 
-    void TearDown() override {
+    void TearDown() override
+    {
         EXPECT_CALL(mockSocket, close(_)).Times(1);
         //delete client;
     }
 };
 
 // Test Constructor
-TEST_F(ClientTest, ConstructorInitializesCorrectly) {
-    EXPECT_FALSE(client->isConnected()); 
-    EXPECT_GT(client->getClientSocket(), 0); 
+TEST_F(ClientTest, ConstructorInitializesCorrectly)
+{
+    EXPECT_FALSE(client->isConnected());
+    EXPECT_GT(client->getClientSocket(), 0);
 }
 
 // Test connection success
-TEST_F(ClientTest, ConnectToServerSuccess) {
+TEST_F(ClientTest, ConnectToServerSuccess)
+{
     EXPECT_CALL(mockSocket, connect(_, _, _)).WillOnce(Return(0));
     ErrorCode result = client->connectToServer(1);
     EXPECT_EQ(result, ErrorCode::SUCCESS);
@@ -72,7 +73,8 @@ TEST_F(ClientTest, ConnectToServerSuccess) {
 }
 
 // Test connection failure (connect fails)
-TEST_F(ClientTest, ConnectToServerFailureOnConnect) {
+TEST_F(ClientTest, ConnectToServerFailureOnConnect)
+{
     EXPECT_CALL(mockSocket, connect(_, _, _)).WillOnce(Return(-1));
     ErrorCode result = client->connectToServer(1);
     EXPECT_EQ(result, ErrorCode::CONNECTION_FAILED);
@@ -80,7 +82,8 @@ TEST_F(ClientTest, ConnectToServerFailureOnConnect) {
 }
 
 // Test connection failure (socket creation fails)
-TEST_F(ClientTest, ConnectToServerSocketFailure) {
+TEST_F(ClientTest, ConnectToServerSocketFailure)
+{
     EXPECT_CALL(mockSocket, socket(_, _, _)).WillOnce(Return(-1));
     ErrorCode result = client->connectToServer(1);
     EXPECT_EQ(result, ErrorCode::SOCKET_FAILED);
@@ -88,7 +91,8 @@ TEST_F(ClientTest, ConnectToServerSocketFailure) {
 }
 
 // Test sendPacket success
-TEST_F(ClientTest, SendPacketSuccess) {
+TEST_F(ClientTest, SendPacketSuccess)
+{
     Packet packet;
     client->connectToServer(1);
     ErrorCode result = client->sendPacket(packet);
@@ -96,14 +100,16 @@ TEST_F(ClientTest, SendPacketSuccess) {
 }
 
 // Test sendPacket failure - not connected
-TEST_F(ClientTest, SendPacketFailureNotConnected) {
+TEST_F(ClientTest, SendPacketFailureNotConnected)
+{
     Packet packet;
     ErrorCode result = client->sendPacket(packet);
     EXPECT_EQ(result, ErrorCode::CONNECTION_FAILED);
 }
 
 // Test sendPacket failure - socket send fails
-TEST_F(ClientTest, SendPacketFailureOnSend) {
+TEST_F(ClientTest, SendPacketFailureOnSend)
+{
     Packet packet;
     client->connectToServer(1);
     EXPECT_CALL(mockSocket, send(_, _, _, _)).WillOnce(Return(-1));
@@ -112,16 +118,19 @@ TEST_F(ClientTest, SendPacketFailureOnSend) {
 }
 
 // Test sendPacket partial send
-TEST_F(ClientTest, SendPacketPartialSend) {
+TEST_F(ClientTest, SendPacketPartialSend)
+{
     Packet packet;
     client->connectToServer(1);
-    EXPECT_CALL(mockSocket, send(_, _, _, _)).WillOnce(Return(sizeof(Packet) - 1));
+    EXPECT_CALL(mockSocket, send(_, _, _, _))
+        .WillOnce(Return(sizeof(Packet) - 1));
     ErrorCode result = client->sendPacket(packet);
     EXPECT_EQ(result, ErrorCode::SEND_FAILED);
 }
 
 // Test receivePacket success
-TEST_F(ClientTest, ReceivePacketSuccess) {
+TEST_F(ClientTest, ReceivePacketSuccess)
+{
     Packet packet;
     EXPECT_CALL(mockSocket, recv(_, _, _, _)).WillOnce(Return(sizeof(Packet)));
     client->connectToServer(1);
@@ -131,7 +140,8 @@ TEST_F(ClientTest, ReceivePacketSuccess) {
 }
 
 // Test receivePacket failure (recv fails)
-TEST_F(ClientTest, ReceivePacketFailure) {
+TEST_F(ClientTest, ReceivePacketFailure)
+{
     EXPECT_CALL(mockSocket, recv(_, _, _, _)).WillOnce(Return(-1));
     client->connectToServer(1);
     std::thread receiveThread(&ClientConnection::receivePacket, client);
@@ -140,16 +150,20 @@ TEST_F(ClientTest, ReceivePacketFailure) {
 }
 
 // Test receivePacket no data (recv returns 0)
-TEST_F(ClientTest, ReceivePacketNoData) {
+TEST_F(ClientTest, ReceivePacketNoData)
+{
     EXPECT_CALL(mockSocket, recv(_, _, _, _)).WillOnce(Return(0));
     client->connectToServer(1);
     std::thread receiveThread(&ClientConnection::receivePacket, client);
     receiveThread.join();
-    EXPECT_TRUE(client->isConnected()); // Should still be connected, no data means wait for more
+    EXPECT_TRUE(
+        client
+            ->isConnected());  // Should still be connected, no data means wait for more
 }
 
 // Test closeConnection success
-TEST_F(ClientTest, CloseConnectionSuccess) {
+TEST_F(ClientTest, CloseConnectionSuccess)
+{
     client->connectToServer(1);
     ErrorCode result = client->closeConnection();
     EXPECT_EQ(result, ErrorCode::SUCCESS);
@@ -157,47 +171,56 @@ TEST_F(ClientTest, CloseConnectionSuccess) {
 }
 
 // Test closeConnection failure
-TEST_F(ClientTest, CloseConnectionFailure) {
+TEST_F(ClientTest, CloseConnectionFailure)
+{
     EXPECT_CALL(mockSocket, close(_)).WillOnce(Return(-1));
     ErrorCode result = client->closeConnection();
     EXPECT_EQ(result, ErrorCode::CLOSE_FAILED);
 }
 
 // Test setCallback throws on null function
-TEST_F(ClientTest, SetCallbackThrowsOnNull) {
+TEST_F(ClientTest, SetCallbackThrowsOnNull)
+{
     EXPECT_THROW(client->setCallback(nullptr), std::invalid_argument);
 }
 
 // Test setSocketInterface throws on null
-TEST_F(ClientTest, SetSocketInterfaceThrowsOnNull) {
+TEST_F(ClientTest, SetSocketInterfaceThrowsOnNull)
+{
     EXPECT_THROW(client->setSocketInterface(nullptr), std::invalid_argument);
 }
 
 // Test valid socket interface setting
-TEST_F(ClientTest, SetSocketInterfaceSuccess) {
+TEST_F(ClientTest, SetSocketInterfaceSuccess)
+{
     MockSocket anotherMockSocket;
     EXPECT_NO_THROW(client->setSocketInterface(&anotherMockSocket));
 }
 
 // Test connection thread starts correctly
-TEST_F(ClientTest, ConnectionStartsReceiveThread) {
+TEST_F(ClientTest, ConnectionStartsReceiveThread)
+{
     client->connectToServer(1);
     EXPECT_TRUE(client->isReceiveThreadRunning());
 }
 
 // Test destructor closes connection
-TEST_F(ClientTest, DestructorClosesConnection) {
+TEST_F(ClientTest, DestructorClosesConnection)
+{
     client->connectToServer(1);
-    delete client; // Should close connection in destructor
-    EXPECT_CALL(mockSocket, close(_)).Times(1); // Ensure close is called
+    delete client;  // Should close connection in destructor
+    EXPECT_CALL(mockSocket, close(_)).Times(1);  // Ensure close is called
 }
 
 // Test connection failure after sending a partial packet
-TEST_F(ClientTest, SendPacketPartialConnectionClose) {
+TEST_F(ClientTest, SendPacketPartialConnectionClose)
+{
     Packet packet;
     client->connectToServer(1);
-    EXPECT_CALL(mockSocket, send(_, _, _, _)).WillOnce(Return(sizeof(Packet) - 1));
+    EXPECT_CALL(mockSocket, send(_, _, _, _))
+        .WillOnce(Return(sizeof(Packet) - 1));
     ErrorCode result = client->sendPacket(packet);
     EXPECT_EQ(result, ErrorCode::SEND_FAILED);
-    EXPECT_FALSE(client->isConnected()); // Should close connection after failure
+    EXPECT_FALSE(
+        client->isConnected());  // Should close connection after failure
 }

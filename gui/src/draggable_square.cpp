@@ -40,15 +40,15 @@ DraggableSquare::DraggableSquare(QWidget *parent, const QString &color,
     setFixedSize(width, height);
     setStyleSheet(color);
 
-    
-  label->setStyleSheet("QLabel {"
-             " color: black;"
-             " font-size: 10px;"
-             " font-family: 'Segoe UI', sans-serif;"
-             " font-weight: bold;"
-             " text-align: center;"
-             "}");
-             
+    label->setStyleSheet(
+        "QLabel {"
+        " color: black;"
+        " font-size: 10px;"
+        " font-family: 'Segoe UI', sans-serif;"
+        " font-weight: bold;"
+        " text-align: center;"
+        "}");
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(label);
     layout->addWidget(stopButton);

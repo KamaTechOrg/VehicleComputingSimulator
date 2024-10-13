@@ -4,25 +4,25 @@
 #include "server_connection.h"
 #include <iostream>
 
-class BusManager
-{
-private:
+class BusManager {
+   private:
     ServerConnection server;
 
     // Singleton instance
-    static BusManager* instance;
+    static BusManager *instance;
     static std::mutex managerMutex;
     //SyncCommunication syncCommunication;
-    
+
     // Sending according to broadcast variable
     ErrorCode sendToClients(const Packet &packet);
 
     // Private constructor
     BusManager(std::vector<uint32_t> idShouldConnect, uint32_t limit);
 
-public:
+   public:
     //Static function to return a singleton instance
-    static BusManager* getInstance(std::vector<uint32_t> idShouldConnect, uint32_t limit);
+    static BusManager *getInstance(std::vector<uint32_t> idShouldConnect,
+                                   uint32_t limit);
 
     // Sends to the server to listen for requests
     ErrorCode startConnection();

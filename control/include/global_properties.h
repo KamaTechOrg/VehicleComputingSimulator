@@ -51,8 +51,8 @@ public:
     // Creating the communication object with the callback function to process the data
     Communication *comm;
 
-    CryptoClient client;
-    
+    static CryptoClient client;
+
     static logger controlLogger;
 };
 

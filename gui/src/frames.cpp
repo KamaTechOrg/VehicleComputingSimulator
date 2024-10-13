@@ -67,10 +67,12 @@ void Frames::paintEvent(QPaintEvent *event)
                 auto square1 = logHandler.getProcessSquares()[log.srcId];
                 auto square2 = logHandler.getProcessSquares()[log.dstId];
 
-                QRect rect1(square1->pos().x() - squareOffset, square1->pos().y() - squareOffset,
-                            square1->width(), square1->height());
-                QRect rect2(square2->pos().x() - squareOffset, square2->pos().y() - squareOffset,
-                            square2->width(), square2->height());
+                QRect rect1(square1->pos().x() - squareOffset,
+                            square1->pos().y() - squareOffset, square1->width(),
+                            square1->height());
+                QRect rect2(square2->pos().x() - squareOffset,
+                            square2->pos().y() - squareOffset, square2->width(),
+                            square2->height());
 
                 painter.drawRoundedRect(rect1, cornerRadius, cornerRadius);
                 painter.drawRoundedRect(rect2, cornerRadius, cornerRadius);
@@ -129,7 +131,7 @@ void Frames::updateFrames()
                                    idMapping[logEntry.srcId]);
                 int col = std::min(idMapping[logEntry.dstId],
                                    idMapping[logEntry.srcId]);
-                if(framesMat[row][col].thickness <= maxThickness)
+                if (framesMat[row][col].thickness <= maxThickness)
                     framesMat[row][col].thickness += minThickness;
                 activeLogEntries.emplace(logEntry.timestamp, logEntry);
             }

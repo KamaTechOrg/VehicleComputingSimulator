@@ -8,19 +8,19 @@
 #include <iostream>
 #include "packet.h"
 
-class Message
-{
-private:
+class Message {
+   private:
     std::vector<Packet> packets;
     uint32_t tps;
-                  
-public:
+
+   public:
     // Default
     Message() = default;
 
     // Constructor for sending message
-    Message(uint32_t srcID, void *data, int dlc, bool isBroadcast, uint32_t destID = 0xFFFF);
-    
+    Message(uint32_t srcID, void *data, int dlc, bool isBroadcast,
+            uint32_t destID = 0xFFFF);
+
     // Constructor for receiving message
     Message(uint32_t tps);
 

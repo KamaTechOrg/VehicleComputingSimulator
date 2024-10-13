@@ -28,14 +28,8 @@ public:
     void setExecutionFile(const QString &executableFile);
     void setQEMUPlatform(const QString &qemuPlatform);
     void setCMakeProject(const QString &cmakeProject);
-    
-    enum KeyPermission {
-        VERIFY,
-        SIGN,
-        ENCRYPT,
-        DECRYPT,
-        EXPORTABLE
-    };
+
+    enum KeyPermission { VERIFY, SIGN, ENCRYPT, DECRYPT, EXPORTABLE };
 
     QMap<KeyPermission, bool> getKeyPermissions() const;
     void setKeyPermissions(const QMap<KeyPermission, bool> &permissions);
@@ -51,9 +45,9 @@ private:
     QLineEdit *nameEdit;
     QLineEdit *executionFile;
     QComboBox *qemuPlatformCombo;
-    QMap<KeyPermission, QCheckBox*> permissionCheckboxes;
-    QLineEdit *cmakeProjectEdit;            
-    QPushButton *selectExecutableFileButton; 
+    QMap<KeyPermission, QCheckBox *> permissionCheckboxes;
+    QLineEdit *cmakeProjectEdit;
+    QPushButton *selectExecutableFileButton;
 
     friend class ProcessDialogTests;
 };

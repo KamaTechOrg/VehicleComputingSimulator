@@ -2,8 +2,7 @@
 #include <QFileDialog>
 #include "main_window.h"
 
-class UserInteractionTests : public QObject
-{
+class UserInteractionTests : public QObject {
     Q_OBJECT
 
 private slots:

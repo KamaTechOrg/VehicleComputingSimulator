@@ -19,11 +19,15 @@ file(GLOB SOCKETS_COMMUNICATIONS "../communication/sockets/*.*" )
 
 file(GLOB LOGGER "../logger/*.*")
 
-include(${CMAKE_SOURCE_DIR}/../hsm-client/use_hsm_client.cmake)
-configure_grpc_protos()
-
 # Main executable
-add_executable(${PROJECT_NAME} user_1.cpp ${SOURCES_COMMUNICATION} ${HEADERS_COMMUNICATION} ${SOCKETS_COMMUNICATIONS} ${LOGGER}   ${HSM_CLIENT_SRCS})
-link_hsm_client_libraries(${PROJECT_NAME})
+add_executable(${PROJECT_NAME} user_1.cpp ${SOURCES_COMMUNICATION} ${HEADERS_COMMUNICATION} ${SOCKETS_COMMUNICATIONS} ${LOGGER})
 
-add_proto_dependencies(${PROJECT_NAME})
+include(../hsm-client/use_hsm_client.cmake)
+find_library(HSM_CLIENT_LIB hsm_client_lib PATHS ${HSM_CLIENT_LIB_PATH})
+if(HSM_CLIENT_LIB)
+    message(STATUS "Found hsm_client_lib: ${HSM_CLIENT_LIB}")
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${HSM_CLIENT_LIB} ${HSM_CLIENT_LIB_DEPS})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${HSM_CLIENT_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Could not find hsm_client_lib at ${HSM_CLIENT_LIB_PATH}")
+endif()

@@ -1,9 +1,12 @@
 #include "../include/client_connection.h"
 
 // Constructor
-ClientConnection::ClientConnection(std::function<void(Packet &)> callback, ISocket* socketInterface): connected(false){
-        setCallback(callback);
-        setSocketInterface(socketInterface);
+ClientConnection::ClientConnection(std::function<void(Packet &)> callback,
+                                   ISocket *socketInterface)
+    : connected(false)
+{
+    setCallback(callback);
+    setSocketInterface(socketInterface);
 }
 
 // Requesting a connection to the server
@@ -18,19 +21,21 @@ ErrorCode ClientConnection::connectToServer(int id)
     servAddress.sin_port = htons(PORT);
     inet_pton(AF_INET, IP, &servAddress.sin_addr);
 
-    int connectRes = socketInterface->connect(clientSocket, (struct sockaddr *)&servAddress, sizeof(servAddress));
+    int connectRes = socketInterface->connect(
+        clientSocket, (struct sockaddr *)&servAddress, sizeof(servAddress));
     if (connectRes < 0) {
         socketInterface->close(clientSocket);
         return ErrorCode::CONNECTION_FAILED;
     }
 
     Packet packet(id);
-    ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
+    ssize_t bytesSent =
+        socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
     if (bytesSent < sizeof(Packet)) {
         socketInterface->close(clientSocket);
         return ErrorCode::SEND_FAILED;
     }
-    
+
     connected = true;
     receiveThread = std::thread(&ClientConnection::receivePacket, this);
     receiveThread.detach();
@@ -44,16 +49,17 @@ ErrorCode ClientConnection::sendPacket(Packet &packet)
     //If send executed before start
     if (!connected)
         return ErrorCode::CONNECTION_FAILED;
-        
-    ssize_t bytesSent = socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
-    if (bytesSent==0) {
+
+    ssize_t bytesSent =
+        socketInterface->send(clientSocket, &packet, sizeof(Packet), 0);
+    if (bytesSent == 0) {
         closeConnection();
         return ErrorCode::CONNECTION_FAILED;
     }
-        
-    if (bytesSent<0)
+
+    if (bytesSent < 0)
         return ErrorCode::SEND_FAILED;
-        
+
     return ErrorCode::SUCCESS;
 }
 
@@ -62,11 +68,12 @@ void ClientConnection::receivePacket()
 {
     while (connected) {
         Packet packet;
-        int valread = socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
-        if (valread==0)
+        int valread =
+            socketInterface->recv(clientSocket, &packet, sizeof(Packet), 0);
+        if (valread == 0)
             break;
 
-        if (valread<0)
+        if (valread < 0)
             continue;
 
         passPacketCom(packet);
@@ -80,26 +87,28 @@ ErrorCode ClientConnection::closeConnection()
 {
     if (connected) {
         int socketInterfaceRes = socketInterface->close(clientSocket);
-        if(socketInterfaceRes < 0)
+        if (socketInterfaceRes < 0)
             return ErrorCode::CLOSE_FAILED;
         connected = false;
     }
-    return ErrorCode::SUCCESS;  
+    return ErrorCode::SUCCESS;
 }
 
 // Setter for passPacketCom
-void ClientConnection::setCallback(std::function<void(Packet&)> callback) {
+void ClientConnection::setCallback(std::function<void(Packet &)> callback)
+{
     if (!callback)
         throw std::invalid_argument("Callback function cannot be null");
-    
+
     passPacketCom = callback;
 }
 
 // Setter for socketInterface
-void ClientConnection::setSocketInterface(ISocket* socketInterface) {
+void ClientConnection::setSocketInterface(ISocket *socketInterface)
+{
     if (!socketInterface)
         throw std::invalid_argument("Socket interface cannot be null");
-    
+
     this->socketInterface = socketInterface;
 }
 
