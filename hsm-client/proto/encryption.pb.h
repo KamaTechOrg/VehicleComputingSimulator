@@ -448,6 +448,7 @@ class AsymetricEncryptRequest final :
   enum : int {
     kKeyIdFieldNumber = 2,
     kDataFieldNumber = 3,
+    kMessageIdFieldNumber = 4,
     kSenderIdFieldNumber = 1,
   };
   // string keyId = 2;
@@ -478,6 +479,20 @@ class AsymetricEncryptRequest final :
   std::string* _internal_mutable_data();
   public:
 
+  // string messageId = 4;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
   // int32 senderId = 1;
   void clear_senderid();
   ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
@@ -496,6 +511,7 @@ class AsymetricEncryptRequest final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyid_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
   ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
@@ -623,18 +639,18 @@ class AsymetricEncryptResponse final :
   enum : int {
     kEncryptedDataFieldNumber = 1,
   };
-  // bytes encrypted_data = 1;
-  void clear_encrypted_data();
-  const std::string& encrypted_data() const;
+  // bytes encryptedData = 1;
+  void clear_encrypteddata();
+  const std::string& encrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_encrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_encrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_encrypted_data();
-  void set_allocated_encrypted_data(std::string* encrypted_data);
+  void set_encrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_encrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_encrypteddata();
+  void set_allocated_encrypteddata(std::string* encrypteddata);
   private:
-  const std::string& _internal_encrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypted_data(const std::string& value);
-  std::string* _internal_mutable_encrypted_data();
+  const std::string& _internal_encrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypteddata(const std::string& value);
+  std::string* _internal_mutable_encrypteddata();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.AsymetricEncryptResponse)
@@ -644,7 +660,7 @@ class AsymetricEncryptResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypteddata_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -769,11 +785,13 @@ class AsymetricDecryptRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kKeyIdFieldNumber = 2,
-    kDataFieldNumber = 3,
-    kReceiverIdFieldNumber = 1,
+    kKeyIdFieldNumber = 3,
+    kDataFieldNumber = 4,
+    kMessageIdFieldNumber = 5,
+    kSenderIdFieldNumber = 1,
+    kReceiverIdFieldNumber = 2,
   };
-  // string keyId = 2;
+  // string keyId = 3;
   void clear_keyid();
   const std::string& keyid() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -787,7 +805,7 @@ class AsymetricDecryptRequest final :
   std::string* _internal_mutable_keyid();
   public:
 
-  // bytes data = 3;
+  // bytes data = 4;
   void clear_data();
   const std::string& data() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -801,7 +819,30 @@ class AsymetricDecryptRequest final :
   std::string* _internal_mutable_data();
   public:
 
-  // int32 receiverId = 1;
+  // string messageId = 5;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 receiverId = 2;
   void clear_receiverid();
   ::PROTOBUF_NAMESPACE_ID::int32 receiverid() const;
   void set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -819,6 +860,8 @@ class AsymetricDecryptRequest final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyid_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
   ::PROTOBUF_NAMESPACE_ID::int32 receiverid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
@@ -944,10 +987,35 @@ class GetHashLengthRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kFuncFieldNumber = 1,
-    kDataLenFieldNumber = 2,
+    kMessageIdFieldNumber = 4,
+    kSenderIdFieldNumber = 1,
+    kFuncFieldNumber = 2,
+    kDataLenFieldNumber = 3,
   };
-  // .crypto.SHAAlgorithm func = 1;
+  // string messageId = 4;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // .crypto.SHAAlgorithm func = 2;
   void clear_func();
   ::crypto::SHAAlgorithm func() const;
   void set_func(::crypto::SHAAlgorithm value);
@@ -956,7 +1024,7 @@ class GetHashLengthRequest final :
   void _internal_set_func(::crypto::SHAAlgorithm value);
   public:
 
-  // int32 dataLen = 2;
+  // int32 dataLen = 3;
   void clear_datalen();
   ::PROTOBUF_NAMESPACE_ID::int32 datalen() const;
   void set_datalen(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -972,6 +1040,8 @@ class GetHashLengthRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
   int func_;
   ::PROTOBUF_NAMESPACE_ID::int32 datalen_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -1098,11 +1168,36 @@ class GetAESLengthRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDataLenFieldNumber = 1,
-    kIsFirstFieldNumber = 2,
-    kChainingModeFieldNumber = 3,
+    kMessageIdFieldNumber = 5,
+    kSenderIdFieldNumber = 1,
+    kDataLenFieldNumber = 2,
+    kIsFirstFieldNumber = 3,
+    kChainingModeFieldNumber = 4,
   };
-  // int32 dataLen = 1;
+  // string messageId = 5;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 dataLen = 2;
   void clear_datalen();
   ::PROTOBUF_NAMESPACE_ID::int32 datalen() const;
   void set_datalen(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -1111,7 +1206,7 @@ class GetAESLengthRequest final :
   void _internal_set_datalen(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // bool isFirst = 2;
+  // bool isFirst = 3;
   void clear_isfirst();
   bool isfirst() const;
   void set_isfirst(bool value);
@@ -1120,7 +1215,7 @@ class GetAESLengthRequest final :
   void _internal_set_isfirst(bool value);
   public:
 
-  // .crypto.AESChainingMode chainingMode = 3;
+  // .crypto.AESChainingMode chainingMode = 4;
   void clear_chainingmode();
   ::crypto::AESChainingMode chainingmode() const;
   void set_chainingmode(::crypto::AESChainingMode value);
@@ -1136,6 +1231,8 @@ class GetAESLengthRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
   ::PROTOBUF_NAMESPACE_ID::int32 datalen_;
   bool isfirst_;
   int chainingmode_;
@@ -1265,18 +1362,18 @@ class AsymetricDecryptResponse final :
   enum : int {
     kDecryptedDataFieldNumber = 1,
   };
-  // bytes decrypted_data = 1;
-  void clear_decrypted_data();
-  const std::string& decrypted_data() const;
+  // bytes decryptedData = 1;
+  void clear_decrypteddata();
+  const std::string& decrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_decrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_decrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_decrypted_data();
-  void set_allocated_decrypted_data(std::string* decrypted_data);
+  void set_decrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_decrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_decrypteddata();
+  void set_allocated_decrypteddata(std::string* decrypteddata);
   private:
-  const std::string& _internal_decrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_decrypted_data(const std::string& value);
-  std::string* _internal_mutable_decrypted_data();
+  const std::string& _internal_decrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_decrypteddata(const std::string& value);
+  std::string* _internal_mutable_decrypteddata();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.AsymetricDecryptResponse)
@@ -1286,7 +1383,7 @@ class AsymetricDecryptResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr decrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr decrypteddata_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -1411,15 +1508,40 @@ class GetLengthRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kInLenFieldNumber = 1,
+    kMessageIdFieldNumber = 3,
+    kSenderIdFieldNumber = 1,
+    kInLenFieldNumber = 2,
   };
-  // int32 in_len = 1;
-  void clear_in_len();
-  ::PROTOBUF_NAMESPACE_ID::int32 in_len() const;
-  void set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 3;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_in_len() const;
-  void _internal_set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 inLen = 2;
+  void clear_inlen();
+  ::PROTOBUF_NAMESPACE_ID::int32 inlen() const;
+  void set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_inlen() const;
+  void _internal_set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.GetLengthRequest)
@@ -1429,7 +1551,9 @@ class GetLengthRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::int32 in_len_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 inlen_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -1697,10 +1821,25 @@ class GetWholeLength final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kMessageIdFieldNumber = 4,
     kSenderIdFieldNumber = 1,
     kInLenFieldNumber = 2,
     kIsFirstFieldNumber = 3,
   };
+  // string messageId = 4;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
   // int32 senderId = 1;
   void clear_senderid();
   ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
@@ -1735,6 +1874,7 @@ class GetWholeLength final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
   ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
   ::PROTOBUF_NAMESPACE_ID::int32 inlen_;
   bool isfirst_;
@@ -1863,6 +2003,7 @@ class GenerateAESKeyRequest final :
 
   enum : int {
     kPermissionsFieldNumber = 2,
+    kMessageIdFieldNumber = 5,
     kUserIdFieldNumber = 1,
     kKeyLengthFieldNumber = 3,
     kDestUserIdFieldNumber = 4,
@@ -1884,13 +2025,27 @@ class GenerateAESKeyRequest final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>& permissions() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* mutable_permissions();
 
-  // int32 user_id = 1;
-  void clear_user_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 user_id() const;
-  void set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 5;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_user_id() const;
-  void _internal_set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 userId = 1;
+  void clear_userid();
+  ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
+  void set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_userid() const;
+  void _internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // .crypto.AESKeyLength keyLength = 3;
@@ -1920,7 +2075,8 @@ class GenerateAESKeyRequest final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int> permissions_;
   mutable std::atomic<int> _permissions_cached_byte_size_;
-  ::PROTOBUF_NAMESPACE_ID::int32 user_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   int keylength_;
   ::PROTOBUF_NAMESPACE_ID::int32 destuserid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -2049,18 +2205,18 @@ class GenerateAESKeyResponse final :
   enum : int {
     kAesKeyFieldNumber = 1,
   };
-  // string aes_key = 1;
-  void clear_aes_key();
-  const std::string& aes_key() const;
+  // string aesKey = 1;
+  void clear_aeskey();
+  const std::string& aeskey() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_aes_key(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_aes_key();
-  PROTOBUF_MUST_USE_RESULT std::string* release_aes_key();
-  void set_allocated_aes_key(std::string* aes_key);
+  void set_aeskey(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_aeskey();
+  PROTOBUF_MUST_USE_RESULT std::string* release_aeskey();
+  void set_allocated_aeskey(std::string* aeskey);
   private:
-  const std::string& _internal_aes_key() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_aes_key(const std::string& value);
-  std::string* _internal_mutable_aes_key();
+  const std::string& _internal_aeskey() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_aeskey(const std::string& value);
+  std::string* _internal_mutable_aeskey();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.GenerateAESKeyResponse)
@@ -2070,7 +2226,7 @@ class GenerateAESKeyResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr aes_key_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr aeskey_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -2196,6 +2352,7 @@ class GenerateKeyPairRequest final :
 
   enum : int {
     kPermissionsFieldNumber = 2,
+    kMessageIdFieldNumber = 3,
     kUserIdFieldNumber = 1,
   };
   // repeated .crypto.KeyPermission permissions = 2;
@@ -2215,13 +2372,27 @@ class GenerateKeyPairRequest final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>& permissions() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* mutable_permissions();
 
-  // int32 user_id = 1;
-  void clear_user_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 user_id() const;
-  void set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 3;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_user_id() const;
-  void _internal_set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 userId = 1;
+  void clear_userid();
+  ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
+  void set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_userid() const;
+  void _internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.GenerateKeyPairRequest)
@@ -2233,7 +2404,8 @@ class GenerateKeyPairRequest final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int> permissions_;
   mutable std::atomic<int> _permissions_cached_byte_size_;
-  ::PROTOBUF_NAMESPACE_ID::int32 user_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -2361,32 +2533,32 @@ class GenerateKeyPairResponse final :
     kPublicKeyFieldNumber = 1,
     kPrivateKeyFieldNumber = 2,
   };
-  // string public_key = 1;
-  void clear_public_key();
-  const std::string& public_key() const;
+  // string publicKey = 1;
+  void clear_publickey();
+  const std::string& publickey() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_public_key(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_public_key();
-  PROTOBUF_MUST_USE_RESULT std::string* release_public_key();
-  void set_allocated_public_key(std::string* public_key);
+  void set_publickey(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_publickey();
+  PROTOBUF_MUST_USE_RESULT std::string* release_publickey();
+  void set_allocated_publickey(std::string* publickey);
   private:
-  const std::string& _internal_public_key() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_public_key(const std::string& value);
-  std::string* _internal_mutable_public_key();
+  const std::string& _internal_publickey() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_publickey(const std::string& value);
+  std::string* _internal_mutable_publickey();
   public:
 
-  // string private_key = 2;
-  void clear_private_key();
-  const std::string& private_key() const;
+  // string privateKey = 2;
+  void clear_privatekey();
+  const std::string& privatekey() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_private_key(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_private_key();
-  PROTOBUF_MUST_USE_RESULT std::string* release_private_key();
-  void set_allocated_private_key(std::string* private_key);
+  void set_privatekey(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_privatekey();
+  PROTOBUF_MUST_USE_RESULT std::string* release_privatekey();
+  void set_allocated_privatekey(std::string* privatekey);
   private:
-  const std::string& _internal_private_key() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_private_key(const std::string& value);
-  std::string* _internal_mutable_private_key();
+  const std::string& _internal_privatekey() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_privatekey(const std::string& value);
+  std::string* _internal_mutable_privatekey();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.GenerateKeyPairResponse)
@@ -2396,8 +2568,8 @@ class GenerateKeyPairResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr public_key_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr private_key_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr publickey_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr privatekey_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -2524,6 +2696,7 @@ class SignRequest final :
   enum : int {
     kDataFieldNumber = 2,
     kKeyIdFieldNumber = 6,
+    kMessageIdFieldNumber = 7,
     kSenderIdFieldNumber = 1,
     kHashFuncFieldNumber = 3,
     kCounterFieldNumber = 5,
@@ -2542,36 +2715,50 @@ class SignRequest final :
   std::string* _internal_mutable_data();
   public:
 
-  // string key_id = 6;
-  void clear_key_id();
-  const std::string& key_id() const;
+  // string keyId = 6;
+  void clear_keyid();
+  const std::string& keyid() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_key_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_key_id();
-  PROTOBUF_MUST_USE_RESULT std::string* release_key_id();
-  void set_allocated_key_id(std::string* key_id);
+  void set_keyid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_keyid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_keyid();
+  void set_allocated_keyid(std::string* keyid);
   private:
-  const std::string& _internal_key_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key_id(const std::string& value);
-  std::string* _internal_mutable_key_id();
+  const std::string& _internal_keyid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_keyid(const std::string& value);
+  std::string* _internal_mutable_keyid();
   public:
 
-  // int32 sender_id = 1;
-  void clear_sender_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id() const;
-  void set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 7;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sender_id() const;
-  void _internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
   public:
 
-  // .crypto.SHAAlgorithm hash_func = 3;
-  void clear_hash_func();
-  ::crypto::SHAAlgorithm hash_func() const;
-  void set_hash_func(::crypto::SHAAlgorithm value);
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::crypto::SHAAlgorithm _internal_hash_func() const;
-  void _internal_set_hash_func(::crypto::SHAAlgorithm value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // .crypto.SHAAlgorithm hashFunc = 3;
+  void clear_hashfunc();
+  ::crypto::SHAAlgorithm hashfunc() const;
+  void set_hashfunc(::crypto::SHAAlgorithm value);
+  private:
+  ::crypto::SHAAlgorithm _internal_hashfunc() const;
+  void _internal_set_hashfunc(::crypto::SHAAlgorithm value);
   public:
 
   // int64 counter = 5;
@@ -2591,9 +2778,10 @@ class SignRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id_;
-  int hash_func_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyid_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  int hashfunc_;
   ::PROTOBUF_NAMESPACE_ID::int64 counter_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
@@ -2870,6 +3058,7 @@ class VerifyRequest final :
     kDataFieldNumber = 3,
     kSignatureFieldNumber = 4,
     kKeyIdFieldNumber = 6,
+    kMessageIdFieldNumber = 8,
     kSenderIdFieldNumber = 1,
     kReceiverIdFieldNumber = 2,
     kHashFuncFieldNumber = 5,
@@ -2903,45 +3092,59 @@ class VerifyRequest final :
   std::string* _internal_mutable_signature();
   public:
 
-  // string key_id = 6;
-  void clear_key_id();
-  const std::string& key_id() const;
+  // string keyId = 6;
+  void clear_keyid();
+  const std::string& keyid() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_key_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_key_id();
-  PROTOBUF_MUST_USE_RESULT std::string* release_key_id();
-  void set_allocated_key_id(std::string* key_id);
+  void set_keyid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_keyid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_keyid();
+  void set_allocated_keyid(std::string* keyid);
   private:
-  const std::string& _internal_key_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key_id(const std::string& value);
-  std::string* _internal_mutable_key_id();
+  const std::string& _internal_keyid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_keyid(const std::string& value);
+  std::string* _internal_mutable_keyid();
   public:
 
-  // int32 sender_id = 1;
-  void clear_sender_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id() const;
-  void set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 8;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sender_id() const;
-  void _internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
   public:
 
-  // int32 receiver_id = 2;
-  void clear_receiver_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id() const;
-  void set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiver_id() const;
-  void _internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // .crypto.SHAAlgorithm hash_func = 5;
-  void clear_hash_func();
-  ::crypto::SHAAlgorithm hash_func() const;
-  void set_hash_func(::crypto::SHAAlgorithm value);
+  // int32 receiverId = 2;
+  void clear_receiverid();
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid() const;
+  void set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::crypto::SHAAlgorithm _internal_hash_func() const;
-  void _internal_set_hash_func(::crypto::SHAAlgorithm value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiverid() const;
+  void _internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // .crypto.SHAAlgorithm hashFunc = 5;
+  void clear_hashfunc();
+  ::crypto::SHAAlgorithm hashfunc() const;
+  void set_hashfunc(::crypto::SHAAlgorithm value);
+  private:
+  ::crypto::SHAAlgorithm _internal_hashfunc() const;
+  void _internal_set_hashfunc(::crypto::SHAAlgorithm value);
   public:
 
   // int32 counter = 7;
@@ -2962,10 +3165,11 @@ class VerifyRequest final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr signature_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id_;
-  int hash_func_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyid_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid_;
+  int hashfunc_;
   ::PROTOBUF_NAMESPACE_ID::int32 counter_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
@@ -3250,15 +3454,40 @@ class KeyRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kUserIdFieldNumber = 1,
+    kMessageIdFieldNumber = 3,
+    kSenderIdFieldNumber = 1,
+    kUserIdFieldNumber = 2,
   };
-  // int32 user_id = 1;
-  void clear_user_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 user_id() const;
-  void set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 3;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_user_id() const;
-  void _internal_set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 userId = 2;
+  void clear_userid();
+  ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
+  void set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_userid() const;
+  void _internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.KeyRequest)
@@ -3268,7 +3497,9 @@ class KeyRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::int32 user_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -3705,6 +3936,7 @@ class BootSystemRequest final :
 
   enum : int {
     kUsersIdsPermissionsFieldNumber = 1,
+    kMessageIdFieldNumber = 5,
   };
   // repeated .crypto.UserKeyPermissions usersIdsPermissions = 1;
   int usersidspermissions_size() const;
@@ -3724,6 +3956,20 @@ class BootSystemRequest final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::crypto::UserKeyPermissions >&
       usersidspermissions() const;
 
+  // string messageId = 5;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
   // @@protoc_insertion_point(class_scope:crypto.BootSystemRequest)
  private:
   class _Internal;
@@ -3732,6 +3978,7 @@ class BootSystemRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::crypto::UserKeyPermissions > usersidspermissions_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -3971,11 +4218,26 @@ class CryptoConfig final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kMessageIdFieldNumber = 5,
     kHashFunctionFieldNumber = 1,
     kAesKeyLengthFieldNumber = 2,
     kAesChainingModeFieldNumber = 3,
     kAsymmetricFunctionFieldNumber = 4,
   };
+  // string messageId = 5;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
   // .crypto.SHAAlgorithm hashFunction = 1;
   void clear_hashfunction();
   ::crypto::SHAAlgorithm hashfunction() const;
@@ -4019,6 +4281,7 @@ class CryptoConfig final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
   int hashfunction_;
   int aeskeylength_;
   int aeschainingmode_;
@@ -4147,9 +4410,24 @@ class ConfigureRequest final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kMessageIdFieldNumber = 3,
     kConfigFieldNumber = 2,
     kUserIdFieldNumber = 1,
   };
+  // string messageId = 3;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
   // .crypto.CryptoConfig config = 2;
   bool has_config() const;
   private:
@@ -4184,6 +4462,7 @@ class ConfigureRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
   ::crypto::CryptoConfig* config_;
   ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -4311,6 +4590,7 @@ class AddProcessRequest final :
 
   enum : int {
     kPermissionsFieldNumber = 2,
+    kMessageIdFieldNumber = 4,
     kUserIdFieldNumber = 1,
   };
   // repeated .crypto.KeyPermission permissions = 2;
@@ -4330,6 +4610,20 @@ class AddProcessRequest final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>& permissions() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* mutable_permissions();
 
+  // string messageId = 4;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
+  private:
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
+  public:
+
   // int32 userId = 1;
   void clear_userid();
   ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
@@ -4348,6 +4642,7 @@ class AddProcessRequest final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int> permissions_;
   mutable std::atomic<int> _permissions_cached_byte_size_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
   ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
@@ -4474,6 +4769,7 @@ class EncryptRequest final :
 
   enum : int {
     kDataFieldNumber = 3,
+    kMessageIdFieldNumber = 6,
     kSenderIdFieldNumber = 1,
     kReceiverIdFieldNumber = 2,
     kCounterFieldNumber = 4,
@@ -4493,22 +4789,36 @@ class EncryptRequest final :
   std::string* _internal_mutable_data();
   public:
 
-  // int32 sender_id = 1;
-  void clear_sender_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id() const;
-  void set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 6;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sender_id() const;
-  void _internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
   public:
 
-  // int32 receiver_id = 2;
-  void clear_receiver_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id() const;
-  void set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiver_id() const;
-  void _internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 receiverId = 2;
+  void clear_receiverid();
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid() const;
+  void set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiverid() const;
+  void _internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // int64 counter = 4;
@@ -4537,8 +4847,9 @@ class EncryptRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid_;
   ::PROTOBUF_NAMESPACE_ID::int64 counter_;
   bool isfirst_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -4668,18 +4979,18 @@ class EncryptResponse final :
     kEncryptedDataFieldNumber = 1,
     kSignatureFieldNumber = 2,
   };
-  // bytes encrypted_data = 1;
-  void clear_encrypted_data();
-  const std::string& encrypted_data() const;
+  // bytes encryptedData = 1;
+  void clear_encrypteddata();
+  const std::string& encrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_encrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_encrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_encrypted_data();
-  void set_allocated_encrypted_data(std::string* encrypted_data);
+  void set_encrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_encrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_encrypteddata();
+  void set_allocated_encrypteddata(std::string* encrypteddata);
   private:
-  const std::string& _internal_encrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypted_data(const std::string& value);
-  std::string* _internal_mutable_encrypted_data();
+  const std::string& _internal_encrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypteddata(const std::string& value);
+  std::string* _internal_mutable_encrypteddata();
   public:
 
   // bytes signature = 2;
@@ -4703,7 +5014,7 @@ class EncryptResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypteddata_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr signature_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
@@ -4831,23 +5142,24 @@ class DecryptRequest final :
   enum : int {
     kEncryptedDataFieldNumber = 3,
     kSignatureFieldNumber = 5,
+    kMessageIdFieldNumber = 7,
     kSenderIdFieldNumber = 1,
     kReceiverIdFieldNumber = 2,
     kCounterFieldNumber = 4,
     kIsFirstFieldNumber = 6,
   };
-  // bytes encrypted_data = 3;
-  void clear_encrypted_data();
-  const std::string& encrypted_data() const;
+  // bytes encryptedData = 3;
+  void clear_encrypteddata();
+  const std::string& encrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_encrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_encrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_encrypted_data();
-  void set_allocated_encrypted_data(std::string* encrypted_data);
+  void set_encrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_encrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_encrypteddata();
+  void set_allocated_encrypteddata(std::string* encrypteddata);
   private:
-  const std::string& _internal_encrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypted_data(const std::string& value);
-  std::string* _internal_mutable_encrypted_data();
+  const std::string& _internal_encrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypteddata(const std::string& value);
+  std::string* _internal_mutable_encrypteddata();
   public:
 
   // bytes signature = 5;
@@ -4864,22 +5176,36 @@ class DecryptRequest final :
   std::string* _internal_mutable_signature();
   public:
 
-  // int32 sender_id = 1;
-  void clear_sender_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id() const;
-  void set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 7;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sender_id() const;
-  void _internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
   public:
 
-  // int32 receiver_id = 2;
-  void clear_receiver_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id() const;
-  void set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiver_id() const;
-  void _internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 receiverId = 2;
+  void clear_receiverid();
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid() const;
+  void set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiverid() const;
+  void _internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // int64 counter = 4;
@@ -4907,10 +5233,11 @@ class DecryptRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypteddata_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr signature_;
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid_;
   ::PROTOBUF_NAMESPACE_ID::int64 counter_;
   bool isfirst_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -5039,18 +5366,18 @@ class DecryptResponse final :
   enum : int {
     kDecryptedDataFieldNumber = 1,
   };
-  // bytes decrypted_data = 1;
-  void clear_decrypted_data();
-  const std::string& decrypted_data() const;
+  // bytes decryptedData = 1;
+  void clear_decrypteddata();
+  const std::string& decrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_decrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_decrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_decrypted_data();
-  void set_allocated_decrypted_data(std::string* decrypted_data);
+  void set_decrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_decrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_decrypteddata();
+  void set_allocated_decrypteddata(std::string* decrypteddata);
   private:
-  const std::string& _internal_decrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_decrypted_data(const std::string& value);
-  std::string* _internal_mutable_decrypted_data();
+  const std::string& _internal_decrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_decrypteddata(const std::string& value);
+  std::string* _internal_mutable_decrypteddata();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.DecryptResponse)
@@ -5060,7 +5387,7 @@ class DecryptResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr decrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr decrypteddata_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -5187,6 +5514,7 @@ class AESEncryptRequest final :
   enum : int {
     kDataFieldNumber = 3,
     kKeyIdFieldNumber = 6,
+    kMessageIdFieldNumber = 10,
     kSenderIdFieldNumber = 1,
     kReceiverIdFieldNumber = 2,
     kCounterFieldNumber = 5,
@@ -5209,36 +5537,50 @@ class AESEncryptRequest final :
   std::string* _internal_mutable_data();
   public:
 
-  // string key_id = 6;
-  void clear_key_id();
-  const std::string& key_id() const;
+  // string keyId = 6;
+  void clear_keyid();
+  const std::string& keyid() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_key_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_key_id();
-  PROTOBUF_MUST_USE_RESULT std::string* release_key_id();
-  void set_allocated_key_id(std::string* key_id);
+  void set_keyid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_keyid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_keyid();
+  void set_allocated_keyid(std::string* keyid);
   private:
-  const std::string& _internal_key_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key_id(const std::string& value);
-  std::string* _internal_mutable_key_id();
+  const std::string& _internal_keyid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_keyid(const std::string& value);
+  std::string* _internal_mutable_keyid();
   public:
 
-  // int32 sender_id = 1;
-  void clear_sender_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id() const;
-  void set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 10;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sender_id() const;
-  void _internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
   public:
 
-  // int32 receiver_id = 2;
-  void clear_receiver_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id() const;
-  void set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiver_id() const;
-  void _internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 receiverId = 2;
+  void clear_receiverid();
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid() const;
+  void set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiverid() const;
+  void _internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // int64 counter = 5;
@@ -5259,13 +5601,13 @@ class AESEncryptRequest final :
   void _internal_set_func(::crypto::AsymmetricFunction value);
   public:
 
-  // .crypto.AESKeyLength key_length = 7;
-  void clear_key_length();
-  ::crypto::AESKeyLength key_length() const;
-  void set_key_length(::crypto::AESKeyLength value);
+  // .crypto.AESKeyLength keyLength = 7;
+  void clear_keylength();
+  ::crypto::AESKeyLength keylength() const;
+  void set_keylength(::crypto::AESKeyLength value);
   private:
-  ::crypto::AESKeyLength _internal_key_length() const;
-  void _internal_set_key_length(::crypto::AESKeyLength value);
+  ::crypto::AESKeyLength _internal_keylength() const;
+  void _internal_set_keylength(::crypto::AESKeyLength value);
   public:
 
   // .crypto.AESChainingMode chainingMode = 8;
@@ -5294,12 +5636,13 @@ class AESEncryptRequest final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyid_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid_;
   ::PROTOBUF_NAMESPACE_ID::int64 counter_;
   int func_;
-  int key_length_;
+  int keylength_;
   int chainingmode_;
   bool isfirst_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -5428,18 +5771,18 @@ class AESEncryptResponse final :
   enum : int {
     kEncryptedDataFieldNumber = 1,
   };
-  // bytes encrypted_data = 1;
-  void clear_encrypted_data();
-  const std::string& encrypted_data() const;
+  // bytes encryptedData = 1;
+  void clear_encrypteddata();
+  const std::string& encrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_encrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_encrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_encrypted_data();
-  void set_allocated_encrypted_data(std::string* encrypted_data);
+  void set_encrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_encrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_encrypteddata();
+  void set_allocated_encrypteddata(std::string* encrypteddata);
   private:
-  const std::string& _internal_encrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypted_data(const std::string& value);
-  std::string* _internal_mutable_encrypted_data();
+  const std::string& _internal_encrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_encrypteddata(const std::string& value);
+  std::string* _internal_mutable_encrypteddata();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.AESEncryptResponse)
@@ -5449,7 +5792,7 @@ class AESEncryptResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encrypteddata_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -5577,6 +5920,7 @@ class AESDecryptRequest final :
     kDataInFieldNumber = 3,
     kDataOutFieldNumber = 5,
     kKeyIdFieldNumber = 10,
+    kMessageIdFieldNumber = 12,
     kSenderIdFieldNumber = 1,
     kReceiverIdFieldNumber = 2,
     kInLenFieldNumber = 4,
@@ -5586,73 +5930,87 @@ class AESDecryptRequest final :
     kCounterFieldNumber = 9,
     kIsFirstFieldNumber = 11,
   };
-  // bytes data_in = 3;
-  void clear_data_in();
-  const std::string& data_in() const;
+  // bytes dataIn = 3;
+  void clear_datain();
+  const std::string& datain() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_data_in(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_data_in();
-  PROTOBUF_MUST_USE_RESULT std::string* release_data_in();
-  void set_allocated_data_in(std::string* data_in);
+  void set_datain(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_datain();
+  PROTOBUF_MUST_USE_RESULT std::string* release_datain();
+  void set_allocated_datain(std::string* datain);
   private:
-  const std::string& _internal_data_in() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_data_in(const std::string& value);
-  std::string* _internal_mutable_data_in();
+  const std::string& _internal_datain() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_datain(const std::string& value);
+  std::string* _internal_mutable_datain();
   public:
 
-  // bytes data_out = 5;
-  void clear_data_out();
-  const std::string& data_out() const;
+  // bytes dataOut = 5;
+  void clear_dataout();
+  const std::string& dataout() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_data_out(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_data_out();
-  PROTOBUF_MUST_USE_RESULT std::string* release_data_out();
-  void set_allocated_data_out(std::string* data_out);
+  void set_dataout(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_dataout();
+  PROTOBUF_MUST_USE_RESULT std::string* release_dataout();
+  void set_allocated_dataout(std::string* dataout);
   private:
-  const std::string& _internal_data_out() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_data_out(const std::string& value);
-  std::string* _internal_mutable_data_out();
+  const std::string& _internal_dataout() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_dataout(const std::string& value);
+  std::string* _internal_mutable_dataout();
   public:
 
-  // string key_id = 10;
-  void clear_key_id();
-  const std::string& key_id() const;
+  // string keyId = 10;
+  void clear_keyid();
+  const std::string& keyid() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_key_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_key_id();
-  PROTOBUF_MUST_USE_RESULT std::string* release_key_id();
-  void set_allocated_key_id(std::string* key_id);
+  void set_keyid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_keyid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_keyid();
+  void set_allocated_keyid(std::string* keyid);
   private:
-  const std::string& _internal_key_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_key_id(const std::string& value);
-  std::string* _internal_mutable_key_id();
+  const std::string& _internal_keyid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_keyid(const std::string& value);
+  std::string* _internal_mutable_keyid();
   public:
 
-  // int32 sender_id = 1;
-  void clear_sender_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id() const;
-  void set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // string messageId = 12;
+  void clear_messageid();
+  const std::string& messageid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messageid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messageid();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messageid();
+  void set_allocated_messageid(std::string* messageid);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sender_id() const;
-  void _internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const std::string& _internal_messageid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messageid(const std::string& value);
+  std::string* _internal_mutable_messageid();
   public:
 
-  // int32 receiver_id = 2;
-  void clear_receiver_id();
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id() const;
-  void set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 senderId = 1;
+  void clear_senderid();
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid() const;
+  void set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiver_id() const;
-  void _internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_senderid() const;
+  void _internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // int32 in_len = 4;
-  void clear_in_len();
-  ::PROTOBUF_NAMESPACE_ID::int32 in_len() const;
-  void set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // int32 receiverId = 2;
+  void clear_receiverid();
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid() const;
+  void set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_in_len() const;
-  void _internal_set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_receiverid() const;
+  void _internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 inLen = 4;
+  void clear_inlen();
+  ::PROTOBUF_NAMESPACE_ID::int32 inlen() const;
+  void set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_inlen() const;
+  void _internal_set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // .crypto.AsymmetricFunction func = 6;
@@ -5664,13 +6022,13 @@ class AESDecryptRequest final :
   void _internal_set_func(::crypto::AsymmetricFunction value);
   public:
 
-  // .crypto.AESKeyLength key_length = 7;
-  void clear_key_length();
-  ::crypto::AESKeyLength key_length() const;
-  void set_key_length(::crypto::AESKeyLength value);
+  // .crypto.AESKeyLength keyLength = 7;
+  void clear_keylength();
+  ::crypto::AESKeyLength keylength() const;
+  void set_keylength(::crypto::AESKeyLength value);
   private:
-  ::crypto::AESKeyLength _internal_key_length() const;
-  void _internal_set_key_length(::crypto::AESKeyLength value);
+  ::crypto::AESKeyLength _internal_keylength() const;
+  void _internal_set_keylength(::crypto::AESKeyLength value);
   public:
 
   // .crypto.AESChainingMode chainingMode = 8;
@@ -5707,14 +6065,15 @@ class AESDecryptRequest final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_in_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_out_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 sender_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 receiver_id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 in_len_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr datain_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr dataout_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyid_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messageid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 senderid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 receiverid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 inlen_;
   int func_;
-  int key_length_;
+  int keylength_;
   int chainingmode_;
   ::PROTOBUF_NAMESPACE_ID::int64 counter_;
   bool isfirst_;
@@ -5842,20 +6201,20 @@ class AESDecryptResponse final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDecryptedDataFieldNumber = 1,
+    kDecrypteddataFieldNumber = 1,
   };
-  // bytes decrypted_data = 1;
-  void clear_decrypted_data();
-  const std::string& decrypted_data() const;
+  // bytes decrypteddata = 1;
+  void clear_decrypteddata();
+  const std::string& decrypteddata() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_decrypted_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_decrypted_data();
-  PROTOBUF_MUST_USE_RESULT std::string* release_decrypted_data();
-  void set_allocated_decrypted_data(std::string* decrypted_data);
+  void set_decrypteddata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_decrypteddata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_decrypteddata();
+  void set_allocated_decrypteddata(std::string* decrypteddata);
   private:
-  const std::string& _internal_decrypted_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_decrypted_data(const std::string& value);
-  std::string* _internal_mutable_decrypted_data();
+  const std::string& _internal_decrypteddata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_decrypteddata(const std::string& value);
+  std::string* _internal_mutable_decrypteddata();
   public:
 
   // @@protoc_insertion_point(class_scope:crypto.AESDecryptResponse)
@@ -5865,7 +6224,7 @@ class AESDecryptResponse final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr decrypted_data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr decrypteddata_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_proto_2fencryption_2eproto;
 };
@@ -5992,61 +6351,127 @@ inline void AsymetricEncryptRequest::set_allocated_data(std::string* data) {
   // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricEncryptRequest.data)
 }
 
-// -------------------------------------------------------------------
-
-// AsymetricEncryptResponse
-
-// bytes encrypted_data = 1;
-inline void AsymetricEncryptResponse::clear_encrypted_data() {
-  encrypted_data_.ClearToEmpty();
+// string messageId = 4;
+inline void AsymetricEncryptRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& AsymetricEncryptResponse::encrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.AsymetricEncryptResponse.encrypted_data)
-  return _internal_encrypted_data();
+inline const std::string& AsymetricEncryptRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.AsymetricEncryptRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AsymetricEncryptResponse::set_encrypted_data(ArgT0&& arg0, ArgT... args) {
+void AsymetricEncryptRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- encrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AsymetricEncryptResponse.encrypted_data)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AsymetricEncryptRequest.messageId)
 }
-inline std::string* AsymetricEncryptResponse::mutable_encrypted_data() {
-  std::string* _s = _internal_mutable_encrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.AsymetricEncryptResponse.encrypted_data)
+inline std::string* AsymetricEncryptRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.AsymetricEncryptRequest.messageId)
   return _s;
 }
-inline const std::string& AsymetricEncryptResponse::_internal_encrypted_data() const {
-  return encrypted_data_.Get();
+inline const std::string& AsymetricEncryptRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void AsymetricEncryptResponse::_internal_set_encrypted_data(const std::string& value) {
+inline void AsymetricEncryptRequest::_internal_set_messageid(const std::string& value) {
   
-  encrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AsymetricEncryptResponse::_internal_mutable_encrypted_data() {
+inline std::string* AsymetricEncryptRequest::_internal_mutable_messageid() {
   
-  return encrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AsymetricEncryptResponse::release_encrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.AsymetricEncryptResponse.encrypted_data)
-  return encrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AsymetricEncryptRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.AsymetricEncryptRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AsymetricEncryptResponse::set_allocated_encrypted_data(std::string* encrypted_data) {
-  if (encrypted_data != nullptr) {
+inline void AsymetricEncryptRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  encrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypted_data,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricEncryptResponse.encrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricEncryptRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// AsymetricEncryptResponse
+
+// bytes encryptedData = 1;
+inline void AsymetricEncryptResponse::clear_encrypteddata() {
+  encrypteddata_.ClearToEmpty();
+}
+inline const std::string& AsymetricEncryptResponse::encrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.AsymetricEncryptResponse.encryptedData)
+  return _internal_encrypteddata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AsymetricEncryptResponse::set_encrypteddata(ArgT0&& arg0, ArgT... args) {
+ 
+ encrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AsymetricEncryptResponse.encryptedData)
+}
+inline std::string* AsymetricEncryptResponse::mutable_encrypteddata() {
+  std::string* _s = _internal_mutable_encrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.AsymetricEncryptResponse.encryptedData)
+  return _s;
+}
+inline const std::string& AsymetricEncryptResponse::_internal_encrypteddata() const {
+  return encrypteddata_.Get();
+}
+inline void AsymetricEncryptResponse::_internal_set_encrypteddata(const std::string& value) {
+  
+  encrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* AsymetricEncryptResponse::_internal_mutable_encrypteddata() {
+  
+  return encrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* AsymetricEncryptResponse::release_encrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.AsymetricEncryptResponse.encryptedData)
+  return encrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void AsymetricEncryptResponse::set_allocated_encrypteddata(std::string* encrypteddata) {
+  if (encrypteddata != nullptr) {
+    
+  } else {
+    
+  }
+  encrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypteddata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricEncryptResponse.encryptedData)
 }
 
 // -------------------------------------------------------------------
 
 // AsymetricDecryptRequest
 
-// int32 receiverId = 1;
+// int32 senderId = 1;
+inline void AsymetricDecryptRequest::clear_senderid() {
+  senderid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 AsymetricDecryptRequest::_internal_senderid() const {
+  return senderid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 AsymetricDecryptRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.AsymetricDecryptRequest.senderId)
+  return _internal_senderid();
+}
+inline void AsymetricDecryptRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  senderid_ = value;
+}
+inline void AsymetricDecryptRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.AsymetricDecryptRequest.senderId)
+}
+
+// int32 receiverId = 2;
 inline void AsymetricDecryptRequest::clear_receiverid() {
   receiverid_ = 0;
 }
@@ -6066,7 +6491,7 @@ inline void AsymetricDecryptRequest::set_receiverid(::PROTOBUF_NAMESPACE_ID::int
   // @@protoc_insertion_point(field_set:crypto.AsymetricDecryptRequest.receiverId)
 }
 
-// string keyId = 2;
+// string keyId = 3;
 inline void AsymetricDecryptRequest::clear_keyid() {
   keyid_.ClearToEmpty();
 }
@@ -6112,7 +6537,7 @@ inline void AsymetricDecryptRequest::set_allocated_keyid(std::string* keyid) {
   // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricDecryptRequest.keyId)
 }
 
-// bytes data = 3;
+// bytes data = 4;
 inline void AsymetricDecryptRequest::clear_data() {
   data_.ClearToEmpty();
 }
@@ -6158,11 +6583,77 @@ inline void AsymetricDecryptRequest::set_allocated_data(std::string* data) {
   // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricDecryptRequest.data)
 }
 
+// string messageId = 5;
+inline void AsymetricDecryptRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& AsymetricDecryptRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.AsymetricDecryptRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AsymetricDecryptRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AsymetricDecryptRequest.messageId)
+}
+inline std::string* AsymetricDecryptRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.AsymetricDecryptRequest.messageId)
+  return _s;
+}
+inline const std::string& AsymetricDecryptRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void AsymetricDecryptRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* AsymetricDecryptRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* AsymetricDecryptRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.AsymetricDecryptRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void AsymetricDecryptRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricDecryptRequest.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // GetHashLengthRequest
 
-// .crypto.SHAAlgorithm func = 1;
+// int32 senderId = 1;
+inline void GetHashLengthRequest::clear_senderid() {
+  senderid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetHashLengthRequest::_internal_senderid() const {
+  return senderid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetHashLengthRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetHashLengthRequest.senderId)
+  return _internal_senderid();
+}
+inline void GetHashLengthRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  senderid_ = value;
+}
+inline void GetHashLengthRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.GetHashLengthRequest.senderId)
+}
+
+// .crypto.SHAAlgorithm func = 2;
 inline void GetHashLengthRequest::clear_func() {
   func_ = 0;
 }
@@ -6182,7 +6673,7 @@ inline void GetHashLengthRequest::set_func(::crypto::SHAAlgorithm value) {
   // @@protoc_insertion_point(field_set:crypto.GetHashLengthRequest.func)
 }
 
-// int32 dataLen = 2;
+// int32 dataLen = 3;
 inline void GetHashLengthRequest::clear_datalen() {
   datalen_ = 0;
 }
@@ -6202,11 +6693,77 @@ inline void GetHashLengthRequest::set_datalen(::PROTOBUF_NAMESPACE_ID::int32 val
   // @@protoc_insertion_point(field_set:crypto.GetHashLengthRequest.dataLen)
 }
 
+// string messageId = 4;
+inline void GetHashLengthRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& GetHashLengthRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetHashLengthRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void GetHashLengthRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GetHashLengthRequest.messageId)
+}
+inline std::string* GetHashLengthRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.GetHashLengthRequest.messageId)
+  return _s;
+}
+inline const std::string& GetHashLengthRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void GetHashLengthRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* GetHashLengthRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* GetHashLengthRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.GetHashLengthRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void GetHashLengthRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.GetHashLengthRequest.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // GetAESLengthRequest
 
-// int32 dataLen = 1;
+// int32 senderId = 1;
+inline void GetAESLengthRequest::clear_senderid() {
+  senderid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetAESLengthRequest::_internal_senderid() const {
+  return senderid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetAESLengthRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetAESLengthRequest.senderId)
+  return _internal_senderid();
+}
+inline void GetAESLengthRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  senderid_ = value;
+}
+inline void GetAESLengthRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.GetAESLengthRequest.senderId)
+}
+
+// int32 dataLen = 2;
 inline void GetAESLengthRequest::clear_datalen() {
   datalen_ = 0;
 }
@@ -6226,7 +6783,7 @@ inline void GetAESLengthRequest::set_datalen(::PROTOBUF_NAMESPACE_ID::int32 valu
   // @@protoc_insertion_point(field_set:crypto.GetAESLengthRequest.dataLen)
 }
 
-// bool isFirst = 2;
+// bool isFirst = 3;
 inline void GetAESLengthRequest::clear_isfirst() {
   isfirst_ = false;
 }
@@ -6246,7 +6803,7 @@ inline void GetAESLengthRequest::set_isfirst(bool value) {
   // @@protoc_insertion_point(field_set:crypto.GetAESLengthRequest.isFirst)
 }
 
-// .crypto.AESChainingMode chainingMode = 3;
+// .crypto.AESChainingMode chainingMode = 4;
 inline void GetAESLengthRequest::clear_chainingmode() {
   chainingmode_ = 0;
 }
@@ -6266,78 +6823,190 @@ inline void GetAESLengthRequest::set_chainingmode(::crypto::AESChainingMode valu
   // @@protoc_insertion_point(field_set:crypto.GetAESLengthRequest.chainingMode)
 }
 
-// -------------------------------------------------------------------
-
-// AsymetricDecryptResponse
-
-// bytes decrypted_data = 1;
-inline void AsymetricDecryptResponse::clear_decrypted_data() {
-  decrypted_data_.ClearToEmpty();
+// string messageId = 5;
+inline void GetAESLengthRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& AsymetricDecryptResponse::decrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.AsymetricDecryptResponse.decrypted_data)
-  return _internal_decrypted_data();
+inline const std::string& GetAESLengthRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetAESLengthRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AsymetricDecryptResponse::set_decrypted_data(ArgT0&& arg0, ArgT... args) {
+void GetAESLengthRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- decrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AsymetricDecryptResponse.decrypted_data)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GetAESLengthRequest.messageId)
 }
-inline std::string* AsymetricDecryptResponse::mutable_decrypted_data() {
-  std::string* _s = _internal_mutable_decrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.AsymetricDecryptResponse.decrypted_data)
+inline std::string* GetAESLengthRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.GetAESLengthRequest.messageId)
   return _s;
 }
-inline const std::string& AsymetricDecryptResponse::_internal_decrypted_data() const {
-  return decrypted_data_.Get();
+inline const std::string& GetAESLengthRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void AsymetricDecryptResponse::_internal_set_decrypted_data(const std::string& value) {
+inline void GetAESLengthRequest::_internal_set_messageid(const std::string& value) {
   
-  decrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AsymetricDecryptResponse::_internal_mutable_decrypted_data() {
+inline std::string* GetAESLengthRequest::_internal_mutable_messageid() {
   
-  return decrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AsymetricDecryptResponse::release_decrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.AsymetricDecryptResponse.decrypted_data)
-  return decrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* GetAESLengthRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.GetAESLengthRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AsymetricDecryptResponse::set_allocated_decrypted_data(std::string* decrypted_data) {
-  if (decrypted_data != nullptr) {
+inline void GetAESLengthRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  decrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), decrypted_data,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricDecryptResponse.decrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.GetAESLengthRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// AsymetricDecryptResponse
+
+// bytes decryptedData = 1;
+inline void AsymetricDecryptResponse::clear_decrypteddata() {
+  decrypteddata_.ClearToEmpty();
+}
+inline const std::string& AsymetricDecryptResponse::decrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.AsymetricDecryptResponse.decryptedData)
+  return _internal_decrypteddata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AsymetricDecryptResponse::set_decrypteddata(ArgT0&& arg0, ArgT... args) {
+ 
+ decrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AsymetricDecryptResponse.decryptedData)
+}
+inline std::string* AsymetricDecryptResponse::mutable_decrypteddata() {
+  std::string* _s = _internal_mutable_decrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.AsymetricDecryptResponse.decryptedData)
+  return _s;
+}
+inline const std::string& AsymetricDecryptResponse::_internal_decrypteddata() const {
+  return decrypteddata_.Get();
+}
+inline void AsymetricDecryptResponse::_internal_set_decrypteddata(const std::string& value) {
+  
+  decrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* AsymetricDecryptResponse::_internal_mutable_decrypteddata() {
+  
+  return decrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* AsymetricDecryptResponse::release_decrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.AsymetricDecryptResponse.decryptedData)
+  return decrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void AsymetricDecryptResponse::set_allocated_decrypteddata(std::string* decrypteddata) {
+  if (decrypteddata != nullptr) {
+    
+  } else {
+    
+  }
+  decrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), decrypteddata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.AsymetricDecryptResponse.decryptedData)
 }
 
 // -------------------------------------------------------------------
 
 // GetLengthRequest
 
-// int32 in_len = 1;
-inline void GetLengthRequest::clear_in_len() {
-  in_len_ = 0;
+// int32 senderId = 1;
+inline void GetLengthRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 GetLengthRequest::_internal_in_len() const {
-  return in_len_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetLengthRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 GetLengthRequest::in_len() const {
-  // @@protoc_insertion_point(field_get:crypto.GetLengthRequest.in_len)
-  return _internal_in_len();
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetLengthRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetLengthRequest.senderId)
+  return _internal_senderid();
 }
-inline void GetLengthRequest::_internal_set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void GetLengthRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  in_len_ = value;
+  senderid_ = value;
 }
-inline void GetLengthRequest::set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_in_len(value);
-  // @@protoc_insertion_point(field_set:crypto.GetLengthRequest.in_len)
+inline void GetLengthRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.GetLengthRequest.senderId)
+}
+
+// int32 inLen = 2;
+inline void GetLengthRequest::clear_inlen() {
+  inlen_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetLengthRequest::_internal_inlen() const {
+  return inlen_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 GetLengthRequest::inlen() const {
+  // @@protoc_insertion_point(field_get:crypto.GetLengthRequest.inLen)
+  return _internal_inlen();
+}
+inline void GetLengthRequest::_internal_set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  inlen_ = value;
+}
+inline void GetLengthRequest::set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_inlen(value);
+  // @@protoc_insertion_point(field_set:crypto.GetLengthRequest.inLen)
+}
+
+// string messageId = 3;
+inline void GetLengthRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& GetLengthRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetLengthRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void GetLengthRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GetLengthRequest.messageId)
+}
+inline std::string* GetLengthRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.GetLengthRequest.messageId)
+  return _s;
+}
+inline const std::string& GetLengthRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void GetLengthRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* GetLengthRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* GetLengthRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.GetLengthRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void GetLengthRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.GetLengthRequest.messageId)
 }
 
 // -------------------------------------------------------------------
@@ -6428,28 +7097,74 @@ inline void GetWholeLength::set_isfirst(bool value) {
   // @@protoc_insertion_point(field_set:crypto.GetWholeLength.isFirst)
 }
 
+// string messageId = 4;
+inline void GetWholeLength::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& GetWholeLength::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.GetWholeLength.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void GetWholeLength::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GetWholeLength.messageId)
+}
+inline std::string* GetWholeLength::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.GetWholeLength.messageId)
+  return _s;
+}
+inline const std::string& GetWholeLength::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void GetWholeLength::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* GetWholeLength::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* GetWholeLength::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.GetWholeLength.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void GetWholeLength::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.GetWholeLength.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // GenerateAESKeyRequest
 
-// int32 user_id = 1;
-inline void GenerateAESKeyRequest::clear_user_id() {
-  user_id_ = 0;
+// int32 userId = 1;
+inline void GenerateAESKeyRequest::clear_userid() {
+  userid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateAESKeyRequest::_internal_user_id() const {
-  return user_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateAESKeyRequest::_internal_userid() const {
+  return userid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateAESKeyRequest::user_id() const {
-  // @@protoc_insertion_point(field_get:crypto.GenerateAESKeyRequest.user_id)
-  return _internal_user_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateAESKeyRequest::userid() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateAESKeyRequest.userId)
+  return _internal_userid();
 }
-inline void GenerateAESKeyRequest::_internal_set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void GenerateAESKeyRequest::_internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  user_id_ = value;
+  userid_ = value;
 }
-inline void GenerateAESKeyRequest::set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_user_id(value);
-  // @@protoc_insertion_point(field_set:crypto.GenerateAESKeyRequest.user_id)
+inline void GenerateAESKeyRequest::set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:crypto.GenerateAESKeyRequest.userId)
 }
 
 // repeated .crypto.KeyPermission permissions = 2;
@@ -6535,78 +7250,124 @@ inline void GenerateAESKeyRequest::set_destuserid(::PROTOBUF_NAMESPACE_ID::int32
   // @@protoc_insertion_point(field_set:crypto.GenerateAESKeyRequest.destUserId)
 }
 
-// -------------------------------------------------------------------
-
-// GenerateAESKeyResponse
-
-// string aes_key = 1;
-inline void GenerateAESKeyResponse::clear_aes_key() {
-  aes_key_.ClearToEmpty();
+// string messageId = 5;
+inline void GenerateAESKeyRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& GenerateAESKeyResponse::aes_key() const {
-  // @@protoc_insertion_point(field_get:crypto.GenerateAESKeyResponse.aes_key)
-  return _internal_aes_key();
+inline const std::string& GenerateAESKeyRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateAESKeyRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void GenerateAESKeyResponse::set_aes_key(ArgT0&& arg0, ArgT... args) {
+void GenerateAESKeyRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- aes_key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.GenerateAESKeyResponse.aes_key)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GenerateAESKeyRequest.messageId)
 }
-inline std::string* GenerateAESKeyResponse::mutable_aes_key() {
-  std::string* _s = _internal_mutable_aes_key();
-  // @@protoc_insertion_point(field_mutable:crypto.GenerateAESKeyResponse.aes_key)
+inline std::string* GenerateAESKeyRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.GenerateAESKeyRequest.messageId)
   return _s;
 }
-inline const std::string& GenerateAESKeyResponse::_internal_aes_key() const {
-  return aes_key_.Get();
+inline const std::string& GenerateAESKeyRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void GenerateAESKeyResponse::_internal_set_aes_key(const std::string& value) {
+inline void GenerateAESKeyRequest::_internal_set_messageid(const std::string& value) {
   
-  aes_key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* GenerateAESKeyResponse::_internal_mutable_aes_key() {
+inline std::string* GenerateAESKeyRequest::_internal_mutable_messageid() {
   
-  return aes_key_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* GenerateAESKeyResponse::release_aes_key() {
-  // @@protoc_insertion_point(field_release:crypto.GenerateAESKeyResponse.aes_key)
-  return aes_key_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* GenerateAESKeyRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.GenerateAESKeyRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void GenerateAESKeyResponse::set_allocated_aes_key(std::string* aes_key) {
-  if (aes_key != nullptr) {
+inline void GenerateAESKeyRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  aes_key_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), aes_key,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateAESKeyResponse.aes_key)
+  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateAESKeyRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// GenerateAESKeyResponse
+
+// string aesKey = 1;
+inline void GenerateAESKeyResponse::clear_aeskey() {
+  aeskey_.ClearToEmpty();
+}
+inline const std::string& GenerateAESKeyResponse::aeskey() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateAESKeyResponse.aesKey)
+  return _internal_aeskey();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void GenerateAESKeyResponse::set_aeskey(ArgT0&& arg0, ArgT... args) {
+ 
+ aeskey_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GenerateAESKeyResponse.aesKey)
+}
+inline std::string* GenerateAESKeyResponse::mutable_aeskey() {
+  std::string* _s = _internal_mutable_aeskey();
+  // @@protoc_insertion_point(field_mutable:crypto.GenerateAESKeyResponse.aesKey)
+  return _s;
+}
+inline const std::string& GenerateAESKeyResponse::_internal_aeskey() const {
+  return aeskey_.Get();
+}
+inline void GenerateAESKeyResponse::_internal_set_aeskey(const std::string& value) {
+  
+  aeskey_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* GenerateAESKeyResponse::_internal_mutable_aeskey() {
+  
+  return aeskey_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* GenerateAESKeyResponse::release_aeskey() {
+  // @@protoc_insertion_point(field_release:crypto.GenerateAESKeyResponse.aesKey)
+  return aeskey_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void GenerateAESKeyResponse::set_allocated_aeskey(std::string* aeskey) {
+  if (aeskey != nullptr) {
+    
+  } else {
+    
+  }
+  aeskey_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), aeskey,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateAESKeyResponse.aesKey)
 }
 
 // -------------------------------------------------------------------
 
 // GenerateKeyPairRequest
 
-// int32 user_id = 1;
-inline void GenerateKeyPairRequest::clear_user_id() {
-  user_id_ = 0;
+// int32 userId = 1;
+inline void GenerateKeyPairRequest::clear_userid() {
+  userid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateKeyPairRequest::_internal_user_id() const {
-  return user_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateKeyPairRequest::_internal_userid() const {
+  return userid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateKeyPairRequest::user_id() const {
-  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairRequest.user_id)
-  return _internal_user_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 GenerateKeyPairRequest::userid() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairRequest.userId)
+  return _internal_userid();
 }
-inline void GenerateKeyPairRequest::_internal_set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void GenerateKeyPairRequest::_internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  user_id_ = value;
+  userid_ = value;
 }
-inline void GenerateKeyPairRequest::set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_user_id(value);
-  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairRequest.user_id)
+inline void GenerateKeyPairRequest::set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairRequest.userId)
 }
 
 // repeated .crypto.KeyPermission permissions = 2;
@@ -6652,124 +7413,170 @@ GenerateKeyPairRequest::mutable_permissions() {
   return _internal_mutable_permissions();
 }
 
+// string messageId = 3;
+inline void GenerateKeyPairRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& GenerateKeyPairRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void GenerateKeyPairRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairRequest.messageId)
+}
+inline std::string* GenerateKeyPairRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.GenerateKeyPairRequest.messageId)
+  return _s;
+}
+inline const std::string& GenerateKeyPairRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void GenerateKeyPairRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* GenerateKeyPairRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* GenerateKeyPairRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.GenerateKeyPairRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void GenerateKeyPairRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateKeyPairRequest.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // GenerateKeyPairResponse
 
-// string public_key = 1;
-inline void GenerateKeyPairResponse::clear_public_key() {
-  public_key_.ClearToEmpty();
+// string publicKey = 1;
+inline void GenerateKeyPairResponse::clear_publickey() {
+  publickey_.ClearToEmpty();
 }
-inline const std::string& GenerateKeyPairResponse::public_key() const {
-  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairResponse.public_key)
-  return _internal_public_key();
+inline const std::string& GenerateKeyPairResponse::publickey() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairResponse.publicKey)
+  return _internal_publickey();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void GenerateKeyPairResponse::set_public_key(ArgT0&& arg0, ArgT... args) {
+void GenerateKeyPairResponse::set_publickey(ArgT0&& arg0, ArgT... args) {
  
- public_key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairResponse.public_key)
+ publickey_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairResponse.publicKey)
 }
-inline std::string* GenerateKeyPairResponse::mutable_public_key() {
-  std::string* _s = _internal_mutable_public_key();
-  // @@protoc_insertion_point(field_mutable:crypto.GenerateKeyPairResponse.public_key)
+inline std::string* GenerateKeyPairResponse::mutable_publickey() {
+  std::string* _s = _internal_mutable_publickey();
+  // @@protoc_insertion_point(field_mutable:crypto.GenerateKeyPairResponse.publicKey)
   return _s;
 }
-inline const std::string& GenerateKeyPairResponse::_internal_public_key() const {
-  return public_key_.Get();
+inline const std::string& GenerateKeyPairResponse::_internal_publickey() const {
+  return publickey_.Get();
 }
-inline void GenerateKeyPairResponse::_internal_set_public_key(const std::string& value) {
+inline void GenerateKeyPairResponse::_internal_set_publickey(const std::string& value) {
   
-  public_key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  publickey_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* GenerateKeyPairResponse::_internal_mutable_public_key() {
+inline std::string* GenerateKeyPairResponse::_internal_mutable_publickey() {
   
-  return public_key_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return publickey_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* GenerateKeyPairResponse::release_public_key() {
-  // @@protoc_insertion_point(field_release:crypto.GenerateKeyPairResponse.public_key)
-  return public_key_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* GenerateKeyPairResponse::release_publickey() {
+  // @@protoc_insertion_point(field_release:crypto.GenerateKeyPairResponse.publicKey)
+  return publickey_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void GenerateKeyPairResponse::set_allocated_public_key(std::string* public_key) {
-  if (public_key != nullptr) {
+inline void GenerateKeyPairResponse::set_allocated_publickey(std::string* publickey) {
+  if (publickey != nullptr) {
     
   } else {
     
   }
-  public_key_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), public_key,
+  publickey_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), publickey,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateKeyPairResponse.public_key)
+  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateKeyPairResponse.publicKey)
 }
 
-// string private_key = 2;
-inline void GenerateKeyPairResponse::clear_private_key() {
-  private_key_.ClearToEmpty();
+// string privateKey = 2;
+inline void GenerateKeyPairResponse::clear_privatekey() {
+  privatekey_.ClearToEmpty();
 }
-inline const std::string& GenerateKeyPairResponse::private_key() const {
-  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairResponse.private_key)
-  return _internal_private_key();
+inline const std::string& GenerateKeyPairResponse::privatekey() const {
+  // @@protoc_insertion_point(field_get:crypto.GenerateKeyPairResponse.privateKey)
+  return _internal_privatekey();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void GenerateKeyPairResponse::set_private_key(ArgT0&& arg0, ArgT... args) {
+void GenerateKeyPairResponse::set_privatekey(ArgT0&& arg0, ArgT... args) {
  
- private_key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairResponse.private_key)
+ privatekey_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.GenerateKeyPairResponse.privateKey)
 }
-inline std::string* GenerateKeyPairResponse::mutable_private_key() {
-  std::string* _s = _internal_mutable_private_key();
-  // @@protoc_insertion_point(field_mutable:crypto.GenerateKeyPairResponse.private_key)
+inline std::string* GenerateKeyPairResponse::mutable_privatekey() {
+  std::string* _s = _internal_mutable_privatekey();
+  // @@protoc_insertion_point(field_mutable:crypto.GenerateKeyPairResponse.privateKey)
   return _s;
 }
-inline const std::string& GenerateKeyPairResponse::_internal_private_key() const {
-  return private_key_.Get();
+inline const std::string& GenerateKeyPairResponse::_internal_privatekey() const {
+  return privatekey_.Get();
 }
-inline void GenerateKeyPairResponse::_internal_set_private_key(const std::string& value) {
+inline void GenerateKeyPairResponse::_internal_set_privatekey(const std::string& value) {
   
-  private_key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  privatekey_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* GenerateKeyPairResponse::_internal_mutable_private_key() {
+inline std::string* GenerateKeyPairResponse::_internal_mutable_privatekey() {
   
-  return private_key_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return privatekey_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* GenerateKeyPairResponse::release_private_key() {
-  // @@protoc_insertion_point(field_release:crypto.GenerateKeyPairResponse.private_key)
-  return private_key_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* GenerateKeyPairResponse::release_privatekey() {
+  // @@protoc_insertion_point(field_release:crypto.GenerateKeyPairResponse.privateKey)
+  return privatekey_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void GenerateKeyPairResponse::set_allocated_private_key(std::string* private_key) {
-  if (private_key != nullptr) {
+inline void GenerateKeyPairResponse::set_allocated_privatekey(std::string* privatekey) {
+  if (privatekey != nullptr) {
     
   } else {
     
   }
-  private_key_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), private_key,
+  privatekey_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), privatekey,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateKeyPairResponse.private_key)
+  // @@protoc_insertion_point(field_set_allocated:crypto.GenerateKeyPairResponse.privateKey)
 }
 
 // -------------------------------------------------------------------
 
 // SignRequest
 
-// int32 sender_id = 1;
-inline void SignRequest::clear_sender_id() {
-  sender_id_ = 0;
+// int32 senderId = 1;
+inline void SignRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 SignRequest::_internal_sender_id() const {
-  return sender_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 SignRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 SignRequest::sender_id() const {
-  // @@protoc_insertion_point(field_get:crypto.SignRequest.sender_id)
-  return _internal_sender_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 SignRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.SignRequest.senderId)
+  return _internal_senderid();
 }
-inline void SignRequest::_internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void SignRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  sender_id_ = value;
+  senderid_ = value;
 }
-inline void SignRequest::set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:crypto.SignRequest.sender_id)
+inline void SignRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.SignRequest.senderId)
 }
 
 // bytes data = 2;
@@ -6818,24 +7625,24 @@ inline void SignRequest::set_allocated_data(std::string* data) {
   // @@protoc_insertion_point(field_set_allocated:crypto.SignRequest.data)
 }
 
-// .crypto.SHAAlgorithm hash_func = 3;
-inline void SignRequest::clear_hash_func() {
-  hash_func_ = 0;
+// .crypto.SHAAlgorithm hashFunc = 3;
+inline void SignRequest::clear_hashfunc() {
+  hashfunc_ = 0;
 }
-inline ::crypto::SHAAlgorithm SignRequest::_internal_hash_func() const {
-  return static_cast< ::crypto::SHAAlgorithm >(hash_func_);
+inline ::crypto::SHAAlgorithm SignRequest::_internal_hashfunc() const {
+  return static_cast< ::crypto::SHAAlgorithm >(hashfunc_);
 }
-inline ::crypto::SHAAlgorithm SignRequest::hash_func() const {
-  // @@protoc_insertion_point(field_get:crypto.SignRequest.hash_func)
-  return _internal_hash_func();
+inline ::crypto::SHAAlgorithm SignRequest::hashfunc() const {
+  // @@protoc_insertion_point(field_get:crypto.SignRequest.hashFunc)
+  return _internal_hashfunc();
 }
-inline void SignRequest::_internal_set_hash_func(::crypto::SHAAlgorithm value) {
+inline void SignRequest::_internal_set_hashfunc(::crypto::SHAAlgorithm value) {
   
-  hash_func_ = value;
+  hashfunc_ = value;
 }
-inline void SignRequest::set_hash_func(::crypto::SHAAlgorithm value) {
-  _internal_set_hash_func(value);
-  // @@protoc_insertion_point(field_set:crypto.SignRequest.hash_func)
+inline void SignRequest::set_hashfunc(::crypto::SHAAlgorithm value) {
+  _internal_set_hashfunc(value);
+  // @@protoc_insertion_point(field_set:crypto.SignRequest.hashFunc)
 }
 
 // int64 counter = 5;
@@ -6858,50 +7665,96 @@ inline void SignRequest::set_counter(::PROTOBUF_NAMESPACE_ID::int64 value) {
   // @@protoc_insertion_point(field_set:crypto.SignRequest.counter)
 }
 
-// string key_id = 6;
-inline void SignRequest::clear_key_id() {
-  key_id_.ClearToEmpty();
+// string keyId = 6;
+inline void SignRequest::clear_keyid() {
+  keyid_.ClearToEmpty();
 }
-inline const std::string& SignRequest::key_id() const {
-  // @@protoc_insertion_point(field_get:crypto.SignRequest.key_id)
-  return _internal_key_id();
+inline const std::string& SignRequest::keyid() const {
+  // @@protoc_insertion_point(field_get:crypto.SignRequest.keyId)
+  return _internal_keyid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void SignRequest::set_key_id(ArgT0&& arg0, ArgT... args) {
+void SignRequest::set_keyid(ArgT0&& arg0, ArgT... args) {
  
- key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.SignRequest.key_id)
+ keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.SignRequest.keyId)
 }
-inline std::string* SignRequest::mutable_key_id() {
-  std::string* _s = _internal_mutable_key_id();
-  // @@protoc_insertion_point(field_mutable:crypto.SignRequest.key_id)
+inline std::string* SignRequest::mutable_keyid() {
+  std::string* _s = _internal_mutable_keyid();
+  // @@protoc_insertion_point(field_mutable:crypto.SignRequest.keyId)
   return _s;
 }
-inline const std::string& SignRequest::_internal_key_id() const {
-  return key_id_.Get();
+inline const std::string& SignRequest::_internal_keyid() const {
+  return keyid_.Get();
 }
-inline void SignRequest::_internal_set_key_id(const std::string& value) {
+inline void SignRequest::_internal_set_keyid(const std::string& value) {
   
-  key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* SignRequest::_internal_mutable_key_id() {
+inline std::string* SignRequest::_internal_mutable_keyid() {
   
-  return key_id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return keyid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* SignRequest::release_key_id() {
-  // @@protoc_insertion_point(field_release:crypto.SignRequest.key_id)
-  return key_id_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* SignRequest::release_keyid() {
+  // @@protoc_insertion_point(field_release:crypto.SignRequest.keyId)
+  return keyid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void SignRequest::set_allocated_key_id(std::string* key_id) {
-  if (key_id != nullptr) {
+inline void SignRequest::set_allocated_keyid(std::string* keyid) {
+  if (keyid != nullptr) {
     
   } else {
     
   }
-  key_id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), key_id,
+  keyid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), keyid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.SignRequest.key_id)
+  // @@protoc_insertion_point(field_set_allocated:crypto.SignRequest.keyId)
+}
+
+// string messageId = 7;
+inline void SignRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& SignRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.SignRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void SignRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.SignRequest.messageId)
+}
+inline std::string* SignRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.SignRequest.messageId)
+  return _s;
+}
+inline const std::string& SignRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void SignRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* SignRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* SignRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.SignRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void SignRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.SignRequest.messageId)
 }
 
 // -------------------------------------------------------------------
@@ -6958,44 +7811,44 @@ inline void SignResponse::set_allocated_signature(std::string* signature) {
 
 // VerifyRequest
 
-// int32 sender_id = 1;
-inline void VerifyRequest::clear_sender_id() {
-  sender_id_ = 0;
+// int32 senderId = 1;
+inline void VerifyRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::_internal_sender_id() const {
-  return sender_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::sender_id() const {
-  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.sender_id)
-  return _internal_sender_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.senderId)
+  return _internal_senderid();
 }
-inline void VerifyRequest::_internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void VerifyRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  sender_id_ = value;
+  senderid_ = value;
 }
-inline void VerifyRequest::set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.sender_id)
+inline void VerifyRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.senderId)
 }
 
-// int32 receiver_id = 2;
-inline void VerifyRequest::clear_receiver_id() {
-  receiver_id_ = 0;
+// int32 receiverId = 2;
+inline void VerifyRequest::clear_receiverid() {
+  receiverid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::_internal_receiver_id() const {
-  return receiver_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::_internal_receiverid() const {
+  return receiverid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::receiver_id() const {
-  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.receiver_id)
-  return _internal_receiver_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 VerifyRequest::receiverid() const {
+  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.receiverId)
+  return _internal_receiverid();
 }
-inline void VerifyRequest::_internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void VerifyRequest::_internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  receiver_id_ = value;
+  receiverid_ = value;
 }
-inline void VerifyRequest::set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_receiver_id(value);
-  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.receiver_id)
+inline void VerifyRequest::set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_receiverid(value);
+  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.receiverId)
 }
 
 // bytes data = 3;
@@ -7090,70 +7943,70 @@ inline void VerifyRequest::set_allocated_signature(std::string* signature) {
   // @@protoc_insertion_point(field_set_allocated:crypto.VerifyRequest.signature)
 }
 
-// .crypto.SHAAlgorithm hash_func = 5;
-inline void VerifyRequest::clear_hash_func() {
-  hash_func_ = 0;
+// .crypto.SHAAlgorithm hashFunc = 5;
+inline void VerifyRequest::clear_hashfunc() {
+  hashfunc_ = 0;
 }
-inline ::crypto::SHAAlgorithm VerifyRequest::_internal_hash_func() const {
-  return static_cast< ::crypto::SHAAlgorithm >(hash_func_);
+inline ::crypto::SHAAlgorithm VerifyRequest::_internal_hashfunc() const {
+  return static_cast< ::crypto::SHAAlgorithm >(hashfunc_);
 }
-inline ::crypto::SHAAlgorithm VerifyRequest::hash_func() const {
-  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.hash_func)
-  return _internal_hash_func();
+inline ::crypto::SHAAlgorithm VerifyRequest::hashfunc() const {
+  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.hashFunc)
+  return _internal_hashfunc();
 }
-inline void VerifyRequest::_internal_set_hash_func(::crypto::SHAAlgorithm value) {
+inline void VerifyRequest::_internal_set_hashfunc(::crypto::SHAAlgorithm value) {
   
-  hash_func_ = value;
+  hashfunc_ = value;
 }
-inline void VerifyRequest::set_hash_func(::crypto::SHAAlgorithm value) {
-  _internal_set_hash_func(value);
-  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.hash_func)
+inline void VerifyRequest::set_hashfunc(::crypto::SHAAlgorithm value) {
+  _internal_set_hashfunc(value);
+  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.hashFunc)
 }
 
-// string key_id = 6;
-inline void VerifyRequest::clear_key_id() {
-  key_id_.ClearToEmpty();
+// string keyId = 6;
+inline void VerifyRequest::clear_keyid() {
+  keyid_.ClearToEmpty();
 }
-inline const std::string& VerifyRequest::key_id() const {
-  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.key_id)
-  return _internal_key_id();
+inline const std::string& VerifyRequest::keyid() const {
+  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.keyId)
+  return _internal_keyid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void VerifyRequest::set_key_id(ArgT0&& arg0, ArgT... args) {
+void VerifyRequest::set_keyid(ArgT0&& arg0, ArgT... args) {
  
- key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.key_id)
+ keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.keyId)
 }
-inline std::string* VerifyRequest::mutable_key_id() {
-  std::string* _s = _internal_mutable_key_id();
-  // @@protoc_insertion_point(field_mutable:crypto.VerifyRequest.key_id)
+inline std::string* VerifyRequest::mutable_keyid() {
+  std::string* _s = _internal_mutable_keyid();
+  // @@protoc_insertion_point(field_mutable:crypto.VerifyRequest.keyId)
   return _s;
 }
-inline const std::string& VerifyRequest::_internal_key_id() const {
-  return key_id_.Get();
+inline const std::string& VerifyRequest::_internal_keyid() const {
+  return keyid_.Get();
 }
-inline void VerifyRequest::_internal_set_key_id(const std::string& value) {
+inline void VerifyRequest::_internal_set_keyid(const std::string& value) {
   
-  key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* VerifyRequest::_internal_mutable_key_id() {
+inline std::string* VerifyRequest::_internal_mutable_keyid() {
   
-  return key_id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return keyid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* VerifyRequest::release_key_id() {
-  // @@protoc_insertion_point(field_release:crypto.VerifyRequest.key_id)
-  return key_id_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* VerifyRequest::release_keyid() {
+  // @@protoc_insertion_point(field_release:crypto.VerifyRequest.keyId)
+  return keyid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void VerifyRequest::set_allocated_key_id(std::string* key_id) {
-  if (key_id != nullptr) {
+inline void VerifyRequest::set_allocated_keyid(std::string* keyid) {
+  if (keyid != nullptr) {
     
   } else {
     
   }
-  key_id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), key_id,
+  keyid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), keyid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.VerifyRequest.key_id)
+  // @@protoc_insertion_point(field_set_allocated:crypto.VerifyRequest.keyId)
 }
 
 // int32 counter = 7;
@@ -7174,6 +8027,52 @@ inline void VerifyRequest::_internal_set_counter(::PROTOBUF_NAMESPACE_ID::int32 
 inline void VerifyRequest::set_counter(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_counter(value);
   // @@protoc_insertion_point(field_set:crypto.VerifyRequest.counter)
+}
+
+// string messageId = 8;
+inline void VerifyRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& VerifyRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.VerifyRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void VerifyRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.VerifyRequest.messageId)
+}
+inline std::string* VerifyRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.VerifyRequest.messageId)
+  return _s;
+}
+inline const std::string& VerifyRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void VerifyRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* VerifyRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* VerifyRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.VerifyRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void VerifyRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.VerifyRequest.messageId)
 }
 
 // -------------------------------------------------------------------
@@ -7250,24 +8149,90 @@ inline void VerifyResponse::set_allocated_out(std::string* out) {
 
 // KeyRequest
 
-// int32 user_id = 1;
-inline void KeyRequest::clear_user_id() {
-  user_id_ = 0;
+// int32 senderId = 1;
+inline void KeyRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 KeyRequest::_internal_user_id() const {
-  return user_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 KeyRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 KeyRequest::user_id() const {
-  // @@protoc_insertion_point(field_get:crypto.KeyRequest.user_id)
-  return _internal_user_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 KeyRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.KeyRequest.senderId)
+  return _internal_senderid();
 }
-inline void KeyRequest::_internal_set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void KeyRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  user_id_ = value;
+  senderid_ = value;
 }
-inline void KeyRequest::set_user_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_user_id(value);
-  // @@protoc_insertion_point(field_set:crypto.KeyRequest.user_id)
+inline void KeyRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.KeyRequest.senderId)
+}
+
+// int32 userId = 2;
+inline void KeyRequest::clear_userid() {
+  userid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 KeyRequest::_internal_userid() const {
+  return userid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 KeyRequest::userid() const {
+  // @@protoc_insertion_point(field_get:crypto.KeyRequest.userId)
+  return _internal_userid();
+}
+inline void KeyRequest::_internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  userid_ = value;
+}
+inline void KeyRequest::set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_userid(value);
+  // @@protoc_insertion_point(field_set:crypto.KeyRequest.userId)
+}
+
+// string messageId = 3;
+inline void KeyRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& KeyRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.KeyRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void KeyRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.KeyRequest.messageId)
+}
+inline std::string* KeyRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.KeyRequest.messageId)
+  return _s;
+}
+inline const std::string& KeyRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void KeyRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* KeyRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* KeyRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.KeyRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void KeyRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.KeyRequest.messageId)
 }
 
 // -------------------------------------------------------------------
@@ -7431,6 +8396,52 @@ BootSystemRequest::usersidspermissions() const {
   return usersidspermissions_;
 }
 
+// string messageId = 5;
+inline void BootSystemRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& BootSystemRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.BootSystemRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void BootSystemRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.BootSystemRequest.messageId)
+}
+inline std::string* BootSystemRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.BootSystemRequest.messageId)
+  return _s;
+}
+inline const std::string& BootSystemRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void BootSystemRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* BootSystemRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* BootSystemRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.BootSystemRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void BootSystemRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.BootSystemRequest.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // Empty
@@ -7517,6 +8528,52 @@ inline void CryptoConfig::_internal_set_asymmetricfunction(::crypto::AsymmetricF
 inline void CryptoConfig::set_asymmetricfunction(::crypto::AsymmetricFunction value) {
   _internal_set_asymmetricfunction(value);
   // @@protoc_insertion_point(field_set:crypto.CryptoConfig.asymmetricFunction)
+}
+
+// string messageId = 5;
+inline void CryptoConfig::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& CryptoConfig::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.CryptoConfig.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void CryptoConfig::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.CryptoConfig.messageId)
+}
+inline std::string* CryptoConfig::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.CryptoConfig.messageId)
+  return _s;
+}
+inline const std::string& CryptoConfig::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void CryptoConfig::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* CryptoConfig::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* CryptoConfig::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.CryptoConfig.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void CryptoConfig::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.CryptoConfig.messageId)
 }
 
 // -------------------------------------------------------------------
@@ -7633,6 +8690,52 @@ inline void ConfigureRequest::set_allocated_config(::crypto::CryptoConfig* confi
   // @@protoc_insertion_point(field_set_allocated:crypto.ConfigureRequest.config)
 }
 
+// string messageId = 3;
+inline void ConfigureRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& ConfigureRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.ConfigureRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ConfigureRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.ConfigureRequest.messageId)
+}
+inline std::string* ConfigureRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.ConfigureRequest.messageId)
+  return _s;
+}
+inline const std::string& ConfigureRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void ConfigureRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* ConfigureRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* ConfigureRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.ConfigureRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void ConfigureRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.ConfigureRequest.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // AddProcessRequest
@@ -7700,48 +8803,94 @@ AddProcessRequest::mutable_permissions() {
   return _internal_mutable_permissions();
 }
 
+// string messageId = 4;
+inline void AddProcessRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
+}
+inline const std::string& AddProcessRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.AddProcessRequest.messageId)
+  return _internal_messageid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AddProcessRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
+ 
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AddProcessRequest.messageId)
+}
+inline std::string* AddProcessRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.AddProcessRequest.messageId)
+  return _s;
+}
+inline const std::string& AddProcessRequest::_internal_messageid() const {
+  return messageid_.Get();
+}
+inline void AddProcessRequest::_internal_set_messageid(const std::string& value) {
+  
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* AddProcessRequest::_internal_mutable_messageid() {
+  
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* AddProcessRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.AddProcessRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void AddProcessRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
+    
+  } else {
+    
+  }
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.AddProcessRequest.messageId)
+}
+
 // -------------------------------------------------------------------
 
 // EncryptRequest
 
-// int32 sender_id = 1;
-inline void EncryptRequest::clear_sender_id() {
-  sender_id_ = 0;
+// int32 senderId = 1;
+inline void EncryptRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::_internal_sender_id() const {
-  return sender_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::sender_id() const {
-  // @@protoc_insertion_point(field_get:crypto.EncryptRequest.sender_id)
-  return _internal_sender_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.EncryptRequest.senderId)
+  return _internal_senderid();
 }
-inline void EncryptRequest::_internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void EncryptRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  sender_id_ = value;
+  senderid_ = value;
 }
-inline void EncryptRequest::set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:crypto.EncryptRequest.sender_id)
+inline void EncryptRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.EncryptRequest.senderId)
 }
 
-// int32 receiver_id = 2;
-inline void EncryptRequest::clear_receiver_id() {
-  receiver_id_ = 0;
+// int32 receiverId = 2;
+inline void EncryptRequest::clear_receiverid() {
+  receiverid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::_internal_receiver_id() const {
-  return receiver_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::_internal_receiverid() const {
+  return receiverid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::receiver_id() const {
-  // @@protoc_insertion_point(field_get:crypto.EncryptRequest.receiver_id)
-  return _internal_receiver_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 EncryptRequest::receiverid() const {
+  // @@protoc_insertion_point(field_get:crypto.EncryptRequest.receiverId)
+  return _internal_receiverid();
 }
-inline void EncryptRequest::_internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void EncryptRequest::_internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  receiver_id_ = value;
+  receiverid_ = value;
 }
-inline void EncryptRequest::set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_receiver_id(value);
-  // @@protoc_insertion_point(field_set:crypto.EncryptRequest.receiver_id)
+inline void EncryptRequest::set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_receiverid(value);
+  // @@protoc_insertion_point(field_set:crypto.EncryptRequest.receiverId)
 }
 
 // bytes data = 3;
@@ -7830,54 +8979,100 @@ inline void EncryptRequest::set_isfirst(bool value) {
   // @@protoc_insertion_point(field_set:crypto.EncryptRequest.isFirst)
 }
 
-// -------------------------------------------------------------------
-
-// EncryptResponse
-
-// bytes encrypted_data = 1;
-inline void EncryptResponse::clear_encrypted_data() {
-  encrypted_data_.ClearToEmpty();
+// string messageId = 6;
+inline void EncryptRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& EncryptResponse::encrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.EncryptResponse.encrypted_data)
-  return _internal_encrypted_data();
+inline const std::string& EncryptRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.EncryptRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void EncryptResponse::set_encrypted_data(ArgT0&& arg0, ArgT... args) {
+void EncryptRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- encrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.EncryptResponse.encrypted_data)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.EncryptRequest.messageId)
 }
-inline std::string* EncryptResponse::mutable_encrypted_data() {
-  std::string* _s = _internal_mutable_encrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.EncryptResponse.encrypted_data)
+inline std::string* EncryptRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.EncryptRequest.messageId)
   return _s;
 }
-inline const std::string& EncryptResponse::_internal_encrypted_data() const {
-  return encrypted_data_.Get();
+inline const std::string& EncryptRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void EncryptResponse::_internal_set_encrypted_data(const std::string& value) {
+inline void EncryptRequest::_internal_set_messageid(const std::string& value) {
   
-  encrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* EncryptResponse::_internal_mutable_encrypted_data() {
+inline std::string* EncryptRequest::_internal_mutable_messageid() {
   
-  return encrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* EncryptResponse::release_encrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.EncryptResponse.encrypted_data)
-  return encrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* EncryptRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.EncryptRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void EncryptResponse::set_allocated_encrypted_data(std::string* encrypted_data) {
-  if (encrypted_data != nullptr) {
+inline void EncryptRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  encrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypted_data,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.EncryptResponse.encrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.EncryptRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// EncryptResponse
+
+// bytes encryptedData = 1;
+inline void EncryptResponse::clear_encrypteddata() {
+  encrypteddata_.ClearToEmpty();
+}
+inline const std::string& EncryptResponse::encrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.EncryptResponse.encryptedData)
+  return _internal_encrypteddata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void EncryptResponse::set_encrypteddata(ArgT0&& arg0, ArgT... args) {
+ 
+ encrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.EncryptResponse.encryptedData)
+}
+inline std::string* EncryptResponse::mutable_encrypteddata() {
+  std::string* _s = _internal_mutable_encrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.EncryptResponse.encryptedData)
+  return _s;
+}
+inline const std::string& EncryptResponse::_internal_encrypteddata() const {
+  return encrypteddata_.Get();
+}
+inline void EncryptResponse::_internal_set_encrypteddata(const std::string& value) {
+  
+  encrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* EncryptResponse::_internal_mutable_encrypteddata() {
+  
+  return encrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* EncryptResponse::release_encrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.EncryptResponse.encryptedData)
+  return encrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void EncryptResponse::set_allocated_encrypteddata(std::string* encrypteddata) {
+  if (encrypteddata != nullptr) {
+    
+  } else {
+    
+  }
+  encrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypteddata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.EncryptResponse.encryptedData)
 }
 
 // bytes signature = 2;
@@ -7930,90 +9125,90 @@ inline void EncryptResponse::set_allocated_signature(std::string* signature) {
 
 // DecryptRequest
 
-// int32 sender_id = 1;
-inline void DecryptRequest::clear_sender_id() {
-  sender_id_ = 0;
+// int32 senderId = 1;
+inline void DecryptRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::_internal_sender_id() const {
-  return sender_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::sender_id() const {
-  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.sender_id)
-  return _internal_sender_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.senderId)
+  return _internal_senderid();
 }
-inline void DecryptRequest::_internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void DecryptRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  sender_id_ = value;
+  senderid_ = value;
 }
-inline void DecryptRequest::set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.sender_id)
+inline void DecryptRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.senderId)
 }
 
-// int32 receiver_id = 2;
-inline void DecryptRequest::clear_receiver_id() {
-  receiver_id_ = 0;
+// int32 receiverId = 2;
+inline void DecryptRequest::clear_receiverid() {
+  receiverid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::_internal_receiver_id() const {
-  return receiver_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::_internal_receiverid() const {
+  return receiverid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::receiver_id() const {
-  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.receiver_id)
-  return _internal_receiver_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 DecryptRequest::receiverid() const {
+  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.receiverId)
+  return _internal_receiverid();
 }
-inline void DecryptRequest::_internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void DecryptRequest::_internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  receiver_id_ = value;
+  receiverid_ = value;
 }
-inline void DecryptRequest::set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_receiver_id(value);
-  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.receiver_id)
+inline void DecryptRequest::set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_receiverid(value);
+  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.receiverId)
 }
 
-// bytes encrypted_data = 3;
-inline void DecryptRequest::clear_encrypted_data() {
-  encrypted_data_.ClearToEmpty();
+// bytes encryptedData = 3;
+inline void DecryptRequest::clear_encrypteddata() {
+  encrypteddata_.ClearToEmpty();
 }
-inline const std::string& DecryptRequest::encrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.encrypted_data)
-  return _internal_encrypted_data();
+inline const std::string& DecryptRequest::encrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.encryptedData)
+  return _internal_encrypteddata();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void DecryptRequest::set_encrypted_data(ArgT0&& arg0, ArgT... args) {
+void DecryptRequest::set_encrypteddata(ArgT0&& arg0, ArgT... args) {
  
- encrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.encrypted_data)
+ encrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.encryptedData)
 }
-inline std::string* DecryptRequest::mutable_encrypted_data() {
-  std::string* _s = _internal_mutable_encrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.DecryptRequest.encrypted_data)
+inline std::string* DecryptRequest::mutable_encrypteddata() {
+  std::string* _s = _internal_mutable_encrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.DecryptRequest.encryptedData)
   return _s;
 }
-inline const std::string& DecryptRequest::_internal_encrypted_data() const {
-  return encrypted_data_.Get();
+inline const std::string& DecryptRequest::_internal_encrypteddata() const {
+  return encrypteddata_.Get();
 }
-inline void DecryptRequest::_internal_set_encrypted_data(const std::string& value) {
+inline void DecryptRequest::_internal_set_encrypteddata(const std::string& value) {
   
-  encrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  encrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* DecryptRequest::_internal_mutable_encrypted_data() {
+inline std::string* DecryptRequest::_internal_mutable_encrypteddata() {
   
-  return encrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return encrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* DecryptRequest::release_encrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.DecryptRequest.encrypted_data)
-  return encrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* DecryptRequest::release_encrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.DecryptRequest.encryptedData)
+  return encrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void DecryptRequest::set_allocated_encrypted_data(std::string* encrypted_data) {
-  if (encrypted_data != nullptr) {
+inline void DecryptRequest::set_allocated_encrypteddata(std::string* encrypteddata) {
+  if (encrypteddata != nullptr) {
     
   } else {
     
   }
-  encrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypted_data,
+  encrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypteddata,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.DecryptRequest.encrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.DecryptRequest.encryptedData)
 }
 
 // int64 counter = 4;
@@ -8102,98 +9297,144 @@ inline void DecryptRequest::set_isfirst(bool value) {
   // @@protoc_insertion_point(field_set:crypto.DecryptRequest.isFirst)
 }
 
-// -------------------------------------------------------------------
-
-// DecryptResponse
-
-// bytes decrypted_data = 1;
-inline void DecryptResponse::clear_decrypted_data() {
-  decrypted_data_.ClearToEmpty();
+// string messageId = 7;
+inline void DecryptRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& DecryptResponse::decrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.DecryptResponse.decrypted_data)
-  return _internal_decrypted_data();
+inline const std::string& DecryptRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.DecryptRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void DecryptResponse::set_decrypted_data(ArgT0&& arg0, ArgT... args) {
+void DecryptRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- decrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.DecryptResponse.decrypted_data)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.DecryptRequest.messageId)
 }
-inline std::string* DecryptResponse::mutable_decrypted_data() {
-  std::string* _s = _internal_mutable_decrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.DecryptResponse.decrypted_data)
+inline std::string* DecryptRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.DecryptRequest.messageId)
   return _s;
 }
-inline const std::string& DecryptResponse::_internal_decrypted_data() const {
-  return decrypted_data_.Get();
+inline const std::string& DecryptRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void DecryptResponse::_internal_set_decrypted_data(const std::string& value) {
+inline void DecryptRequest::_internal_set_messageid(const std::string& value) {
   
-  decrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* DecryptResponse::_internal_mutable_decrypted_data() {
+inline std::string* DecryptRequest::_internal_mutable_messageid() {
   
-  return decrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* DecryptResponse::release_decrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.DecryptResponse.decrypted_data)
-  return decrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* DecryptRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.DecryptRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void DecryptResponse::set_allocated_decrypted_data(std::string* decrypted_data) {
-  if (decrypted_data != nullptr) {
+inline void DecryptRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  decrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), decrypted_data,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.DecryptResponse.decrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.DecryptRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// DecryptResponse
+
+// bytes decryptedData = 1;
+inline void DecryptResponse::clear_decrypteddata() {
+  decrypteddata_.ClearToEmpty();
+}
+inline const std::string& DecryptResponse::decrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.DecryptResponse.decryptedData)
+  return _internal_decrypteddata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void DecryptResponse::set_decrypteddata(ArgT0&& arg0, ArgT... args) {
+ 
+ decrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.DecryptResponse.decryptedData)
+}
+inline std::string* DecryptResponse::mutable_decrypteddata() {
+  std::string* _s = _internal_mutable_decrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.DecryptResponse.decryptedData)
+  return _s;
+}
+inline const std::string& DecryptResponse::_internal_decrypteddata() const {
+  return decrypteddata_.Get();
+}
+inline void DecryptResponse::_internal_set_decrypteddata(const std::string& value) {
+  
+  decrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* DecryptResponse::_internal_mutable_decrypteddata() {
+  
+  return decrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* DecryptResponse::release_decrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.DecryptResponse.decryptedData)
+  return decrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void DecryptResponse::set_allocated_decrypteddata(std::string* decrypteddata) {
+  if (decrypteddata != nullptr) {
+    
+  } else {
+    
+  }
+  decrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), decrypteddata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.DecryptResponse.decryptedData)
 }
 
 // -------------------------------------------------------------------
 
 // AESEncryptRequest
 
-// int32 sender_id = 1;
-inline void AESEncryptRequest::clear_sender_id() {
-  sender_id_ = 0;
+// int32 senderId = 1;
+inline void AESEncryptRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::_internal_sender_id() const {
-  return sender_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::sender_id() const {
-  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.sender_id)
-  return _internal_sender_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.senderId)
+  return _internal_senderid();
 }
-inline void AESEncryptRequest::_internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void AESEncryptRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  sender_id_ = value;
+  senderid_ = value;
 }
-inline void AESEncryptRequest::set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.sender_id)
+inline void AESEncryptRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.senderId)
 }
 
-// int32 receiver_id = 2;
-inline void AESEncryptRequest::clear_receiver_id() {
-  receiver_id_ = 0;
+// int32 receiverId = 2;
+inline void AESEncryptRequest::clear_receiverid() {
+  receiverid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::_internal_receiver_id() const {
-  return receiver_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::_internal_receiverid() const {
+  return receiverid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::receiver_id() const {
-  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.receiver_id)
-  return _internal_receiver_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESEncryptRequest::receiverid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.receiverId)
+  return _internal_receiverid();
 }
-inline void AESEncryptRequest::_internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void AESEncryptRequest::_internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  receiver_id_ = value;
+  receiverid_ = value;
 }
-inline void AESEncryptRequest::set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_receiver_id(value);
-  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.receiver_id)
+inline void AESEncryptRequest::set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_receiverid(value);
+  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.receiverId)
 }
 
 // bytes data = 3;
@@ -8282,70 +9523,70 @@ inline void AESEncryptRequest::set_counter(::PROTOBUF_NAMESPACE_ID::int64 value)
   // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.counter)
 }
 
-// string key_id = 6;
-inline void AESEncryptRequest::clear_key_id() {
-  key_id_.ClearToEmpty();
+// string keyId = 6;
+inline void AESEncryptRequest::clear_keyid() {
+  keyid_.ClearToEmpty();
 }
-inline const std::string& AESEncryptRequest::key_id() const {
-  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.key_id)
-  return _internal_key_id();
+inline const std::string& AESEncryptRequest::keyid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.keyId)
+  return _internal_keyid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AESEncryptRequest::set_key_id(ArgT0&& arg0, ArgT... args) {
+void AESEncryptRequest::set_keyid(ArgT0&& arg0, ArgT... args) {
  
- key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.key_id)
+ keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.keyId)
 }
-inline std::string* AESEncryptRequest::mutable_key_id() {
-  std::string* _s = _internal_mutable_key_id();
-  // @@protoc_insertion_point(field_mutable:crypto.AESEncryptRequest.key_id)
+inline std::string* AESEncryptRequest::mutable_keyid() {
+  std::string* _s = _internal_mutable_keyid();
+  // @@protoc_insertion_point(field_mutable:crypto.AESEncryptRequest.keyId)
   return _s;
 }
-inline const std::string& AESEncryptRequest::_internal_key_id() const {
-  return key_id_.Get();
+inline const std::string& AESEncryptRequest::_internal_keyid() const {
+  return keyid_.Get();
 }
-inline void AESEncryptRequest::_internal_set_key_id(const std::string& value) {
+inline void AESEncryptRequest::_internal_set_keyid(const std::string& value) {
   
-  key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AESEncryptRequest::_internal_mutable_key_id() {
+inline std::string* AESEncryptRequest::_internal_mutable_keyid() {
   
-  return key_id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return keyid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AESEncryptRequest::release_key_id() {
-  // @@protoc_insertion_point(field_release:crypto.AESEncryptRequest.key_id)
-  return key_id_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AESEncryptRequest::release_keyid() {
+  // @@protoc_insertion_point(field_release:crypto.AESEncryptRequest.keyId)
+  return keyid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AESEncryptRequest::set_allocated_key_id(std::string* key_id) {
-  if (key_id != nullptr) {
+inline void AESEncryptRequest::set_allocated_keyid(std::string* keyid) {
+  if (keyid != nullptr) {
     
   } else {
     
   }
-  key_id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), key_id,
+  keyid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), keyid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AESEncryptRequest.key_id)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESEncryptRequest.keyId)
 }
 
-// .crypto.AESKeyLength key_length = 7;
-inline void AESEncryptRequest::clear_key_length() {
-  key_length_ = 0;
+// .crypto.AESKeyLength keyLength = 7;
+inline void AESEncryptRequest::clear_keylength() {
+  keylength_ = 0;
 }
-inline ::crypto::AESKeyLength AESEncryptRequest::_internal_key_length() const {
-  return static_cast< ::crypto::AESKeyLength >(key_length_);
+inline ::crypto::AESKeyLength AESEncryptRequest::_internal_keylength() const {
+  return static_cast< ::crypto::AESKeyLength >(keylength_);
 }
-inline ::crypto::AESKeyLength AESEncryptRequest::key_length() const {
-  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.key_length)
-  return _internal_key_length();
+inline ::crypto::AESKeyLength AESEncryptRequest::keylength() const {
+  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.keyLength)
+  return _internal_keylength();
 }
-inline void AESEncryptRequest::_internal_set_key_length(::crypto::AESKeyLength value) {
+inline void AESEncryptRequest::_internal_set_keylength(::crypto::AESKeyLength value) {
   
-  key_length_ = value;
+  keylength_ = value;
 }
-inline void AESEncryptRequest::set_key_length(::crypto::AESKeyLength value) {
-  _internal_set_key_length(value);
-  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.key_length)
+inline void AESEncryptRequest::set_keylength(::crypto::AESKeyLength value) {
+  _internal_set_keylength(value);
+  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.keyLength)
 }
 
 // .crypto.AESChainingMode chainingMode = 8;
@@ -8388,210 +9629,256 @@ inline void AESEncryptRequest::set_isfirst(bool value) {
   // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.isFirst)
 }
 
-// -------------------------------------------------------------------
-
-// AESEncryptResponse
-
-// bytes encrypted_data = 1;
-inline void AESEncryptResponse::clear_encrypted_data() {
-  encrypted_data_.ClearToEmpty();
+// string messageId = 10;
+inline void AESEncryptRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& AESEncryptResponse::encrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.AESEncryptResponse.encrypted_data)
-  return _internal_encrypted_data();
+inline const std::string& AESEncryptRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESEncryptRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AESEncryptResponse::set_encrypted_data(ArgT0&& arg0, ArgT... args) {
+void AESEncryptRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- encrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AESEncryptResponse.encrypted_data)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESEncryptRequest.messageId)
 }
-inline std::string* AESEncryptResponse::mutable_encrypted_data() {
-  std::string* _s = _internal_mutable_encrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.AESEncryptResponse.encrypted_data)
+inline std::string* AESEncryptRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.AESEncryptRequest.messageId)
   return _s;
 }
-inline const std::string& AESEncryptResponse::_internal_encrypted_data() const {
-  return encrypted_data_.Get();
+inline const std::string& AESEncryptRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void AESEncryptResponse::_internal_set_encrypted_data(const std::string& value) {
+inline void AESEncryptRequest::_internal_set_messageid(const std::string& value) {
   
-  encrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AESEncryptResponse::_internal_mutable_encrypted_data() {
+inline std::string* AESEncryptRequest::_internal_mutable_messageid() {
   
-  return encrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AESEncryptResponse::release_encrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.AESEncryptResponse.encrypted_data)
-  return encrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AESEncryptRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.AESEncryptRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AESEncryptResponse::set_allocated_encrypted_data(std::string* encrypted_data) {
-  if (encrypted_data != nullptr) {
+inline void AESEncryptRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  encrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypted_data,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AESEncryptResponse.encrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESEncryptRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// AESEncryptResponse
+
+// bytes encryptedData = 1;
+inline void AESEncryptResponse::clear_encrypteddata() {
+  encrypteddata_.ClearToEmpty();
+}
+inline const std::string& AESEncryptResponse::encrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.AESEncryptResponse.encryptedData)
+  return _internal_encrypteddata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AESEncryptResponse::set_encrypteddata(ArgT0&& arg0, ArgT... args) {
+ 
+ encrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESEncryptResponse.encryptedData)
+}
+inline std::string* AESEncryptResponse::mutable_encrypteddata() {
+  std::string* _s = _internal_mutable_encrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.AESEncryptResponse.encryptedData)
+  return _s;
+}
+inline const std::string& AESEncryptResponse::_internal_encrypteddata() const {
+  return encrypteddata_.Get();
+}
+inline void AESEncryptResponse::_internal_set_encrypteddata(const std::string& value) {
+  
+  encrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* AESEncryptResponse::_internal_mutable_encrypteddata() {
+  
+  return encrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* AESEncryptResponse::release_encrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.AESEncryptResponse.encryptedData)
+  return encrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void AESEncryptResponse::set_allocated_encrypteddata(std::string* encrypteddata) {
+  if (encrypteddata != nullptr) {
+    
+  } else {
+    
+  }
+  encrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), encrypteddata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESEncryptResponse.encryptedData)
 }
 
 // -------------------------------------------------------------------
 
 // AESDecryptRequest
 
-// int32 sender_id = 1;
-inline void AESDecryptRequest::clear_sender_id() {
-  sender_id_ = 0;
+// int32 senderId = 1;
+inline void AESDecryptRequest::clear_senderid() {
+  senderid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_sender_id() const {
-  return sender_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_senderid() const {
+  return senderid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::sender_id() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.sender_id)
-  return _internal_sender_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::senderid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.senderId)
+  return _internal_senderid();
 }
-inline void AESDecryptRequest::_internal_set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void AESDecryptRequest::_internal_set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  sender_id_ = value;
+  senderid_ = value;
 }
-inline void AESDecryptRequest::set_sender_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.sender_id)
+inline void AESDecryptRequest::set_senderid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_senderid(value);
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.senderId)
 }
 
-// int32 receiver_id = 2;
-inline void AESDecryptRequest::clear_receiver_id() {
-  receiver_id_ = 0;
+// int32 receiverId = 2;
+inline void AESDecryptRequest::clear_receiverid() {
+  receiverid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_receiver_id() const {
-  return receiver_id_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_receiverid() const {
+  return receiverid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::receiver_id() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.receiver_id)
-  return _internal_receiver_id();
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::receiverid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.receiverId)
+  return _internal_receiverid();
 }
-inline void AESDecryptRequest::_internal_set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void AESDecryptRequest::_internal_set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  receiver_id_ = value;
+  receiverid_ = value;
 }
-inline void AESDecryptRequest::set_receiver_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_receiver_id(value);
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.receiver_id)
+inline void AESDecryptRequest::set_receiverid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_receiverid(value);
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.receiverId)
 }
 
-// bytes data_in = 3;
-inline void AESDecryptRequest::clear_data_in() {
-  data_in_.ClearToEmpty();
+// bytes dataIn = 3;
+inline void AESDecryptRequest::clear_datain() {
+  datain_.ClearToEmpty();
 }
-inline const std::string& AESDecryptRequest::data_in() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.data_in)
-  return _internal_data_in();
+inline const std::string& AESDecryptRequest::datain() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.dataIn)
+  return _internal_datain();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AESDecryptRequest::set_data_in(ArgT0&& arg0, ArgT... args) {
+void AESDecryptRequest::set_datain(ArgT0&& arg0, ArgT... args) {
  
- data_in_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.data_in)
+ datain_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.dataIn)
 }
-inline std::string* AESDecryptRequest::mutable_data_in() {
-  std::string* _s = _internal_mutable_data_in();
-  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.data_in)
+inline std::string* AESDecryptRequest::mutable_datain() {
+  std::string* _s = _internal_mutable_datain();
+  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.dataIn)
   return _s;
 }
-inline const std::string& AESDecryptRequest::_internal_data_in() const {
-  return data_in_.Get();
+inline const std::string& AESDecryptRequest::_internal_datain() const {
+  return datain_.Get();
 }
-inline void AESDecryptRequest::_internal_set_data_in(const std::string& value) {
+inline void AESDecryptRequest::_internal_set_datain(const std::string& value) {
   
-  data_in_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  datain_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AESDecryptRequest::_internal_mutable_data_in() {
+inline std::string* AESDecryptRequest::_internal_mutable_datain() {
   
-  return data_in_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return datain_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AESDecryptRequest::release_data_in() {
-  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.data_in)
-  return data_in_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AESDecryptRequest::release_datain() {
+  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.dataIn)
+  return datain_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AESDecryptRequest::set_allocated_data_in(std::string* data_in) {
-  if (data_in != nullptr) {
+inline void AESDecryptRequest::set_allocated_datain(std::string* datain) {
+  if (datain != nullptr) {
     
   } else {
     
   }
-  data_in_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), data_in,
+  datain_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), datain,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.data_in)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.dataIn)
 }
 
-// int32 in_len = 4;
-inline void AESDecryptRequest::clear_in_len() {
-  in_len_ = 0;
+// int32 inLen = 4;
+inline void AESDecryptRequest::clear_inlen() {
+  inlen_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_in_len() const {
-  return in_len_;
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::_internal_inlen() const {
+  return inlen_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::in_len() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.in_len)
-  return _internal_in_len();
+inline ::PROTOBUF_NAMESPACE_ID::int32 AESDecryptRequest::inlen() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.inLen)
+  return _internal_inlen();
 }
-inline void AESDecryptRequest::_internal_set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void AESDecryptRequest::_internal_set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  in_len_ = value;
+  inlen_ = value;
 }
-inline void AESDecryptRequest::set_in_len(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_in_len(value);
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.in_len)
+inline void AESDecryptRequest::set_inlen(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_inlen(value);
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.inLen)
 }
 
-// bytes data_out = 5;
-inline void AESDecryptRequest::clear_data_out() {
-  data_out_.ClearToEmpty();
+// bytes dataOut = 5;
+inline void AESDecryptRequest::clear_dataout() {
+  dataout_.ClearToEmpty();
 }
-inline const std::string& AESDecryptRequest::data_out() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.data_out)
-  return _internal_data_out();
+inline const std::string& AESDecryptRequest::dataout() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.dataOut)
+  return _internal_dataout();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AESDecryptRequest::set_data_out(ArgT0&& arg0, ArgT... args) {
+void AESDecryptRequest::set_dataout(ArgT0&& arg0, ArgT... args) {
  
- data_out_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.data_out)
+ dataout_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.dataOut)
 }
-inline std::string* AESDecryptRequest::mutable_data_out() {
-  std::string* _s = _internal_mutable_data_out();
-  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.data_out)
+inline std::string* AESDecryptRequest::mutable_dataout() {
+  std::string* _s = _internal_mutable_dataout();
+  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.dataOut)
   return _s;
 }
-inline const std::string& AESDecryptRequest::_internal_data_out() const {
-  return data_out_.Get();
+inline const std::string& AESDecryptRequest::_internal_dataout() const {
+  return dataout_.Get();
 }
-inline void AESDecryptRequest::_internal_set_data_out(const std::string& value) {
+inline void AESDecryptRequest::_internal_set_dataout(const std::string& value) {
   
-  data_out_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  dataout_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AESDecryptRequest::_internal_mutable_data_out() {
+inline std::string* AESDecryptRequest::_internal_mutable_dataout() {
   
-  return data_out_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return dataout_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AESDecryptRequest::release_data_out() {
-  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.data_out)
-  return data_out_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AESDecryptRequest::release_dataout() {
+  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.dataOut)
+  return dataout_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AESDecryptRequest::set_allocated_data_out(std::string* data_out) {
-  if (data_out != nullptr) {
+inline void AESDecryptRequest::set_allocated_dataout(std::string* dataout) {
+  if (dataout != nullptr) {
     
   } else {
     
   }
-  data_out_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), data_out,
+  dataout_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), dataout,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.data_out)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.dataOut)
 }
 
 // .crypto.AsymmetricFunction func = 6;
@@ -8614,24 +9901,24 @@ inline void AESDecryptRequest::set_func(::crypto::AsymmetricFunction value) {
   // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.func)
 }
 
-// .crypto.AESKeyLength key_length = 7;
-inline void AESDecryptRequest::clear_key_length() {
-  key_length_ = 0;
+// .crypto.AESKeyLength keyLength = 7;
+inline void AESDecryptRequest::clear_keylength() {
+  keylength_ = 0;
 }
-inline ::crypto::AESKeyLength AESDecryptRequest::_internal_key_length() const {
-  return static_cast< ::crypto::AESKeyLength >(key_length_);
+inline ::crypto::AESKeyLength AESDecryptRequest::_internal_keylength() const {
+  return static_cast< ::crypto::AESKeyLength >(keylength_);
 }
-inline ::crypto::AESKeyLength AESDecryptRequest::key_length() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.key_length)
-  return _internal_key_length();
+inline ::crypto::AESKeyLength AESDecryptRequest::keylength() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.keyLength)
+  return _internal_keylength();
 }
-inline void AESDecryptRequest::_internal_set_key_length(::crypto::AESKeyLength value) {
+inline void AESDecryptRequest::_internal_set_keylength(::crypto::AESKeyLength value) {
   
-  key_length_ = value;
+  keylength_ = value;
 }
-inline void AESDecryptRequest::set_key_length(::crypto::AESKeyLength value) {
-  _internal_set_key_length(value);
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.key_length)
+inline void AESDecryptRequest::set_keylength(::crypto::AESKeyLength value) {
+  _internal_set_keylength(value);
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.keyLength)
 }
 
 // .crypto.AESChainingMode chainingMode = 8;
@@ -8674,50 +9961,50 @@ inline void AESDecryptRequest::set_counter(::PROTOBUF_NAMESPACE_ID::int64 value)
   // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.counter)
 }
 
-// string key_id = 10;
-inline void AESDecryptRequest::clear_key_id() {
-  key_id_.ClearToEmpty();
+// string keyId = 10;
+inline void AESDecryptRequest::clear_keyid() {
+  keyid_.ClearToEmpty();
 }
-inline const std::string& AESDecryptRequest::key_id() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.key_id)
-  return _internal_key_id();
+inline const std::string& AESDecryptRequest::keyid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.keyId)
+  return _internal_keyid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AESDecryptRequest::set_key_id(ArgT0&& arg0, ArgT... args) {
+void AESDecryptRequest::set_keyid(ArgT0&& arg0, ArgT... args) {
  
- key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.key_id)
+ keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.keyId)
 }
-inline std::string* AESDecryptRequest::mutable_key_id() {
-  std::string* _s = _internal_mutable_key_id();
-  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.key_id)
+inline std::string* AESDecryptRequest::mutable_keyid() {
+  std::string* _s = _internal_mutable_keyid();
+  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.keyId)
   return _s;
 }
-inline const std::string& AESDecryptRequest::_internal_key_id() const {
-  return key_id_.Get();
+inline const std::string& AESDecryptRequest::_internal_keyid() const {
+  return keyid_.Get();
 }
-inline void AESDecryptRequest::_internal_set_key_id(const std::string& value) {
+inline void AESDecryptRequest::_internal_set_keyid(const std::string& value) {
   
-  key_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  keyid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AESDecryptRequest::_internal_mutable_key_id() {
+inline std::string* AESDecryptRequest::_internal_mutable_keyid() {
   
-  return key_id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return keyid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AESDecryptRequest::release_key_id() {
-  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.key_id)
-  return key_id_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AESDecryptRequest::release_keyid() {
+  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.keyId)
+  return keyid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AESDecryptRequest::set_allocated_key_id(std::string* key_id) {
-  if (key_id != nullptr) {
+inline void AESDecryptRequest::set_allocated_keyid(std::string* keyid) {
+  if (keyid != nullptr) {
     
   } else {
     
   }
-  key_id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), key_id,
+  keyid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), keyid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.key_id)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.keyId)
 }
 
 // bool isFirst = 11;
@@ -8740,54 +10027,100 @@ inline void AESDecryptRequest::set_isfirst(bool value) {
   // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.isFirst)
 }
 
-// -------------------------------------------------------------------
-
-// AESDecryptResponse
-
-// bytes decrypted_data = 1;
-inline void AESDecryptResponse::clear_decrypted_data() {
-  decrypted_data_.ClearToEmpty();
+// string messageId = 12;
+inline void AESDecryptRequest::clear_messageid() {
+  messageid_.ClearToEmpty();
 }
-inline const std::string& AESDecryptResponse::decrypted_data() const {
-  // @@protoc_insertion_point(field_get:crypto.AESDecryptResponse.decrypted_data)
-  return _internal_decrypted_data();
+inline const std::string& AESDecryptRequest::messageid() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptRequest.messageId)
+  return _internal_messageid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void AESDecryptResponse::set_decrypted_data(ArgT0&& arg0, ArgT... args) {
+void AESDecryptRequest::set_messageid(ArgT0&& arg0, ArgT... args) {
  
- decrypted_data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:crypto.AESDecryptResponse.decrypted_data)
+ messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptRequest.messageId)
 }
-inline std::string* AESDecryptResponse::mutable_decrypted_data() {
-  std::string* _s = _internal_mutable_decrypted_data();
-  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptResponse.decrypted_data)
+inline std::string* AESDecryptRequest::mutable_messageid() {
+  std::string* _s = _internal_mutable_messageid();
+  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptRequest.messageId)
   return _s;
 }
-inline const std::string& AESDecryptResponse::_internal_decrypted_data() const {
-  return decrypted_data_.Get();
+inline const std::string& AESDecryptRequest::_internal_messageid() const {
+  return messageid_.Get();
 }
-inline void AESDecryptResponse::_internal_set_decrypted_data(const std::string& value) {
+inline void AESDecryptRequest::_internal_set_messageid(const std::string& value) {
   
-  decrypted_data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  messageid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* AESDecryptResponse::_internal_mutable_decrypted_data() {
+inline std::string* AESDecryptRequest::_internal_mutable_messageid() {
   
-  return decrypted_data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return messageid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* AESDecryptResponse::release_decrypted_data() {
-  // @@protoc_insertion_point(field_release:crypto.AESDecryptResponse.decrypted_data)
-  return decrypted_data_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* AESDecryptRequest::release_messageid() {
+  // @@protoc_insertion_point(field_release:crypto.AESDecryptRequest.messageId)
+  return messageid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void AESDecryptResponse::set_allocated_decrypted_data(std::string* decrypted_data) {
-  if (decrypted_data != nullptr) {
+inline void AESDecryptRequest::set_allocated_messageid(std::string* messageid) {
+  if (messageid != nullptr) {
     
   } else {
     
   }
-  decrypted_data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), decrypted_data,
+  messageid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messageid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptResponse.decrypted_data)
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptRequest.messageId)
+}
+
+// -------------------------------------------------------------------
+
+// AESDecryptResponse
+
+// bytes decrypteddata = 1;
+inline void AESDecryptResponse::clear_decrypteddata() {
+  decrypteddata_.ClearToEmpty();
+}
+inline const std::string& AESDecryptResponse::decrypteddata() const {
+  // @@protoc_insertion_point(field_get:crypto.AESDecryptResponse.decrypteddata)
+  return _internal_decrypteddata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void AESDecryptResponse::set_decrypteddata(ArgT0&& arg0, ArgT... args) {
+ 
+ decrypteddata_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:crypto.AESDecryptResponse.decrypteddata)
+}
+inline std::string* AESDecryptResponse::mutable_decrypteddata() {
+  std::string* _s = _internal_mutable_decrypteddata();
+  // @@protoc_insertion_point(field_mutable:crypto.AESDecryptResponse.decrypteddata)
+  return _s;
+}
+inline const std::string& AESDecryptResponse::_internal_decrypteddata() const {
+  return decrypteddata_.Get();
+}
+inline void AESDecryptResponse::_internal_set_decrypteddata(const std::string& value) {
+  
+  decrypteddata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* AESDecryptResponse::_internal_mutable_decrypteddata() {
+  
+  return decrypteddata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* AESDecryptResponse::release_decrypteddata() {
+  // @@protoc_insertion_point(field_release:crypto.AESDecryptResponse.decrypteddata)
+  return decrypteddata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void AESDecryptResponse::set_allocated_decrypteddata(std::string* decrypteddata) {
+  if (decrypteddata != nullptr) {
+    
+  } else {
+    
+  }
+  decrypteddata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), decrypteddata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:crypto.AESDecryptResponse.decrypteddata)
 }
 
 #ifdef __GNUC__

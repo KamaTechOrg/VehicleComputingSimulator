@@ -57,7 +57,7 @@ include_directories(${PROTO_GEN_DIR})
 include_directories(${Protobuf_INCLUDE_DIRS} ${GRPC_INCLUDE_DIRS})
 
 # Add the executable
-add_executable(grpc_client ${SOURCES} logger/logger.cpp tests/client_tests.cpp ${PROTO_SRCS})
+add_executable(grpc_client ${SOURCES} src/my_logger.cpp ../logger/logger.cpp tests/client_tests.cpp ${PROTO_SRCS})
 
 # Link against protobuf and gRPC libraries
 target_link_libraries(grpc_client ${Protobuf_LIBRARIES} gRPC::grpc++)

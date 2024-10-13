@@ -1,6 +1,6 @@
 #ifndef __GENERAL_H__
 #define __GENERAL_H__
-#include "../logger/logger.h"
+#include "../../logger/logger.h"
 typedef unsigned long CK_RV;
 
 /* Successful operation */
@@ -50,6 +50,6 @@ struct CryptoConfig {
         asymmetricFunction(asymFunc) {}
   CryptoConfig() {}
 }; 
-void log(logger::LogLevel level, const std::string &message);
+void log(logger::LogLevel level ,const std::string &message);
 
 #endif // __GENERAL_H__
