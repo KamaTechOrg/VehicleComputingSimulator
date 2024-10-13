@@ -24,6 +24,7 @@ public:
     PacketParser *parser;
     std::map<std::string, Field> fieldsMap;
     int msgLength;
+    bool isUsingHSM;
 
     // Variables for the timer functions
     int timeForUpdate;

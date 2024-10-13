@@ -8,13 +8,6 @@
 using json = nlohmann::json;
 using namespace std;
 
-// Processing the data received from the complete message
-void processData(uint32_t senderId,void *data)
-{
-  std::cout << "I'm userA: Received from id : " << senderId << ", data: " << static_cast<char *>(data)
-            << std::endl;
-  free(data);
-}
 
 int readIdFromJson() {
   // Read the json file
@@ -37,6 +30,44 @@ int readIdFromJson() {
   return (*data)["ID"];
 }
 
+uint32_t srcID = readIdFromJson();
+
+
+
+bool decryptData(void *data, int dataLen, uint32_t senderId, uint32_t myId)
+{
+  CryptoClient client;
+
+  size_t encryptedLength =
+      client.getEncryptedLenClient(senderId, dataLen);
+  size_t decryptedLength =
+      client.getDecryptedLenClient(senderId, encryptedLength);
+
+  uint8_t decryptedData[decryptedLength];
+
+  CK_RV decryptResult = client.decrypt(
+      senderId, myId, data, encryptedLength, decryptedData, decryptedLength);
+
+  if (decryptResult != CKR_OK || decryptedLength != dataLen)
+      return false;
+  memcpy(data, decryptedData, decryptedLength);
+  return true;
+}
+
+// Processing the data received from the complete message
+void processData(uint32_t senderId,void *data)
+{
+  cout << "I'm userA: Received from id : " << senderId << endl;
+  
+  if (decryptData(data, 5, senderId, srcID))
+    cout << "The message dycrypted successfully" << endl;
+  else
+    cerr << "The message dycryption failed" << endl;
+  
+  cout << "data: " << static_cast<char *>(data) << endl;
+  free(data);
+}
+
 bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
                  size_t encryptedLength, uint32_t receiverId, uint32_t myId)
 {
@@ -55,10 +86,9 @@ bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
 int main() {
   // Preparing the parameters for the message
   uint32_t destID = 1;
-  uint32_t srcID = readIdFromJson();
   cout << "srcID: " << srcID << endl;
 
-    CryptoClient client;
+  CryptoClient client;
   // Creating the communication object with the callback function to process the
   // data
   Communication comm(srcID, processData);

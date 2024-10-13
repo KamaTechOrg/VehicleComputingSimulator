@@ -1,25 +1,6 @@
 #include "global_properties.h"
 using namespace std;
 
-bool decryptData(void *data, int dataLen, uint32_t senderId, uint32_t myId)
-{
-    GlobalProperties &instanceGP = GlobalProperties::getInstance();
-
-    size_t encryptedLength =
-        instanceGP.client.getEncryptedLenClient(senderId, dataLen);
-    size_t decryptedLength =
-        instanceGP.client.getDecryptedLenClient(senderId, encryptedLength);
-
-    uint8_t decryptedData[decryptedLength];
-
-    CK_RV decryptResult = instanceGP.client.decrypt(
-        senderId, myId, data, encryptedLength, decryptedData, decryptedLength);
-
-    if (decryptResult != CKR_OK || decryptedLength != dataLen)
-        return false;
-    memcpy(data, decryptedData, decryptedLength);
-    return true;
-}
 
 void handleMesseage(uint32_t senderId, void *data)
 {
@@ -28,18 +9,21 @@ void handleMesseage(uint32_t senderId, void *data)
     GlobalProperties::controlLogger.logMessage(
         logger::LogLevel::INFO, "Received message from id " + senderId);
 
-    char *msg = "I got message";
+    const char *msg = "I got message";
     size_t dataSize = strlen(msg) + 1;
-    instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
-                                 instanceGP.srcID, false);
+    // instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
+    //                              instanceGP.srcID, false);
 
     if (decryptData(data, instanceGP.sensors[senderId]->msgLength/8, senderId,
-                    instanceGP.srcID))
+                    instanceGP.srcID)){
         instanceGP.controlLogger.logMessage(
-            logger::LogLevel::INFO, "The message dycrypted successfully");
-    else
+                    logger::LogLevel::INFO, "The message dycrypted successfully");
+    }
+    else {
         instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR,
                                             "The message dycryption failed");
+        instanceGP.sensors[senderId]->isUsingHSM = false;
+    }
 
     instanceGP.sensors[senderId]->handleMessage(data);
 

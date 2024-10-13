@@ -14,6 +14,7 @@
 #include "full_condition.h"
 #include "sensor.h"
 #include "crypto_api.h"
+#include "hsm_support.h"
 
 #include "../../communication/include/communication.h"
 #include "../../logger/logger.h"

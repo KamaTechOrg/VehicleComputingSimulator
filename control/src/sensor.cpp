@@ -48,6 +48,7 @@ Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
 {
     timeForUpdate = 10;
     timerCounter = 0;
+    isUsingHSM = true;
 
     parser = new PacketParser(jsonFilePath);
     vector<Field> tempFields = parser->getFields();
