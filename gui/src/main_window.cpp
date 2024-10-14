@@ -5,6 +5,40 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QJsonDocument>
+#include <csignal>
+#include <fstream>
+#include <ctime>
+#include <thread>
+#include <sys/resource.h>
+#include <iostream>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <QProcess>
+#include <QFileInfo>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
+#include <cstdlib>
+#include <string>
+#include <iostream>
+#include <QSysInfo>
+#include <csignal>
+#include <fstream>
+#include <ctime>
+#include <thread>
+#include <sys/resource.h>
+#include <iostream>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <QProcess>
+#include <QFileInfo>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
+#include <cstdlib>
+#include <string>
+#include <iostream>
+#include <QSysInfo>
 #include "process.h"
 #include "main_window.h"
 #include "draggable_square.h"
@@ -143,21 +177,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "HSM", "../test/crash_program/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "LogsDb", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Main", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform");
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -275,7 +309,6 @@ void MainWindow::openDialog()
     dialog.exec();
 }
 
-
 Process *MainWindow::getProcessById(int id)
 {
     for (DraggableSquare *square : squares) {
@@ -316,6 +349,7 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
     squarePositions[process->getId()] = pos;
     squares.push_back(square);
 }
+
 void MainWindow::openHistoryWindow()
 {
     historyWindow = new HistoryWindow(dataHandler, this);
@@ -397,37 +431,58 @@ void MainWindow::endProcesses()
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
         "MainWindow::endProcesses()   Ending processes");
-
+    
     if (timer) {
         timer->stop();
         delete timer;
         timer = nullptr;
     }
-
     timeLabel->show();
     timeInput->clear();
-
     stateManager->saveSimulationState("simulation_state.bson", squares,
                                       currentImagePath);
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "MainWindow::endProcesses  Simulation "
                                      "data saved to simulation_state.bson");
-    
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
         int id = pair.second;
         if (process->state() != QProcess::NotRunning) {
-            process->terminate();
-            process->waitForFinished();
+            // Use a singleShot timer to avoid blocking
+            QTimer::singleShot(0, process, [process]() {
+                process->terminate();
+                QObject::connect(
+                    process,
+                    QOverload<int, QProcess::ExitStatus>::of(
+                        &QProcess::finished),
+                    [process]() {
+                        process
+                            ->deleteLater();  // Cleanup process after it's finished
+                    });
+            });
         }
-        // Check if the process is already marked for deletion by deleteLater
-        if (process && !process->parent()) {
-            // Only delete if it hasn't already been marked for deletion
-            delete process;
+        // Hide stop button for the corresponding DraggableSquare
+        for (DraggableSquare *square : squares) {
+            if (square->getProcess()->getId() == id) {
+                square->setStopButtonVisible(false);  // Hide the stop button
+                break;
+            }
+            // Use a singleShot timer to avoid blocking
+            QTimer::singleShot(0, process, [process]() {
+                process->terminate();
+                QObject::connect(
+                    process,
+                    QOverload<int, QProcess::ExitStatus>::of(
+                        &QProcess::finished),
+                    [process]() {
+                        process
+                            ->deleteLater();  // Cleanup process after it's finished
+                    });
+            });
         }
     }
     runningProcesses.clear();
-     openDialog();
+    openDialog();
 }
 
 void MainWindow::stopProcess(int deleteId)
@@ -660,6 +715,25 @@ QString MainWindow::getExecutableName(const QString &buildDirPath)
     return QString();
 }
 
+void MainWindow::setCoreDumpLimit()
+{
+    struct rlimit core_limit;
+    core_limit.rlim_cur = RLIM_INFINITY;  // Set soft limit to unlimited
+    core_limit.rlim_max = RLIM_INFINITY;  // Set hard limit to unlimited
+
+    if (setrlimit(RLIMIT_CORE, &core_limit) != 0) {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::ERROR,
+            "MainWindow::setCoreDumpLimit Failed to set core dump limit.");
+    }
+    else {
+        MainWindow::guiLogger.logMessage(
+            logger::LogLevel::INFO,
+            "MainWindow::setCoreDumpLimit Core dump limit successfully set to "
+            "unlimited.");
+    }
+}
+
 void MainWindow::compileProjects()
 {
     guiLogger.logMessage(logger::LogLevel::INFO,
@@ -667,7 +741,7 @@ void MainWindow::compileProjects()
 
     // Disable the run button until compilation finishes
     runButton->setEnabled(false);
-
+    setCoreDumpLimit();
     // Clear previous running processes
     for (const QPair<QProcess *, int> &pair : runningProcesses) {
         QProcess *process = pair.first;
@@ -717,87 +791,480 @@ void MainWindow::compileProjects()
     }
 }
 
+// std::string MainWindow::getCoreDumpPath(qint64 pid,
+//                                         const std::string &executableName)
+// {
+//     std::string coreDumpPath;
+
+//     QString unameInfo = QSysInfo::kernelType();
+//     if (unameInfo == "linux" && QFile::exists("/mnt/wslg")) {
+//         coreDumpPath = "/mnt/wslg/dumps/core." + executableName + "." +
+//                        std::to_string(pid);
+//     }
+//     else if (unameInfo == "linux") {
+//         coreDumpPath = "/var/lib/systemd/coredump/core." + executableName +
+//                        "." + std::to_string(pid);
+//     }
+//     return coreDumpPath;
+// }
+
+std::string MainWindow::getCoreDumpPath(qint64 pid, const std::string &executableName)
+{
+    std::string coreDumpPath;
+    QString unameInfo = QSysInfo::kernelType();
+
+    if (unameInfo == "linux" && QFile::exists("/mnt/wslg")) {
+        // Ensure the dumps directory exists
+        if (!QFile::exists("/mnt/wslg/dumps")) {
+            QProcess::execute("sudo", {"mkdir", "-p", "/mnt/wslg/dumps"});
+        }
+
+        // Set the core dump pattern without the signal
+        // QProcess::execute("bash", {"-c", "echo '/mnt/wslg/dumps/core.%e.%p' | sudo tee /proc/sys/kernel/core_pattern"});
+
+        // Set the permissions for the dumps directory
+        // QProcess::execute("sudo", {"chmod", "777", "/mnt/wslg/dumps"});
+
+        coreDumpPath = "/mnt/wslg/dumps/core." + executableName + "." + std::to_string(pid);
+    } else if (unameInfo == "linux") {
+        coreDumpPath = "/var/lib/systemd/coredump/core." + executableName + "." + std::to_string(pid);
+    }
+
+    return coreDumpPath;
+}
+
+bool MainWindow::createBacktrace(const std::string &executablePath,
+                     const std::string &coreDumpPath,
+                     const std::string &outputFilePath)
+{
+    // Construct the gdb command
+    std::string gdbCommand = "gdb -batch -ex 'bt' " + executablePath + " " +
+                         coreDumpPath + " >/dev/null 2>&1";
+    // Execute the command
+    int result = system(gdbCommand.c_str());
+
+    if (result != 0) {
+        MainWindow::guiLogger.logMessage(
+        logger::LogLevel::ERROR,
+        "MainWindow:: noooooooo  executablePath: " +
+            executablePath+"coreDumpPath: "+ coreDumpPath);
+        return false;
+    }
+    std::ofstream outFile(outputFilePath, std::ios::out);
+
+    // Get the current time (timestamp)
+    auto now =
+        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::string timestamp = std::ctime(&now);
+    timestamp.pop_back();  // Remove the newline at the end of ctime output
+
+    // Append additional information to the output file
+    outFile << "# Crash Report\n\n";
+    outFile << "Timestamp: " << timestamp << "\n";
+    outFile << "Executable: " << executablePath << "\n";
+    outFile << "Core Dump Path: " << coreDumpPath << "\n";
+    outFile << "\n# Backtrace\n";
+    // Close the file before running gdb
+    outFile.close();
+    MainWindow::guiLogger.logMessage(
+        logger::LogLevel::INFO,
+        "MainWindow::createBacktrace Backtrace successfully saved to: " +
+            outputFilePath);
+    gdbCommand = "gdb -batch -ex 'bt' " + executablePath + " " +
+                             coreDumpPath + " >> " + outputFilePath;
+    int result2 = system(gdbCommand.c_str());
+    // Open the output file for writing
+    
+    return true;  // Return true if the gdb command succeeded
+}
+
+// void MainWindow::runProjects()
+// {
+//     disableButtonsExceptEnd();
+//     showLoadingIndicator();
+//     updateTimer();
+//     MainWindow::guiLogger.logMessage(
+//         logger::LogLevel::INFO,
+//         "MainWindow::runProjects Starting to run projects.");
+
+//     for (DraggableSquare *square : squares) {
+//         QString executionFilePath = square->getProcess()->getExecutionFile();
+//         MainWindow::guiLogger.logMessage(
+//             logger::LogLevel::INFO,
+//             "MainWindow::runProjects Processing square with ID: " +
+//                 std::to_string(square->getId()) +
+//                 ", CMake path: " + executionFilePath.toStdString());
+
+//         if (executionFilePath.endsWith(".sh")) {
+//              MainWindow::guiLogger.logMessage(
+//                 logger::LogLevel::ERROR,
+//                 "MainWindow::runProjects sh: " + executionFilePath.toStdString());
+//             QProcess *scriptProcess = new QProcess(this);
+//             scriptProcess->start("bash", QStringList() << executionFilePath);
+//             if (!scriptProcess->waitForStarted()) {
+//                 MainWindow::guiLogger.logMessage(
+//                     logger::LogLevel::ERROR,
+//                     "MainWindow::runProjects Failed to start the bash "
+//                     "script: " +
+//                         executionFilePath.toStdString());
+//                 delete scriptProcess;
+//                 continue;
+//             }
+
+//             connect(
+//                 scriptProcess, &QProcess::readyReadStandardOutput,
+//                 [this, scriptProcess]()
+//                 {
+//                     logOutput->append(scriptProcess->readAllStandardOutput());
+//                 });
+//             connect(
+//                 scriptProcess, &QProcess::readyReadStandardError,
+//                 [this, scriptProcess]()
+//                 {
+//                     logOutput->append(scriptProcess->readAllStandardError());
+//                 });
+//            connect(
+//             scriptProcess, &QProcess::errorOccurred,
+//             [this, executionFilePath, scriptProcess, square]() {
+//                 qint64 pid = scriptProcess->processId();
+
+//                 // Extract the project directory from the CMakeLists.txt path
+//                 QString projectDir = QFileInfo(executionFilePath).absolutePath();
+
+//                 // Get the executable name from the build directory
+//                 std::string executableName = QFileInfo(getExecutableName(projectDir + "/build")).fileName().toStdString();
+                
+//                 // Get the core dump path and backtrace file path
+//                 std::string coreDumpPath = getCoreDumpPath(pid, executableName);
+//                 std::string backtraceFilePath = projectDir.toStdString() + "/build/backtrace_" + std::to_string(pid) + ".txt";
+                
+//                 // Delay for core dump creation
+//                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+//                 // Call createBacktrace with the correct executable path
+//                 bool success = createBacktrace(projectDir.toStdString() + "/build/" + executableName, coreDumpPath, backtraceFilePath);
+
+//                 if (success) {
+//                     square->setDumpFilePath(QString::fromStdString(backtraceFilePath));
+//                     square->setCrashIndicator(true);
+
+//                     MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+//                                                     "Process crashed. Crash details in: " + backtraceFilePath);
+
+//                     if (square->getId() < 4) {
+//                         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
+//                                                         "Error: Simulation stopped because an initial process crashed.");
+//                         QTimer::singleShot(0, this, &MainWindow::endProcesses);
+//                         QMessageBox msgBox;
+//                             msgBox.setIcon(QMessageBox::Critical);
+//                             msgBox.setWindowTitle("CRITICAL ERROR!");
+//                             msgBox.setText(
+//                                 "<div align='center'><b><font color='red' "
+//                                 "size='+2'>One of the initial processes has "
+//                                 "CRASHED!</font></b></div>");
+//                             msgBox.setInformativeText(
+//                                 "<div align='center'>The simulation will stop "
+//                                 "immediately.<br>"
+//                                 "Please check the details below:</div>");
+//                             msgBox.setDetailedText(
+//                                 "The crash report has been saved at: " +
+//                                 square->getDumpFilePath());
+//                             msgBox.setStyleSheet(
+//                                 "QLabel{min-width: 350px; font-size: 16px; "
+//                                 "text-align: center;}");
+//                             msgBox.exec();
+//                     }
+//                 }
+//             }
+//         );
+//         runningProcesses.append(qMakePair(scriptProcess, square->getProcess()->getId()));
+//         }
+//         else {
+//             QDir cmakeDir(QFileInfo(executionFilePath).absolutePath());
+//             QString buildDirPath = cmakeDir.absoluteFilePath("build");
+//             QDir buildDir(buildDirPath);
+
+//             if (!buildDir.exists()) {
+//                 if (!buildDir.mkpath(buildDirPath)) {
+//                     guiLogger.logMessage(logger::LogLevel::ERROR,
+//                                          "Failed to create build directory: " +
+//                                              buildDirPath.toStdString());
+//                     logOutput->append("Failed to create build directory: " +
+//                                       buildDirPath);
+//                     continue;
+//                 }
+//             }
+
+//             QString exeFile = getExecutableName(buildDirPath);
+//             QString executablePath = buildDir.absoluteFilePath(exeFile);
+//             QProcess *runProcess = new QProcess(this);
+//             runProcess->setWorkingDirectory(buildDirPath);
+//             connect(runProcess, &QProcess::readyReadStandardOutput,
+//                     [this, runProcess]()
+//                     {
+//                         logOutput->append(runProcess->readAllStandardOutput());
+//                     });
+//             connect(runProcess, &QProcess::readyReadStandardError,
+//                     [this, runProcess]()
+//                     {
+//                         logOutput->append(runProcess->readAllStandardError());
+//                     });
+//             connect(
+//                 runProcess, &QProcess::errorOccurred,
+//                 [this, executablePath, runProcess, buildDirPath, square]() {
+//                     qint64 pid = runProcess->processId();
+//                     std::string executableName =
+//                         QFileInfo(executablePath).fileName().toStdString();
+//                     std::string coreDumpPath =
+//                         getCoreDumpPath(pid, executableName);
+//                     std::string backtraceFilePath =
+//                         buildDirPath.toStdString() + "/backtrace_" +
+//                         std::to_string(pid) + ".txt";
+//                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+//                     bool success =
+//                         createBacktrace(executablePath.toStdString(),
+//                                         coreDumpPath, backtraceFilePath);
+
+//                     if (success) {
+//                         square->setDumpFilePath(
+//                             QString::fromStdString(backtraceFilePath));
+//                         square->setCrashIndicator(true);
+
+//                         MainWindow::guiLogger.logMessage(
+//                             logger::LogLevel::ERROR,
+//                             "MainWindow::runProjects Process crashed. Crash "
+//                             "details in: " +
+//                                 backtraceFilePath);
+
+//                         if (square->getId() < 4) {
+//                             MainWindow::guiLogger.logMessage(
+//                                 logger::LogLevel::ERROR,
+//                                 "MainWindow::runProjects Error: Simulation "
+//                                 "stopped because an initial process crashed.");
+//                             QTimer::singleShot(0, this,
+//                                                &MainWindow::endProcesses);
+//                             QMessageBox msgBox;
+//                             msgBox.setIcon(QMessageBox::Critical);
+//                             msgBox.setWindowTitle("CRITICAL ERROR!");
+//                             msgBox.setText(
+//                                 "<div align='center'><b><font color='red' "
+//                                 "size='+2'>One of the initial processes has "
+//                                 "CRASHED!</font></b></div>");
+//                             msgBox.setInformativeText(
+//                                 "<div align='center'>The simulation will stop "
+//                                 "immediately.<br>"
+//                                 "Please check the details below:</div>");
+//                             msgBox.setDetailedText(
+//                                 "The crash report has been saved at: " +
+//                                 square->getDumpFilePath());
+//                             msgBox.setStyleSheet(
+//                                 "QLabel{min-width: 350px; font-size: 16px; "
+//                                 "text-align: center;}");
+//                             msgBox.exec();
+//                         }
+//                     }
+//                 });
+//             connect(
+//                 runProcess,
+//                 QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+//                 this, &MainWindow::processFinished);
+//             runProcess->start(executablePath, QStringList());
+//             if (!runProcess->waitForStarted()) {
+//                 guiLogger.logMessage(logger::LogLevel::ERROR,
+//                                      "Failed to start the program in " +
+//                                          buildDirPath.toStdString());
+//                 logOutput->append("Failed to start the program in " +
+//                                   buildDirPath);
+//                 logOutput->append(runProcess->readAllStandardError());
+//                 delete runProcess;
+//                 continue;
+//             }
+
+//             runningProcesses.append(
+//                 qMakePair(runProcess, square->getProcess()->getId()));
+//         }
+//         square->setStopButtonVisible(true);
+//     }
+
+//     guiLogger.logMessage(logger::LogLevel::INFO,
+//                          "Compiling and running projects finished.");
+// }
+
 void MainWindow::runProjects()
 {
     disableButtonsExceptEnd();
     showLoadingIndicator();
     updateTimer();
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Starting to run projects.");
+
     for (DraggableSquare *square : squares) {
         QString executionFilePath = square->getProcess()->getExecutionFile();
+        logSquareProcessing(square, executionFilePath);
 
         if (executionFilePath.endsWith(".sh")) {
-            QProcess *scriptProcess = new QProcess(this);
-            scriptProcess->start("bash", QStringList() << executionFilePath);
-            connect(
-                scriptProcess, &QProcess::readyReadStandardOutput,
-                [this, scriptProcess]()
-                {
-                    logOutput->append(scriptProcess->readAllStandardOutput());
-                });
-            connect(
-                scriptProcess, &QProcess::readyReadStandardError,
-                [this, scriptProcess]()
-                {
-                    logOutput->append(scriptProcess->readAllStandardError());
-                });
+            runBashScript(square, executionFilePath);
+        } else {
+            runCMakeProject(square, executionFilePath);
         }
-        else {
-            QDir cmakeDir(
-                QFileInfo(executionFilePath)
-                    .absolutePath());  // Get the directory containing CMakeLists.txt
-            QString buildDirPath = cmakeDir.absoluteFilePath(
-                "build");  // Updated build directory outside the source
-            QDir buildDir(buildDirPath);
 
-            if (!buildDir.exists()) {
-                if (!buildDir.mkpath(buildDirPath)) {
-                    guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to create build directory: " +
-                                             buildDirPath.toStdString());
-                    logOutput->append("Failed to create build directory: " +
-                                      buildDirPath);
-                    continue;
-                }
-            }
-
-            QString exeFile = getExecutableName(buildDirPath);
-            QString executablePath = buildDir.absoluteFilePath(exeFile);
-            QProcess *runProcess = new QProcess(this);
-            runProcess->setWorkingDirectory(buildDirPath);
-            connect(runProcess, &QProcess::readyReadStandardOutput,
-                    [this, runProcess]()
-                    {
-                        logOutput->append(runProcess->readAllStandardOutput());
-                    });
-            connect(runProcess, &QProcess::readyReadStandardError,
-                    [this, runProcess]()
-                    {
-                        logOutput->append(runProcess->readAllStandardError());
-                    });
-            connect(
-                runProcess,
-                QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-                this, &MainWindow::processFinished);
-            runProcess->start(executablePath, QStringList());
-            if (!runProcess->waitForStarted()) {
-                guiLogger.logMessage(logger::LogLevel::ERROR,
-                                     "Failed to start the program in " +
-                                         buildDirPath.toStdString());
-                logOutput->append("Failed to start the program in " +
-                                  buildDirPath);
-                logOutput->append(runProcess->readAllStandardError());
-                delete runProcess;
-                continue;
-            }
-            runningProcesses.append(
-                qMakePair(runProcess, square->getProcess()->getId()));
-        }
         square->setStopButtonVisible(true);
     }
 
-    guiLogger.logMessage(logger::LogLevel::INFO,
-                         "Compiling and running projects finished.");
+    guiLogger.logMessage(logger::LogLevel::INFO, "Compiling and running projects finished.");
 }
+
+void MainWindow::logSquareProcessing(DraggableSquare *square, const QString &executionFilePath)
+{
+    MainWindow::guiLogger.logMessage(
+        logger::LogLevel::INFO,
+        "Processing square with ID: " +
+            std::to_string(square->getId()) +
+            ", CMake path: " + executionFilePath.toStdString());
+}
+
+void MainWindow::runBashScript(DraggableSquare *square, const QString &executionFilePath)
+{
+    MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Running bash script: " + executionFilePath.toStdString());
+
+    QProcess *scriptProcess = new QProcess(this);
+    scriptProcess->start("bash", QStringList() << executionFilePath);
+
+    if (!scriptProcess->waitForStarted()) {
+        logProcessStartFailure(executionFilePath);
+        delete scriptProcess;
+        return;
+    }
+
+    connectProcessSignals(scriptProcess);
+    handleProcessCrash(scriptProcess, executionFilePath, square, QFileInfo(executionFilePath).absolutePath());
+    runningProcesses.append(qMakePair(scriptProcess, square->getProcess()->getId()));
+}
+
+void MainWindow::runCMakeProject(DraggableSquare *square, const QString &executionFilePath)
+{
+    QString projectDir = QFileInfo(executionFilePath).absolutePath();
+    QString buildDirPath = projectDir + "/build";
+    QDir buildDir(buildDirPath);
+
+    if (!buildDir.exists() && !buildDir.mkpath(buildDirPath)) {
+        // logBuildDirCreationFailure(buildDirPath);
+        return;
+    }
+
+    QString exeFile = getExecutableName(buildDirPath);
+    QString executablePath = buildDir.absoluteFilePath(exeFile);
+    QProcess *runProcess = new QProcess(this);
+    runProcess->setWorkingDirectory(buildDirPath);
+
+    connectProcessSignals(runProcess);
+    handleProcessCrash(runProcess, executablePath, square, buildDirPath);
+    runProcess->start(executablePath, QStringList());
+
+    if (!runProcess->waitForStarted()) {
+        logProcessStartFailure(buildDirPath);
+        delete runProcess;
+        return;
+    }
+
+    runningProcesses.append(qMakePair(runProcess, square->getProcess()->getId()));
+}
+
+void MainWindow::connectProcessSignals(QProcess *process)
+{
+    connect(process, &QProcess::readyReadStandardOutput, [this, process]() {
+        logOutput->append(process->readAllStandardOutput());
+    });
+    connect(process, &QProcess::readyReadStandardError, [this, process]() {
+        logOutput->append(process->readAllStandardError());
+    });
+}
+
+void MainWindow::handleProcessCrash(QProcess *process, const QString &executionPath, DraggableSquare *square, const QString &dumpDirectory)
+{
+    connect(process, &QProcess::errorOccurred, [this, executionPath, process, dumpDirectory, square]() {
+        qint64 pid = process->processId();
+        if (process->exitStatus() != QProcess::CrashExit) {
+            MainWindow::guiLogger.logMessage(
+                logger::LogLevel::INFO,
+                "MainWindow::handleProcessCrash Process did not crash, no core dump generated.");
+            return;
+        }
+        // Extract project directory from execution path
+        QString projectDir = QFileInfo(executionPath).absolutePath();
+        
+        // Check if it's a bash script or CMake project based on extension
+        bool isBashScript = executionPath.endsWith(".sh");
+
+        QString executableName;
+        std::string backtraceFilePath;
+        std::string coreDumpPath;
+
+        if (isBashScript) {
+            // Handle bash script: dumpDirectory is the project directory
+            executableName = QFileInfo(executionPath).fileName();
+            backtraceFilePath = dumpDirectory.toStdString() + "/backtrace_" + std::to_string(pid) + ".txt";
+        } else {
+            // Handle CMake project
+            QString correctedBuildDir = projectDir;
+            
+            // Check if the projectDir already contains "build"
+            if (!projectDir.endsWith("/build")) {
+                correctedBuildDir = projectDir + "/build";
+            }
+
+            // Now call getExecutableName with the corrected path
+            executableName = QFileInfo(getExecutableName(correctedBuildDir)).fileName();
+            backtraceFilePath = dumpDirectory.toStdString() + "/backtrace_" + std::to_string(pid) + ".txt";
+        }
+
+        // Get the core dump path
+        coreDumpPath = getCoreDumpPath(pid, executableName.toStdString());
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        // Call createBacktrace with the correct paths
+        bool success = createBacktrace(executionPath.toStdString(), coreDumpPath, backtraceFilePath);
+
+        if (success) {
+            square->setDumpFilePath(QString::fromStdString(backtraceFilePath));
+            square->setCrashIndicator(true);
+            logCrashDetails(square, backtraceFilePath);
+
+            if (square->getId() < 4) {
+                stopSimulationDueToCrash(square);
+            }
+        }
+    });
+}
+
+void MainWindow::logProcessStartFailure(const QString &filePath)
+{
+    guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to start process: " + filePath.toStdString());
+    logOutput->append("Failed to start process: " + filePath);
+}
+
+void MainWindow::logCrashDetails(DraggableSquare *square, const std::string &backtraceFilePath)
+{
+    guiLogger.logMessage(logger::LogLevel::ERROR, "Process crashed. Crash details in: " + backtraceFilePath);
+}
+
+void MainWindow::stopSimulationDueToCrash(DraggableSquare *square)
+{
+    guiLogger.logMessage(logger::LogLevel::ERROR, "Simulation stopped because an initial process crashed.");
+    QTimer::singleShot(0, this, &MainWindow::endProcesses);
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setWindowTitle("CRITICAL ERROR!");
+    msgBox.setText("<div align='center'><b><font color='red' size='+2'>One of the initial processes has CRASHED!</font></b></div>");
+    msgBox.setInformativeText("<div align='center'>The simulation will stop immediately.<br>Please check the details below:</div>");
+    msgBox.setDetailedText("The crash report has been saved at: " + square->getDumpFilePath());
+    msgBox.setStyleSheet("QLabel{min-width: 350px; font-size: 16px; text-align: center;}");
+    msgBox.exec();
+}
+
+
 
 void MainWindow::editSquare(int id)
 {
@@ -951,13 +1418,15 @@ void MainWindow::rotateImage()
 }
 
 // Show the loading spinner with rotation
-void MainWindow::showLoadingIndicator() {
+void MainWindow::showLoadingIndicator() 
+{
     loadingLabel->show();
     rotationTimer->start(rotationTimerIntervals);  // Start the timer with ms intervals
 }
 
 // Hide the loading spinner and stop the rotation
-void MainWindow::hideLoadingIndicator() {
+void MainWindow::hideLoadingIndicator() 
+{
     rotationTimer->stop();
     loadingLabel->hide();
 }

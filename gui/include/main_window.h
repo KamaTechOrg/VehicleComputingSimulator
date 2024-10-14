@@ -42,8 +42,13 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+    bool createBacktrace(const std::string &executablePath,
+                     const std::string &coreDumpPath,
+                     const std::string &outputFilePath);
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    std::string getCoreDumpPath(qint64 pid, const std::string &executableName);
+    void setCoreDumpLimit();
     void updateTimer();
     void endProcesses();
     void stopProcess(int deleteId);
@@ -55,7 +60,6 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
-  
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -92,23 +96,32 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
     friend class TestMainWindow;
     friend class DraggableSquareTest;
     friend class UserInteractionTests;
+    
+    void runProjects();
+    void logSquareProcessing(DraggableSquare *square, const QString &executionFilePath);
+    void runBashScript(DraggableSquare *square, const QString &executionFilePath);
+    void runCMakeProject(DraggableSquare *square, const QString &executionFilePath);
+    void connectProcessSignals(QProcess *process);
+    void handleProcessCrash(QProcess *process, const QString &executionPath, DraggableSquare *square, const QString &dumpDirectory);
+    void logProcessStartFailure(const QString &filePath);
+    void stopSimulationDueToCrash(DraggableSquare *square);
+    void logCrashDetails(DraggableSquare *square, const std::string &backtraceFilePath);
+    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void addProcessSquare(Process *&process);
     bool isUniqueId(int id);
     void addId(int id);
     void addProcessSquare(Process *process, QPoint position, int width,
                           int height, const QString &color);
     void compileProjects();
-    void runProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);
     void rotateImage();     // Function to handle rotation
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
-    void openDialog();
+    void openDialog();   
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
