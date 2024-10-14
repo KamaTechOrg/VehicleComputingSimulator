@@ -2,6 +2,7 @@
 #include <iostream>
 #include "manager.h"
 #include "alert.h"
+#include "crypto_api.h"
 
 #define ESC 27
 #define NUM_OF_TRACKING 10
@@ -178,9 +179,24 @@ int Manager::drawOutput()
 
 void Manager::sendAlerts(vector<vector<uint8_t>> &alerts)
 {
+    CryptoClient client(processID);
     for (std::vector<uint8_t> &alertBuffer : alerts) {
-        communication.sendMessage(alertBuffer.data(), alertBuffer.size(),
-                                  destID, processID, false);
+        // size_t encryptedLength =
+        //     client.getEncryptedLen(myId, alertBuffer.size());
+        // uint8_t encryptedData[encryptedLength];
+        // if (encryptData((const void *)alertBuffer.data(), alertBuffer.size(),
+        //                 encryptedData, encryptedLength, destID, processID)) {
+        //     LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+        //                                 "encryption success!");
+        //     communication.sendMessage(encryptedData, encryptedLength, destID,
+        //                               processID, false);
+        // }
+        // else {
+            // LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+            //                             "encryption fail!");
+            communication.sendMessage(alertBuffer.data(), alertBuffer.size(),
+                                      destID, processID, false);
+        // }
     }
 }
 
