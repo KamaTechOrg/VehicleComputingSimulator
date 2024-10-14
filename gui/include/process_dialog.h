@@ -43,6 +43,7 @@ public:
     void setSecurityPermissions(const QMap<KeyPermission, bool>& permissions);
     void setPlugins(const QString &plugins);
     QString permToString(KeyPermission perm) const;
+    QString getSelectedOption() const;
     QLineEdit *pluginsEdit;
 
 private slots:
@@ -51,7 +52,10 @@ private slots:
 
 private:
     void setupPermissionCheckboxes();
-
+    QComboBox *optionsComboBox;
+    QComboBox *AsyComboBox;
+    QComboBox *AESCComboBox;
+    QComboBox *AESKComboBox;
     QLineEdit *idEdit;
     QLineEdit *nameEdit;
     QLineEdit *executionFile;

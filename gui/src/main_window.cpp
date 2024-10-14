@@ -119,8 +119,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
             &MainWindow::compileProjects);
     connect(debugCheckBox, &QCheckBox::toggled, this, [this](bool checked) 
     {
-        MainWindow::guiLogger.isDebugMode = checked; 
-        MainWindow::guiLogger.setDebugMode(checked); 
+        
     });
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
@@ -275,33 +274,12 @@ MainWindow::~MainWindow()
     }
 }
 
-void MainWindow::startControlConditonsDebug() {
-    QString program = "../../control/your_control_program"; 
-    QString buildDir = "../../control-build_conditons";
-    startDebug(program,buildDir);
-}
-
-void MainWindow::startControlDebug() {
-    QString program = "../../control/your_control_program"; 
-    QString buildDir = "../../control";
-    startDebug(program,buildDir);
-}
-
-void MainWindow::startImgProcessingDebug() {
-    QString program = "../../control/your_control_program"; 
-    QString buildDir = "../../img_processing";
-    startDebug(program,buildDir);
-}
-
-void MainWindow::startCommunicationDebug() {
-    QString program = "../../control/your_control_program"; 
-    QString buildDir = "../../communication";
-    startDebug(program,buildDir);
-}
-
-void MainWindow::startDebug(QString program,QString buildDir) {
+void MainWindow::startDebug(QString program, QString buildDir) {
     QStringList arguments;
-    arguments << "--debug";
+    
+    // if (debugCheckBox->isChecked()) {
+    //     arguments << "LOG_LEVEL=2";  
+    // }
     QDir buildDirectory(buildDir);
     if (!buildDirectory.exists()) {
         if (!buildDirectory.mkpath(buildDirectory.absolutePath())) {
@@ -311,26 +289,32 @@ void MainWindow::startDebug(QString program,QString buildDir) {
             return;
         }
     }
+
     QProcess cmakeProcess;
     cmakeProcess.setWorkingDirectory(buildDirectory.absolutePath());
-    cmakeProcess.start("cmake",arguments);
+    
+    cmakeProcess.start("cmake", arguments);
     if (!cmakeProcess.waitForFinished()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
                                          "Failed to run CMake: " + 
-                                         cmakeProcess.readAllStandardError()
-                                         .toStdString());
+                                         cmakeProcess.readAllStandardError().toStdString());
         return;
     }
+    
     QProcess makeProcess;
     makeProcess.setWorkingDirectory(buildDirectory.absolutePath());
-    makeProcess.start("make");
+    if(debugCheckBox->isChecked()){
+        makeProcess.start("make LOG_LEVEL=2");
+    }
+    else{
+        makeProcess.start("make");
+    }
     if (!makeProcess.waitForFinished()) {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
                                          "Failed to compile process: " + 
                                          makeProcess.readAllStandardError().toStdString());
         return;
     }
-
 }
     
 void MainWindow::createNewProcess()
@@ -1007,89 +991,6 @@ void MainWindow::setCoreDumpLimit()
             "unlimited.");
     }
 }
-// void MainWindow::sendDebugArgumentToSpecificProcesses()
-// {
-//     bool isDebugMode = true; 
-
-//     QString communicationProcessPath = "/path/to/communication_process";
-//     compileProcessDebug(communicationProcessPath,isDebugMode,"CommunicationProcess");
-
-//     QString controlProcessPath = "/path/to/control_process";
-//     compileProcessDebug(controlProcessPath, isDebugMode,"ControlProcess");
-    
-//     QString communicationProcessPath = "/path/to/communication_process";
-//     compileProcessDebug(communicationProcessPath,isDebugMode,"CommunicationProcess");
-
-//     QString controlProcessPath = "/path/to/control_process";
-//     compileProcessDebug(controlProcessPath, isDebugMode,"ControlProcess");
-    
-//     QString communicationProcessPath = "/path/to/communication_process";
-//     compileAndRunProcess(communicationProcessPath,isDebugMode,"CommunicationProcess");
-
-//     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, 
-//                                      "Finished sending debug arguments to specified processes.");
-// }
-
-// void MainWindow::compileProcessDebug(const QString &executionFilePath, bool isDebugMode, const QString &processName)
-// {
-//   MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, 
-//                                      "Compiling process: " + processName.toStdString());
-
-//     QDir cmakeDir(QFileInfo(executionFilePath).absolutePath());
-//     QString buildDirPath = cmakeDir.absoluteFilePath("build");
-//     QDir buildDir(buildDirPath);
-
-//     if (!buildDir.exists()) {
-//         if (!buildDir.mkpath(buildDirPath)) {
-//             guiLogger.logMessage(logger::LogLevel::ERROR,
-//                                  "Failed to create build directory: " + 
-//                                  buildDirPath.toStdString());
-//             logOutput->append("Failed to create build directory: " + buildDirPath);
-//             return;
-//         }
-//     }
-
-//     QString cmakeCommand = "cmake .."; 
-//     QProcess cmakeProcess;
-//     cmakeProcess.setWorkingDirectory(buildDirPath);
-    
-//     if (isDebugMode) {
-//         cmakeCommand += " -DCMAKE_BUILD_TYPE=Debug";
-//     }
-
-//     cmakeProcess.start(cmakeCommand);
-
-//     if (!cmakeProcess.waitForFinished()) {
-//         guiLogger.logMessage(logger::LogLevel::ERROR,
-//                              "CMake failed for process: " + 
-//                              processName.toStdString());
-//         logOutput->append("CMake failed for process: " + 
-//                           processName);
-//         logOutput->append(cmakeProcess.readAllStandardError());
-//         return;
-//     }
-
-//     QString makeCommand = "make";
-//     QProcess makeProcess;
-//     makeProcess.setWorkingDirectory(buildDirPath);
-//     makeProcess.start(makeCommand);
-
-//     if (!makeProcess.waitForFinished()) {
-//         guiLogger.logMessage(logger::LogLevel::ERROR,
-//                              "Make failed for process: " + 
-//                              processName.toStdString());
-//         logOutput->append("Make failed for process: " + 
-//                           processName);
-//         logOutput->append(makeProcess.readAllStandardError());
-//         return;
-//     }
-
-//     guiLogger.logMessage(logger::LogLevel::INFO, 
-//                          "Compilation successful for process: " + 
-//                          processName.toStdString());
-//     logOutput->append("Compilation successful for process: " + 
-//                       processName);
-// }
 
 void MainWindow::compileProjects()
 {
