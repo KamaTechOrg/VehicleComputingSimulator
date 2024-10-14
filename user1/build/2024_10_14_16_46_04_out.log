@@ -1,0 +1,55 @@
+[2040797ns] [INFO] create a client socket: 8 Invalid argument
+[2115660ns] [INFO] SRC process DST server connection succeed: No such file or directory
+[2142979ns] [INFO] SRC 2 DST 0 sending packet number: 0, of messageId: 0 No such file or directory ID for connection: 2
+[8703944ns] [ERROR] RPC encrypt failed
+[10091070ns] [INFO] SRC 2 DST 1 Complete message:0x000000000000000000000000000000000000000000000000b423bb52b655000000000000fd7f00000000000000000000e0bb8574fd7f0000e0bb8574fd7f0000000000000000000000c7ba52b6550000000000000000000000000000000000000000000000000000a0bd8574fd7f000000000000fd7f0000000000000000000030bc8574fd7f000030bc8574fd7f000000000000000000000000000000000000ffff00000000000000b49654b655000080bc8574fd7f0000000000000000000000b49654b6550000600000000000000000bb8574fd7f00000000000040ee707ce06d25c24e7f00000000000000000000408b9654b6550000000000000000000000000000000000000000000000000000009e9654b65500000000000000000000c4b49654b65500000074a6a440ee707c80be8574fd7f000080be8574fd7f000040bd8574fd7f000096c9bbc14e7f0000149e9654b6550000080000000000000040bd85740200000090bd8574fd7f000004000000000000000101000000000000c0
+[10190510ns] [INFO] SRC 2 DST 1 sending packet number: 0, of messageId: 3 File exists Data: 0x0000000000000000
+[10203157ns] [INFO] SRC 2 DST 1 sending packet number: 1, of messageId: 3 File exists Data: 0x0000000000000000
+[10211127ns] [INFO] SRC 2 DST 1 sending packet number: 2, of messageId: 3 File exists Data: 0x0000000000000000
+[10218444ns] [INFO] SRC 2 DST 1 sending packet number: 3, of messageId: 3 File exists Data: 0xb423bb52b6550000
+[10225288ns] [INFO] SRC 2 DST 1 sending packet number: 4, of messageId: 3 File exists Data: 0x00000000fd7f0000
+[10232780ns] [INFO] SRC 2 DST 1 sending packet number: 5, of messageId: 3 File exists Data: 0x0000000000000000
+[10240088ns] [INFO] SRC 2 DST 1 sending packet number: 6, of messageId: 3 File exists Data: 0xe0bb8574fd7f0000
+[10249821ns] [INFO] SRC 2 DST 1 sending packet number: 7, of messageId: 3 File exists Data: 0xe0bb8574fd7f0000
+[10257261ns] [INFO] SRC 2 DST 1 sending packet number: 8, of messageId: 3 File exists Data: 0x0000000000000000
+[10264948ns] [INFO] SRC 2 DST 1 sending packet number: 9, of messageId: 3 File exists Data: 0x00c7ba52b6550000
+[10272363ns] [INFO] SRC 2 DST 1 sending packet number: 10, of messageId: 3 File exists Data: 0x0000000000000000
+[10279374ns] [INFO] SRC 2 DST 1 sending packet number: 11, of messageId: 3 File exists Data: 0x0000000000000000
+[10286519ns] [INFO] SRC 2 DST 1 sending packet number: 12, of messageId: 3 File exists Data: 0x0000000000000000
+[10293479ns] [INFO] SRC 2 DST 1 sending packet number: 13, of messageId: 3 File exists Data: 0xa0bd8574fd7f0000
+[10300428ns] [INFO] SRC 2 DST 1 sending packet number: 14, of messageId: 3 File exists Data: 0x00000000fd7f0000
+[10307869ns] [INFO] SRC 2 DST 1 sending packet number: 15, of messageId: 3 File exists Data: 0x0000000000000000
+[10313881ns] [INFO] SRC 2 DST 1 sending packet number: 16, of messageId: 3 File exists Data: 0x30bc8574fd7f0000
+[10319497ns] [INFO] SRC 2 DST 1 sending packet number: 17, of messageId: 3 File exists Data: 0x30bc8574fd7f0000
+[10325612ns] [INFO] SRC 2 DST 1 sending packet number: 18, of messageId: 3 File exists Data: 0x0000000000000000
+[10331102ns] [INFO] SRC 2 DST 1 sending packet number: 19, of messageId: 3 File exists Data: 0x0000000000000000
+[10336613ns] [INFO] SRC 2 DST 1 sending packet number: 20, of messageId: 3 File exists Data: 0xffff000000000000
+[10341915ns] [INFO] SRC 2 DST 1 sending packet number: 21, of messageId: 3 File exists Data: 0x00b49654b6550000
+[10347586ns] [INFO] SRC 2 DST 1 sending packet number: 22, of messageId: 3 File exists Data: 0x80bc8574fd7f0000
+[10353263ns] [INFO] SRC 2 DST 1 sending packet number: 23, of messageId: 3 File exists Data: 0x0000000000000000
+[10359569ns] [INFO] SRC 2 DST 1 sending packet number: 24, of messageId: 3 File exists Data: 0x00b49654b6550000
+[10365455ns] [INFO] SRC 2 DST 1 sending packet number: 25, of messageId: 3 File exists Data: 0x6000000000000000
+[10371774ns] [INFO] SRC 2 DST 1 sending packet number: 26, of messageId: 3 File exists Data: 0x00bb8574fd7f0000
+[10386005ns] [INFO] SRC 2 DST 1 sending packet number: 27, of messageId: 3 File exists Data: 0x0000000040ee707c
+[10391793ns] [INFO] SRC 2 DST 1 sending packet number: 28, of messageId: 3 File exists Data: 0xe06d25c24e7f0000
+[10397475ns] [INFO] SRC 2 DST 1 sending packet number: 29, of messageId: 3 File exists Data: 0x0000000000000000
+[10402932ns] [INFO] SRC 2 DST 1 sending packet number: 30, of messageId: 3 File exists Data: 0x408b9654b6550000
+[10412557ns] [INFO] SRC 2 DST 1 sending packet number: 31, of messageId: 3 File exists Data: 0x0000000000000000
+[10418873ns] [INFO] SRC 2 DST 1 sending packet number: 32, of messageId: 3 File exists Data: 0x0000000000000000
+[10424614ns] [INFO] SRC 2 DST 1 sending packet number: 33, of messageId: 3 File exists Data: 0x0000000000000000
+[10430013ns] [INFO] SRC 2 DST 1 sending packet number: 34, of messageId: 3 File exists Data: 0x009e9654b6550000
+[10435472ns] [INFO] SRC 2 DST 1 sending packet number: 35, of messageId: 3 File exists Data: 0x0000000000000000
+[10441444ns] [INFO] SRC 2 DST 1 sending packet number: 36, of messageId: 3 File exists Data: 0xc4b49654b6550000
+[10447440ns] [INFO] SRC 2 DST 1 sending packet number: 37, of messageId: 3 File exists Data: 0x0074a6a440ee707c
+[10456809ns] [INFO] SRC 2 DST 1 sending packet number: 38, of messageId: 3 File exists Data: 0x80be8574fd7f0000
+[10462568ns] [INFO] SRC 2 DST 1 sending packet number: 39, of messageId: 3 File exists Data: 0x80be8574fd7f0000
+[10468469ns] [INFO] SRC 2 DST 1 sending packet number: 40, of messageId: 3 File exists Data: 0x40bd8574fd7f0000
+[10474077ns] [INFO] SRC 2 DST 1 sending packet number: 41, of messageId: 3 File exists Data: 0x96c9bbc14e7f0000
+[10480491ns] [INFO] SRC 2 DST 1 sending packet number: 42, of messageId: 3 File exists Data: 0x149e9654b6550000
+[10486197ns] [INFO] SRC 2 DST 1 sending packet number: 43, of messageId: 3 File exists Data: 0x0800000000000000
+[10491902ns] [INFO] SRC 2 DST 1 sending packet number: 44, of messageId: 3 File exists Data: 0x40bd857402000000
+[10498254ns] [INFO] SRC 2 DST 1 sending packet number: 45, of messageId: 3 File exists Data: 0x90bd8574fd7f0000
+[10504085ns] [INFO] SRC 2 DST 1 sending packet number: 46, of messageId: 3 File exists Data: 0x0400000000000000
+[10509871ns] [INFO] SRC 2 DST 1 sending packet number: 47, of messageId: 3 File exists Data: 0x0101000000000000
+[10515463ns] [INFO] SRC 2 DST 1 sending packet number: 48, of messageId: 3 File exists Data: 0xc0
+[15961893594ns] [INFO] close socket number: 8

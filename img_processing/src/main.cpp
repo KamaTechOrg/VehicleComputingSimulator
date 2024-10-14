@@ -83,33 +83,41 @@ using namespace cv;
 //         }
 //     }
 // }
-#include <iostream>
-using namespace std;
-#include "communication.h"
+// #include <iostream>
+// #include <vector>
+// using namespace std;
+// #include "communication.h"
+// #include "alert.h"
+// #include "crypto_api.h"
+// void processData(uint32_t srcId, void *data) {}
 int main()
 {
-    Communication communication;
-     CryptoClient client(processID);
-    for (std::vector<uint8_t> &alertBuffer : alerts) {
-        // size_t encryptedLength =
-        //     client.getEncryptedLen(myId, alertBuffer.size());
-        // uint8_t encryptedData[encryptedLength];
-        // if (encryptData((const void *)alertBuffer.data(), alertBuffer.size(),
-        //                 encryptedData, encryptedLength, destID, processID)) {
-        //     LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
-        //                                 "encryption success!");
-        //     communication.sendMessage(encryptedData, encryptedLength, destID,
-        //                               processID, false);
-        // }
-        // else {
-            // LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
-            //                             "encryption fail!");
-            communication.sendMessage(alertBuffer.data(), alertBuffer.size(),
-                                      destID, processID, false);
-        // }
-    }
-    cout << "fd" << endl;
-    // int processID = readFromJson("ID");
+    int processID = readFromJson("ID");
+    // int destID = 1;
+    // Alert alert(false, 1, 2, 10.5, 5.5);
+    // vector<uint8_t> message = alert.serialize();
+    // Communication communication(processID, processData);
+    // CryptoClient client(processID);
+    // for (std::vector<uint8_t> &alertBuffer : alerts) {
+    // size_t encryptedLength =
+    //     client.getEncryptedLen(myId, alertBuffer.size());
+    // uint8_t encryptedData[encryptedLength];
+    // if (encryptData((const void *)alertBuffer.data(), alertBuffer.size(),
+    //                 encryptedData, encryptedLength, destID, processID)) {
+    //     LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+    //                                 "encryption success!");
+    //     communication.sendMessage(encryptedData, encryptedLength, destID,
+    //                               processID, false);
+    // }
+    // else {
+    // LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+    //                             "encryption fail!");
+    // communication.sendMessage(message.data(), message.size(), destID,
+                            //   processID, false);
+    // }
+    // }
+    // cout << "fd" << endl;
+
     // Manager manager(processID);
     // manager.init();
     // mainDemo(manager);

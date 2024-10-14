@@ -1356,6 +1356,7 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
  */
 size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
 {
+    log(logger::LogLevel::ERROR, "here");
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);
@@ -1395,6 +1396,7 @@ size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
  */
 size_t getDecryptedLen(int senderId, size_t inLen, bool isFirst)
 {
+    log(logger::LogLevel::ERROR, "here");
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);

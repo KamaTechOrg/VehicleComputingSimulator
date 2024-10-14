@@ -122,6 +122,23 @@ void PacketParser::loadJson(const std::string &jsonFilePath)
         Field field;
         field.name = fieldJson["name"];
         field.type = fieldType;
+
+    // Check the type and assign defaultValue accordingly
+    if (field.type == "boolean") {
+        field.defaultValue = fieldJson["defaultValue"].get<bool>();
+    } else if (field.type == "char_array") {
+        field.defaultValue = fieldJson["defaultValue"].get<std::string>();
+    } else if (field.type == "signed_int") {
+        field.defaultValue = fieldJson["defaultValue"].get<int>();
+    } else if (field.type == "unsigned_int") {
+        field.defaultValue = fieldJson["defaultValue"].get<unsigned int>();
+        std::cout << "field.defaultValue: " << fieldJson["defaultValue"].get<unsigned int>() << std::endl;
+    } else if (field.type == "float_fixed" || field.type == "float_mantissa") {
+        field.defaultValue = fieldJson["defaultValue"].get<float>();
+    } else if (field.type == "double") {
+        field.defaultValue = fieldJson["defaultValue"].get<double>();
+    }
+
         field.size = fieldSize;
         field.offset = currentOffset;
 
@@ -144,6 +161,7 @@ void PacketParser::loadJson(const std::string &jsonFilePath)
                 subField.type = subFieldType;
                 subField.size = subFieldSize;
                 subField.offset = bitFieldOffset;
+                subField.defaultValue = subFieldJson["defaultValue"].get<unsigned int>();
 
                 bitField.fields.push_back(subField);
                 bitFieldOffset += subField.size;

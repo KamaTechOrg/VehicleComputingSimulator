@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <sstream>
 
-std::ofstream logFile("../HSM_Communication.txt", std::ios::app);
+// std::ofstream logFile("../HSM_Communication.txt", std::ios::app);
 std::string getTimestamp()
 {
     auto now = std::chrono::system_clock::now();
@@ -29,20 +29,20 @@ std::string dataToHex(const unsigned char *data, size_t size)
 void log(logger::LogLevel loglevel, const std::string &hsm_id,
          const std::string &user_id, const std::string &message)
 {
-    std::string levelStr;
-    switch (loglevel) {
-        case logger::LogLevel::INFO:
-            levelStr = "INFO";
-            break;
-        case logger::LogLevel::ERROR:
-            levelStr = "ERROR";
-            break;
-    }
+    // std::string levelStr;
+    // switch (loglevel) {
+    //     case logger::LogLevel::INFO:
+    //         levelStr = "INFO";
+    //         break;
+    //     case logger::LogLevel::ERROR:
+    //         levelStr = "ERROR";
+    //         break;
+    // }
 
-    std::string logMessage = "[" + getTimestamp() + "ns] [" + levelStr +
-                             "] SRC " + hsm_id + " DST " + user_id + " " +
-                             message;
+    // std::string logMessage = "[" + getTimestamp() + "ns] [" + levelStr +
+    //                          "] SRC " + hsm_id + " DST " + user_id + " " +
+    //                          message;
 
-    // Write to file
-    logFile << logMessage << std::endl;
+    // // Write to file
+    // logFile << logMessage << std::endl;
 }

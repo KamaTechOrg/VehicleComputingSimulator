@@ -26,10 +26,11 @@ enum class FieldType {
 };
 
 struct Field {
-    std::string name;
-    std::string type;
-    size_t size;
-    size_t offset;
+  std::string name;
+  std::string type;
+  FieldValue defaultValue;
+  size_t size;
+  size_t offset;
 };
 
 struct BitField {
