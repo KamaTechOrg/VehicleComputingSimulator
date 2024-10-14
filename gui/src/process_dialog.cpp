@@ -63,6 +63,30 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     // If you need to use this in the future, remove the following lines:
     qemuPlatformCombo->setVisible(false);
     qemuPlatformLabel->setVisible(false);
+    
+    QLabel *SHAAlgorithm = new QLabel("SHAAlgorithm:", this);
+    optionsComboBox = new QComboBox(this);
+    optionsComboBox->addItems({"SHA_256", "SHA_512"}); // Add your options here
+    layout->addWidget(SHAAlgorithm);
+    layout->addWidget(optionsComboBox);
+    
+    QLabel *AESKeyLength = new QLabel("AESKeyLength:", this);
+    AESKComboBox = new QComboBox(this);
+    AESKComboBox->addItems({"AES_128","AES_192","AES_256"}); 
+    layout->addWidget(AESKeyLength);
+    layout->addWidget(AESKComboBox);
+    
+    QLabel *AESChainingMode = new QLabel("AESChainingMode:", this);
+    AESCComboBox = new QComboBox(this);
+    AESCComboBox->addItems({"CFB", "OFB" , "CBC" , "CTR", "ECB"}); 
+    layout->addWidget(AESChainingMode);
+    layout->addWidget(AESCComboBox);
+
+    QLabel *AsymmetricFunction = new QLabel("AsymmetricFunction:", this);
+    AsyComboBox = new QComboBox(this);
+    AsyComboBox->addItems({"ECC","RSA"}); 
+    layout->addWidget(AsymmetricFunction);
+    layout->addWidget(AsyComboBox);
 
     // Key Permissions section
     QLabel *permissionsLabel = new QLabel(tr("Key Permissions:"), this);
@@ -112,6 +136,11 @@ void ProcessDialog::selectExecutableFile()
     if (!fileName.isEmpty()) {
         executionFile->setText(fileName);  // Update the renamed QLineEdit
     }
+}
+
+QString ProcessDialog::getSelectedOption() const
+{
+    return optionsComboBox->currentText();
 }
 
 int ProcessDialog::getId() const
