@@ -29,8 +29,6 @@ void generateRandomIV(unsigned char *iv)
     std::uniform_int_distribution<> dis(0, 255);
     for (unsigned int i = 0; i < BLOCK_BYTES_LEN; i++)
         iv[i] = static_cast<unsigned char>(dis(gen));
-    //TODO delete this!
-    std::memset(iv, 01, BLOCK_BYTES_LEN);
 }
 
 unsigned int getPaddedLength(unsigned int originalLength)
@@ -90,7 +88,6 @@ void generateKey(unsigned char *key, AESKeyLength keyLength)
     // Fill the key with random bytes
     for (int i = 0; i < aesKeyLengthData[keyLength].keySize; i++)
         key[i] = dis(gen);
-    memset(key, 0, aesKeyLengthData[keyLength].keySize);
 }
 
 /**

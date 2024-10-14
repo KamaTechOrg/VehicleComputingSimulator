@@ -1355,11 +1355,10 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
  * the user does not exist or an error occurs.
  */
 size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
-{log(logger::LogLevel::ERROR, "come to the function");
+{
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);
-log(logger::LogLevel::ERROR, "------");
         // encrypted padded data (+ if first chunk: encrypted symmetric key)
         return getAESencryptedLength(inLen, isFirst, config.aesChainingMode) +
                (isFirst
