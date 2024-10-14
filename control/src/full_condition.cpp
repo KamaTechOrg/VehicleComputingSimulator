@@ -204,11 +204,11 @@ void FullCondition::activateActions()
         if (instanceGP.sensors[destID]->isUsingHSM){
             // Get the length of the encrypted data
             size_t encryptedLength =
-                instanceGP.client.getEncryptedLenClient(instanceGP.srcID, dataSize);
+                instanceGP.client.getEncryptedLen(instanceGP.srcID, dataSize);
             uint8_t encryptedData[encryptedLength];
 
             if (encryptData((const void *)message, dataSize, encryptedData,
-                            encryptedLength, destID, instanceGP.srcID))
+                            encryptedLength, destID))
                 instanceGP.controlLogger.logMessage(
                     logger::LogLevel::INFO, "The message encrypted successfully");
             else

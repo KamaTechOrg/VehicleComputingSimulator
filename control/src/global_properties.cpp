@@ -14,8 +14,7 @@ void handleMesseage(uint32_t senderId, void *data)
     // instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
     //                              instanceGP.srcID, false);
 
-    if (decryptData(data, instanceGP.sensors[senderId]->msgLength/8, senderId,
-                    instanceGP.srcID)){
+    if (decryptData(data, instanceGP.sensors[senderId]->msgLength / BITS_IN_BYTE, senderId)){
         instanceGP.controlLogger.logMessage(
                     logger::LogLevel::INFO, "The message dycrypted successfully");
     }
@@ -61,7 +60,7 @@ int readIdFromJson()
 }
 
 // Initializes the sensors based on a JSON file
-GlobalProperties::GlobalProperties()
+GlobalProperties::GlobalProperties() : client(srcID)
 {
     controlLogger.logMessage(logger::LogLevel::INFO, "Initializing...");
 
