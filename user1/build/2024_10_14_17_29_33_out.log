@@ -36,3 +36,5 @@
 [1477248128ns] [INFO] SRC 2 DST 1 sending packet number: 31, of messageId: 3 File exists Data: 0x2186db39414b9bf6
 [1477253713ns] [INFO] SRC 2 DST 1 sending packet number: 32, of messageId: 3 File exists Data: 0xf7fa4550d88d2066
 [1477258700ns] [INFO] SRC 2 DST 1 sending packet number: 33, of messageId: 3 File exists Data: 0x43442154a8c8cb03
+[125572059816ns] [INFO] SRC 0 DST 0  connection closed: in socket 7 Success
+[125572098127ns] [INFO] close socket number: 7
