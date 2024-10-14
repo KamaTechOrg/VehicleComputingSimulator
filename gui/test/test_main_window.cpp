@@ -1,4 +1,9 @@
 #include <QtTest/QtTest>
+#include <QTimer>
+#include <chrono>
+#include <thread>
+#include <QDebug>
+#include <sys/resource.h>
 #include "main_window.h"
 
 class TestMainWindow : public QObject {
@@ -14,8 +19,10 @@ private slots:
     void testStartProcesses();
     void testEndProcesses();
     void testDeleteSquare();
+    void testSetCoreDumpLimit();
     void testShowTimerInput();
     void addId(int id);
+    void testHandleProcessCrash();
 
 private:
     MainWindow *window;  // Pointer to MainWindow to allow reuse in each test
@@ -38,7 +45,7 @@ void TestMainWindow::testCreateNewProcess()
 {
     int newProcessId = 6;
     QString processName = "NewProcess";
-    QString cmakeProject = "../dummy_program1";
+    QString cmakeProject = "../test/dummy_program2/CMakeLists.txt";
     QString qemuPlatform = "QEMUPlatform";
 
     Process *newProcess =
@@ -59,7 +66,7 @@ void TestMainWindow::testCreateNewProcess()
 void TestMainWindow::testAddProcessSquare()
 {
     Process *newProcess =
-        new Process(5, "Test Process", "../dummy_program1", "QEMUPlatform");
+        new Process(5, "Test Process", "../test/dummy_program2/CMakeLists.txt", "QEMUPlatform");
     window->addProcessSquare(newProcess);
     QCOMPARE(window->squares.size(), 5);  // Check if square is added
 
@@ -94,7 +101,7 @@ void TestMainWindow::testEndProcesses()
 
 void TestMainWindow::testDeleteSquare()
 {
-    QString cmakeProject = "../dummy_program1";
+    QString cmakeProject = "../test/dummy_program2/CMakeLists.txt";
     Process *process =
         new Process(5, "Test Process", cmakeProject, "QEMUPlatform");
     window->addProcessSquare(process);
@@ -128,6 +135,72 @@ void TestMainWindow::testShowTimerInput()
     // Now, the time input and label should be visible
     QVERIFY(window->timeInput->isVisible());
     QVERIFY(window->timeLabel->isVisible());
+}
+
+void TestMainWindow::testSetCoreDumpLimit()
+{
+    window->compileProjects();
+    struct rlimit core_limit;
+    getrlimit(RLIMIT_CORE, &core_limit);
+
+    QCOMPARE(core_limit.rlim_cur, RLIM_INFINITY);
+    QCOMPARE(core_limit.rlim_max, RLIM_INFINITY);
+}
+
+void TestMainWindow::testHandleProcessCrash()
+{
+    int crashProcessId = 777;
+    QString processName = "CrashProcess";
+    QString cmakeProject = "../test/crash_program/CMakeLists.txt";  // Path to dummy crash program
+    QString qemuPlatform = "QEMUPlatform";
+
+    Process *crashProcess =
+        new Process(crashProcessId, processName, cmakeProject, qemuPlatform);
+    window->addProcessSquare(crashProcess);
+    window->addId(crashProcessId);
+
+    // Compile and run the crashing program
+    window->compileProjects();
+    window->runProjects();  // This runs the crashing process
+
+    // Wait for the process to finish running
+    QTest::qWait(15000);  // Adjust this wait time as needed
+
+    // Get the process ID and check for core dump creation
+    qint64 pid = crashProcess->getId();
+    std::string executablePath = crashProcess->getExecutionFile().toStdString();
+    
+    // Form the correct path to the build directory
+    QString processDir = QFileInfo(QString::fromStdString(executablePath)).absolutePath();
+    QString buildDir = processDir + "/build";
+
+    // Search for the backtrace file that starts with "backtrace"
+    QDir dir(buildDir);
+    QStringList filters;
+    filters << "backtrace*.txt";  // Look for files starting with "backtrace" and ending in ".txt"
+    dir.setNameFilters(filters);
+    QFileInfoList files = dir.entryInfoList();
+
+    // Verify that at least one file matching the pattern exists
+    QVERIFY(!files.isEmpty());  // Ensure there is at least one matching backtrace file
+
+    // Open the first matching backtrace file
+    QFile backtraceFile(files.first().absoluteFilePath());
+    QVERIFY(backtraceFile.exists());  // Verify that the backtrace file exists
+
+    // Optional: Verify the content of the backtrace file
+    QVERIFY(backtraceFile.open(QIODevice::ReadOnly));
+    QByteArray fileContents = backtraceFile.readAll();
+    QVERIFY(fileContents.contains("# Crash Report"));  // Check for crash report header
+    QVERIFY(fileContents.contains("int a = 5/z"));  // Check for crash location in file content
+
+    // End the running processes after verifying the core dump and backtrace
+    window->endProcesses();
+    QVERIFY(window->runningProcesses.isEmpty());  // Ensure processes are stopped
+
+    // Clean up
+    delete crashProcess;
+    backtraceFile.close();
 }
 
 QTEST_MAIN(TestMainWindow)
