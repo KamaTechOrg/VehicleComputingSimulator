@@ -436,6 +436,7 @@ std::string getPrivateRSAKeyByUserId(int userId)
 CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t &outLen)
 {
+    LOG_BUFFER_HEXA(in, inLen, "plain text to encrypt");
     CK_RV error =
         logAndHandleErrors("ECC Encryption", senderId, keyId, in, inLen, out,
                            outLen, getECCencryptedLength(), true);
@@ -467,7 +468,7 @@ CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
     log(logger::LogLevel::INFO,
         "Successfully completed ECC encryption for user id: " +
             std::to_string(senderId));
-
+    LOG_BUFFER_HEXA(out, outLen, "encrypted");
     return CKR_OK;
 }
 
@@ -475,6 +476,7 @@ CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
 CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t &outLen, size_t requiredOutLen)
 {
+    LOG_BUFFER_HEXA(in, inLen, "encrypted to decrypt");
     // std::string eccPrivateKeyString;
     // try {
     //   eccPrivateKeyString =
@@ -522,7 +524,7 @@ CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
     log(logger::LogLevel::INFO,
         "Successfully completed ECC decryption for user id: " +
             std::to_string(receiverId));
-
+    LOG_BUFFER_HEXA(out, outLen, "decrypted");
     return CKR_OK;
 }
 
@@ -1356,7 +1358,7 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
  */
 size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
 {
-    log(logger::LogLevel::ERROR, "here");
+    log(logger::LogLevel::INFO, "here getEncryptedLen");
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);
@@ -1396,7 +1398,7 @@ size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
  */
 size_t getDecryptedLen(int senderId, size_t inLen, bool isFirst)
 {
-    log(logger::LogLevel::ERROR, "here");
+    log(logger::LogLevel::INFO, "here getDecryptedLen");
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);

@@ -1,6 +1,6 @@
 #ifndef __GENERAL_H__
 #define __GENERAL_H__
-#include "logger.h"
+#include "../logger/logger.h"
 typedef unsigned long CK_RV;
 
 /* Successful operation */

@@ -9,6 +9,7 @@ if(NOT GMP_INCLUDE_DIR OR NOT GMP_LIBRARY OR NOT GMPXX_LIBRARY)
   message(FATAL_ERROR "Could not find GMP or GMPXX libraries")
 endif()
 include_directories(${GMP_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Specify C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,8 +26,9 @@ set(PROTO_FILES
 set(PROTOC_PATH "/usr/local/bin/protoc")
 set(GRPC_CPP_PLUGIN_PATH "/usr/local/bin/grpc_cpp_plugin")
 # Specify output directory for generated files
-set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated")
-file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
+# set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated")
+set(PROTO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR})
+# file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
 # Generate C++ source files from proto files
 foreach(proto_file ${PROTO_FILES})
     get_filename_component(proto_name ${proto_file} NAME_WE)
@@ -54,6 +56,7 @@ endforeach()
 include_directories(${PROTO_GEN_DIR})
 # Include directories for protobuf and gRPC
 include_directories(${Protobuf_INCLUDE_DIRS} ${GRPC_INCLUDE_DIRS})
+
 # Add the logger library
 file(GLOB LOGGER_SOURCES "logger/*.cpp")
 add_library(logger STATIC ${LOGGER_SOURCES})

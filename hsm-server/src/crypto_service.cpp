@@ -13,55 +13,20 @@
 #include <string>
 #include <csignal>
 
-grpc::Status CryptoServiceServer::bootSystem(
-    grpc::ServerContext *context, const crypto::BootSystemRequest *request,
-    crypto::Empty *response)
+#pragma region Encrypt / Decrypt
+/**
+ * Retrieves the length of encrypted data for a specific sender.
+ *
+ * @param context The gRPC server context.
+ * @param request The request containing sender ID and input length.
+ * @param response The response object to send back the length.
+ * @return grpc::Status indicating the success or failure of the operation.
+ */
+grpc::Status CryptoServiceServer::getEncryptedLen(
+    grpc::ServerContext *context, const crypto::GetWholeLength *request,
+    crypto::GetLengthResponse *response)
 {
-    std::map<int, std::vector<KeyPermission>> usersIdsPermissions;
-    for (auto user : request->usersidspermissions())
-        for (auto permission : user.permissions())
-            usersIdsPermissions[user.userid()].push_back(
-                static_cast<KeyPermission>(permission));
-    if (::bootSystem(usersIdsPermissions) == CKR_OK)
-        return grpc::Status::OK;
-    return grpc::Status::CANCELLED;
-}
-
-grpc::Status CryptoServiceServer::addProccess(
-    grpc::ServerContext *context, const crypto::AddProcessRequest *request,
-    crypto::Empty *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->permissions().data(),
-                      request->permissions().size()));
-    std::vector<KeyPermission> permissions;
-    for (auto permission : request->permissions())
-        permissions.push_back(static_cast<KeyPermission>(permission));
-    if (::addProccess(request->userid(), permissions) == CKR_OK) {
-        log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-            std::to_string(request->userid()),
-            std::string("sending packet number: ") + std::to_string(1) +
-                std::string(", of messageId: ") +
-                std::to_string(request->userid()) +
-                std::string(", total packets: ") + std::to_string(1) + " " +
-                "Success Data: " +
-                dataToHex((unsigned char *)response->SerializeAsString().data(),
-                          response->SerializeAsString().size()));
-        return grpc::Status::OK;
-    }
-    return grpc::Status::CANCELLED;
-}
-
-grpc::Status CryptoServiceServer::configure(
-    grpc::ServerContext *context, const crypto::ConfigureRequest *request,
-    crypto::Empty *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
         std::to_string(HSM_ID),
         std::string("received packet number: ") + std::to_string(1) +
             std::string(", of messageId: ") + request->messageid() +
@@ -69,24 +34,52 @@ grpc::Status CryptoServiceServer::configure(
             std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)request->SerializeAsString().data(),
                       request->SerializeAsString().size()));
-    CryptoConfig config(
-        static_cast<SHAAlgorithm>(request->config().hashfunction()),
-        static_cast<AESKeyLength>(request->config().aeskeylength()),
-        static_cast<AESChainingMode>(request->config().aeschainingmode()),
-        static_cast<AsymmetricFunction>(
-            request->config().asymmetricfunction()));
-    if (::configure(request->userid(), config) == CKR_OK) {
-        log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-            std::to_string(request->userid()),
-            std::string("sending packet number: ") + std::to_string(1) +
-                std::string(", of messageId: ") + request->messageid() +
-                std::string(", total packets: ") + std::to_string(1) +
-                std::string(" ") + "Success Data: " +
-                dataToHex((unsigned char *)response->SerializeAsString().data(),
-                          response->SerializeAsString().size()));
-        return grpc::Status::OK;
-    }
-    return grpc::Status::CANCELLED;
+    response->set_length(::getEncryptedLen(
+        request->senderid(), request->inlen(), request->isfirst()));
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") +
+            std::to_string(request->senderid()) + request->messageid() + "21" +
+            std::to_string(1) + std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+/**
+ * Retrieves the length of decrypted data for a specific sender.
+ *
+ * @param context The gRPC server context.
+ * @param request The request containing sender ID and input length.
+ * @param response The response object to send back the length.
+ * @return grpc::Status indicating the success or failure of the operation.
+ */
+grpc::Status CryptoServiceServer::getDecryptedLen(
+    grpc::ServerContext *context, const crypto::GetWholeLength *request,
+    crypto::GetLengthResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    response->set_length(::getDecryptedLen(
+        request->senderid(), request->inlen(), request->isfirst()));
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "22" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
 }
 
 /**
@@ -192,6 +185,7 @@ grpc::Status CryptoServiceServer::decrypt(grpc::ServerContext *context,
         request->signature().length(), out, outLen, request->counter());
     if (status != CKR_OK)
         return grpc::Status::CANCELLED;
+    response->set_decryptedlength(outLen);
     response->set_decrypteddata(out, outLen);
     delete[](uint8_t *) out;
     log(logger::LogLevel::INFO, std::to_string(HSM_ID),
@@ -209,449 +203,9 @@ grpc::Status CryptoServiceServer::decrypt(grpc::ServerContext *context,
     return grpc::Status::OK;
 }
 
-/**
- * Generates an AES key with the specified permissions and user ID.
- *
- * @param context The gRPC server context.
- * @param request The request containing the user ID and key length.
- * @param response The response containing the generated AES key.
- * @return The gRPC status indicating success or failure.
- */
-grpc::Status CryptoServiceServer::generateAESKey(
-    grpc::ServerContext *context, const crypto::GenerateAESKeyRequest *request,
-    crypto::GenerateAESKeyResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    std::vector<KeyPermission> permissions;
-    for (auto permission : request->permissions())
-        permissions.push_back(static_cast<KeyPermission>(permission));
-    response->set_aeskey(::generateAESKey(
-        request->userid(), static_cast<AESKeyLength>(request->keylength()),
-        permissions, request->destuserid()));
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->userid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "3" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
+#pragma endregion
 
-    return grpc::Status::OK;
-}
-
-/**
- * Generates an RSA key pair with the specified permissions and user ID.
- *
- * @param context The gRPC server context.
- * @param request The request containing the user ID and permissions.
- * @param response The response containing the generated RSA key pair.
- * @return The gRPC status indicating success or failure.
- */
-grpc::Status CryptoServiceServer::generateRSAKeyPair(
-    grpc::ServerContext *context, const crypto::GenerateKeyPairRequest *request,
-    crypto::GenerateKeyPairResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    std::vector<KeyPermission> permissions;
-    for (auto permission : request->permissions())
-        permissions.push_back(static_cast<KeyPermission>(permission));
-    std::pair<std::string, std::string> pair =
-        ::generateRSAKeyPair(request->userid(), permissions);
-    response->set_privatekey(pair.second);
-    response->set_publickey(pair.first);
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->userid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "4" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-/**
- * Generates an ECC key pair with the specified permissions and user ID.
- *
- * @param context The gRPC server context.
- * @param request The request containing the user ID and permissions.
- * @param response The response containing the generated ECC key pair.
- * @return The gRPC status indicating success or failure.
- */
-grpc::Status CryptoServiceServer::generateECCKeyPair(
-    grpc::ServerContext *context, const crypto::GenerateKeyPairRequest *request,
-    crypto::GenerateKeyPairResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    std::vector<KeyPermission> permissions;
-    for (auto permission : request->permissions())
-        permissions.push_back(static_cast<KeyPermission>(permission));
-    std::pair<std::string, std::string> pair =
-        ::generateECCKeyPair(request->userid(), permissions);
-    response->set_privatekey(pair.second);
-    response->set_publickey(pair.first);
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->userid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "5" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-/**
- * Retrieves the length of signed data (signature length).
- *
- * @param context The gRPC server context.
- * @param request The request for getting the hash length.
- * @param response The response containing the length of the signed data.
- * @return The gRPC status indicating success or failure.
- */
-grpc::Status CryptoServiceServer::getSignedDataLength(
-    grpc::ServerContext *context, const crypto::GetHashLengthRequest *request,
-    crypto::GetLengthResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_len(::getSignatureLength());
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") +
-            std::to_string(request->senderid()) + request->messageid() + "6" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Retrieves the public ECC key associated with a given user ID.
-grpc::Status CryptoServiceServer::getPublicECCKeyByUserId(
-    grpc::ServerContext *context, const crypto::KeyRequest *request,
-    crypto::KeyResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_key(::getPublicECCKeyByUserId(request->userid()));
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->userid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "7" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Retrieves the public RSA key associated with a given user ID.
-grpc::Status CryptoServiceServer::getPublicRSAKeyByUserId(
-    grpc::ServerContext *context, const crypto::KeyRequest *request,
-    crypto::KeyResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->userid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_key(::getPublicRSAKeyByUserId(request->userid()));
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->userid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "8" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Gets the length of the encrypted ECC data.
-grpc::Status CryptoServiceServer::getECCencryptedLength(
-    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
-    crypto::GetLengthResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_len(::getECCencryptedLength());
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "9" +
-            std::to_string(std::time(nullptr)) +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Gets the length of the decrypted ECC data.
-grpc::Status CryptoServiceServer::getECCDecryptedLength(
-    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
-    crypto::GetLengthResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_len(::getECCdecryptedLength());
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "10" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Encrypts data using ECC with the specified sender ID and key ID.
-grpc::Status CryptoServiceServer::ECCencrypt(
-    grpc::ServerContext *context,
-    const crypto::AsymetricEncryptRequest *request,
-    crypto::AsymetricEncryptResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->data().data(),
-                      request->data().size()));
-    size_t outLen = ::getECCencryptedLength();
-    void *out = new uint8_t[outLen];
-
-    ::ECCencrypt(request->senderid(), request->keyid(),
-                 (void *)request->data().data(), request->data().length(), out,
-                 outLen);
-    response->set_encrypteddata(out, outLen);
-    delete[](uint8_t *) out;
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "11" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->encrypteddata().data(),
-                      response->encrypteddata().size()));
-
-    return grpc::Status::OK;
-}
-
-// Decrypts ECC-encrypted data using the specified receiver ID and key ID.
-grpc::Status CryptoServiceServer::ECCdecrypt(
-    grpc::ServerContext *context,
-    const crypto::AsymetricDecryptRequest *request,
-    crypto::AsymetricDecryptResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->data().data(),
-                      request->data().size()));
-    size_t outLen = ::getECCdecryptedLength();
-    void *out = new uint8_t[outLen];
-    ::ECCdecrypt(request->receiverid(), request->keyid(),
-                 (void *)request->data().data(), request->data().length(), out,
-                 outLen);
-    response->set_decrypteddata(out, outLen);
-    delete[](uint8_t *) out;
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "12" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->decrypteddata().data(),
-                      response->decrypteddata().size()));
-
-    return grpc::Status::OK;
-}
-
-// Gets the length of the encrypted RSA data.
-grpc::Status CryptoServiceServer::getRSAencryptedLength(
-    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
-    crypto::GetLengthResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_len(::getRSAencryptedLength());
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "13" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Gets the length of the decrypted RSA data.
-grpc::Status CryptoServiceServer::getRSAdecryptedLength(
-    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
-    crypto::GetLengthResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->SerializeAsString().data(),
-                      request->SerializeAsString().size()));
-    response->set_len(::getRSAdecryptedLength());
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "14" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->SerializeAsString().data(),
-                      response->SerializeAsString().size()));
-
-    return grpc::Status::OK;
-}
-
-// Encrypts data using RSA with the specified sender ID and key ID.
-grpc::Status CryptoServiceServer::RSAencrypt(
-    grpc::ServerContext *context,
-    const crypto::AsymetricEncryptRequest *request,
-    crypto::AsymetricEncryptResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") +
-            std::to_string(request->senderid()) +
-            std::to_string(std::time(nullptr)) +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->data().data(),
-                      request->data().size()));
-    size_t outLen = ::getRSAencryptedLength();
-    void *out = new uint8_t[outLen];
-
-    ::RSAencrypt(request->senderid(), request->keyid(),
-                 (void *)request->data().data(), request->data().length(), out,
-                 outLen);
-    response->set_encrypteddata(out, outLen);
-    delete[](uint8_t *) out;
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + "15" + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->encrypteddata().data(),
-                      response->encrypteddata().size()));
-
-    return grpc::Status::OK;
-}
-
-// Decrypts RSA-encrypted data using the specified receiver ID and key ID.
-grpc::Status CryptoServiceServer::RSAdecrypt(
-    grpc::ServerContext *context,
-    const crypto::AsymetricDecryptRequest *request,
-    crypto::AsymetricDecryptResponse *response)
-{
-    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
-        std::to_string(HSM_ID),
-        std::string("received packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)request->data().data(),
-                      request->data().size()));
-    size_t outLen = ::getRSAdecryptedLength();
-    void *out = new uint8_t[outLen];
-    ::RSAdecrypt(request->receiverid(), request->keyid(),
-                 (void *)request->data().data(), request->data().length(), out,
-                 &outLen);
-    response->set_decrypteddata(out, outLen);
-    delete[](uint8_t *) out;
-    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
-        std::to_string(request->senderid()),
-        std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "16" +
-            std::string(", total packets: ") + std::to_string(1) +
-            std::string(" ") + "Success Data: " +
-            dataToHex((unsigned char *)response->decrypteddata().data(),
-                      response->decrypteddata().size()));
-
-    return grpc::Status::OK;
-}
-
+#pragma region AES
 // aes
 /**
  * Retrieves the length of encrypted data using AES.
@@ -674,7 +228,7 @@ grpc::Status CryptoServiceServer::getAESencryptedLength(
             std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)request->SerializeAsString().data(),
                       request->SerializeAsString().size()));
-    response->set_len(::getAESencryptedLength(
+    response->set_length(::getAESencryptedLength(
         request->datalen(), request->isfirst(),
         static_cast<AESChainingMode>(request->chainingmode())));
     log(logger::LogLevel::INFO, std::to_string(HSM_ID),
@@ -709,7 +263,7 @@ grpc::Status CryptoServiceServer::getAESdecryptedLength(
             std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)request->SerializeAsString().data(),
                       request->SerializeAsString().size()));
-    response->set_len(::getAESdecryptedLength(
+    response->set_length(::getAESdecryptedLength(
         request->datalen(), request->isfirst(),
         static_cast<AESChainingMode>(request->chainingmode())));
     log(logger::LogLevel::INFO, std::to_string(HSM_ID),
@@ -815,6 +369,7 @@ grpc::Status CryptoServiceServer::AESdecrypt(
         request->counter(), request->keyid());
     if (status != CKR_OK)
         return grpc::Status::CANCELLED;
+    response->set_decryptedlength(outLen);
     response->set_decrypteddata(out.get(), outLen);
     log(logger::LogLevel::INFO, std::to_string(HSM_ID),
         std::to_string(request->senderid()),
@@ -831,16 +386,12 @@ grpc::Status CryptoServiceServer::AESdecrypt(
     return grpc::Status::OK;
 }
 
-/**
- * Retrieves the length of encrypted data for a specific sender.
- *
- * @param context The gRPC server context.
- * @param request The request containing sender ID and input length.
- * @param response The response object to send back the length.
- * @return grpc::Status indicating the success or failure of the operation.
- */
-grpc::Status CryptoServiceServer::getEncryptedLen(
-    grpc::ServerContext *context, const crypto::GetWholeLength *request,
+#pragma endregion
+
+#pragma region ECC
+// Gets the length of the encrypted ECC data.
+grpc::Status CryptoServiceServer::getECCencryptedLength(
+    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
     crypto::GetLengthResponse *response)
 {
     log(logger::LogLevel::INFO, std::to_string(request->senderid()),
@@ -851,30 +402,23 @@ grpc::Status CryptoServiceServer::getEncryptedLen(
             std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)request->SerializeAsString().data(),
                       request->SerializeAsString().size()));
-    response->set_len(::getEncryptedLen(request->senderid(), request->inlen(),
-                                        request->isfirst()));
+    response->set_length(::getECCencryptedLength());
     log(logger::LogLevel::INFO, std::to_string(HSM_ID),
         std::to_string(request->senderid()),
         std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") +
-            std::to_string(request->senderid()) + request->messageid() + "21" +
-            std::to_string(1) + std::string(" ") + "Success Data: " +
+            std::string(", of messageId: ") + request->messageid() + "9" +
+            std::to_string(std::time(nullptr)) +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)response->SerializeAsString().data(),
                       response->SerializeAsString().size()));
 
     return grpc::Status::OK;
 }
 
-/**
- * Retrieves the length of decrypted data for a specific sender.
- *
- * @param context The gRPC server context.
- * @param request The request containing sender ID and input length.
- * @param response The response object to send back the length.
- * @return grpc::Status indicating the success or failure of the operation.
- */
-grpc::Status CryptoServiceServer::getDecryptedLen(
-    grpc::ServerContext *context, const crypto::GetWholeLength *request,
+// Gets the length of the decrypted ECC data.
+grpc::Status CryptoServiceServer::getECCDecryptedLength(
+    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
     crypto::GetLengthResponse *response)
 {
     log(logger::LogLevel::INFO, std::to_string(request->senderid()),
@@ -885,12 +429,240 @@ grpc::Status CryptoServiceServer::getDecryptedLen(
             std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)request->SerializeAsString().data(),
                       request->SerializeAsString().size()));
-    response->set_len(::getDecryptedLen(request->senderid(), request->inlen(),
-                                        request->isfirst()));
+    response->set_length(::getECCdecryptedLength());
     log(logger::LogLevel::INFO, std::to_string(HSM_ID),
         std::to_string(request->senderid()),
         std::string("sending packet number: ") + std::to_string(1) +
-            std::string(", of messageId: ") + request->messageid() + "22" +
+            std::string(", of messageId: ") + request->messageid() + "10" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+// Encrypts data using ECC with the specified sender ID and key ID.
+grpc::Status CryptoServiceServer::ECCencrypt(
+    grpc::ServerContext *context,
+    const crypto::AsymetricEncryptRequest *request,
+    crypto::AsymetricEncryptResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->data().data(),
+                      request->data().size()));
+    size_t outLen = ::getECCencryptedLength();
+    void *out = new uint8_t[outLen];
+
+    ::ECCencrypt(request->senderid(), request->keyid(),
+                 (void *)request->data().data(), request->data().length(), out,
+                 outLen);
+    response->set_encrypteddata(out, outLen);
+    delete[](uint8_t *) out;
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "11" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->encrypteddata().data(),
+                      response->encrypteddata().size()));
+
+    return grpc::Status::OK;
+}
+
+// Decrypts ECC-encrypted data using the specified receiver ID and key ID.
+grpc::Status CryptoServiceServer::ECCdecrypt(
+    grpc::ServerContext *context,
+    const crypto::AsymetricDecryptRequest *request,
+    crypto::AsymetricDecryptResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->data().data(),
+                      request->data().size()));
+    size_t outLen = ::getECCdecryptedLength();
+    void *out = new uint8_t[outLen];
+    ::ECCdecrypt(request->receiverid(), request->keyid(),
+                 (void *)request->data().data(), request->data().length(), out,
+                 outLen);
+    response->set_decrypteddata(out, outLen);
+    response->set_decryptedlength(outLen);
+    delete[](uint8_t *) out;
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "12" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->decrypteddata().data(),
+                      response->decrypteddata().size()));
+
+    return grpc::Status::OK;
+}
+
+#pragma endregion
+
+#pragma region RSA
+// Gets the length of the encrypted RSA data.
+grpc::Status CryptoServiceServer::getRSAencryptedLength(
+    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
+    crypto::GetLengthResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    response->set_length(::getRSAencryptedLength());
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "13" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+// Gets the length of the decrypted RSA data.
+grpc::Status CryptoServiceServer::getRSAdecryptedLength(
+    grpc::ServerContext *context, const crypto::GetLengthRequest *request,
+    crypto::GetLengthResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    response->set_length(::getRSAdecryptedLength());
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "14" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+// Encrypts data using RSA with the specified sender ID and key ID.
+grpc::Status CryptoServiceServer::RSAencrypt(
+    grpc::ServerContext *context,
+    const crypto::AsymetricEncryptRequest *request,
+    crypto::AsymetricEncryptResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") +
+            std::to_string(request->senderid()) +
+            std::to_string(std::time(nullptr)) +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->data().data(),
+                      request->data().size()));
+    size_t outLen = ::getRSAencryptedLength();
+    void *out = new uint8_t[outLen];
+
+    ::RSAencrypt(request->senderid(), request->keyid(),
+                 (void *)request->data().data(), request->data().length(), out,
+                 outLen);
+    response->set_encrypteddata(out, outLen);
+    delete[](uint8_t *) out;
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + "15" + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->encrypteddata().data(),
+                      response->encrypteddata().size()));
+
+    return grpc::Status::OK;
+}
+
+// Decrypts RSA-encrypted data using the specified receiver ID and key ID.
+grpc::Status CryptoServiceServer::RSAdecrypt(
+    grpc::ServerContext *context,
+    const crypto::AsymetricDecryptRequest *request,
+    crypto::AsymetricDecryptResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->data().data(),
+                      request->data().size()));
+    size_t outLen = ::getRSAdecryptedLength();
+    void *out = new uint8_t[outLen];
+    ::RSAdecrypt(request->receiverid(), request->keyid(),
+                 (void *)request->data().data(), request->data().length(), out,
+                 &outLen);
+    response->set_decryptedlength(outLen);
+    response->set_decrypteddata(out, outLen);
+    delete[](uint8_t *) out;
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "16" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->decrypteddata().data(),
+                      response->decrypteddata().size()));
+
+    return grpc::Status::OK;
+}
+#pragma endregion
+
+#pragma region Sign / Verify
+/**
+ * Retrieves the length of signed data (signature length).
+ *
+ * @param context The gRPC server context.
+ * @param request The request for getting the hash length.
+ * @param response The response containing the length of the signed data.
+ * @return The gRPC status indicating success or failure.
+ */
+grpc::Status CryptoServiceServer::getSignedDataLength(
+    grpc::ServerContext *context, const crypto::GetHashLengthRequest *request,
+    crypto::GetLengthResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->senderid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    response->set_length(::getSignatureLength());
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->senderid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") +
+            std::to_string(request->senderid()) + request->messageid() + "6" +
             std::string(", total packets: ") + std::to_string(1) +
             std::string(" ") + "Success Data: " +
             dataToHex((unsigned char *)response->SerializeAsString().data(),
@@ -1060,6 +832,257 @@ grpc::Status CryptoServiceServer::verifyFinalize(
     return grpc::Status::OK;
 }
 
+#pragma endregion
+
+#pragma region Config
+
+grpc::Status CryptoServiceServer::bootSystem(
+    grpc::ServerContext *context, const crypto::BootSystemRequest *request,
+    crypto::Empty *response)
+{
+    std::map<int, std::vector<KeyPermission>> usersIdsPermissions;
+    for (auto user : request->usersidspermissions())
+        for (auto permission : user.permissions())
+            usersIdsPermissions[user.userid()].push_back(
+                static_cast<KeyPermission>(permission));
+    if (::bootSystem(usersIdsPermissions) == CKR_OK)
+        return grpc::Status::OK;
+    return grpc::Status::CANCELLED;
+}
+
+grpc::Status CryptoServiceServer::addProccess(
+    grpc::ServerContext *context, const crypto::AddProcessRequest *request,
+    crypto::Empty *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->permissions().data(),
+                      request->permissions().size()));
+    std::vector<KeyPermission> permissions;
+    for (auto permission : request->permissions())
+        permissions.push_back(static_cast<KeyPermission>(permission));
+    if (::addProccess(request->userid(), permissions) == CKR_OK) {
+        log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+            std::to_string(request->userid()),
+            std::string("sending packet number: ") + std::to_string(1) +
+                std::string(", of messageId: ") +
+                std::to_string(request->userid()) +
+                std::string(", total packets: ") + std::to_string(1) + " " +
+                "Success Data: " +
+                dataToHex((unsigned char *)response->SerializeAsString().data(),
+                          response->SerializeAsString().size()));
+        return grpc::Status::OK;
+    }
+    return grpc::Status::CANCELLED;
+}
+
+grpc::Status CryptoServiceServer::configure(
+    grpc::ServerContext *context, const crypto::ConfigureRequest *request,
+    crypto::Empty *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    CryptoConfig config(
+        static_cast<SHAAlgorithm>(request->config().hashfunction()),
+        static_cast<AESKeyLength>(request->config().aeskeylength()),
+        static_cast<AESChainingMode>(request->config().aeschainingmode()),
+        static_cast<AsymmetricFunction>(
+            request->config().asymmetricfunction()));
+    if (::configure(request->userid(), config) == CKR_OK) {
+        log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+            std::to_string(request->userid()),
+            std::string("sending packet number: ") + std::to_string(1) +
+                std::string(", of messageId: ") + request->messageid() +
+                std::string(", total packets: ") + std::to_string(1) +
+                std::string(" ") + "Success Data: " +
+                dataToHex((unsigned char *)response->SerializeAsString().data(),
+                          response->SerializeAsString().size()));
+        return grpc::Status::OK;
+    }
+    return grpc::Status::CANCELLED;
+}
+
+#pragma endregion
+#pragma region keys
+// Retrieves the public ECC key associated with a given user ID.
+grpc::Status CryptoServiceServer::getPublicECCKeyByUserId(
+    grpc::ServerContext *context, const crypto::KeyRequest *request,
+    crypto::KeyResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    response->set_key(::getPublicECCKeyByUserId(request->userid()));
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->userid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "7" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+// Retrieves the public RSA key associated with a given user ID.
+grpc::Status CryptoServiceServer::getPublicRSAKeyByUserId(
+    grpc::ServerContext *context, const crypto::KeyRequest *request,
+    crypto::KeyResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    response->set_key(::getPublicRSAKeyByUserId(request->userid()));
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->userid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "8" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+/**
+ * Generates an AES key with the specified permissions and user ID.
+ *
+ * @param context The gRPC server context.
+ * @param request The request containing the user ID and key length.
+ * @param response The response containing the generated AES key.
+ * @return The gRPC status indicating success or failure.
+ */
+grpc::Status CryptoServiceServer::generateAESKey(
+    grpc::ServerContext *context, const crypto::GenerateAESKeyRequest *request,
+    crypto::GenerateAESKeyResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    std::vector<KeyPermission> permissions;
+    for (auto permission : request->permissions())
+        permissions.push_back(static_cast<KeyPermission>(permission));
+    response->set_aeskey(::generateAESKey(
+        request->userid(), static_cast<AESKeyLength>(request->keylength()),
+        permissions, request->destuserid()));
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->userid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "3" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+/**
+ * Generates an RSA key pair with the specified permissions and user ID.
+ *
+ * @param context The gRPC server context.
+ * @param request The request containing the user ID and permissions.
+ * @param response The response containing the generated RSA key pair.
+ * @return The gRPC status indicating success or failure.
+ */
+grpc::Status CryptoServiceServer::generateRSAKeyPair(
+    grpc::ServerContext *context, const crypto::GenerateKeyPairRequest *request,
+    crypto::GenerateKeyPairResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    std::vector<KeyPermission> permissions;
+    for (auto permission : request->permissions())
+        permissions.push_back(static_cast<KeyPermission>(permission));
+    std::pair<std::string, std::string> pair =
+        ::generateRSAKeyPair(request->userid(), permissions);
+    response->set_privatekey(pair.second);
+    response->set_publickey(pair.first);
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->userid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "4" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+/**
+ * Generates an ECC key pair with the specified permissions and user ID.
+ *
+ * @param context The gRPC server context.
+ * @param request The request containing the user ID and permissions.
+ * @param response The response containing the generated ECC key pair.
+ * @return The gRPC status indicating success or failure.
+ */
+grpc::Status CryptoServiceServer::generateECCKeyPair(
+    grpc::ServerContext *context, const crypto::GenerateKeyPairRequest *request,
+    crypto::GenerateKeyPairResponse *response)
+{
+    log(logger::LogLevel::INFO, std::to_string(request->userid()),
+        std::to_string(HSM_ID),
+        std::string("received packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)request->SerializeAsString().data(),
+                      request->SerializeAsString().size()));
+    std::vector<KeyPermission> permissions;
+    for (auto permission : request->permissions())
+        permissions.push_back(static_cast<KeyPermission>(permission));
+    std::pair<std::string, std::string> pair =
+        ::generateECCKeyPair(request->userid(), permissions);
+    response->set_privatekey(pair.second);
+    response->set_publickey(pair.first);
+    log(logger::LogLevel::INFO, std::to_string(HSM_ID),
+        std::to_string(request->userid()),
+        std::string("sending packet number: ") + std::to_string(1) +
+            std::string(", of messageId: ") + request->messageid() + "5" +
+            std::string(", total packets: ") + std::to_string(1) +
+            std::string(" ") + "Success Data: " +
+            dataToHex((unsigned char *)response->SerializeAsString().data(),
+                      response->SerializeAsString().size()));
+
+    return grpc::Status::OK;
+}
+
+#pragma endregion
 void RunServer()
 {
     std::string serverAddress("0.0.0.0:50051");

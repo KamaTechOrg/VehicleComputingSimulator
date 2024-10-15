@@ -33,15 +33,9 @@
             "defaultValue": 100.0
         },
         {
-            "name": "CarSpeed",
+            "name": "relativeVelocity",
             "size": 32,
-            "type": "unsigned_int",
-            "defaultValue": 100
-        },
-        {
-            "name": "ObjectSpeed",
-            "size": 32,
-            "type": "unsigned_int",
+            "type": "float_fixed",
             "defaultValue": 100
         }
     ]

@@ -43,7 +43,6 @@ RUN mkdir -p /usr/src/gtest/build \
     && make \
     && cp lib/*.a /usr/lib
 
-
 # Update the package list
 RUN apt-get update
 
@@ -83,7 +82,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Install dependencies for OpenCV
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -106,8 +105,8 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/opencv/opencv.git && \
     git clone https://github.com/opencv/opencv_contrib.git
 
-# Checkout the specific version 4.2.0 (to match what you're using)
-RUN cd opencv && git checkout 4.2.0 && cd ../opencv_contrib && git checkout 4.2.0
+# Checkout the specific version 4.5.4
+RUN cd opencv && git checkout 4.5.4 && cd ../opencv_contrib && git checkout 4.5.4
 
 # Build OpenCV with contrib modules
 RUN mkdir /opencv/build && cd /opencv/build && \
@@ -121,5 +120,6 @@ WORKDIR /app
 
 # Copy the CMake project
 COPY . .
+
 # Specify command to run the application
 CMD ["bash"]

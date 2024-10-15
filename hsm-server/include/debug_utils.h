@@ -5,8 +5,6 @@
 #include <iostream>
 #include <string>
 #include "general.h"
-#include "aes_stream.h"
-#include "ecc.h"
 
 #define START_TIMER \
     auto start_timer = std::chrono::high_resolution_clock::now();
@@ -18,15 +16,6 @@
 
 void printBufferHexa(const uint8_t *buffer, size_t len, std::string message);
 
-void encryptStartPrintParams(unsigned char block[], unsigned int inLen,
-                             unsigned char *&out, unsigned int &outLen,
-                             unsigned char *key, AESKeyLength keyLength);
-void encryptContinuePrintParams(unsigned char block[], unsigned int inLen,
-                                unsigned char *&out, unsigned int &outLen);
-void printStreamAES(const StreamAES &obj, size_t blockSize,
-                    std::string message);
-void printEncryptedMessage(const EncryptedMessage &message);
-//Declaration of the debugLog functionvoid
 void debugLog(const std::string &message,
               const std::string &functionName);  // Macro for easier use
 #define DEBUG_LOG(msg) debugLog(msg, __func__)

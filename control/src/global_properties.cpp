@@ -1,7 +1,6 @@
 #include "global_properties.h"
 using namespace std;
 
-
 void handleMesseage(uint32_t senderId, void *data)
 {
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
@@ -14,9 +13,9 @@ void handleMesseage(uint32_t senderId, void *data)
     // instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
     //                              instanceGP.srcID, false);
 
-    if (decryptData(data, instanceGP.sensors[senderId]->msgLength / BITS_IN_BYTE, senderId)){
+    if (hsm::decryptData(data, senderId, instanceGP.srcID)) {
         instanceGP.controlLogger.logMessage(
-                    logger::LogLevel::INFO, "The message dycrypted successfully");
+            logger::LogLevel::INFO, "The message dycrypted successfully");
     }
     else {
         instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR,
@@ -25,7 +24,7 @@ void handleMesseage(uint32_t senderId, void *data)
     }
 
     instanceGP.sensors[senderId]->handleMessage(data);
-
+    cout << "fdsa" << endl;
     for (int cId : instanceGP.trueConditions)
         instanceGP.conditions[cId]->activateActions();
 
@@ -60,7 +59,7 @@ int readIdFromJson()
 }
 
 // Initializes the sensors based on a JSON file
-GlobalProperties::GlobalProperties() : client(srcID)
+GlobalProperties::GlobalProperties()
 {
     controlLogger.logMessage(logger::LogLevel::INFO, "Initializing...");
 

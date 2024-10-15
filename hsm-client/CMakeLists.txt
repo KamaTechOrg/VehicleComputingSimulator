@@ -24,8 +24,8 @@ set(PROTOC_PATH "/usr/local/bin/protoc")
 set(GRPC_CPP_PLUGIN_PATH "/usr/local/bin/grpc_cpp_plugin")
 
 # Specify output directory for generated files
-set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated")
-file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
+set(PROTO_GEN_DIR ${CMAKE_BINARY_DIR})
+# file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
 
 # Generate C++ source files from proto files
 foreach(proto_file ${PROTO_FILES})

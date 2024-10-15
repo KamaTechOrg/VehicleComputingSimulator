@@ -1,8 +1,8 @@
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/server_context.h>
 #include <grpcpp/support/status.h>
-#include "../proto/encryption.pb.h"
-#include "../proto/encryption.grpc.pb.h"
+#include "encryption.pb.h"
+#include "encryption.grpc.pb.h"
 #include "general.h"
 
 class CryptoServiceServer final : public crypto::CryptoService::Service {

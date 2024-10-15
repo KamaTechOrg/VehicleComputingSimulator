@@ -13,7 +13,6 @@
 #include "input.h"
 #include "full_condition.h"
 #include "sensor.h"
-#include "crypto_api.h"
 #include "hsm_support.h"
 
 #include "../../communication/include/communication.h"
@@ -52,8 +51,6 @@ public:
     uint32_t srcID = 1;
     // Creating the communication object with the callback function to process the data
     Communication *comm;
-
-    CryptoClient client;
     
     static logger controlLogger;
 };
