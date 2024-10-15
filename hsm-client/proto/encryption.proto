@@ -68,15 +68,16 @@ message GetAESLengthRequest{
 }
 message AsymetricDecryptResponse{
     bytes decryptedData = 1;
+    int32 decryptedLength = 2;
 }
 message GetLengthRequest {
    int32 senderId = 1;
    int32 inLen = 2;
    string messageId = 3;
-
+   
 }
 message GetLengthResponse {
-   int32 len = 1;
+   int32 length = 1;
 }
 message GetWholeLength{
     int32 senderId = 1;
@@ -196,6 +197,7 @@ message DecryptRequest {
 }
 message DecryptResponse {
     bytes decryptedData = 1;
+    int32 decryptedLength = 2;
 }
 message AESEncryptRequest {
     int32 senderId = 1;
@@ -231,6 +233,7 @@ message AESDecryptRequest {
 }
 message AESDecryptResponse {
     bytes decrypteddata = 1;
+    int32 decryptedLength = 2;
 }
 enum KeyPermission {
     VERIFY = 0;

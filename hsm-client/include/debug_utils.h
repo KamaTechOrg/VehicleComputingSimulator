@@ -4,7 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include "../include/general.h"
+#include "general.h"
 
 #define START_TIMER \
     auto start_timer = std::chrono::high_resolution_clock::now();
@@ -16,14 +16,13 @@
 
 void printBufferHexa(const uint8_t *buffer, size_t len, std::string message);
 
-void encryptStartPrintParams(unsigned char block[], unsigned int inLen,
-                             unsigned char *&out, unsigned int &outLen,
-                             unsigned char *key, AESKeyLength keyLength);
-void encryptContinuePrintParams(unsigned char block[], unsigned int inLen,
-                                unsigned char *&out, unsigned int &outLen);
-//Declaration of the debugLog functionvoid
 void debugLog(const std::string &message,
               const std::string &functionName);  // Macro for easier use
 #define DEBUG_LOG(msg) debugLog(msg, __func__)
+#define LOG_BUFFER_HEXA(buffer, len, message) \
+    logBufferHexa(buffer, len, message, __func__, __LINE__)
+void logBufferHexa(const void *voidBuffer, size_t len,
+                   const std::string &message, const char *callingFunction,
+                   int line);
 
 #endif  //  __DEBUG_UTILS_H__

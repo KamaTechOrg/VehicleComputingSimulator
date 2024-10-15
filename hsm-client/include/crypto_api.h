@@ -7,9 +7,9 @@
 #include <vector>
 #include <memory>
 #include <grpcpp/grpcpp.h>
-#include "../proto/encryption.grpc.pb.h"
+#include "encryption.grpc.pb.h"
 #include "general.h"
-#include "../proto/encryption.pb.h"
+#include "encryption.pb.h"
 
 class CryptoClient {
    public:
@@ -88,7 +88,7 @@ class CryptoClient {
                   size_t &outLen);
     CK_RV decrypt(int receiverId, void *in, size_t inLen, void *out,
                   size_t &outLen);
-
+    size_t getEncryptedLengthByEncrypted(void* data);
    private:
     int userId;
     std::unique_ptr<crypto::CryptoService::Stub> stub_;

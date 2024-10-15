@@ -22,7 +22,7 @@ std::string dataToHex(const unsigned char* data, size_t size) {
 
 void log(logger::LogLevel loglevel, const std::string& hsm_id, const std::string& user_id, const std::string& message)
 {
-    std::cout<<"Im hereeee!"<<std::endl;
+    // std::cout<<"Im hereeee!"<<std::endl;
     std::string levelStr;
     switch (loglevel) {
         case logger::LogLevel::INFO:

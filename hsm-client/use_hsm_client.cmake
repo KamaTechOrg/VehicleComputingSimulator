@@ -2,6 +2,7 @@ set(HSM_CLIENT_DIR "../hsm-client")
 set(HSM_CLIENT_LIB_PATH ${HSM_CLIENT_DIR}/build/lib)
 set(HSM_CLIENT_INCLUDE_DIRS
     ${HSM_CLIENT_DIR}/include
+    ${HSM_CLIENT_DIR}/build
     ${PROTO_GEN_DIR}
     ${Protobuf_INCLUDE_DIRS}
     ${GRPC_INCLUDE_DIRS}

@@ -6,7 +6,7 @@
 using namespace std;
 
 #define DEBUG
-
+#define LOG_BUFFERS
 void printBufferHexa(const uint8_t *buffer, size_t len, std::string message)
 {
 #ifdef DEBUG
@@ -24,22 +24,35 @@ void printBufferHexa(const uint8_t *buffer, size_t len, std::string message)
 #endif
 }
 
-void encryptStartPrintParams(unsigned char block[], unsigned int inLen,
-                             unsigned char *&out, unsigned int &outLen,
-                             unsigned char *key, AESKeyLength keyLength)
+void logBufferHexa(const void *voidBuffer, size_t len,
+                   const std::string &message, const char *callingFunction,
+                   int line)
 {
-    printBufferHexa(block, inLen, "Block: ");
-    printBufferHexa(key, 128, "Key: ");
-    std::cout << "inLen: " << inLen << ", outLen(before): " << outLen
-              << std::endl;
-}
+#ifdef LOG_BUFFERS
+    const uint8_t *buffer = static_cast<const uint8_t *>(voidBuffer);
+    // Accumulate the message and buffer data in a single string
+    std::ostringstream oss;
+    oss << message << std::endl;
+    oss << " (function: " << callingFunction << ", line:" << line << ")\n";
 
-void encryptContinuePrintParams(unsigned char block[], unsigned int inLen,
-                                unsigned char *&out, unsigned int &outLen)
-{
-    printBufferHexa(block, inLen, "Block: ");
-    std::cout << "inLen: " << inLen << ", outLen(before): " << outLen
-              << std::endl;
+    for (size_t i = 0; i < len; ++i) {
+        oss << std::hex << std::setw(2) << std::setfill('0')
+            << static_cast<int>(buffer[i]) << " ";
+        // Add a new line every 16 bytes for readability
+        if ((i + 1) % 16 == 0)
+            oss << std::endl;
+    }
+
+    // Append a final newline after the buffer, if needed
+    if (len % 16 != 0)
+        oss << std::endl;
+
+    // Reset the stream back to decimal
+    oss << std::dec;
+
+    // Log the buffer content using the logging system
+    log(logger::LogLevel::INFO, oss.str());
+#endif
 }
 
 // Definition of the debugLog function
