@@ -40,6 +40,12 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     qemuPlatformCombo->addItems({"x86_64", "arm", "aarch64"});
     qemuPlatformCombo->setEnabled(false);
 
+    QLabel *idBusesLabel = new QLabel("Count Buses:");
+    idBusesEdit = new QLineEdit(this);
+    idBusesEdit->setValidator(new QIntValidator(0, 10000, this));
+    layout->addWidget(idBusesLabel);
+    layout->addWidget(idBusesEdit);
+
     // Adding widgets to layout
     layout->addWidget(qemuPlatformLabel);
     layout->addWidget(qemuPlatformCombo);
@@ -121,29 +127,42 @@ QString ProcessDialog::getQEMUPlatform() const
 
 bool ProcessDialog::isValid() const
 {
-    if (!idEdit || !nameEdit || !executionFile || !qemuPlatformCombo) {
+    if (!idEdit || !nameEdit || !executionFile || !qemuPlatformCombo || !idBusesEdit) {
         return false;
     }
+
     return !idEdit->text().isEmpty() && !nameEdit->text().isEmpty() &&
            !executionFile->text().isEmpty() &&
-           !qemuPlatformCombo->currentText().isEmpty();
+           !qemuPlatformCombo->currentText().isEmpty() &&
+           !idBusesEdit->text().isEmpty();
 }
 
 bool ProcessDialog::validateAndAccept()
 {
     MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Validating ProcessDialog inputs");
+                                     
+    // Convert the entered value for buses to an integer
+    int busCount = idBusesEdit->text().toInt();
+    
+    // Check if the bus count exceeds the limit set in MainWindow
+    if (busCount > maxBusCount) {  // maxBusCount should be a member variable of ProcessDialog
+        QMessageBox::warning(this, "Input Error",
+                             QString("The number of buses cannot exceed %1.").arg(maxBusCount));
+        return false;
+    }
 
     if (isValid()) {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO, "Validation successful, accepting dialog");
-        MainWindow::guiLogger.logMessage(
+       MainWindow::guiLogger.logMessage(
             logger::LogLevel::DEBUG,
             "Entered values: ID = " + idEdit->text().toStdString() +
-                ", Name = " + nameEdit->text().toStdString() +
-                ", Executable File = " + executionFile->text().toStdString() +
-                ", QEMU Platform = " +
-                qemuPlatformCombo->currentText().toStdString());
+            ", Name = " + nameEdit->text().toStdString() +
+            ", Executable File = " + executionFile->text().toStdString() +
+            ", QEMU Platform = " + qemuPlatformCombo->currentText().toStdString() +
+            ", Count Buses = " + idBusesEdit->text().toStdString());
+
         accept();
         return true;
     }
@@ -186,4 +205,18 @@ void ProcessDialog::setupPermissionCheckboxes() {
         KeyPermission perm = static_cast<KeyPermission>(i);  
         permissionCheckboxes[perm] = new QCheckBox(permissions[i], this);  
     }
+}
+int ProcessDialog::getIdBuses() const
+{
+    return idBusesEdit->text().toInt();
+}
+
+void ProcessDialog::setIdBuses(int count)
+{
+    idBusesEdit->setText(QString::number(count));
+}
+
+void ProcessDialog::setMaxBusCount(int maxCount)
+{
+    maxBusCount = maxCount; // Store the max count for validation
 }

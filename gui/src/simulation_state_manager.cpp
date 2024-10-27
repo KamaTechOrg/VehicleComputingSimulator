@@ -178,7 +178,7 @@ void SimulationStateManager::updateStateFromJson(QJsonObject jsonObject)
         QString name = squareObj["name"].toString();
         QString CMakeProject = squareObj["CMakeProject"].toString();
         QString QEMUPlatform = squareObj["QEMUPlatform"].toString();
-
+        int busID = squareObj["busID"].toInt();
         QJsonObject positionObj = squareObj["position"].toObject();
         int x = positionObj["x"].toInt();
         int y = positionObj["y"].toInt();
@@ -192,7 +192,7 @@ void SimulationStateManager::updateStateFromJson(QJsonObject jsonObject)
         // Allocate a new DraggableSquare on the heap
         DraggableSquare *square =
             new DraggableSquare(nullptr, color, width, height);
-        square->setProcess(new Process(id, name, CMakeProject, QEMUPlatform));
+        square->setProcess(new Process(id, name, CMakeProject, QEMUPlatform,busID));
         square->move(QPoint(x, y));
         // Add the pointer to the vector
         data.squares.append(square);

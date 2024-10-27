@@ -2,8 +2,8 @@
 #include "main_window.h"
 
 Process::Process(int id, const QString &name, const QString &executionFile,
-                 const QString &qemuPlatform)
-    : id(id), name(name), executionFile(executionFile), qemuPlatform(qemuPlatform)
+                 const QString &qemuPlatform, int busID)
+    : id(id), name(name), executionFile(executionFile), qemuPlatform(qemuPlatform), busID(busID)
 {
     MainWindow::guiLogger.logMessage(
         logger::LogLevel::INFO,
@@ -42,4 +42,8 @@ QString Process::getExecutionFile() const
 QString Process::getQEMUPlatform() const
 {
     return qemuPlatform;
+}
+int Process::getBusID() const
+{
+    return busID;
 }

@@ -116,13 +116,14 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
             QString name = processObject["name"].toString();
             QString cmakeProject = processObject["CMakeProject"].toString();
             QString qemuPlatform = processObject["QEMUPlatform"].toString();
+            int busID = processObject["busID"].toInt();
             int x = processObject["position"].toObject()["x"].toInt();
             int y = processObject["position"].toObject()["y"].toInt();
             int width = processObject["width"].toInt();
             int height = processObject["height"].toInt();
 
             Process *process =
-                new Process(id, name, cmakeProject, qemuPlatform);
+                new Process(id, name, cmakeProject, qemuPlatform, busID);
             DraggableSquare *square =
                 new DraggableSquare(mainWindow, "", width, height);
             square->setProcess(process);

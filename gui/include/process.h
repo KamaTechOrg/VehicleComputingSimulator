@@ -6,7 +6,7 @@
 class Process {
 public:
     Process(int id, const QString &name, const QString &executionFile,
-            const QString &qemuPlatform);
+            const QString &qemuPlatform, int busID);
     Process();
     Process(const Process &other);  // Copy constructor
 
@@ -14,6 +14,8 @@ public:
     QString getName() const;
     QString getExecutionFile() const;
     QString getQEMUPlatform() const;
+    int getBusID() const;
+
     void setId(int newId)
     {
         id = newId;
@@ -30,12 +32,16 @@ public:
     {
         qemuPlatform = newQEMUPlatform;
     }
-
+    void setBusesId(int newId)
+    {
+        busID = newId;
+    }
 private:
     int id;
     QString name;
     QString executionFile;
     QString qemuPlatform;
+    int busID;
 };
 
 #endif  // PROCESS_H

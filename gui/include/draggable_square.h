@@ -58,6 +58,7 @@ private:
 private slots:
     void editSquare(int id);
     void deleteSquare(int id);
+    void updateBus(int id);
     void handleStopButtonClicked();
 };
 

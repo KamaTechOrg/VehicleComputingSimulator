@@ -102,10 +102,11 @@ void DraggableSquare::setProcess(Process *proc)
         this->id = process->getId();
         QString executionFilePath = process->getExecutionFile();
 
-        label->setText(QString("ID: %1\nName: %2\nCMake: %3\n")
+        label->setText(QString("ID: %1\nName: %2\nCMake: %3\nBusID: %4\n")
                            .arg(process->getId())
                            .arg(process->getName())
-                           .arg(executionFilePath));
+                           .arg(executionFilePath)
+                           .arg(process->getBusID()));
 
         // Set the tooltip to show the full path of the executable file
         label->setToolTip(executionFilePath);
@@ -141,24 +142,34 @@ DraggableSquare::~DraggableSquare()
 void DraggableSquare::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton) {
-        if (id < 0 || id > 4) {  // Prevent menu for IDs 1 to 4
-            MainWindow::guiLogger.logMessage(
+        MainWindow::guiLogger.logMessage(
                 logger::LogLevel::DEBUG,
                 "Right-click on DraggableSquare with ID: " +
                     std::to_string(id));
-            QMenu contextMenu(this);
+        QMenu contextMenu(this);
 
-            QAction *editAction = contextMenu.addAction("Edit");
-            QAction *deleteAction = contextMenu.addAction("Delete");
+        QAction *editAction = nullptr;
+        QAction *deleteAction = nullptr;
+        QAction *editBusIDAction = nullptr;
 
-            QAction *selectedAction = contextMenu.exec(event->globalPos());
+        if (id < 0 || id > 4) {  // Prevent menu for IDs 1 to 4
+            editAction = contextMenu.addAction("Edit");
+            deleteAction = contextMenu.addAction("Delete");
+        }
+        else {
+            editBusIDAction = contextMenu.addAction("Edit BusID");
+        }
 
-            if (selectedAction == editAction) {
-                editSquare(id);
-            }
-            else if (selectedAction == deleteAction) {
-                deleteSquare(id);
-            }
+        QAction *selectedAction = contextMenu.exec(event->globalPos());
+
+        if (selectedAction == editAction) {
+            editSquare(id);
+        }
+        else if (selectedAction == deleteAction) {
+            deleteSquare(id);
+        }
+        else if (selectedAction == editBusIDAction) {
+            updateBus(id);
         }
     }
     else if (event->button() == Qt::LeftButton) {
@@ -172,7 +183,6 @@ void DraggableSquare::mousePressEvent(QMouseEvent *event)
         QWidget::mousePressEvent(event);
     }
 }
-
 void DraggableSquare::mouseMoveEvent(QMouseEvent *event)
 {
     if (!dragging) {
@@ -208,6 +218,15 @@ void DraggableSquare::editSquare(int id)
         qobject_cast<MainWindow *>(parentWidget()->window());
     if (mainWindow) {
         mainWindow->editSquare(id);
+    }
+}
+
+void DraggableSquare::updateBus(int id)
+{
+    MainWindow *mainWindow =
+        qobject_cast<MainWindow *>(parentWidget()->window());
+    if (mainWindow) {
+        mainWindow->updateBus(id);
     }
 }
 

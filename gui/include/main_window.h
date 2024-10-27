@@ -55,7 +55,6 @@ public:
     void enableAllButtons();         // Re-enable all buttons
     void showLoadingIndicator();     // Show loading animation (spinner)
     void hideLoadingIndicator();     // Hide loading animation (spinner)
-  
     QLineEdit *getTimeInput() const
     {
         return timeInput;
@@ -81,12 +80,14 @@ public:
 private slots:
     void showSimulation();
     void loadSimulation();
+    void setBusCount(); 
 
 public slots:
     void createNewProcess();
     void editSquare(int id);
     void deleteSquare(int id);
     void openHistoryWindow();  
+    void updateBus(int processId);
     
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -109,6 +110,7 @@ private:
     void openSecondProject();  // Function that handles launching the second project
     void setDefaultBackgroundImage();
     void openDialog();
+    void updateProcessConfigWithPorts();
     QPushButton *openSecondProjectButton;  // Button to open the second project
     QVBoxLayout *toolboxLayout;
     QWidget *workspace;
@@ -135,6 +137,9 @@ private:
     DbManager *sqlDataManager;
     DbManager *dataHandler;   // Pointer to DbManager
     HistoryWindow *historyWindow; // Pointer to history window
+    int countBuses;
+    QPushButton *setBusCountButton;
+    std::vector<uint32_t> idsVector;
 };
 
 #endif  // MAIN_WINDOW_H

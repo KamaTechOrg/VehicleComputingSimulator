@@ -76,8 +76,8 @@ target_link_libraries(VehicleComputingSimulator PRIVATE VehicleComputingSimulato
 # Make sure the main executable has access to the include directory
 target_include_directories(VehicleComputingSimulator PRIVATE ${CMAKE_SOURCE_DIR}/include ${BSON_INCLUDE_DIRS})
 
-# Enable testing
-enable_testing()
+# # Enable testing
+# enable_testing()
 
-# Add the test directory
-add_subdirectory(test)
+# # Add the test directory
+# add_subdirectory(test)

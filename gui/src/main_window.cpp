@@ -5,6 +5,11 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QJsonDocument>
+#include <QInputDialog>
+#include <QFile>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <unordered_map>
 #include "process.h"
 #include "main_window.h"
 #include "draggable_square.h"
@@ -58,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
     logOutput->setReadOnly(true);
 
     mainLayout->addWidget(toolbox);
-
+    countBuses = 1;
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->insertWidget(1, showSimulationButton);
@@ -97,6 +102,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
 
     // Connect the timer to the rotation function
     connect(rotationTimer, &QTimer::timeout, this, &MainWindow::rotateImage);
+    
+    setBusCountButton = new QPushButton("Set Bus Count", this);
+    toolboxLayout->addWidget(setBusCountButton);
+    connect(setBusCountButton, &QPushButton::clicked, this, &MainWindow::setBusCount);
 
     toolbox->setMaximumWidth(100);
     toolbox->setMinimumWidth(100);
@@ -136,28 +145,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         "}";
 
     Process *mainProcess =
-        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform",countBuses);
     addProcessSquare(
         mainProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "HSM", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform",countBuses);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "LogsDb", "../test/dummy_program2/CMakeLists.txt", "QEMUPlatform",countBuses);
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Main", "path/to/Main/directory/CMakeLists.txt", "QEMUPlatform");
+        new Process(id, "Main", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform",countBuses);
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -176,6 +185,7 @@ MainWindow::~MainWindow()
 void MainWindow::createNewProcess()
 {
     ProcessDialog dialog(this);
+    dialog.setMaxBusCount(countBuses);
 
     if (dialog.exec() == QDialog::Accepted && dialog.isValid()) {
         int id = dialog.getId();
@@ -198,7 +208,7 @@ void MainWindow::createNewProcess()
         }
         Process *newProcess =
             new Process(id, dialog.getName(), dialog.getExecutionFile(),
-                        dialog.getQEMUPlatform());
+                        dialog.getQEMUPlatform(),dialog.getIdBuses());
         addProcessSquare(newProcess);
         addId(id);
         MainWindow::guiLogger.logMessage(
@@ -315,6 +325,8 @@ void MainWindow::addProcessSquare(Process *process, QPoint position, int width,
 
     squarePositions[process->getId()] = pos;
     squares.push_back(square);
+
+    createProcessConfigFile(process->getId(), process->getExecutionFile());
 }
 void MainWindow::openHistoryWindow()
 {
@@ -599,7 +611,8 @@ void MainWindow::loadSimulation()
             Process *process = new Process(
                 sqr->getProcess()->getId(), sqr->getProcess()->getName(),
                 sqr->getProcess()->getExecutionFile(),
-                sqr->getProcess()->getQEMUPlatform());
+                sqr->getProcess()->getQEMUPlatform(),
+                sqr->getProcess()->getBusID());
             addProcessSquare(process, sqr->pos(), sqr->width(), sqr->height(),
                              sqr->styleSheet());
             addId(sqr->getId());
@@ -719,6 +732,7 @@ void MainWindow::compileProjects()
 
 void MainWindow::runProjects()
 {
+    updateProcessConfigWithPorts();
     disableButtonsExceptEnd();
     showLoadingIndicator();
     updateTimer();
@@ -807,17 +821,18 @@ void MainWindow::editSquare(int id)
     for (DraggableSquare *square : squares) {
         if (square->getProcess()->getId() == id) {
             ProcessDialog dialog(this);
+            dialog.setMaxBusCount(countBuses);
             dialog.setId(square->getProcess()->getId());
             dialog.setName(square->getProcess()->getName());
             dialog.setExecutionFile(square->getProcess()->getExecutionFile());
             dialog.setQEMUPlatform(square->getProcess()->getQEMUPlatform());
-
+            dialog.setIdBuses(square->getProcess()->getBusID());
             if (dialog.exec() == QDialog::Accepted && dialog.isValid()) {
                 // Update the process details
                 // square->setProcess(Process(dialog.getId(), dialog.getName(), dialog.getCMakeProject(), dialog.getQEMUPlatform()));
                 Process *updatedProcess = new Process(
                     dialog.getId(), dialog.getName(), dialog.getExecutionFile(),
-                    dialog.getQEMUPlatform());
+                    dialog.getQEMUPlatform(),dialog.getIdBuses());
                 square->setProcess(updatedProcess);
                 guiLogger.logMessage(logger::LogLevel::INFO,
                                      "Updated process details for square ID: " +
@@ -858,18 +873,28 @@ void MainWindow::deleteSquare(int id)
 
 void MainWindow::createProcessConfigFile(int id, const QString &processPath)
 {
-    // Creating a JSON object with the process ID
+    // Get the directory path if the provided path points to a file
+    QFileInfo fileInfo(processPath);
+    QString directoryPath;
+
+    if (fileInfo.isDir()) {
+        directoryPath = processPath;  // If it's already a directory path
+    } else {
+        directoryPath = fileInfo.absolutePath();  // If it's a file path, get the directory containing it
+    }
+
+    // Create a JSON object with the process ID
     QJsonObject jsonObject;
     jsonObject["ID"] = id;
 
-    // Converting the object to a JSON document
+    // Convert the object to a JSON document
     QJsonDocument jsonDoc(jsonObject);
 
-    // Defining the file name and its path
-    QString filePath = processPath + "/config.json";
+    // Define the file name and its path
+    QString filePath = directoryPath + "/config.json";
     QFile configFile(filePath);
 
-    // Opening the file for writing and checking if the file opened successfully
+    // Open the file for writing and check if it opened successfully
     if (configFile.open(QIODevice::WriteOnly)) {
         configFile.write(jsonDoc.toJson());
         configFile.close();
@@ -951,15 +976,166 @@ void MainWindow::rotateImage()
 }
 
 // Show the loading spinner with rotation
-void MainWindow::showLoadingIndicator() {
+void MainWindow::showLoadingIndicator()
+{
     loadingLabel->show();
     rotationTimer->start(rotationTimerIntervals);  // Start the timer with ms intervals
 }
 
 // Hide the loading spinner and stop the rotation
-void MainWindow::hideLoadingIndicator() {
+void MainWindow::hideLoadingIndicator()
+{
     rotationTimer->stop();
     loadingLabel->hide();
 }
 
+void MainWindow::setBusCount()
+{
+    bool ok;
+    int count = QInputDialog::getInt(this, tr("Set Bus Count"),
+                                     tr("Enter number of buses:"), countBuses, countBuses, 100, 1, &ok);
+
+    if (ok) {
+        // Check if the new count is greater than or equal to the current count
+        if (count >= countBuses) {
+            countBuses = count;
+            QMessageBox::information(this, tr("Bus Count Set"),
+                                     tr("Bus count set to %1").arg(countBuses));
+        } else {
+            QMessageBox::warning(this, tr("Invalid Bus Count"),
+                                 tr("Cannot set the bus count to a value smaller than the current count (%1).").arg(countBuses));
+        }
+    }
+}
+
+void MainWindow::updateProcessConfigWithPorts()
+{
+     // Get the full path to sensors.json
+    QString sensorsPath = QDir::currentPath() + "/sensors.json";
+    
+    // Step 1: Collect the IDs of all DraggableSquares
+    std::vector<uint32_t> ids;
+    for (uint32_t i = 1; i <= countBuses; ++i) {
+        ids.push_back(i);
+    }
+    
+    // Step 2: Use a test map instead of calling assignPorts
+    // // Initializing the ports of the busses
+    // static std::unordered_map<uint32_t, uint16_t> idToPortMap = assignPorts(std::vector<uint32_t>& ids);
+    std::unordered_map<uint32_t, uint16_t> idToPortMap;
+    idToPortMap[1] = 8080;
+    idToPortMap[2] = 8081;
+    idToPortMap[3] = 8082;
+    // You can modify the map above to match the IDs you are using in your project.
+
+    // Step 3: Iterate through squares and update the config.json for each process
+    for (DraggableSquare* square : squares) {
+        int id = square->getProcess()->getBusID();
+        Process* process = square->getProcess();
+        if (process == nullptr) {
+            continue;  // Handle potential null process
+        }
+
+        // Step 4: Retrieve the process directory by getting the execution file path
+        QString executionFilePath = process->getExecutionFile();
+        QFileInfo fileInfo(executionFilePath);
+        QString processDir = fileInfo.absolutePath();  // This is the directory containing the CMakeLists.txt file
+
+        // Step 5: Open and parse the config.json file
+        QString configFilePath = processDir + "/config.json";
+        QFile configFile(configFilePath);
+        if (!configFile.open(QIODevice::ReadOnly)) {
+            qWarning() << "Could not open config file:" << configFilePath;
+            continue;
+        }
+
+        QByteArray jsonData = configFile.readAll();
+        configFile.close();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
+        if (!jsonDoc.isObject()) {
+            qWarning() << "Invalid JSON format in config file:" << configFilePath;
+            continue;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        // Step 5.5: Check if the process name is "main_bus"
+        if (process->getName() == "Bus_Manager") {
+            // Add list of connected process IDs
+            QJsonArray connectedIds;
+            for (int usedId : usedIds) {
+                connectedIds.append(usedId);
+            }
+            jsonObj["ProcessIDs"] = connectedIds;
+
+            // Add critical maximum count of buses
+            jsonObj["CriticalMaxCount"] = 4;
+        }
+        else {
+            // Step 6: Find the corresponding port for the ID in the test map
+            if (idToPortMap.find(id) != idToPortMap.end()) {
+                uint16_t port = idToPortMap[id];
+                jsonObj["Port"] = static_cast<int>(port);  // Add or update the "Port" field in the JSON
+            } else {
+                qWarning() << "No port found for ID:" << id;
+                continue;
+            }
+
+            // Step 6.5: Find the IP
+            // // Function to retrieve the local machine's IP address
+            // static std::string IP = getLocalIPAddress();
+            std::string IP = "333";
+            jsonObj["IP"] = QString::fromStdString(IP);  // Add or update the "IP" field in the JSON
+
+            // Add the pathToProcessFile field
+            jsonObj["PathToProcessFile"] = sensorsPath;  // Insert full path to sensors.json
+
+        }       
+        // Step 7: Write the updated JSON back to the file
+        QJsonDocument updatedJsonDoc(jsonObj);
+        if (!configFile.open(QIODevice::WriteOnly)) {
+            qWarning() << "Could not open config file for writing:" << configFilePath;
+            continue;
+        }
+        configFile.write(updatedJsonDoc.toJson());
+        configFile.close();
+    }
+}
+
+void MainWindow::updateBus(int processId)
+{
+    if (countBuses <= 0) {
+        QMessageBox::warning(this, tr("No Buses Available"),
+                             tr("Please set a valid bus count first."));
+        return;
+    }
+
+    bool ok;
+    int newBusId = QInputDialog::getInt(this, tr("Update Bus"),
+                                        tr("Enter the process ID (1 to %1):").arg(countBuses),
+                                        1, 1, countBuses, 1, &ok);
+
+    if (ok) {
+        bool found = false;
+        for (auto square : squares) {
+            if (square->getProcess() && square->getProcess()->getId() == processId) {
+                square->getProcess()->setBusesId(newBusId);
+                QMessageBox::information(this, tr("Bus Updated"),
+                                         tr("Bus ID set to %1 for process.").arg(newBusId));
+                found = true;
+                Process *updatedProcess = new Process(
+                    square->getProcess()->getId(), square->getProcess()->getName(), square->getProcess()->getExecutionFile(),
+                    square->getProcess()->getQEMUPlatform(),newBusId);
+                square->setProcess(updatedProcess);
+                break;
+            }
+        }
+
+        if (!found) {
+            QMessageBox::warning(this, tr("Process Not Found"),
+                                 tr("No process found with ID %1").arg(newBusId));
+        }
+    }
+}
 #include "moc_main_window.cpp"

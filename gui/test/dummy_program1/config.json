@@ -1,3 +1,6 @@
 {
-    "ID": 2
+    "ID": 3,
+    "IP": "333",
+    "PathToProcessFile": "/home/batsheva/git1/VehicleComputingSimulator/gui/build/sensors.json",
+    "Port": 8080
 }

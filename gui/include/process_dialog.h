@@ -28,7 +28,8 @@ public:
     void setExecutionFile(const QString &executableFile);
     void setQEMUPlatform(const QString &qemuPlatform);
     void setCMakeProject(const QString &cmakeProject);
-    
+    int getIdBuses() const;
+    void setIdBuses(int count);
     enum KeyPermission {
         VERIFY,
         SIGN,
@@ -36,10 +37,10 @@ public:
         DECRYPT,
         EXPORTABLE
     };
-
+    void setMaxBusCount(int maxCount);
     QMap<KeyPermission, bool> getKeyPermissions() const;
     void setKeyPermissions(const QMap<KeyPermission, bool> &permissions);
-
+    
 private slots:
     bool validateAndAccept();
     void selectExecutableFile();
@@ -54,7 +55,8 @@ private:
     QMap<KeyPermission, QCheckBox*> permissionCheckboxes;
     QLineEdit *cmakeProjectEdit;            
     QPushButton *selectExecutableFileButton; 
-
+    QLineEdit *idBusesEdit;
+    int maxBusCount; // Add this line to your class declaration
     friend class ProcessDialogTests;
 };
 
