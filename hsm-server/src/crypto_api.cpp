@@ -6,7 +6,7 @@
 #include "../include/crypto_api.h"
 #include "../include/hash_factory.h"
 #include "../include/rsa.h"
-#include "../include/temp_hsm.h"
+#include "temp_hsm.h"
 #include "../logger/logger.h"
 #include "../include/debug_utils.h"
 
@@ -248,7 +248,27 @@ CK_RV logAndHandleErrors(std::string action, int userId, std::string keyId,
 }
 
 #pragma region RSA and ECC
+// Deserialize buffer back to Point
+Point bufferToPoint(const void *buffer, size_t bufferSize)
+{
+    size_t offset = 0;
+    const uint8_t *byteBuffer = static_cast<const uint8_t *>(buffer);
 
+    // Deserialize x
+    mpz_class x;
+    size_t countX = byteBuffer[offset];
+    offset += sizeof(uint8_t);
+    mpz_import(x.get_mpz_t(), countX, 1, 1, 0, 0, byteBuffer + offset);
+    offset += countX;
+
+    // Deserialize y
+    mpz_class y;
+    size_t countY = byteBuffer[offset];
+    offset += sizeof(uint8_t);
+    mpz_import(y.get_mpz_t(), countY, 1, 1, 0, 0, byteBuffer + offset);
+
+    return Point(x, y);
+}
 // Serialize the EncryptedMessage to a void* buffer
 void serializeToBuffer(const EncryptedMessage &message, uint8_t *out)
 {
@@ -457,8 +477,13 @@ CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
     Point eccPublicKey;
 
     try {
-        eccPublicKey = TempHsm::getInstance().getECCPublicKey(
-            senderId, keyId, KeyPermission::ENCRYPT);
+        size_t eccPublicKeySize =
+            TempHsm::getInstance().getKeyLengthByKeyId(keyId);
+        std::vector<uint8_t> eccPublicKeyVec(eccPublicKeySize);
+        TempHsm::getInstance().getKeyByKeyId(
+            senderId, keyId, KeyPermission::ENCRYPT, eccPublicKeyVec.data(),
+            eccPublicKeySize);
+        eccPublicKey = bufferToPoint(eccPublicKeyVec.data(), eccPublicKeySize);
     }
     catch (std::exception &e) {
         log(logger::LogLevel::ERROR,
@@ -486,33 +511,24 @@ CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t &outLen, size_t requiredOutLen)
 {
     LOG_BUFFER_HEXA(in, inLen, "encrypted to decrypt", receiverId);
-    // std::string eccPrivateKeyString;
-    // try {
-    //   eccPrivateKeyString =
-    //       TempHsm::getInstance().getAuthorizedKey(receiverId, keyId,
-    //       "DECRYPT");
-    // } catch (std::exception &e) {
-    //   return CKR_USER_NOT_AUTHORIZED;
-    // }
-    // mpz_class eccPrivateKey(eccPrivateKeyString);
-    // // Decrypt the message
-    // std::vector<uint8_t> decryptedMessage =
-    //     decryptECC(*(reinterpret_cast<EncryptedMessage *>(in)),
-    //     eccPrivateKey);
-    // outLen = decryptedMessage.size();
-    // std::memcpy(out, decryptedMessage.data(), outLen);
-    // return CKR_OK;
 
     CK_RV error = logAndHandleErrors("ECC Decryption", receiverId, keyId, in,
                                      inLen, out, outLen, requiredOutLen, true);
     if (error != CKR_OK)
         return error;
 
-    mpz_class key;
+    mpz_class eccPrivateKey;
 
     try {
-        key = TempHsm::getInstance().getECCPrivateKey(receiverId, keyId,
-                                                      KeyPermission::DECRYPT);
+        size_t eccPrivateKeySize =
+            TempHsm::getInstance().getKeyLengthByKeyId(keyId);
+        std::vector<uint8_t> eccPrivateKeyVec(eccPrivateKeySize);
+        TempHsm::getInstance().getKeyByKeyId(
+            receiverId, keyId, KeyPermission::DECRYPT, eccPrivateKeyVec.data(),
+            eccPrivateKeySize);
+        eccPrivateKey = mpz_class();
+        mpz_import(eccPrivateKey.get_mpz_t(), eccPrivateKeySize, 1,
+                   sizeof(uint8_t), 0, 0, eccPrivateKeyVec.data());
     }
     catch (std::exception &e) {
         log(logger::LogLevel::ERROR,
@@ -526,7 +542,7 @@ CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
     EncryptedMessage cipher = deserializeFromBuffer(in, inLen);
 
     //perform decryption
-    std::vector<uint8_t> decryptedMessage = decryptECC(cipher, key);
+    std::vector<uint8_t> decryptedMessage = decryptECC(cipher, eccPrivateKey);
     outLen = decryptedMessage.size();
     std::memcpy(out, decryptedMessage.data(), outLen);
 
@@ -581,30 +597,16 @@ CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
 CK_RV RSAencrypt(int userId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t outLen)
 {
-    // std::string rsaKeyString;
-    // try {
-    //   rsaKeyString =
-    //       TempHsm::getInstance().getAuthorizedKey(userId, keyId, "ENCRYPT");
-    // } catch (std::exception &e) {
-    //   return CKR_USER_NOT_AUTHORIZED;
-    // }
-    // CK_RV returnCode =
-    //     rsaEncrypt(reinterpret_cast<uint8_t *>(in), inLen,
-    //                reinterpret_cast<const uint8_t *>(rsaKeyString.c_str()),
-    //                rsaKeyString.size(), reinterpret_cast<uint8_t *>(out),
-    //                outLen, rsaKeyString.size() * BITS_IN_BYTE);
-
     CK_RV error =
         logAndHandleErrors("RSA Encryption", userId, keyId, in, inLen, out,
                            outLen, getRSAencryptedLength(), true);
     if (error != CKR_OK)
         return error;
-
-    std::pair<uint8_t *, int> key;
-
+    size_t rsaKeySize = TempHsm::getInstance().getKeyLengthByKeyId(keyId);
+    std::vector<uint8_t> rsaKey(rsaKeySize);
     try {
-        key = TempHsm::getInstance().getRSAKey(userId, keyId,
-                                               KeyPermission::ENCRYPT);
+        TempHsm::getInstance().getKeyByKeyId(
+            userId, keyId, KeyPermission::ENCRYPT, rsaKey.data(), rsaKeySize);
     }
     catch (std::exception &e) {
         log(logger::LogLevel::ERROR,
@@ -618,7 +620,7 @@ CK_RV RSAencrypt(int userId, std::string keyId, void *in, size_t inLen,
     }
 
     CK_RV returnCode = rsaEncrypt(
-        reinterpret_cast<uint8_t *>(in), inLen, key.first, key.second,
+        reinterpret_cast<uint8_t *>(in), inLen, rsaKey.data(), rsaKeySize,
         reinterpret_cast<uint8_t *>(out), outLen, RSA_KEY_SIZE);
 
     if (returnCode == CKR_OK)
@@ -633,32 +635,17 @@ CK_RV RSAencrypt(int userId, std::string keyId, void *in, size_t inLen,
 CK_RV RSAdecrypt(int userId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t *outLen, size_t requiredLength)
 {
-    // std::string rsaKeyString;
-    // try {
-    //   rsaKeyString =
-    //       TempHsm::getInstance().getAuthorizedKey(userId, keyId, "DECRYPT");
-    // } catch (std::exception &e) {
-    //   return CKR_USER_NOT_AUTHORIZED;
-    // }
-    // CK_RV returnCode =
-    //     rsaDecrypt(reinterpret_cast<uint8_t *>(in), inLen,
-    //                reinterpret_cast<const uint8_t *>(rsaKeyString.c_str()),
-    //                rsaKeyString.size(), reinterpret_cast<uint8_t *>(out),
-    //                outLen, rsaKeyString.size() * BITS_IN_BYTE);
-    // return returnCode;
-
-    // RSAdecryptPrintParams(userId, keyId, in, inLen,
-    //             out, outLen);
     CK_RV error = logAndHandleErrors("RSA Decryption", userId, keyId, in, inLen,
                                      out, *outLen, requiredLength, true);
     if (error != CKR_OK)
         return error;
-
-    std::pair<uint8_t *, int> key;
+    size_t rsaKeySize = TempHsm::getInstance().getKeyLengthByKeyId(keyId);
+    std::vector<uint8_t> rsaKey(rsaKeySize);
 
     try {
-        key = TempHsm::getInstance().getRSAKey(userId, keyId,
-                                               KeyPermission::DECRYPT);
+        rsaKey.resize(rsaKeySize);
+        TempHsm::getInstance().getKeyByKeyId(
+            userId, keyId, KeyPermission::DECRYPT, rsaKey.data(), rsaKeySize);
     }
     catch (std::exception &e) {
         log(logger::LogLevel::ERROR,
@@ -672,7 +659,7 @@ CK_RV RSAdecrypt(int userId, std::string keyId, void *in, size_t inLen,
     }
 
     CK_RV returnCode = rsaDecrypt(
-        reinterpret_cast<uint8_t *>(in), inLen, key.first, key.second,
+        reinterpret_cast<uint8_t *>(in), inLen, rsaKey.data(), rsaKeySize,
         reinterpret_cast<uint8_t *>(out), outLen, RSA_KEY_SIZE);
 
     if (returnCode == CKR_OK)
@@ -741,15 +728,12 @@ bool isFirstChunkForDecryption(int userId)
 
 // Retrieves an AES key from the HSM by key ID.
 CK_RV retrieveAESKeyByKeyId(int userId, std::string aesKeyId,
-                            std::shared_ptr<unsigned char[]> &symmetricKey,
-                            KeyPermission permission)
+                            unsigned char *symmetricKey, int symmetricKeyLength,
+                            KeyPermission usage)
 {
     try {
-        // std::pair<std::shared_ptr<unsigned char[]>, int> keyAndLength =
-        //     TempHsm::getInstance().getAESKey(userId, aesKeyId, permission);
-        symmetricKey = TempHsm::getInstance()
-                           .getAESKey(userId, aesKeyId, permission)
-                           .first;
+        TempHsm::getInstance().getKeyByKeyId(userId, aesKeyId, usage,
+                                             symmetricKey, symmetricKeyLength);
     }
     catch (std::exception &e) {
         log(logger::LogLevel::ERROR,
@@ -808,8 +792,8 @@ CK_RV decryptAESkey(int senderId, int recieverId, void *in, size_t inLen,
 //Performs AES encryption on the first data block.
 CK_RV performAESEncryption(int senderId, void *in, size_t inLen, void *out,
                            size_t outLen, AESChainingMode chainingMode,
-                           std::shared_ptr<unsigned char[]> symmetricKey,
-                           AESKeyLength keyLength, size_t counter)
+                           unsigned char *symmetricKey, AESKeyLength keyLength,
+                           size_t counter)
 {
     LOG_BUFFER_HEXA(in, inLen, "this is the plain data", senderId);
     StreamAES *streamAES = FactoryManager::getInstance().create(chainingMode);
@@ -817,8 +801,7 @@ CK_RV performAESEncryption(int senderId, void *in, size_t inLen, void *out,
 
     mapToInMiddleEncryptions[senderId].first->encryptStart(
         reinterpret_cast<unsigned char *>(in), inLen,
-        static_cast<unsigned char *>(out), outLen, symmetricKey.get(),
-        keyLength);
+        static_cast<unsigned char *>(out), outLen, symmetricKey, keyLength);
     LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data", senderId);
 
     return CKR_OK;
@@ -848,19 +831,17 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
     //if first chunk
     if (isFirstChunkForEncryption(senderId)) {
         size_t symmetricKeyLen = keyLength;
-        std::shared_ptr<unsigned char[]> key;
+        std::vector<unsigned char> symmetricKey(keyLength);
 
         // Handle key generation or retrieval:
         // if using key generation - generate a new key and concatenate it to the encrypted data
         if (generateKeyFlag) {
-            key =
-                std::shared_ptr<unsigned char[]>(new unsigned char[keyLength]);
-            generateKey(key.get(), keyLength);
+            generateKey(symmetricKey.data(), keyLength);
             encryptedKeyLength = getEncryptedLengthByAssymFunc(func);
             //encrypt the symmetric key and store it in the out buffer
-            returnCode =
-                encryptAESkey(senderId, receiverId, key.get(), symmetricKeyLen,
-                              out, getEncryptedLengthByAssymFunc(func), func);
+            returnCode = encryptAESkey(
+                senderId, receiverId, symmetricKey.data(), symmetricKeyLen, out,
+                getEncryptedLengthByAssymFunc(func), func);
 
             if (returnCode != CKR_OK) {
                 deleteFromMap(mapToInMiddleEncryptions, senderId,
@@ -870,7 +851,8 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
         }
         //otherwise retrieve the key from file by keyId:
         else {
-            retrieveAESKeyByKeyId(senderId, keyId, key, ENCRYPT);
+            retrieveAESKeyByKeyId(senderId, keyId, symmetricKey.data(),
+                                  symmetricKeyLen, ENCRYPT);
         }
         //printBufferHexa(symmetricKey, symmetricKeyLen, "key retrieved for encrypting");
         if (generateKeyFlag == true)
@@ -888,7 +870,8 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
         returnCode = performAESEncryption(
             senderId, in, inLen,
             static_cast<uint8_t *>(out) + encryptedKeyLength,
-            outLen - encryptedKeyLength, chainingMode, key, keyLength, counter);
+            outLen - encryptedKeyLength, chainingMode, symmetricKey.data(),
+            keyLength, counter);
         if (returnCode != CKR_OK) {
             deleteFromMap(mapToInMiddleEncryptions, senderId,
                           "mapToInMiddleEncryptions");
@@ -930,9 +913,8 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
 // Performs AES decryption on the first data block.
 CK_RV performAESDecryption(int receiverId, void *in, size_t inLen, void *out,
                            size_t &outLen, AESChainingMode chainingMode,
-                           std::shared_ptr<unsigned char[]> symmetricKey,
-                           AESKeyLength keyLength, size_t counter,
-                           bool generateKeyFlag)
+                           unsigned char *symmetricKey, AESKeyLength keyLength,
+                           size_t counter, bool generateKeyFlag)
 {
     LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data", receiverId);
     StreamAES *streamAES = FactoryManager::getInstance().create(chainingMode);
@@ -941,7 +923,7 @@ CK_RV performAESDecryption(int receiverId, void *in, size_t inLen, void *out,
     try {
         mapToInMiddleDecryptions[receiverId].first->decryptStart(
             reinterpret_cast<unsigned char *>(in), inLen,
-            static_cast<unsigned char *>(out), outLen2, symmetricKey.get(),
+            static_cast<unsigned char *>(out), outLen2, symmetricKey,
             keyLength);
     }
     catch (std::exception &e) {
@@ -984,20 +966,19 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
 
     //if first chunk
     if (isFirstChunkForDecryption(receiverId)) {
-        std::shared_ptr<unsigned char[]> symmetricKey;
+        std::vector<unsigned char> symmetricKey;
         size_t offset = 0;
-
+        size_t symmetricKeyLength;
         // Handle key generation or retrieval:
         //if using key generation - decrypt the concatenated key
         if (generateKeyFlag) {
-            symmetricKey =
-                std::shared_ptr<unsigned char[]>(new unsigned char[keyLength]);
             size_t encryptedKeyLength = getEncryptedLengthByAssymFunc(func);
             size_t symmetricKeyLength = keyLength;
+            symmetricKey.resize(keyLength);
             //decrypt the symmetric key
             CK_RV returnCode = decryptAESkey(
                 senderId, receiverId, in, encryptedKeyLength,
-                symmetricKey.get(), symmetricKeyLength, func, keyLength);
+                symmetricKey.data(), symmetricKeyLength, func, keyLength);
             offset = encryptedKeyLength;
 
             if (returnCode != CKR_OK) {
@@ -1008,7 +989,10 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
         }
         //otherwise retrieve the key from file by keyId:
         else {
-            retrieveAESKeyByKeyId(receiverId, keyId, symmetricKey, DECRYPT);
+            symmetricKeyLength =
+                TempHsm::getInstance().getKeyLengthByKeyId(keyId);
+            retrieveAESKeyByKeyId(senderId, keyId, symmetricKey.data(),
+                                  symmetricKeyLength, DECRYPT);
         }
         if (keyId != "")
             log(logger::LogLevel::INFO,
@@ -1023,8 +1007,8 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
         // Perform AES decryption
         CK_RV error = performAESDecryption(
             receiverId, static_cast<unsigned char *>(in) + offset,
-            inLen - offset, out, outLen, chainingMode, symmetricKey, keyLength,
-            counter, generateKeyFlag);
+            inLen - offset, out, outLen, chainingMode, symmetricKey.data(),
+            keyLength, counter, generateKeyFlag);
         if (error != CKR_OK) {
             deleteFromMap(mapToInMiddleDecryptions, receiverId,
                           "mapToInMiddleDecryptions");

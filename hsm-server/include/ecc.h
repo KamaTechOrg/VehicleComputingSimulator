@@ -15,17 +15,17 @@ struct Point {
     Point(mpz_class x, mpz_class y) : x(x), y(y) {}
 };
 
-// Structure for representing an encrypted message
-struct EncryptedMessage {
-    mpz_class c1X;
-    bool c1Y;
-    mpz_class c2X;
-    bool c2Y;
-    EncryptedMessage(mpz_class c1X, bool c1Y, mpz_class c2X, bool c2Y)
-        : c1X(c1X), c1Y(c1Y), c2X(c2X), c2Y(c2Y)
-    {
-    }
-};
+    // Structure for representing an encrypted message
+    struct EncryptedMessage {
+        mpz_class c1X;
+        bool c1Y;
+        mpz_class c2X;
+        bool c2Y;
+        EncryptedMessage(mpz_class c1X, bool c1Y, mpz_class c2X, bool c2Y)
+            : c1X(c1X), c1Y(c1Y), c2X(c2X), c2Y(c2Y)
+        {
+        }
+    };
 
 mpz_class generatePrivateKey();
 Point generatePublicKey(mpz_class key);

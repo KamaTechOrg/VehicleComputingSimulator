@@ -1,0 +1,116 @@
+{
+    "keys": [
+        {
+            "file_name": "key_1730063999051_0.key",
+            "key_id": "key_1730063999051_0",
+            "key_size": 136,
+            "key_type": "RSA_PUB",
+            "other_users": [
+                {
+                    "permissions": {
+                        "decrypt": true,
+                        "encrypt": true,
+                        "exportable": false,
+                        "sign": false,
+                        "verify": false
+                    },
+                    "user_id": -1
+                }
+            ],
+            "owner": {
+                "permissions": {
+                    "decrypt": true,
+                    "encrypt": true,
+                    "exportable": true,
+                    "sign": true,
+                    "verify": true
+                },
+                "user_id": 1
+            }
+        },
+        {
+            "file_name": "key_1730063999051_1.key",
+            "key_id": "key_1730063999051_1",
+            "key_size": 256,
+            "key_type": "RSA_PRIV",
+            "other_users": [
+                {
+                    "permissions": {
+                        "decrypt": false,
+                        "encrypt": false,
+                        "exportable": false,
+                        "sign": false,
+                        "verify": false
+                    },
+                    "user_id": -1
+                }
+            ],
+            "owner": {
+                "permissions": {
+                    "decrypt": true,
+                    "encrypt": true,
+                    "exportable": true,
+                    "sign": true,
+                    "verify": true
+                },
+                "user_id": 1
+            }
+        },
+        {
+            "file_name": "key_1730064132286_52.key",
+            "key_id": "key_1730064132286_52",
+            "key_size": 66,
+            "key_type": "ECC_PUB",
+            "other_users": [
+                {
+                    "permissions": {
+                        "decrypt": true,
+                        "encrypt": true,
+                        "exportable": false,
+                        "sign": false,
+                        "verify": false
+                    },
+                    "user_id": -1
+                }
+            ],
+            "owner": {
+                "permissions": {
+                    "decrypt": true,
+                    "encrypt": true,
+                    "exportable": true,
+                    "sign": true,
+                    "verify": true
+                },
+                "user_id": 1
+            }
+        },
+        {
+            "file_name": "key_1730064133995_53.key",
+            "key_id": "key_1730064133995_53",
+            "key_size": 32,
+            "key_type": "ECC_PRIV",
+            "other_users": [
+                {
+                    "permissions": {
+                        "decrypt": false,
+                        "encrypt": false,
+                        "exportable": false,
+                        "sign": false,
+                        "verify": false
+                    },
+                    "user_id": -1
+                }
+            ],
+            "owner": {
+                "permissions": {
+                    "decrypt": true,
+                    "encrypt": true,
+                    "exportable": true,
+                    "sign": true,
+                    "verify": true
+                },
+                "user_id": 1
+            }
+        }
+    ]
+}

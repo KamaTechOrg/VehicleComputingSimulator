@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Find Protobuf and gRPC packages
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
-
+find_package(GTest REQUIRED)
 # Gather all source files in src directory
 file(GLOB SOURCES "src/*.cpp")
 
@@ -73,8 +73,36 @@ add_library(logger STATIC ${LOGGER_SOURCES})
 add_executable(grpc_server src/my_logger.cpp ${SOURCES} ${PROTO_SRCS})
 
 # Link against protobuf, gRPC, GMP, and logger libraries
-target_link_libraries(grpc_server ${Protobuf_LIBRARIES} ${GMP_LIBRARY} ${GMPXX_LIBRARY} gRPC::grpc++ logger)
+target_link_libraries(grpc_server 
+    ${Protobuf_LIBRARIES} 
+    ${GMP_LIBRARY} 
+    ${GMPXX_LIBRARY} 
+    gRPC::grpc++ 
+    logger)
+# Set build type to Release for optimizations
+set(CMAKE_BUILD_TYPE Release)
 
+# Set optimization flags for Release mode
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+file(GLOB TESTS_SRCS "tests/*.cpp")
+set(SOURCES_FOR_TESTS ${SOURCES})
+list(REMOVE_ITEM SOURCES_FOR_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/src/crypto_service.cpp")
+add_executable(grpc_server_tests 
+# ${TESTS_SRCS} 
+tests/crypto_api_tests.cpp
+${SOURCES_FOR_TESTS})
+# Set debug-specific flags for tests only
+target_compile_options(grpc_server_tests PRIVATE -g -O0) # Enable debugging information
+
+target_link_libraries(grpc_server_tests 
+    ${GMP_LIBRARY} 
+    ${GMPXX_LIBRARY} 
+    logger
+    GTest::gtest
+    GTest::gtest_main
+    )
 # Ensure that protobuf and gRPC code generation is properly configured
 add_custom_target(proto_gen ALL
     DEPENDS ${PROTO_SRCS} ${PROTO_HDRS}
@@ -83,10 +111,3 @@ add_custom_target(proto_gen ALL
 
 # Add dependencies to ensure proper build order
 add_dependencies(grpc_server proto_gen)
-
-# Set build type to Release for optimizations
-set(CMAKE_BUILD_TYPE Release)
-
-# Set optimization flags for Release mode
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")

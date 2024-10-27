@@ -33,10 +33,10 @@ uint32_t srcID = readIdFromJson();
 // Processing the data received from the complete message
 void processData(uint32_t senderId, void *data) {
   cout << "I'm user1, Received from id : " << senderId << endl;
-  // if (hsm::decryptData(data, senderId, srcID))
-  //   cout << "The message dycrypted successfully" << endl;
-  // else
-  //   cerr << "The message dycryption failed" << endl;
+  if (hsm::decryptData(data, senderId, srcID))
+    cout << "The message dycrypted successfully" << endl;
+  else
+    cerr << "The message dycryption failed" << endl;
 
   cout << "data: " << static_cast<char *>(data) << endl;
   free(data);
@@ -78,14 +78,14 @@ int main() {
   size_t encryptedLength = hsm::getEncryptedLen(srcID, buffer.size());
   uint8_t encryptedData[encryptedLength];
 
-  // if (hsm::encryptData((const void *)buffer.data(), buffer.size(),
-  //                      encryptedData, encryptedLength, srcID, destID)) {
-  //   comm.sendMessage(encryptedData, encryptedLength, destID, srcID, false);
-  //   cout << "The message encrypted successfully" << endl;
-  // } else {
-    // cerr << "The message encryption failed" << endl;
+  if (hsm::encryptData((const void *)buffer.data(), buffer.size(),
+                       encryptedData, encryptedLength, srcID, destID)) {
+    comm.sendMessage(encryptedData, encryptedLength, destID, srcID, false);
+    cout << "The message encrypted successfully" << endl;
+  } else {
+    cerr << "The message encryption failed" << endl;
     comm.sendMessage(buffer.data(), buffer.size(), destID, srcID, false);
-  // }
+  }
 // }
   //-------------
 

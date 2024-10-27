@@ -25,7 +25,7 @@ class CryptoAPIFixture : public ::testing::Test {
     void TearDown() override {}
 };
 
-//#define RSA_TEST
+#define RSA_TEST
 // #define ECC_TEST
 // #define SIGN_VERIFY_TEST
 
@@ -483,7 +483,7 @@ void GenericEncryptionDecryptionTest(CryptoConfig config)
 
 // Control macros to enable or disable RSA and ECC tests
 //#define RUN_RSA_TESTS  // Set to 1 to run RSA tests, 0 to skip
-#define RUN_ECC_TESTS  // Set to 1 to run ECC tests, 0 to skip
+// #define RUN_ECC_TESTS  // Set to 1 to run ECC tests, 0 to skip
 
 //AES_128 combinations
 #ifdef RUN_RSA_TESTS
