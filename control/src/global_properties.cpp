@@ -1,22 +1,35 @@
 #include "global_properties.h"
 using namespace std;
 
-
 void handleMesseage(uint32_t senderId, void *data)
 {
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
-
     GlobalProperties::controlLogger.logMessage(
         logger::LogLevel::INFO, "Received message from id " + senderId);
 
-    const char *msg = "I got message";
-    size_t dataSize = strlen(msg) + 1;
-    // instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
-    //                              instanceGP.srcID, false);
+    // const char *msg = "I got message";
+    // size_t dataSize = strlen(msg) + 1;
+    // // Get the length of the encrypted data
+    // size_t encryptedLength = hsm::getEncryptedLen(instanceGP.srcID, dataSize);
+    // uint8_t encryptedData[encryptedLength];
 
-    if (decryptData(data, instanceGP.sensors[senderId]->msgLength / BITS_IN_BYTE, senderId)){
+    // if (hsm::encryptData((const void *)msg, dataSize, encryptedData,
+    //                      encryptedLength, instanceGP.srcID, senderId)) {
+    //     instanceGP.controlLogger.logMessage(
+    //         logger::LogLevel::INFO, "The message encrypted successfully");
+    //     instanceGP.comm->sendMessage(encryptedData, encryptedLength, senderId,
+    //                                  instanceGP.srcID, false);
+    // }
+    // else {
+    //     instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR,
+    //                                         "The message encryption failed");
+    //     instanceGP.comm->sendMessage((void *)msg, dataSize, senderId,
+    //                                  instanceGP.srcID, false);
+    // }
+
+    if (hsm::decryptData(data, senderId, instanceGP.srcID)) {
         instanceGP.controlLogger.logMessage(
-                    logger::LogLevel::INFO, "The message dycrypted successfully");
+            logger::LogLevel::INFO, "The message dycrypted successfully");
     }
     else {
         instanceGP.controlLogger.logMessage(logger::LogLevel::ERROR,
@@ -25,7 +38,6 @@ void handleMesseage(uint32_t senderId, void *data)
     }
 
     instanceGP.sensors[senderId]->handleMessage(data);
-
     for (int cId : instanceGP.trueConditions)
         instanceGP.conditions[cId]->activateActions();
 
@@ -60,7 +72,7 @@ int readIdFromJson()
 }
 
 // Initializes the sensors based on a JSON file
-GlobalProperties::GlobalProperties() : client(srcID)
+GlobalProperties::GlobalProperties()
 {
     controlLogger.logMessage(logger::LogLevel::INFO, "Initializing...");
 

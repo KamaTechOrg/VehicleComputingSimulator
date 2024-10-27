@@ -7,9 +7,9 @@
 #include <vector>
 #include <memory>
 #include <grpcpp/grpcpp.h>
-#include "../proto/encryption.grpc.pb.h"
+#include "encryption.grpc.pb.h"
 #include "general.h"
-#include "../proto/encryption.pb.h"
+#include "encryption.pb.h"
 
 class CryptoClient {
    public:
@@ -41,7 +41,7 @@ class CryptoClient {
     size_t getSignatureLength();
     size_t getSignedDataLength(size_t inLen);
     size_t getVerifiedDataLength(size_t inLen);
-    CK_RV sign(void *in, size_t inLen, uint8_t *&out, size_t &outLen,
+    CK_RV sign(void *in, size_t inLen, uint8_t *out, size_t &outLen,
                SHAAlgorithm hashFunc, std::string keyId);
     CK_RV verify(int recieverId, void *in, size_t inLen, void *out,
                  size_t &outLen, std::string keyId);
@@ -71,11 +71,11 @@ class CryptoClient {
     size_t getAESdecryptedLength(void *in, size_t dataLend);
     size_t getAESencryptedLength(size_t dataLen, const std::string &keyId,
                                  AESChainingMode chainingMode);
-    CK_RV AESencrypt(int recieverId, void *in, size_t inLen, void *&out,
-                     unsigned int &outLen, AsymmetricFunction func,
+    CK_RV AESencrypt(int recieverId, void *in, size_t inLen, void *out,
+                     size_t &outLen, AsymmetricFunction func,
                      AESKeyLength keyLength, AESChainingMode chainingMode,
                      std::string keyId);
-    CK_RV AESdecrypt(int receiverId, void *in, size_t inLen, void *&out,
+    CK_RV AESdecrypt(int receiverId, void *in, size_t inLen, void *out,
                      size_t &outLen);
 
     // encrypt-decrypt
@@ -88,7 +88,7 @@ class CryptoClient {
                   size_t &outLen);
     CK_RV decrypt(int receiverId, void *in, size_t inLen, void *out,
                   size_t &outLen);
-
+    size_t getEncryptedLengthByEncrypted(void* data);
    private:
     int userId;
     std::unique_ptr<crypto::CryptoService::Stub> stub_;

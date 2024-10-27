@@ -12,7 +12,8 @@
 
 std::map<int, std::pair<StreamAES *, size_t>> mapToInMiddleEncryptions;
 std::map<int, std::pair<StreamAES *, size_t>> mapToInMiddleDecryptions;
-std::map<int, std::pair<std::unique_ptr<IHash>, size_t>> mapToInMiddleHashing;
+std::map<int, std::pair<std::unique_ptr<IHash>, size_t>> mapToInMiddleSigning;
+std::map<int, std::pair<std::unique_ptr<IHash>, size_t>> mapToInMiddleVerifying;
 
 constexpr size_t BITS_IN_BYTE = 8;
 constexpr size_t ECC_CIPHER_LENGTH = 512;
@@ -35,10 +36,18 @@ int getCountFromDecryptions(int userID)
     return 0;
 }
 
-int getCountFromHashing(int userID)
+int getCountFromSigning(int userID)
 {
-    auto it = mapToInMiddleHashing.find(userID);
-    if (it != mapToInMiddleHashing.end())
+    auto it = mapToInMiddleSigning.find(userID);
+    if (it != mapToInMiddleSigning.end())
+        return it->second.second;
+    return 0;
+}
+
+int getCountFromVerifying(int userID)
+{
+    auto it = mapToInMiddleVerifying.find(userID);
+    if (it != mapToInMiddleVerifying.end())
         return it->second.second;
     return 0;
 }
@@ -436,6 +445,7 @@ std::string getPrivateRSAKeyByUserId(int userId)
 CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t &outLen)
 {
+    LOG_BUFFER_HEXA(in, inLen, "plain text to encrypt", senderId);
     CK_RV error =
         logAndHandleErrors("ECC Encryption", senderId, keyId, in, inLen, out,
                            outLen, getECCencryptedLength(), true);
@@ -467,7 +477,7 @@ CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
     log(logger::LogLevel::INFO,
         "Successfully completed ECC encryption for user id: " +
             std::to_string(senderId));
-
+    LOG_BUFFER_HEXA(out, outLen, "encrypted", senderId);
     return CKR_OK;
 }
 
@@ -475,6 +485,7 @@ CK_RV ECCencrypt(int senderId, std::string keyId, void *in, size_t inLen,
 CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
                  void *out, size_t &outLen, size_t requiredOutLen)
 {
+    LOG_BUFFER_HEXA(in, inLen, "encrypted to decrypt", receiverId);
     // std::string eccPrivateKeyString;
     // try {
     //   eccPrivateKeyString =
@@ -522,7 +533,7 @@ CK_RV ECCdecrypt(int receiverId, std::string keyId, void *in, size_t inLen,
     log(logger::LogLevel::INFO,
         "Successfully completed ECC decryption for user id: " +
             std::to_string(receiverId));
-
+    LOG_BUFFER_HEXA(out, outLen, "decrypted", receiverId);
     return CKR_OK;
 }
 
@@ -716,14 +727,14 @@ std::pair<std::string, std::string> generateRSAKeyPair(
 
 #pragma region AES
 
-// Checks if the user is encrypting the first chunck.
-bool isFirstChunckForEncryption(int userId)
+// Checks if the user is encrypting the first chunk.
+bool isFirstChunkForEncryption(int userId)
 {
     return mapToInMiddleEncryptions.count(userId) == 0;
 }
 
-// Checks if the user is decrypting the first chunck.
-bool isFirstChunckForDecryption(int userId)
+// Checks if the user is decrypting the first chunk.
+bool isFirstChunkForDecryption(int userId)
 {
     return mapToInMiddleDecryptions.count(userId) == 0;
 }
@@ -800,7 +811,7 @@ CK_RV performAESEncryption(int senderId, void *in, size_t inLen, void *out,
                            std::shared_ptr<unsigned char[]> symmetricKey,
                            AESKeyLength keyLength, size_t counter)
 {
-    LOG_BUFFER_HEXA(in, inLen, "this is the plain data");
+    LOG_BUFFER_HEXA(in, inLen, "this is the plain data", senderId);
     StreamAES *streamAES = FactoryManager::getInstance().create(chainingMode);
     mapToInMiddleEncryptions[senderId] = std::make_pair(streamAES, counter);
 
@@ -808,7 +819,7 @@ CK_RV performAESEncryption(int senderId, void *in, size_t inLen, void *out,
         reinterpret_cast<unsigned char *>(in), inLen,
         static_cast<unsigned char *>(out), outLen, symmetricKey.get(),
         keyLength);
-    LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data");
+    LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data", senderId);
 
     return CKR_OK;
 }
@@ -822,9 +833,9 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
 {
     CK_RV returnCode = logAndHandleErrors(
         "AES Encryption", senderId, keyId, in, inLen, out, outLen,
-        getAESencryptedLength(inLen, isFirstChunckForEncryption(senderId),
+        getAESencryptedLength(inLen, isFirstChunkForEncryption(senderId),
                               chainingMode),
-        isFirstChunckForEncryption(senderId), keyLength);
+        isFirstChunkForEncryption(senderId), keyLength);
 
     if (returnCode != CKR_OK) {
         deleteFromMap(mapToInMiddleEncryptions, senderId,
@@ -834,8 +845,8 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
 
     size_t encryptedKeyLength = 0;
 
-    //if first chunck
-    if (isFirstChunckForEncryption(senderId)) {
+    //if first chunk
+    if (isFirstChunkForEncryption(senderId)) {
         size_t symmetricKeyLen = keyLength;
         std::shared_ptr<unsigned char[]> key;
 
@@ -866,13 +877,13 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
             log(logger::LogLevel::INFO,
                 "Performing AES encryption for user id: " +
                     std::to_string(senderId) +
-                    " for chunck of data number 1 with keyId: " +
+                    " for chunk of data number 1 with keyId: " +
                     keyId);  //aes key
         else
             log(logger::LogLevel::INFO,
                 "Performing AES encryption for user id: " +
                     std::to_string(senderId) +
-                    " for chunck of data number 1");  //receiver rsa public key
+                    " for chunk of data number 1");  //receiver rsa public key
         // Perform AES encryption
         returnCode = performAESEncryption(
             senderId, in, inLen,
@@ -888,19 +899,19 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
         // Handle chunk continuation
         log(logger::LogLevel::INFO,
             "Performing AES encryption for user id: " +
-                std::to_string(senderId) + " for chunck of data number " +
+                std::to_string(senderId) + " for chunk of data number " +
                 std::to_string(counter -
                                mapToInMiddleEncryptions[senderId].second + 1) +
                 ".");
         //perform encryption
-        LOG_BUFFER_HEXA(in, inLen, "this is the plain data");
+        LOG_BUFFER_HEXA(in, inLen, "this is the plain data", senderId);
         mapToInMiddleEncryptions[senderId].first->encryptContinue(
             reinterpret_cast<unsigned char *>(in), inLen,
             static_cast<unsigned char *>(out), outLen);
-        LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data");
+        LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data", senderId);
     }
 
-    //reduce a chunck from the chuncks counter
+    //reduce a chunk from the chunks counter
     mapToInMiddleEncryptions[senderId].second--;
 
     // If all chunks have been encrypted, erase the entry from the map
@@ -910,7 +921,7 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
         log(logger::LogLevel::INFO,
             "Successfully completed AES encryption for user id: " +
                 std::to_string(senderId) + " for all " +
-                std::to_string(counter) + " chuncks.");
+                std::to_string(counter) + " chunks.");
     }
 
     return CKR_OK;
@@ -923,7 +934,7 @@ CK_RV performAESDecryption(int receiverId, void *in, size_t inLen, void *out,
                            AESKeyLength keyLength, size_t counter,
                            bool generateKeyFlag)
 {
-    LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data");
+    LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data", receiverId);
     StreamAES *streamAES = FactoryManager::getInstance().create(chainingMode);
     mapToInMiddleDecryptions[receiverId] = std::make_pair(streamAES, counter);
     unsigned int outLen2 = outLen;
@@ -939,7 +950,7 @@ CK_RV performAESDecryption(int receiverId, void *in, size_t inLen, void *out,
                 std::to_string(receiverId) + ". Error: " + e.what());
         return CKR_ARGUMENTS_BAD;
     }
-    LOG_BUFFER_HEXA(out, outLen, "this is the decrypted data");
+    LOG_BUFFER_HEXA(out, outLen2, "this is the decrypted data", receiverId);
 
     outLen = outLen2;
     return CKR_OK;
@@ -952,27 +963,27 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
                  size_t counter, bool generateKeyFlag, std::string keyId = "")
 {
     size_t encryptedKeyLen =
-        ((isFirstChunckForDecryption(receiverId)) && generateKeyFlag)
+        ((isFirstChunkForDecryption(receiverId)) && generateKeyFlag)
             ? ((func == RSA) ? rsaGetEncryptedLen(RSA_KEY_SIZE)
                              : getECCencryptedLength())
             : 0;
     size_t requiredLength =
-        getAESdecryptedLength(inLen, isFirstChunckForDecryption(receiverId),
+        getAESdecryptedLength(inLen, isFirstChunkForDecryption(receiverId),
                               chainingMode) -
         encryptedKeyLen;
 
     CK_RV error =
         logAndHandleErrors("AES Decryption", receiverId, keyId, in,
                            inLen - encryptedKeyLen, out, outLen, requiredLength,
-                           isFirstChunckForDecryption(receiverId), keyLength);
+                           isFirstChunkForDecryption(receiverId), keyLength);
     if (error != CKR_OK) {
         deleteFromMap(mapToInMiddleDecryptions, receiverId,
                       "mapToInMiddleDecryptions");
         return error;
     }
 
-    //if first chunck
-    if (isFirstChunckForDecryption(receiverId)) {
+    //if first chunk
+    if (isFirstChunkForDecryption(receiverId)) {
         std::shared_ptr<unsigned char[]> symmetricKey;
         size_t offset = 0;
 
@@ -1003,12 +1014,12 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
             log(logger::LogLevel::INFO,
                 "Performing AES decryption for user id: " +
                     std::to_string(receiverId) +
-                    " for chunck of data number 1 with keyId: " + keyId + ".");
+                    " for chunk of data number 1 with keyId: " + keyId + ".");
         else
             log(logger::LogLevel::INFO,
                 "Performing AES decryption for user id: " +
                     std::to_string(receiverId) +
-                    " for chunck of data number 1.");
+                    " for chunk of data number 1.");
         // Perform AES decryption
         CK_RV error = performAESDecryption(
             receiverId, static_cast<unsigned char *>(in) + offset,
@@ -1024,17 +1035,19 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
     else {
         log(logger::LogLevel::INFO,
             "Performing AES decryption for user id: " +
-                std::to_string(receiverId) + " for chunck of data number " +
+                std::to_string(receiverId) + " for chunk of data number " +
                 std::to_string(
                     counter - mapToInMiddleDecryptions[receiverId].second + 1) +
                 ".");
         unsigned int outLen2 = outLen;
         try {
-            LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data");
+            LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data",
+                            receiverId);
             mapToInMiddleDecryptions[receiverId].first->decryptContinue(
                 reinterpret_cast<unsigned char *>(in), inLen,
                 static_cast<unsigned char *>(out), outLen2);
-            LOG_BUFFER_HEXA(out, outLen2, "this is the decrypted data");
+            LOG_BUFFER_HEXA(out, outLen2, "this is the decrypted data",
+                            receiverId);
         }
         catch (std::exception &e) {
             log(logger::LogLevel::ERROR,
@@ -1046,7 +1059,7 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
         }
         outLen = outLen2;
     }
-    // reduce a chunck from the chuncks counter
+    // reduce a chunk from the chunks counter
     mapToInMiddleDecryptions[receiverId].second--;
 
     // If all chunks have been decrypted, erase the entry from the map
@@ -1056,7 +1069,7 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
         log(logger::LogLevel::INFO,
             "Successfully completed AES decryption for user id: " +
                 std::to_string(receiverId) + " for all " +
-                std::to_string(counter) + " chuncks.");
+                std::to_string(counter) + " chunks.");
     }
 
     return CKR_OK;
@@ -1142,7 +1155,7 @@ CK_RV AESencrypt(int senderId, int receiverId, void *in, size_t inLen,
  * @param[out] outLen The length of the decrypted output.
  * @param keyLength The AES key length (128, 192, or 256 bits).
  * @param chainingMode The AES chaining mode (e.g., CBC, CTR).
- * @param counter The chuncks counter for the chunked decryption process.
+ * @param counter The chunks counter for the chunked decryption process.
  * @param keyId The ID of the key to be retrieved.
  * @return CKR_OK on successful encryption, an appropriate error code on failure..
  */
@@ -1173,68 +1186,27 @@ size_t getHashedMessageSize(SHAAlgorithm hashFunc)
 }
 
 // Checks if the hashing process is done for a specific user.
-bool isDoneHashing(int userId)
+bool isDoneSigning(int userId)
 {
-    return mapToInMiddleHashing.count(userId) != 0 &&
-           mapToInMiddleHashing[userId].second == 0;
+    return mapToInMiddleSigning.count(userId) != 0 &&
+           mapToInMiddleSigning[userId].second == 0;
 }
 
-// Checks if the user is hashing the first chunck.
-bool isFirstChunckHash(int userId)
+bool isDoneVerifying(int userId)
 {
-    return mapToInMiddleHashing.count(userId) == 0;
+    return mapToInMiddleVerifying.count(userId) != 0 &&
+           mapToInMiddleVerifying[userId].second == 0;
 }
 
-// Updates the hash with the provided data.
-CK_RV hashDataUpdate(int userId, void *data, size_t dataLen,
-                     SHAAlgorithm hashfunc, int counter,
-                     std::string signOrVerify)
+// Checks if the user is hashing the first chunk.
+bool isFirstChunkSigning(int userId)
 {
-    LOG_BUFFER_HEXA(data, dataLen, "chunck to hash:");
-    CK_RV returnCode = logAndHandleErrors("Digital Signature", userId, data,
-                                          dataLen, isFirstChunckHash(userId));
-    if (returnCode != CKR_OK)
-        return returnCode;
-    log(logger::LogLevel::INFO, signOrVerify +
-                                    " for user id: " + std::to_string(userId) +
-                                    " chunck of data.");
-
-    if (isFirstChunckHash(userId)) {  // first time
-        HashFactory *factoryManager = &HashFactory::getInstance();
-        mapToInMiddleHashing[userId] =
-            std::make_pair(std::unique_ptr<IHash>(), counter);
-        returnCode = factoryManager->create(hashfunc,
-                                            mapToInMiddleHashing[userId].first);
-        if (returnCode != CKR_OK)
-            return returnCode;
-    }
-
-    std::vector<uint8_t>(static_cast<uint8_t *>(data),
-                         static_cast<uint8_t *>(data) + dataLen);
-
-    returnCode = mapToInMiddleHashing[userId].first->update(
-        std::vector<uint8_t>(static_cast<uint8_t *>(data),
-                             static_cast<uint8_t *>(data) + dataLen));
-    mapToInMiddleHashing[userId].second--;
-
-    return returnCode;
+    return mapToInMiddleSigning.count(userId) == 0;
 }
 
-// Finalizes the hash computation and retrieves the resulting hash.
-CK_RV hashDataFinalize(int userId, void *out, size_t outLen)
+bool isFirstChunkVerifying(int userId)
 {
-    log(logger::LogLevel::INFO,
-        "Signing for user id: " + std::to_string(userId) + " finalizing.");
-
-    std::vector<uint8_t> result;
-    if (mapToInMiddleHashing.count(userId) == 0)
-        return CKR_SIGNATURE_INVALID;
-
-    CK_RV returnCode = mapToInMiddleHashing[userId].first->finalize(result);
-    deleteFromMap(mapToInMiddleHashing, userId, "mapToInMiddleHashing");
-    memcpy(out, result.data(), outLen);
-
-    return returnCode;
+    return mapToInMiddleVerifying.count(userId) == 0;
 }
 
 /**
@@ -1255,10 +1227,40 @@ size_t getSignatureLength()
 CK_RV signUpdate(int senderId, void *data, size_t dataLen,
                  SHAAlgorithm hashfunc, int counter)
 {
-    CK_RV returnCode =
-        hashDataUpdate(senderId, data, dataLen, hashfunc, counter, "Signing ");
+    LOG_BUFFER_HEXA(data, dataLen, "chunk to sign:", senderId);
+    CK_RV returnCode = CKR_OK;
+
+    returnCode = logAndHandleErrors("Signing Digital Signature", senderId, data,
+                                    dataLen, isFirstChunkSigning(senderId));
     if (returnCode != CKR_OK)
-        deleteFromMap(mapToInMiddleHashing, senderId, "mapToInMiddleHashing");
+        return returnCode;
+
+    log(logger::LogLevel::INFO, ("Signing for user id: " +
+                                 std::to_string(senderId) + " chunk of data."));
+
+    if (isFirstChunkSigning(senderId)) {  // first time
+        HashFactory *factoryManager = &HashFactory::getInstance();
+        mapToInMiddleSigning[senderId] =
+            std::make_pair(std::unique_ptr<IHash>(), counter);
+        returnCode = factoryManager->create(
+            hashfunc, mapToInMiddleSigning[senderId].first);
+        if (returnCode != CKR_OK) {
+            deleteFromMap(mapToInMiddleSigning, senderId,
+                          "mapToInMiddleSigning");
+            return returnCode;
+        }
+    }
+
+    std::vector<uint8_t>(static_cast<uint8_t *>(data),
+                         static_cast<uint8_t *>(data) + dataLen);
+
+    returnCode = mapToInMiddleSigning[senderId].first->update(
+        std::vector<uint8_t>(static_cast<uint8_t *>(data),
+                             static_cast<uint8_t *>(data) + dataLen));
+    mapToInMiddleSigning[senderId].second--;
+
+    if (returnCode != CKR_OK)
+        deleteFromMap(mapToInMiddleSigning, senderId, "mapToInMiddleSigning");
 
     return returnCode;
 }
@@ -1267,16 +1269,22 @@ CK_RV signUpdate(int senderId, void *data, size_t dataLen,
 CK_RV signFinalize(int senderId, void *signature, size_t signatureLen,
                    SHAAlgorithm hashfunc, std::string keyId)
 {
+    log(logger::LogLevel::INFO,
+        "Signing for user id: " + std::to_string(senderId) + " finalizing.");
     size_t hashLen = getHashedMessageSize(hashfunc);
     std::vector<uint8_t> hash(hashLen);
-    CK_RV returnCode = hashDataFinalize(senderId, hash.data(), hashLen);
-    LOG_BUFFER_HEXA(hash.data(), hashLen, "hashed in sign finalize");
+    if (mapToInMiddleSigning.count(senderId) == 0)
+        return CKR_SIGNATURE_INVALID;
+    CK_RV returnCode = mapToInMiddleSigning[senderId].first->finalize(hash);
+    deleteFromMap(mapToInMiddleSigning, senderId, "mapToInMiddleSigning");
+    LOG_BUFFER_HEXA(hash.data(), hashLen, "hashed in sign finalize", senderId);
     if (returnCode != CKR_OK)
         return returnCode;
 
     returnCode = RSAencrypt(senderId, keyId, hash.data(), hashLen, signature,
                             signatureLen);
-    LOG_BUFFER_HEXA(signature, signatureLen, "signature in sign finalize");
+    LOG_BUFFER_HEXA(signature, signatureLen, "signature in sign finalize",
+                    senderId);
     return returnCode;
 }
 
@@ -1284,11 +1292,43 @@ CK_RV signFinalize(int senderId, void *signature, size_t signatureLen,
 CK_RV verifyUpdate(int recieverId, void *data, size_t dataLen,
                    SHAAlgorithm hashFunc, size_t counter)
 {
-    ////printGlobalMaps(mapToInMiddleEncryptions, mapToInMiddleDecryptions, mapToInMiddleHashing);();
-    CK_RV returnCode = hashDataUpdate(recieverId, data, dataLen, hashFunc,
-                                      counter, "Verifying ");
+    LOG_BUFFER_HEXA(data, dataLen, "chunk to verify:", recieverId);
+    CK_RV returnCode = CKR_OK;
+
+    returnCode =
+        logAndHandleErrors("Verifying Digital Signature", recieverId, data,
+                           dataLen, isFirstChunkVerifying(recieverId));
     if (returnCode != CKR_OK)
-        deleteFromMap(mapToInMiddleHashing, recieverId, "mapToInMiddleHashing");
+        return returnCode;
+
+    log(logger::LogLevel::INFO,
+        ("Verifying for user id: " + std::to_string(recieverId) +
+         " chunk of data."));
+
+    if (isFirstChunkVerifying(recieverId)) {  // first time
+        HashFactory *factoryManager = &HashFactory::getInstance();
+        mapToInMiddleVerifying[recieverId] =
+            std::make_pair(std::unique_ptr<IHash>(), counter);
+        returnCode = factoryManager->create(
+            hashFunc, mapToInMiddleVerifying[recieverId].first);
+        if (returnCode != CKR_OK) {
+            deleteFromMap(mapToInMiddleVerifying, recieverId,
+                          "mapToInMiddleVerifying");
+            return returnCode;
+        }
+    }
+
+    std::vector<uint8_t>(static_cast<uint8_t *>(data),
+                         static_cast<uint8_t *>(data) + dataLen);
+
+    returnCode = mapToInMiddleVerifying[recieverId].first->update(
+        std::vector<uint8_t>(static_cast<uint8_t *>(data),
+                             static_cast<uint8_t *>(data) + dataLen));
+    mapToInMiddleVerifying[recieverId].second--;
+
+    if (returnCode != CKR_OK)
+        deleteFromMap(mapToInMiddleVerifying, recieverId,
+                      "mapToInMiddleVerifying");
 
     return returnCode;
 }
@@ -1297,15 +1337,22 @@ CK_RV verifyUpdate(int recieverId, void *data, size_t dataLen,
 CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
                      SHAAlgorithm hashFunc, std::string keyId)
 {
-    ////printGlobalMaps(mapToInMiddleEncryptions, mapToInMiddleDecryptions, mapToInMiddleHashing);();
+    log(logger::LogLevel::INFO,
+        "Verifying for user id: " + std::to_string(recieverId) +
+            " finalizing.");
     size_t hashLen = getHashedMessageSize(hashFunc);
     std::vector<uint8_t> hash(hashLen);
-    CK_RV returnCode = hashDataFinalize(recieverId, hash.data(), hashLen);
+    if (mapToInMiddleVerifying.count(recieverId) == 0)
+        return CKR_SIGNATURE_INVALID;
+    CK_RV returnCode = mapToInMiddleVerifying[recieverId].first->finalize(hash);
+    deleteFromMap(mapToInMiddleVerifying, recieverId, "mapToInMiddleVerifying");
     if (returnCode != CKR_OK)
         return returnCode;
 
-    LOG_BUFFER_HEXA(hash.data(), hashLen, "hashed in verify finalize");
-    LOG_BUFFER_HEXA(signature, signatureLen, "signature in verify finalize");
+    LOG_BUFFER_HEXA(hash.data(), hashLen, "hashed in verify finalize",
+                    recieverId);
+    LOG_BUFFER_HEXA(signature, signatureLen, "signature in verify finalize",
+                    recieverId);
 
     size_t decryptSignatureLen = rsaGetDecryptedLen(RSA_KEY_SIZE);
     std::vector<uint8_t> decryptSignature(decryptSignatureLen);
@@ -1316,7 +1363,7 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
     if (returnCode != CKR_OK)
         return returnCode;
     LOG_BUFFER_HEXA(decryptSignature.data(), decryptSignatureLen,
-                    "decrypted signature in verify finalize");
+                    "decrypted signature in verify finalize", recieverId);
 
     //printBufferHexa(hash.data(), hashLen, "hash by verify finalize (before if)");
     if (decryptSignatureLen != hashLen ||
@@ -1356,6 +1403,7 @@ CK_RV verifyFinalize(int recieverId, void *signature, size_t signatureLen,
  */
 size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
 {
+    DEBUG_LOG("here getEncryptedLen");
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);
@@ -1395,6 +1443,7 @@ size_t getEncryptedLen(int senderId, size_t inLen, bool isFirst)
  */
 size_t getDecryptedLen(int senderId, size_t inLen, bool isFirst)
 {
+    DEBUG_LOG("here getDecryptedLen");
     try {
         // Retrieve the encryption function type for the given sender ID
         CryptoConfig config = TempHsm::getInstance().getUserConfig(senderId);
@@ -1421,7 +1470,7 @@ size_t getDecryptedLen(int senderId, size_t inLen, bool isFirst)
  * This function performs the encryption and signing operations for the input data.
  * It uses the sender's user ID to retrieve its encryption and signing configurations.
  * The encrypted data is then signed using the sender's private key.
- * and by the last chunck the signature is sent in the signature buffer.
+ * and by the last chunk the signature is sent in the signature buffer.
  * The encryption and signing are based on the settings defined in the sender's user configuration.
  *
  * @param senderId The ID of the sender, used to retrieve the encryption and signing configurations.
@@ -1440,7 +1489,7 @@ CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
               size_t outLen, void *signature, size_t signatureLen,
               size_t counter)
 {
-    LOG_BUFFER_HEXA(in, inLen, "this is the plain data");
+    LOG_BUFFER_HEXA(in, inLen, "this is the plain data", senderId);
 
     CryptoConfig config;
 
@@ -1473,7 +1522,7 @@ CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
     returnCode = signUpdate(senderId, in, inLen, config.hashFunction, counter);
     if (returnCode != CKR_OK)
         return returnCode;
-    if (isDoneHashing(senderId)) {
+    if (isDoneSigning(senderId)) {
         std::string senderPrivateKeyId =
             TempHsm::getInstance().getPrivateKeyIdByUserId(senderId, RSA);
         returnCode = signFinalize(senderId, signature, signatureLen,
@@ -1481,7 +1530,7 @@ CK_RV encrypt(int senderId, int receiverId, void *in, size_t inLen, void *out,
         if (returnCode != CKR_OK)
             return returnCode;
     }
-    LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data");
+    LOG_BUFFER_HEXA(out, outLen, "this is the encrypted data", senderId);
 
     return CKR_OK;
 }
@@ -1507,7 +1556,7 @@ CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,
               void *signature, size_t signatureLen, void *out, size_t &outLen,
               size_t counter)
 {
-    LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data");
+    LOG_BUFFER_HEXA(in, inLen, "this is the encrypted data", receiverId);
 
     CryptoConfig config;
 
@@ -1535,7 +1584,7 @@ CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,
         verifyUpdate(receiverId, out, outLen, config.hashFunction, counter);
     if (returnCode != CKR_OK)
         return returnCode;
-    if (isDoneHashing(receiverId)) {
+    if (isDoneVerifying(receiverId)) {
         std::string senderPublicKeyId =
             TempHsm::getInstance().getPublicKeyIdByUserId(senderId, RSA);
         returnCode = verifyFinalize(receiverId, signature, signatureLen,
@@ -1544,7 +1593,7 @@ CK_RV decrypt(int senderId, int receiverId, void *in, size_t inLen,
 
     if (returnCode != CKR_OK)
         return returnCode;
-    LOG_BUFFER_HEXA(out, outLen, "this is the decrypted data");
+    LOG_BUFFER_HEXA(out, outLen, "this is the decrypted data", receiverId);
 
     return CKR_OK;
 }

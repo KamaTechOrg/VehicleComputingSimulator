@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <mutex>
 #include "../logger/logger.h"
 
 void log(logger::LogLevel loglevel, const std::string &hsm_id,
