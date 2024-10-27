@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     frames = new Frames(logHandler);
 
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
-    debugCheckBox = new QCheckBox("run on debug ", this);
+    debugCheckBox = new QCheckBox("debug", this);
 
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->insertWidget(1, showSimulationButton);
@@ -117,10 +117,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
             &MainWindow::createNewProcess);
     connect(compileButton, &QPushButton::clicked, this,
             &MainWindow::compileProjects);
-    connect(debugCheckBox, &QCheckBox::toggled, this, [this](bool checked) 
-    {
-        
-    });
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
     connect(timerButton, &QPushButton::clicked, this,
@@ -155,7 +151,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     toolbox->setMinimumWidth(100);
 
     // Create the new button to open the Dependency selection project
-    openDependencySelectionProjectButton = new QPushButton("DependencySelection", this);
+    openDependencySelectionProjectButton = 
+        new QPushButton("DependencySelection", this);
     toolboxLayout->addWidget(openDependencySelectionProjectButton);  // Add button to the toolbox layout
     
     // Connect the button's click signal to the function that opens the second project
@@ -166,7 +163,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     // Add the loading label to the toolbox layout (under the buttons)
     toolboxLayout->addWidget(loadingLabel);
-    toolboxLayout->addWidget(compileButton);
     debugCheckBox->setVisible(true);
     toolboxLayout->addWidget(debugCheckBox);
     toolboxLayout->addWidget(compileButton);
@@ -197,10 +193,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     if (file.exists()) {
         // Remove the file if it exists
         if (file.remove()) {
-            guiLogger.logMessage(logger::LogLevel::INFO, "Existing sensors.json file removed.");
-        } 
-        else {
-            guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to remove sensors.json file.");
+            guiLogger.logMessage(logger::LogLevel::INFO,
+                "Existing sensors.json file removed.");
+        } else {
+            guiLogger.logMessage(logger::LogLevel::ERROR, 
+                "Failed to remove sensors.json file.");
         }
     }
 
@@ -225,28 +222,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
         };
 
     Process *mainProcess =
-        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "Bus_Manager", "../../main_bus/CMakeLists.txt",
+            "QEMUPlatform", allPermissions);
     addProcessSquare(
         mainProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "../test/dummy_program1/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "HSM", "../test/dummy_program1/CMakeLists.txt",
+            "QEMUPlatform", allPermissions);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *logsDbProcess =
-        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "LogsDb", "path/to/LogsDb/directory/CMakeLists.txt",
+            "QEMUPlatform", allPermissions);
     addProcessSquare(
         logsDbProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *busManagerProcess =
-        new Process(id, "Control", "../../control/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "Control", "../../control/CMakeLists.txt",
+            "QEMUPlatform", allPermissions);
     addProcessSquare(
         busManagerProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -271,49 +272,6 @@ MainWindow::~MainWindow()
     qDeleteAll(squares);
     if (timer) {
         delete timer;
-    }
-}
-
-void MainWindow::startDebug(QString program, QString buildDir) {
-    QStringList arguments;
-    
-    // if (debugCheckBox->isChecked()) {
-    //     arguments << "LOG_LEVEL=2";  
-    // }
-    QDir buildDirectory(buildDir);
-    if (!buildDirectory.exists()) {
-        if (!buildDirectory.mkpath(buildDirectory.absolutePath())) {
-            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                             "Failed to create build directory: " +
-                                             buildDirectory.absolutePath().toStdString());
-            return;
-        }
-    }
-
-    QProcess cmakeProcess;
-    cmakeProcess.setWorkingDirectory(buildDirectory.absolutePath());
-    
-    cmakeProcess.start("cmake", arguments);
-    if (!cmakeProcess.waitForFinished()) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to run CMake: " + 
-                                         cmakeProcess.readAllStandardError().toStdString());
-        return;
-    }
-    
-    QProcess makeProcess;
-    makeProcess.setWorkingDirectory(buildDirectory.absolutePath());
-    if(debugCheckBox->isChecked()){
-        makeProcess.start("make LOG_LEVEL=2");
-    }
-    else{
-        makeProcess.start("make");
-    }
-    if (!makeProcess.waitForFinished()) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to compile process: " + 
-                                         makeProcess.readAllStandardError().toStdString());
-        return;
     }
 }
     
@@ -345,8 +303,7 @@ void MainWindow::createNewProcess()
             newProcess = new Process(id, dialog.getName(), dialog.getExecutionFile(),
                                      dialog.getQEMUPlatform(), dialog.getPlugins(),
                                      dialog.getSelectedPermissionsMap());
-        } 
-        else {
+        } else {
             newProcess = new Process(id, dialog.getName(), dialog.getExecutionFile(),
                                      dialog.getQEMUPlatform(),
                                      dialog.getSelectedPermissionsMap());
@@ -394,7 +351,8 @@ void MainWindow::openDialog()
         {
             QString simulationName =input->text();
             inputDialog.close();
-            QMessageBox::information(nullptr, "save", "The name of the simulation is saved: " + simulationName);
+            QMessageBox::information(nullptr, "save", 
+                "The name of the simulation is saved: " + simulationName);
             QString filePath = LOG_FILE_BUS_MANAGER_PATH;
             QString fullPath = getPathLogBus(filePath);  
             QString bsonFilePath = "simulation_state.bson";     //  BSON
@@ -412,7 +370,8 @@ void MainWindow::openDialog()
                 "BSON data is empty!");
             }  
 
-            if (!sqlDataManager->insertDataToDatabase(simulationName, bsonData, logData)) {
+            if (!sqlDataManager->insertDataToDatabase(simulationName,
+                bsonData, logData)) {
                 MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
                 "Failed to insert data into the database.");
             } else {
@@ -649,6 +608,8 @@ void MainWindow::stopProcess(int deleteId)
             break;
         }
     }
+    guiLogger.logMessage(logger::LogLevel::DEBUG,
+                         "Failed to run script and retrieve JSON file path.");
 }
 
 void MainWindow::showTimerInput()
@@ -729,10 +690,9 @@ void MainWindow::setDefaultBackgroundImage()
         QVBoxLayout *newLayout = new QVBoxLayout(workspace);
         newLayout->addWidget(imageLabel);
         workspace->setLayout(newLayout);
-    }
-    else {
+    } else {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "i dont have defult img");
+                                         "There is no difult picture");
     }
 }
 
@@ -757,15 +717,13 @@ void MainWindow::openImageDialog()
             guiLogger.logMessage(
                 logger::LogLevel::INFO,
                 "openImageDialog() called: Image loaded and displayed.");
-        }
-        else {
+        } else {
             guiLogger.logMessage(
                 logger::LogLevel::ERROR,
                 "openImageDialog() failed: Unable to load image from path " +
                     imagePath.toStdString());
         }
-    }
-    else {
+    } else {
         guiLogger.logMessage(
             logger::LogLevel::INFO,
             "openImageDialog() canceled: No image path selected.");
@@ -819,8 +777,7 @@ void MainWindow::showSimulation(bool isRealTime)
         framesLayout->addWidget(frames);
         workspace->setLayout(framesLayout);
         frames->startFrames();
-    }
-    else {
+    } else {
         if(!isSimulationRunning){
             QVariantMap record = dataHandler->getRecordById(offlineId);
             QString logData;
@@ -847,14 +804,12 @@ void MainWindow::showSimulation(bool isRealTime)
 
                 frames->startFrames();
                 isSimulationRunning = true;
-            }
-            else {
+            } else {
                 MainWindow::guiLogger.logMessage(
                     logger::LogLevel::ERROR,
                     "Failed to retrieve log data from database");
             }
-        }
-        else{
+        } else {
             frames->stopFrames();
         }
     }
@@ -983,8 +938,7 @@ void MainWindow::setCoreDumpLimit()
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::ERROR,
             "MainWindow::setCoreDumpLimit Failed to set core dump limit.");
-    }
-    else {
+    } else {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
             "MainWindow::setCoreDumpLimit Core dump limit successfully set to "
@@ -1027,7 +981,7 @@ void MainWindow::compileProjects()
     for (QString executionFilePath : uniquePaths) {
         
         Compiler *compiler =
-            new Compiler(executionFilePath, &compileSuccessful,flag,this);
+            new Compiler(executionFilePath, &compileSuccessful,flag,debugCheckBox->isChecked(),this);
         connect(compiler, &Compiler::logMessage, this,
                 [this](const QString &message) {
                     guiLogger.logMessage(logger::LogLevel::ERROR,
@@ -1048,8 +1002,7 @@ void MainWindow::compileProjects()
         logOutput->append(
             "Compilation completed successfully. You can now run the "
             "projects.");
-    }
-    else {
+    } else {
         logOutput->append("Compilation failed. Please check the logs.");
     }
 }
@@ -1063,8 +1016,7 @@ std::string MainWindow::getCoreDumpPath(qint64 pid,
     if (unameInfo == "linux" && QFile::exists("/mnt/wslg")) {
         coreDumpPath = "/mnt/wslg/dumps/core." + executableName + "." +
                        std::to_string(pid);
-    }
-    else if (unameInfo == "linux") {
+    } else if (unameInfo == "linux") {
         coreDumpPath = "/var/lib/systemd/coredump/core." + executableName +
                        "." + std::to_string(pid);
     }
@@ -1102,8 +1054,7 @@ bool createBacktrace(const std::string &executablePath,
     if (result != 0) {
         logFile.close();
         return false;
-    }
-    else {
+    } else {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
             "MainWindow::createBacktrace Backtrace successfully saved to: " +
@@ -1223,8 +1174,7 @@ void MainWindow::runProjects()
             }
         );
         runningProcesses.append(qMakePair(scriptProcess, square->getProcess()->getId()));
-        }
-        else {
+        } else {
             QDir cmakeDir(QFileInfo(executionFilePath).absolutePath());
             QString buildDirPath = cmakeDir.absoluteFilePath("build");
             QDir buildDir(buildDirPath);
@@ -1400,8 +1350,7 @@ void MainWindow::deleteSquare(int id)
                 logger::LogLevel::INFO,
                 "Square with ID: " + std::to_string(id) + " deleted.");
         }
-    }
-    else {
+    } else {
         guiLogger.logMessage(
             logger::LogLevel::ERROR,
             "Square with ID: " + std::to_string(id) + " not found.");
@@ -1433,8 +1382,7 @@ void MainWindow::createProcessConfigFile(int id, const QString &processPath)
         guiLogger.logMessage(
             logger::LogLevel::INFO,
             "Config file created at: " + filePath.toStdString());
-    }
-    else {
+    } else {
         guiLogger.logMessage(
             logger::LogLevel::ERROR,
             "Failed to create config file at: " + filePath.toStdString());
@@ -1589,7 +1537,8 @@ void MainWindow::openDependencySelectionProject()
     if (!dir.exists()) {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
-            "Build directory does not exist. Creating build directory: " + buildDir.toStdString());
+            "Build directory does not exist. Creating build directory: " + 
+            buildDir.toStdString());
         
         if (!dir.mkpath(buildDir)) {
             MainWindow::guiLogger.logMessage(
@@ -1626,9 +1575,9 @@ void MainWindow::openDependencySelectionProject()
     if (QProcess::startDetached(program, arguments, buildDir, &pid)) {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
-             "Second project started successfully with PID:" + QString::number(pid).toStdString());
-    } 
-    else {
+             "Second project started successfully with PID:" + 
+             QString::number(pid).toStdString());
+    } else {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO,
             "Failed to start the second project.");
@@ -1638,7 +1587,8 @@ void MainWindow::openDependencySelectionProject()
 QString MainWindow::runScriptAndGetJsonPath(const QString& cmakeFilePath)
 {
     // Derive the script path from the CMake file path
-    QString scriptPath = QFileInfo(cmakeFilePath).absolutePath() + "/create_json.sh"; // Adjusted path
+    QString scriptPath = QFileInfo(cmakeFilePath).absolutePath() 
+        + "/create_json.sh"; // Adjusted path
 
     // Set script permissions using QProcess
     QProcess chmodProcess;

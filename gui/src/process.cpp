@@ -112,4 +112,3 @@ void Process::setSecurityPermission(KeyPermission key, bool value)
 {
     securityPermissions[key] = value;
 }
-

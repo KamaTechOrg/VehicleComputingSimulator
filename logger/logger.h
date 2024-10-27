@@ -9,10 +9,11 @@
 #include <sstream>
 #include <string>
 
-#ifndef LOG_LEVEL
-#define LOG_LEVEL logger::LogLevel::DEBUG
+#ifdef LOG_LEVEL
+  #define CURRENT_LOG_LEVEL LOG_LEVEL
+#else
+  #define CURRENT_LOG_LEVEL logger::LogLevel::INFO 
 #endif
-
 class logger {
 public:
   enum class LogLevel {

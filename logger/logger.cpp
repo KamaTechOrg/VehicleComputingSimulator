@@ -64,7 +64,7 @@ std::string logger::logLevelToString(LogLevel level) {
 }
 
 bool logger::shouldLog(LogLevel level) {
-  switch (LOG_LEVEL) {
+  switch (CURRENT_LOG_LEVEL) {
   case LogLevel::ERROR:
     return level == LogLevel::ERROR;
   case LogLevel::INFO:

@@ -42,7 +42,8 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     layout->addWidget(executableFileLabel);
     layout->addWidget(executionFile);
     
-    QPushButton *selectExecutableFileButton = new QPushButton("Select Executable File", this);
+    QPushButton *selectExecutableFileButton = 
+        new QPushButton("Select Executable File", this);
     layout->addWidget(selectExecutableFileButton);  
     
     QLabel *pluginsLabel = new QLabel("Plugins:", this);
@@ -131,8 +132,7 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
 
 void ProcessDialog::selectExecutableFile()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Select Executable File", "", 
-                                                    "Executable Files (*.sh *.cmake);;Text Files (*.txt)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Select Executable File", "","Executable Files (*.sh *.cmake);;Text Files (*.txt)");
     if (!fileName.isEmpty()) {
         executionFile->setText(fileName);  // Update the renamed QLineEdit
     }
@@ -162,6 +162,7 @@ QString ProcessDialog::getQEMUPlatform() const
 {
     return qemuPlatformCombo->currentText();
 }
+
 QString ProcessDialog::getPlugins() const
 {
     return pluginsEdit->text();
@@ -215,8 +216,7 @@ bool ProcessDialog::validateAndAccept()
          }
         accept();
         return true;
-    }
-    else {
+    } else {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::ERROR,
             "Validation failed, missing or incorrect input");
@@ -225,6 +225,7 @@ bool ProcessDialog::validateAndAccept()
         return false;
     }
 }
+
 void ProcessDialog::setId(int id)
 {
     idEdit->setText(QString::number(id));
@@ -266,7 +267,8 @@ QMap<KeyPermission, bool> ProcessDialog::getSelectedPermissionsMap() const
 {
      QMap<KeyPermission, bool> selectedPermissions;
 
-    for (auto it = permissionCheckboxes.constBegin(); it != permissionCheckboxes.constEnd(); ++it) {
+    for (auto it = permissionCheckboxes.constBegin(); it != 
+        permissionCheckboxes.constEnd(); ++it) {
         if (it.value()->isChecked()) {
             selectedPermissions[it.key()] = true;
         }

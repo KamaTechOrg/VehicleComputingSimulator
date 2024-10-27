@@ -13,7 +13,8 @@
 
 class LogHandler {
     friend class TestLogHandler;
-public:
+
+public: 
     struct LogEntry {
         QDateTime timestamp;
         int srcId;

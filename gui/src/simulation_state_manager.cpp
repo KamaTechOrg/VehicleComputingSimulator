@@ -37,8 +37,7 @@ void SimulationStateManager::readSimulationState(
                 logger::LogLevel::DEBUG, "SimulationStateManager",
                 "readSimulationState",
                 "Added process at index " + std::to_string(i));
-        }
-        else
+        } else
             MainWindow::guiLogger.logMessage(
                 logger::LogLevel::ERROR, "SimulationStateManager",
                 "readSimulationState",
@@ -110,8 +109,7 @@ void SimulationStateManager::saveSimulationState(
         file.close();
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::INFO, "Successfully saved state to " + fileName);
-    }
-    else {
+    } else {
         MainWindow::guiLogger.logMessage(
             logger::LogLevel::ERROR,
             "Failed to open file for writing: " + fileName);
@@ -148,13 +146,11 @@ QJsonObject SimulationStateManager::loadSimulationState(
             printJson(jsonObject);
             updateStateFromJson(jsonObject);
             return jsonObject;
-        }
-        else {
+        } else {
             MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
                                              "Failed to parse BSON document");
         }
-    }
-    else {
+    } else {
         MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
                                          "Failed to read file: " + fileName);
     }

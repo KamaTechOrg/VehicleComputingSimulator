@@ -53,8 +53,7 @@ void LogHandler::readLogFile(const QString &fileContent, bool isRealTime)
         }
 
         buffer.close();
-    }
-    else {
+    } else {
         QFile file(fileContent);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             MainWindow::guiLogger.logMessage(
@@ -130,15 +129,19 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
     }
 
     if (!bsonObj) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "BSON object is null.");
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, 
+            "BSON object is null.");
         return;
     }
 
-    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Analyzing log entries from BSON object.");
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, 
+        "Analyzing log entries from BSON object.");
 
     bson_iter_t iter;
-    if (!bson_iter_init(&iter, bsonObj) || !bson_iter_find(&iter, "squares") || !BSON_ITER_HOLDS_ARRAY(&iter)) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Invalid BSON structure or missing 'squares' array.");
+    if (!bson_iter_init(&iter, bsonObj) || !bson_iter_find(&iter, "squares") 
+                                        || !BSON_ITER_HOLDS_ARRAY(&iter)) {
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, 
+            "Invalid BSON structure or missing 'squares' array.");
         return;
     }
 
@@ -147,20 +150,23 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
     
     bson_iter_array(&iter, &arrayLength, &arrayData);
     if (arrayData == nullptr || arrayLength == 0) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "BSON array data is invalid or empty.");
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, 
+            "BSON array data is invalid or empty.");
         return;
     }
 
     bson_t array;
     bson_iter_t arrayIter;
-    if (bson_init_static(&array, arrayData, arrayLength) && bson_iter_init(&arrayIter, &array)) {
+    if (bson_init_static(&array, arrayData, arrayLength) && 
+        bson_iter_init(&arrayIter, &array)) {
         while (bson_iter_next(&arrayIter)) {
             const uint8_t* docData = nullptr;
             uint32_t docLength = 0;
 
             bson_iter_document(&arrayIter, &docLength, &docData);
             if (docData == nullptr || docLength == 0) {
-                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Invalid BSON document data.");
+                MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, 
+                    "Invalid BSON document data.");
                 continue;
             }
 
@@ -176,34 +182,45 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
             while (bson_iter_next(&docIter)) {
                 const char* key = bson_iter_key(&docIter);
                 if (strcmp(key, "id") == 0) id = bson_iter_int32(&docIter);
-                else if (strcmp(key, "name") == 0) name = QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
-                else if (strcmp(key, "CMakeProject") == 0) cmakeProject = QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
-                else if (strcmp(key, "QEMUPlatform") == 0) qemuPlatform = QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
+                else if (strcmp(key, "name") == 0) name =
+                    QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
+                else if (strcmp(key, "CMakeProject") == 0) cmakeProject = 
+                    QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
+                else if (strcmp(key, "QEMUPlatform") == 0) qemuPlatform = 
+                    QString::fromUtf8(bson_iter_utf8(&docIter, nullptr));
                 else if (strcmp(key, "position") == 0) {
                     bson_iter_t posIter;
                     bson_iter_recurse(&docIter, &posIter);
                     while (bson_iter_next(&posIter)) {
-                        if (strcmp(bson_iter_key(&posIter), "x") == 0) x = bson_iter_int32(&posIter);
-                        else if (strcmp(bson_iter_key(&posIter), "y") == 0) y = bson_iter_int32(&posIter);
+                        if (strcmp(bson_iter_key(&posIter), "x") == 0) x = 
+                            bson_iter_int32(&posIter);
+                        else if (strcmp(bson_iter_key(&posIter), "y") == 0) y = 
+                            bson_iter_int32(&posIter);
                     }
                 }
-                else if (strcmp(key, "width") == 0) width = bson_iter_int32(&docIter);
-                else if (strcmp(key, "height") == 0) height = bson_iter_int32(&docIter);
+                else if (strcmp(key, "width") == 0) 
+                    width = bson_iter_int32(&docIter);
+                else if (strcmp(key, "height") == 0) 
+                    height = bson_iter_int32(&docIter);
                 else if (strcmp(key, "securityPermissions") == 0) {
                     bson_iter_t permIter;
                     bson_iter_recurse(&docIter, &permIter);
                     QMap<KeyPermission, bool> permissionsMap;
 
                     while (bson_iter_next(&permIter)) {
-                        QString permKey = QString::fromUtf8(bson_iter_key(&permIter));
+                        QString permKey = 
+                            QString::fromUtf8(bson_iter_key(&permIter));
                         bool conversionOk = false;
                         int permInt = permKey.toInt(&conversionOk);
 
                         if (!conversionOk) {
-                            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to convert permission key to integer.");
+                            MainWindow::guiLogger.logMessage(
+                                logger::LogLevel::ERROR, 
+                            "Failed to convert permission key to integer.");
                             continue;
                         }
-                        KeyPermission perm = static_cast<KeyPermission>(permInt);                        
+                        KeyPermission perm = 
+                            static_cast<KeyPermission>(permInt);                        
                         bool value = bson_iter_bool(&permIter);
                         permissionsMap.insert(perm, value);
                     }
@@ -212,19 +229,23 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
             }
 
             if (id != -1) {
-                Process* process = new Process(id, name, cmakeProject, qemuPlatform, permissionsMap);
-                DraggableSquare* square = new DraggableSquare(mainWindow, "", width, height);
+                Process* process = new Process(id, name, cmakeProject, 
+                qemuPlatform, permissionsMap);
+                DraggableSquare* square = 
+                    new DraggableSquare(mainWindow,"", width, height);
                 square->setProcess(process);
                 square->move(x, y);
                 processSquares.insert(id, square);
             }
         }
     } else {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to initialize BSON array.");
+        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, 
+            "Failed to initialize BSON array.");
         return;
     }
 
-    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO, "Size of logEntries: " + std::to_string(logEntries.size()));
+    MainWindow::guiLogger.logMessage(logger::LogLevel::INFO,
+        "Size of logEntries: " + std::to_string(logEntries.size()));
 }
 
 const QMap<int, DraggableSquare *> &LogHandler::getProcessSquares() const

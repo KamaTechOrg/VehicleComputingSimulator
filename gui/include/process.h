@@ -5,6 +5,7 @@
 #include "process_dialog.h"
 
 class Process {
+    
 public:
     enum ConstructorType {
         ParameterizedConstructor1,

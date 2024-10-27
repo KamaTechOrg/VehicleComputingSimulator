@@ -29,3 +29,12 @@ add_test(NAME runTests COMMAND runTests)
 
 add_executable(runMain src/main.cpp)
 target_link_libraries(runMain ImageProcessingLib CommunicationLib ${OpenCV_LIBS})
+
+set(LOG_LEVEL "INFO" CACHE STRING "Set the log level")
+if (LOG_LEVEL STREQUAL "DEBUG")
+    add_definitions(-DLOG_LEVEL=logger::LogLevel::DEBUG)
+elseif (LOG_LEVEL STREQUAL "INFO")
+    add_definitions(-DLOG_LEVEL=logger::LogLevel::INFO)
+else()
+    message(FATAL_ERROR "Invalid LOG_LEVEL specified!")
+endif()

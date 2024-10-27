@@ -251,7 +251,6 @@ void DraggableSquare::mouseMoveEvent(QMouseEvent *event)
                      qMin(newPos.x(), parentRect.right() - width())));
     newPos.setY(qMax(parentRect.top(),
                      qMin(newPos.y(), parentRect.bottom() - height())));
-
     move(newPos);
 }
 
@@ -262,7 +261,6 @@ void DraggableSquare::mouseReleaseEvent(QMouseEvent *event)
         MainWindow::guiLogger.logMessage(logger::LogLevel::DEBUG,
                                          "DraggableSquare drag ended");
     }
-
     QWidget::mouseReleaseEvent(event);
 }
 

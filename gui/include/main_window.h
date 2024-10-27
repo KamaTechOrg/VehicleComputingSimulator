@@ -83,7 +83,6 @@ public:
     }
     static logger guiLogger;
 
-
 private slots:
     void showSimulation(bool isRealTime = false);
     void loadSimulation();

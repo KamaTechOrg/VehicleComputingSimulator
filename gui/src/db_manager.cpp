@@ -167,7 +167,6 @@ QVariantMap DbManager::getRecordById(int id)
                                          "getRecordById",
                                          "not found Record with ID" + id);
     }
-
     return record;
 }
 
