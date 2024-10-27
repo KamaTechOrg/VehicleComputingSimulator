@@ -1,8 +1,10 @@
+#include <mutex>
 #include "hsm_support.h"
 #include "crypto_api.h"
+#include "debug_utils.h"
 
 namespace hsm {
-
+std::mutex cryptoMutex;
 /**
  * @brief Decrypts the given data.
  *
@@ -19,6 +21,8 @@ namespace hsm {
  */
 bool decryptData(void *data, uint32_t senderId, uint32_t myId)
 {
+    std::lock_guard<std::mutex> lock(cryptoMutex); 
+    DEBUG_LOG("start");
     CryptoClient client(myId);
     size_t encryptedLength = client.getEncryptedLengthByEncrypted(data);
 
@@ -30,7 +34,9 @@ bool decryptData(void *data, uint32_t senderId, uint32_t myId)
                                          decryptedData, decryptedLength);
     if (decryptResult != CKR_OK)
         return false;
+    LOG_BUFFER_HEXA(decryptedData,decryptedLength,"got from "+std::to_string(senderId),myId);
     memcpy(data, decryptedData, decryptedLength);
+    DEBUG_LOG("end");
     return true;
 }
 
@@ -52,11 +58,15 @@ bool decryptData(void *data, uint32_t senderId, uint32_t myId)
 bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
                  size_t encryptedLength, uint32_t myId, uint32_t receiverId)
 {
+    std::lock_guard<std::mutex> lock(cryptoMutex); 
+    DEBUG_LOG("start");
+    LOG_BUFFER_HEXA(data,dataLen," send to "+std::to_string(receiverId),myId);
     CryptoClient client(myId);
     CK_RV encryptResult = client.encrypt(receiverId, data, dataLen,
                                          encryptedData, encryptedLength);
     if (encryptResult != CKR_OK)
         return false;
+    DEBUG_LOG("end");
     return true;
 }
 
@@ -72,8 +82,12 @@ bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
  */
 size_t getEncryptedLen(uint32_t myId, size_t dataLength)
 {
+    std::lock_guard<std::mutex> lock(cryptoMutex); 
+    DEBUG_LOG("start");
     CryptoClient client(myId);
-    return client.getEncryptedLen(myId, dataLength);
+    size_t len= client.getEncryptedLen(myId, dataLength);
+    DEBUG_LOG("end");
+    return len;
 }
 
 }  // namespace hsm
