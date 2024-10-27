@@ -1,4 +1,5 @@
 #include "../communication/include/bus_manager.h"
+
 int main()
 {
     std::vector<uint32_t> ids;

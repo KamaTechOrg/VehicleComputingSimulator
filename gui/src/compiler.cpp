@@ -1,10 +1,13 @@
 #include "compiler.h"
+#include <QDebug>
 
-Compiler::Compiler(QString cmakePath, bool *compileSuccessful,bool plug,QObject *parent)
+Compiler::Compiler(QString cmakePath, bool *compileSuccessful,bool plug,
+                   bool debugCompile,QObject *parent)
     : QThread(parent),
       cmakePath(cmakePath),
       compileSuccessful(compileSuccessful),
-      plug(plug)
+      plug(plug),
+      debugCompile(debugCompile)
 {
 }
 
@@ -66,9 +69,12 @@ void Compiler::run()
                 cmakeArgs << "-D" + defines; 
             }
         }
-
+        if (debugCompile) {
+            emit logMessage("Compiling in DEBUG mode");
+            cmakeArgs << "-DLOG_LEVEL=DEBUG"; 
+        }
         cmakeProcess.start("cmake", cmakeArgs);
-
+       
         if (!cmakeProcess.waitForFinished()) {
             emit logMessage("Failed to run cmake in " + buildDirPath);
             *compileSuccessful = false;

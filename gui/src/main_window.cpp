@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     frames = new Frames(logHandler);
 
     QPushButton *addProcessButton = new QPushButton("Add Process", toolbox);
-    debugCheckBox = new QCheckBox("run on debug ", this);
+    debugCheckBox = new QCheckBox("compile on debug", this);
 
     toolboxLayout->addWidget(addProcessButton);
     toolboxLayout->insertWidget(1, showSimulationButton);
@@ -117,10 +117,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
             &MainWindow::createNewProcess);
     connect(compileButton, &QPushButton::clicked, this,
             &MainWindow::compileProjects);
-    connect(debugCheckBox, &QCheckBox::toggled, this, [this](bool checked) 
-    {
-        
-    });
     connect(runButton, &QPushButton::clicked, this, &MainWindow::runProjects);
     connect(endButton, &QPushButton::clicked, this, &MainWindow::endProcesses);
     connect(timerButton, &QPushButton::clicked, this,
@@ -166,7 +162,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     // Add the loading label to the toolbox layout (under the buttons)
     toolboxLayout->addWidget(loadingLabel);
-    toolboxLayout->addWidget(compileButton);
     debugCheckBox->setVisible(true);
     toolboxLayout->addWidget(debugCheckBox);
     toolboxLayout->addWidget(compileButton);
@@ -271,49 +266,6 @@ MainWindow::~MainWindow()
     qDeleteAll(squares);
     if (timer) {
         delete timer;
-    }
-}
-
-void MainWindow::startDebug(QString program, QString buildDir) {
-    QStringList arguments;
-    
-    // if (debugCheckBox->isChecked()) {
-    //     arguments << "LOG_LEVEL=2";  
-    // }
-    QDir buildDirectory(buildDir);
-    if (!buildDirectory.exists()) {
-        if (!buildDirectory.mkpath(buildDirectory.absolutePath())) {
-            MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                             "Failed to create build directory: " +
-                                             buildDirectory.absolutePath().toStdString());
-            return;
-        }
-    }
-
-    QProcess cmakeProcess;
-    cmakeProcess.setWorkingDirectory(buildDirectory.absolutePath());
-    
-    cmakeProcess.start("cmake", arguments);
-    if (!cmakeProcess.waitForFinished()) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to run CMake: " + 
-                                         cmakeProcess.readAllStandardError().toStdString());
-        return;
-    }
-    
-    QProcess makeProcess;
-    makeProcess.setWorkingDirectory(buildDirectory.absolutePath());
-    if(debugCheckBox->isChecked()){
-        makeProcess.start("make LOG_LEVEL=2");
-    }
-    else{
-        makeProcess.start("make");
-    }
-    if (!makeProcess.waitForFinished()) {
-        MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR,
-                                         "Failed to compile process: " + 
-                                         makeProcess.readAllStandardError().toStdString());
-        return;
     }
 }
     
@@ -649,6 +601,8 @@ void MainWindow::stopProcess(int deleteId)
             break;
         }
     }
+    guiLogger.logMessage(logger::LogLevel::DEBUG,
+                         "Failed to run script and retrieve JSON file path.");
 }
 
 void MainWindow::showTimerInput()
@@ -1027,7 +981,7 @@ void MainWindow::compileProjects()
     for (QString executionFilePath : uniquePaths) {
         
         Compiler *compiler =
-            new Compiler(executionFilePath, &compileSuccessful,flag,this);
+            new Compiler(executionFilePath, &compileSuccessful,flag,debugCheckBox->isChecked(),this);
         connect(compiler, &Compiler::logMessage, this,
                 [this](const QString &message) {
                     guiLogger.logMessage(logger::LogLevel::ERROR,

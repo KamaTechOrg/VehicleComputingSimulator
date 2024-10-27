@@ -12,7 +12,7 @@ class Compiler : public QThread {
     Q_OBJECT
 public:
     Compiler(QString cmakePath, bool *compileSuccessful,
-             bool plug,QObject *parent = nullptr);
+             bool plug,bool debugCompile,QObject *parent = nullptr);
     void setUserDefines(QString defines);
     QString getUserDefines();
 
@@ -27,6 +27,7 @@ private:
     QString userDefines;
     bool *compileSuccessful;
     bool plug;
+    bool debugCompile;
 };
 
 #endif  // COMPILER_H

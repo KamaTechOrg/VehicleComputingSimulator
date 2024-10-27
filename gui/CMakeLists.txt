@@ -81,3 +81,12 @@ enable_testing()
 
 # Add the test directory
 add_subdirectory(test)
+
+set(LOG_LEVEL "INFO" CACHE STRING "Set the log level")
+if (LOG_LEVEL STREQUAL "DEBUG")
+    add_definitions(-DLOG_LEVEL=logger::LogLevel::DEBUG)
+elseif (LOG_LEVEL STREQUAL "INFO")
+    add_definitions(-DLOG_LEVEL=logger::LogLevel::INFO)
+else()
+    message(FATAL_ERROR "Invalid LOG_LEVEL specified!")
+endif()
