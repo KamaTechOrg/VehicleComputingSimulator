@@ -193,7 +193,6 @@ FullCondition::FullCondition(string condition,
 // Fuction that activates all actions in the vector
 void FullCondition::activateActions()
 {
-    cout<<"fdsa"<<endl;
     // Activates all actions associated with the `FullCondition`
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
     for (pair<int, string> action : this->actions) {
@@ -201,7 +200,6 @@ void FullCondition::activateActions()
         const char *message = action.second.c_str();
         size_t dataSize = strlen(message) + 1;
         uint32_t destID = action.first;
-
         if (instanceGP.sensors[destID]->isUsingHSM) {
             // Get the length of the encrypted data
             size_t encryptedLength =
@@ -209,19 +207,22 @@ void FullCondition::activateActions()
             uint8_t encryptedData[encryptedLength];
 
             if (hsm::encryptData((const void *)message, dataSize, encryptedData,
-                                 encryptedLength,instanceGP.srcID, destID))
+                                 encryptedLength, instanceGP.srcID, destID)) {
                 instanceGP.controlLogger.logMessage(
                     logger::LogLevel::INFO,
                     "The message encrypted successfully");
-            else
+                instanceGP.comm->sendMessage(encryptedData, encryptedLength,
+                                             destID, instanceGP.srcID, false);
+            }
+            else {
                 instanceGP.controlLogger.logMessage(
                     logger::LogLevel::ERROR, "The message encryption failed");
-
-            instanceGP.comm->sendMessage(encryptedData, encryptedLength, destID,
-                                         instanceGP.srcID, false);
+                instanceGP.comm->sendMessage((void *)message, dataSize, destID,
+                                             instanceGP.srcID, false);
+            }
         }
         else
-            instanceGP.comm->sendMessage((void *)message, dataSize, destID,
-                                         instanceGP.srcID, false);
+        instanceGP.comm->sendMessage((void *)message, dataSize, destID,
+                                     instanceGP.srcID, false);
     }
 }

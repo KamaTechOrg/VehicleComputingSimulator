@@ -10,7 +10,7 @@
 #include <string>
 
 #ifndef LOG_LEVEL
-#define LOG_LEVEL logger::LogLevel::INFO
+#define LOG_LEVEL logger::LogLevel::DEBUG
 #endif
 
 class logger {

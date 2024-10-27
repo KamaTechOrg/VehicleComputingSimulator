@@ -32,12 +32,11 @@ uint32_t srcID = readIdFromJson();
 
 // Processing the data received from the complete message
 void processData(uint32_t senderId, void *data) {
-  cout << "I'm userA: Received from id : " << senderId << endl;
-
-  if (hsm::decryptData(data, senderId, srcID))
-    cout << "The message dycrypted successfully" << endl;
-  else
-    cerr << "The message dycryption failed" << endl;
+  cout << "I'm user1, Received from id : " << senderId << endl;
+  // if (hsm::decryptData(data, senderId, srcID))
+  //   cout << "The message dycrypted successfully" << endl;
+  // else
+  //   cerr << "The message dycryption failed" << endl;
 
   cout << "data: " << static_cast<char *>(data) << endl;
   free(data);
@@ -73,18 +72,21 @@ int main() {
   // }
 
   //-------------
+// for(int i=0;i<10;i++){
+  cout << "I'm user1, sending to id : " << destID << endl;
 
   size_t encryptedLength = hsm::getEncryptedLen(srcID, buffer.size());
   uint8_t encryptedData[encryptedLength];
 
-  if (hsm::encryptData((const void *)buffer.data(), buffer.size(),
-                       encryptedData, encryptedLength, srcID, destID)) {
-    comm.sendMessage(encryptedData, encryptedLength, destID, srcID, false);
-    cout << "The message encrypted successfully" << endl;
-  } else {
-    cerr << "The message encryption failed" << endl;
+  // if (hsm::encryptData((const void *)buffer.data(), buffer.size(),
+  //                      encryptedData, encryptedLength, srcID, destID)) {
+  //   comm.sendMessage(encryptedData, encryptedLength, destID, srcID, false);
+  //   cout << "The message encrypted successfully" << endl;
+  // } else {
+    // cerr << "The message encryption failed" << endl;
     comm.sendMessage(buffer.data(), buffer.size(), destID, srcID, false);
-  }
+  // }
+// }
   //-------------
 
   ///////////////////////////////////
@@ -104,7 +106,7 @@ int main() {
   std::memcpy(pressBytes2, &pressure2, sizeof(float));
   buffer.insert(buffer.end(), pressBytes2, pressBytes2 + 4);
 
-  comm.sendMessage(buffer.data(), buffer.size(), destID, srcID, false);
+  // comm.sendMessage(buffer.data(), buffer.size(), destID, srcID, false);
 
   ////////////////////////////////////
 

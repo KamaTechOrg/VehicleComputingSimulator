@@ -1,5 +1,6 @@
 {
     "endianness": "little",
+    "HSMusage": false,
     "fields": [
         {
             "size": 32,

@@ -2,12 +2,5 @@ services:
   app:
     build: .
     volumes:
-      - ./hsm/build:/app/hsm/build
-      - ./hsm-client/build:/app/hsm-client/build
-      - ./control/build:/app/control/build
-      - ./user1/build:/app/user1/build
-      - ./main_bus/build:/app/main_bus/build
-      - ./hsm-boot/build:/app/hsm-boot/build
-      - ./gui/build:/app/gui/build
       - .:/app  # Mount the whole project, excluding build directories via .dockerignore
     command: ["tail", "-f", "/dev/null"]

@@ -118,7 +118,7 @@ RUN cd /opencv/build && \
 
 # Compile the code
 RUN cd /opencv/build && \
-    make -j4
+    make -j$(nproc)
 
 # Install OpenCV
 RUN cd /opencv/build && \
@@ -126,7 +126,6 @@ RUN cd /opencv/build && \
 
 # Update the dynamic linker configuration
 RUN ldconfig
-
 # Set working directory
 WORKDIR /app
 

@@ -77,6 +77,43 @@ TEST_F(CryptoClientTest, EncryptDecrypt)
     ASSERT_EQ(decryptResult, CKR_OK);
     ASSERT_FALSE(memcmp(decryptedData, message, messageLen))
         << "Decrypted data does not match original data";
+    delete[] message;
+}
+TEST_F(CryptoClientTest, EncryptDecryptWithCustomData)
+{
+    for (int i = 0; i < 5; i++) {
+        // Use custom data instead of generated message
+        uint8_t customMessage[] = {0x12, 0xED, 0xBC, 0x0B, 0x41,
+                                   0x00, 0x00, 0x00, 0x00};
+        size_t messageLen = sizeof(customMessage) / sizeof(customMessage[0]);
+
+        // Encrypt the custom message
+        size_t encryptedLength = client1.getEncryptedLen(senderId, messageLen);
+        uint8_t encryptedData[encryptedLength];
+        CK_RV encryptResult =
+            client1.encrypt(receiverId, (void *)customMessage, messageLen,
+                            encryptedData, encryptedLength);
+        ASSERT_EQ(encryptResult, CKR_OK);
+
+        //----------------------------------------------
+        // Verify encrypted length and decrypt the data
+        size_t encryptedLen =
+            client2.getEncryptedLengthByEncrypted(encryptedData);
+        ASSERT_EQ(encryptedLength, encryptedLen + 8);
+
+        size_t decryptedLength =
+            client2.getDecryptedLen(senderId, encryptedLen);
+        uint8_t decryptedData[decryptedLength];
+        CK_RV decryptResult =
+            client2.decrypt(senderId, encryptedData, encryptedLen,
+                            decryptedData, decryptedLength);
+        ASSERT_EQ(decryptedLength, messageLen);
+        ASSERT_EQ(decryptResult, CKR_OK);
+
+        // Compare the decrypted data with the original custom message
+        ASSERT_FALSE(memcmp(decryptedData, customMessage, messageLen))
+            << "Decrypted data does not match original data";
+    }
 }
 
 TEST_F(CryptoClientTest, SignVerify)
@@ -103,7 +140,7 @@ TEST_F(CryptoClientTest, SignVerify)
                        verifiedMessage, verifiedMessageLen, rsaKeysPair.second);
     ASSERT_EQ(verifyResult, CKR_OK);
     ASSERT_EQ(memcmp(message, verifiedMessage, messageLen), 0);
-
+    delete[] message;
     delete[] signedMessage;
 }
 
@@ -179,12 +216,11 @@ TEST_F(CryptoClientTest, AESncryptDecrypt)
         client1.generateAESKey(keyLength, permissions, receiverId);
     size_t encryptedLength =
         client1.getAESencryptedLength(inputDataLen, keyId, mode);
-    void *encryptedData = new uint8_t[encryptedLength];
+    uint8_t *encryptedData = new uint8_t[encryptedLength];
     // Encrypt the data
     CK_RV result = client1.AESencrypt(
         receiverId, (void *)inputData, inputDataLen, encryptedData,
-        reinterpret_cast<unsigned int &>(encryptedLength), RSA, keyLength, mode,
-        keyId);
+        encryptedLength, RSA, keyLength, mode, keyId);
     //Check for successful encryption
     EXPECT_EQ(result, CKR_OK);
 
@@ -194,12 +230,17 @@ TEST_F(CryptoClientTest, AESncryptDecrypt)
     uint8_t *decryptedData = new uint8_t[inputDataLen];
     result =
         client2.AESdecrypt(senderId, (uint8_t *)encryptedData, encryptedLength,
-                           (void *&)decryptedData, decryptedLength);
+                           decryptedData, decryptedLength);
     EXPECT_EQ(result, CKR_OK);
     EXPECT_EQ(memcmp(inputData, decryptedData, inputDataLen), 0);
     ASSERT_EQ(decryptedLength, messageLen);
+    delete[] inputData;
+    delete[] encryptedData;
+    delete[] decryptedData;
 }
-
+TEST_F(CryptoClientTest,edge_cases){
+    // size_t ans=client1.getEncryptedLen(senderId, -1);
+}
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

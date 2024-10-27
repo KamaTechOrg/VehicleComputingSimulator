@@ -3,6 +3,7 @@
 #include "manager.h"
 #include "alert.h"
 #include "hsm_support.h"
+#include "jsonUtils.h"
 
 #define ESC 27
 #define NUM_OF_TRACKING 10
@@ -10,7 +11,19 @@
 using namespace std;
 using namespace cv;
 
-void processData(uint32_t srcId, void *data) {}
+void processData(uint32_t srcId, void *data)
+{
+    std::cout << "img_processing got message from " << std::to_string(srcId)
+              << std::endl;
+    int processID = readFromJson("ID");
+     if (hsm::decryptData(data, srcId,8)) {
+        LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+                                        "decription success!");
+    }
+    else
+       LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+                                        "decryption failed!");
+}
 
 Manager::Manager(int processID)
     : processID(processID), communication(processID, processData)
@@ -36,9 +49,25 @@ void Manager::init()
     // Starting communication with the server
     communication.startConnection();
     // Sending the message
-    communication.sendMessage((void *)message.c_str(), dataSize, destID,
-                              processID, false);
+    // communication.sendMessage((void *)message.c_str(), dataSize, destID,
+    //                           processID, false);
+    std::cout << "img_processing- send message to " << std::to_string(destID)
+              << std::endl;
+    size_t encryptedLength = hsm::getEncryptedLen(processID, dataSize);
+    uint8_t encryptedData[encryptedLength];
 
+    if (hsm::encryptData((const void *)message.data(), dataSize, encryptedData,
+                         encryptedLength, processID, destID)) {
+        LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+                                    "encryption success!");
+        communication.sendMessage(encryptedData, encryptedLength, destID,
+                                  processID, false);
+    }
+    else {
+        LogManager::logErrorMessage(ErrorType::IMAGE_ERROR, "encryption fail!");
+        communication.sendMessage((void *)message.c_str(), dataSize, destID,
+                                  processID, false);
+    }
     // calibration
     Mat calibrationImage = imread("../tests/images/black_line.JPG");
     if (calibrationImage.empty()) {
@@ -176,12 +205,16 @@ int Manager::drawOutput()
     int key = waitKey(1);
     return key;
 }
-
+#include <cstdlib>
 void Manager::sendAlerts(vector<vector<uint8_t>> &alerts)
 {
     for (std::vector<uint8_t> &alertBuffer : alerts) {
-        size_t encryptedLength = hsm::getEncryptedLen(processID, alertBuffer.size());
+        std::cout << "img_processing- send message to "
+                  << std::to_string(destID) << std::endl;
+        size_t encryptedLength =
+            hsm::getEncryptedLen(processID, alertBuffer.size());
         uint8_t encryptedData[encryptedLength];
+
         if (hsm::encryptData((const void *)alertBuffer.data(),
                              alertBuffer.size(), encryptedData, encryptedLength,
                              processID, destID)) {

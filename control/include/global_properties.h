@@ -24,7 +24,7 @@ class FullCondition;
 // Forward declaration instead of #include
 class Sensor;
 
-#define BITS_IN_BYTE 8
+constexpr int BITS_IN_BYTE = 8;
 
 // Singleton class managing global properties
 class GlobalProperties {

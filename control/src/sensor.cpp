@@ -8,7 +8,10 @@ void Sensor::delayedFunction()
         this_thread::sleep_for(
             chrono::milliseconds(1000));  // Sleep for 1 second
         timerCounter.fetch_sub(1);        // Atomically decrement the timer
-        cout << "Time left: " << timerCounter.load() << " seconds" << endl;
+        GlobalProperties::controlLogger.logMessage(
+            logger::LogLevel::DEBUG,
+            "Timer of " + name + " sensor with id: " + to_string(id) +
+                ", time left: " + to_string(timerCounter.load()) + " seconds");
     }
     updateDefualtValues();
 }
@@ -20,20 +23,27 @@ void Sensor::startOrResetTimer()
     if (timerCounter == 0) {
         // Timer is not active, set the timer to 10 seconds and start it
         timerCounter = timeForUpdate;
-        cout << "Starting new timer..." << endl;
+        GlobalProperties::controlLogger.logMessage(
+            logger::LogLevel::DEBUG, "Starting new timer for " + name +
+                                         " sensor with id " + to_string(id));
         timerThread = thread(&Sensor::delayedFunction, this);
         timerThread.detach();  // Detach the thread so it can run independently
     }
     else {
         // Timer is already running, just reset it to 10 seconds
         timerCounter = timeForUpdate;
-        cout << "Timer is active, resetting to 10 seconds..." << endl;
+        GlobalProperties::controlLogger.logMessage(
+            logger::LogLevel::DEBUG, name + " sensor with id " + to_string(id) +
+                                         ": Timer is active, resetting to " +
+                                         to_string(timeForUpdate) + " seconds");
     }
 }
 
 // Function that update the fields to be the default values
 void Sensor::updateDefualtValues()
 {
+    GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG,
+                                               "Update defualt values: ");
     for (auto field : fieldsMap) {
         updateTrueRoots(field.second.name, field.second.defaultValue,
                         parser->getFieldType(field.second.type));
@@ -45,13 +55,38 @@ void Sensor::updateDefualtValues()
         instanceGP.conditions[cId]->activateActions();
 }
 
+bool readHsmUsage(string jsonFilePath)
+{
+    // Read the json file
+    ifstream f(jsonFilePath);
+
+    // Check if the input is correct
+    if (!f.is_open())
+        GlobalProperties::controlLogger.logMessage(
+            logger::LogLevel::ERROR, "Failed to open " + jsonFilePath);
+    json *data = NULL;
+
+    // Try parse to json type
+    try {
+        data = new json(json::parse(f));
+        f.close();
+    }
+    catch (exception e) {
+        GlobalProperties::controlLogger.logMessage(logger::LogLevel::ERROR,
+                                                   e.what());
+    }
+
+    return (bool)(*data)["HSMusage"];
+}
+
 // C-tor initializes the id member variable.
 Sensor::Sensor(int id, string name, string jsonFilePath) : id(id), name(name)
 {
     timeForUpdate = 10;
     timerCounter = 0;
-    isUsingHSM = true;
+    isUsingHSM = readHsmUsage(jsonFilePath);
     msgLength = 0;
+
     parser = new PacketParser(jsonFilePath);
     vector<Field> tempFields = parser->getFields();
 
@@ -80,7 +115,6 @@ void Sensor::handleMessage(void *msg)
 
     for (auto field : fieldsMap) {
         string fieldName = field.first;
-        // cout<<get<float>(parser->getFieldValue(fieldName));
 
         updateTrueRoots(fieldName, parser->getFieldValue(fieldName),
                         parser->getFieldType(field.second.type));
@@ -90,9 +124,6 @@ void Sensor::handleMessage(void *msg)
 //Updates the condition status according to the received field and returns the  list of the full conditions whose root is true
 void Sensor::updateTrueRoots(string field, FieldValue value, FieldType type)
 {
-    GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG,
-                                               "Processing field: " + field);
-    cout << field << ": ";
     // Update the field value in the sensor
     this->fields[field].first = value;
 
@@ -104,35 +135,56 @@ void Sensor::updateTrueRoots(string field, FieldValue value, FieldType type)
 
         switch (type) {
             case FieldType::UNSIGNED_INT: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + to_string(get<unsigned int>(value)));
                 flag = applyComparison(get<unsigned int>(value),
                                        get<unsigned int>(bcValue), op);
                 break;
             }
             case FieldType::SIGNED_INT: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + to_string(get<int>(value)));
                 flag = applyComparison(get<int>(value), get<int>(bcValue), op);
                 break;
             }
             case FieldType::CHAR_ARRAY: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + get<string>(value));
                 flag = applyComparison(get<string>(value), get<string>(bcValue),
                                        op);
                 break;
             }
             case FieldType::FLOAT_FIXED: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + to_string(get<float>(value)));
                 flag =
                     applyComparison(get<float>(value), get<float>(bcValue), op);
                 break;
             }
             case FieldType::FLOAT_MANTISSA: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + to_string(get<float>(value)));
                 flag =
                     applyComparison(get<float>(value), get<float>(bcValue), op);
                 break;
             }
             case FieldType::BOOLEAN: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + to_string(get<bool>(value)));
                 flag =
                     applyComparison(get<bool>(value), get<bool>(bcValue), op);
                 break;
             }
             case FieldType::DOUBLE: {
+                GlobalProperties::controlLogger.logMessage(
+                    logger::LogLevel::DEBUG,
+                    field + " : " + to_string(get<double>(value)));
                 flag = applyComparison(get<double>(value), get<double>(bcValue),
                                        op);
             }
@@ -170,21 +222,39 @@ template <typename T>
 bool Sensor::applyComparison(T a, T b, OperatorTypes op)
 {
     GlobalProperties::controlLogger.logMessage(logger::LogLevel::DEBUG,
-                                               "applyComparison");
-    cout << a << endl;
+                                               "Apply comparison: ");
+
     switch (op) {
-        case OperatorTypes::e:
+        case OperatorTypes::e: {
+            GlobalProperties::controlLogger.logMessage(
+                logger::LogLevel::DEBUG, ((a == b) ? "True" : "False"));
             return a == b;
-        case OperatorTypes::ne:
+        }
+        case OperatorTypes::ne: {
+            GlobalProperties::controlLogger.logMessage(
+                logger::LogLevel::DEBUG, ((a != b) ? "True" : "False"));
             return a != b;
-        case OperatorTypes::l:
+        }
+        case OperatorTypes::l: {
+            GlobalProperties::controlLogger.logMessage(
+                logger::LogLevel::DEBUG, ((a < b) ? "True" : "False"));
             return a < b;
-        case OperatorTypes::b:
+        }
+        case OperatorTypes::b: {
+            GlobalProperties::controlLogger.logMessage(
+                logger::LogLevel::DEBUG, ((a > b) ? "True" : "False"));
             return a > b;
-        case OperatorTypes::le:
+        }
+        case OperatorTypes::le: {
+            GlobalProperties::controlLogger.logMessage(
+                logger::LogLevel::DEBUG, ((a <= b) ? "True" : "False"));
             return a <= b;
-        case OperatorTypes::be:
+        }
+        case OperatorTypes::be: {
+            GlobalProperties::controlLogger.logMessage(
+                logger::LogLevel::DEBUG, ((a >= b) ? "True" : "False"));
             return a >= b;
+        }
     }
     return false;
 }

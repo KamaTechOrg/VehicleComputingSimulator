@@ -1,11 +1,14 @@
 #include "../include/my_logger.h"
-#include <iostream>
-#include <chrono>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
+// מגדיר נתיב מוחלט לקובץ הלוג
+const std::string logFilePath =
+    "../../HSM_Communication.log";  // יש לשנות לנתיב המתאים
 
-// std::ofstream logFile("../HSM_Communication.txt", std::ios::app);
+// מוודא שהקובץ נפתח פעם אחת בלבד
+std::ofstream logFile(logFilePath, std::ios::app);
+
+// יוצר mutex עבור סינכרון
+std::mutex logMutex;
+
 std::string getTimestamp()
 {
     auto now = std::chrono::system_clock::now();
@@ -29,20 +32,28 @@ std::string dataToHex(const unsigned char *data, size_t size)
 void log(logger::LogLevel loglevel, const std::string &hsm_id,
          const std::string &user_id, const std::string &message)
 {
-    // std::string levelStr;
-    // switch (loglevel) {
-    //     case logger::LogLevel::INFO:
-    //         levelStr = "INFO";
-    //         break;
-    //     case logger::LogLevel::ERROR:
-    //         levelStr = "ERROR";
-    //         break;
-    // }
+    std::cout << "Im here in log" << std::endl;
+    std::string levelStr;
+    switch (loglevel) {
+        case logger::LogLevel::INFO:
+            levelStr = "INFO";
+            break;
+        case logger::LogLevel::ERROR:
+            levelStr = "ERROR";
+            break;
+    }
 
-    // std::string logMessage = "[" + getTimestamp() + "ns] [" + levelStr +
-    //                          "] SRC " + hsm_id + " DST " + user_id + " " +
-    //                          message;
+    std::string logMessage = "[" + getTimestamp() + "ns] [" + levelStr +
+                             "] SRC " + hsm_id + " DST " + user_id + " " +
+                             message;
 
-    // // Write to file
-    // logFile << logMessage << std::endl;
+    // מבצע סינכרון לגישה לקובץ הלוג
+    std::lock_guard<std::mutex> guard(logMutex);
+    logFile << logMessage << std::endl;
+}
+
+int getId()
+{
+    static int counter = 0;
+    return ++counter;
 }
