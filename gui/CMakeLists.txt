@@ -70,11 +70,27 @@ target_link_libraries(VehicleComputingSimulatorLib PRIVATE ${BSON_LIBRARIES} Qt5
 # Create the main executable
 add_executable(VehicleComputingSimulator src/main.cpp)
 
+#---------
+include(../hsm-client/use_hsm_client.cmake)
+find_library(HSM_CLIENT_LIB hsm_client_lib PATHS ${HSM_CLIENT_LIB_PATH})
+if(HSM_CLIENT_LIB)
+    message(STATUS "Found hsm_client_lib: ${HSM_CLIENT_LIB}")
+    target_link_libraries(VehicleComputingSimulatorLib PRIVATE ${HSM_CLIENT_LIB} ${HSM_CLIENT_LIB_DEPS})
+    target_include_directories(VehicleComputingSimulatorLib PRIVATE ${HSM_CLIENT_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Could not find hsm_client_lib at ${HSM_CLIENT_LIB_PATH}")
+endif()
+
+#----------
+
 # Link the main executable with the library and Qt5 modules
 target_link_libraries(VehicleComputingSimulator PRIVATE VehicleComputingSimulatorLib Qt5::Core Qt5::Gui Qt5::Widgets)
 
 # Make sure the main executable has access to the include directory
 target_include_directories(VehicleComputingSimulator PRIVATE ${CMAKE_SOURCE_DIR}/include ${BSON_INCLUDE_DIRS})
+
+
+
 
 # Enable testing
 enable_testing()

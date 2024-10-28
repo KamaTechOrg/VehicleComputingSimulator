@@ -198,9 +198,9 @@ void SimulationStateManager::updateStateFromJson(QJsonObject jsonObject)
         // Load color
         QString color = squareObj["color"].toString();
 
-        QMap<KeyPermission, bool> permissionsMap;
+        QMap<Key_Permission, bool> permissionsMap;
         for (auto key : permissionsObj.keys()) {
-            KeyPermission perm = static_cast<KeyPermission>(key.toInt());
+            Key_Permission perm = static_cast<Key_Permission>(key.toInt());
             bool value = permissionsObj[key].toBool();
             permissionsMap.insert(perm, value);
         }

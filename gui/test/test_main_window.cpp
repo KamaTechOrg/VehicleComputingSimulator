@@ -53,10 +53,10 @@ void TestMainWindow::testCreateNewProcess()
     QString processName = "NewProcess";
     QString cmakeProject = "../test/dummy_program2";
     QString qemuPlatform = "QEMUPlatform";
-    QMap<KeyPermission, bool> permissionsMap;
+    QMap<Key_Permission, bool> permissionsMap;
 
-    permissionsMap[KeyPermission::ENCRYPT] = true;
-    permissionsMap[KeyPermission::SIGN] = false;
+    permissionsMap[Key_Permission::ENCRYPT] = true;
+    permissionsMap[Key_Permission::SIGN] = false;
 
     Process *newProcess =
         new Process(newProcessId, processName, cmakeProject, qemuPlatform, permissionsMap);
@@ -76,10 +76,10 @@ void TestMainWindow::testCreateNewProcess()
 
 void TestMainWindow::testAddProcessSquare()
 {
-    QMap<KeyPermission, bool> permissionsMap;
+    QMap<Key_Permission, bool> permissionsMap;
 
-    permissionsMap[KeyPermission::ENCRYPT] = true;
-    permissionsMap[KeyPermission::SIGN] = false;
+    permissionsMap[Key_Permission::ENCRYPT] = true;
+    permissionsMap[Key_Permission::SIGN] = false;
     Process *newProcess =
         new Process(5, "Test Process", "../dummy_program1", "QEMUPlatform", permissionsMap);
     window->addProcessSquare(newProcess);
@@ -117,10 +117,10 @@ void TestMainWindow::testEndProcesses()
 void TestMainWindow::testDeleteSquare()
 {
     QString cmakeProject = "../test/dummy_program1";
-    QMap<KeyPermission, bool> permissionsMap;
+    QMap<Key_Permission, bool> permissionsMap;
 
-    permissionsMap[KeyPermission::ENCRYPT] = true;
-    permissionsMap[KeyPermission::SIGN] = false;
+    permissionsMap[Key_Permission::ENCRYPT] = true;
+    permissionsMap[Key_Permission::SIGN] = false;
 
     Process *process =
         new Process(5, "Test Process", cmakeProject, "QEMUPlatform", permissionsMap);

@@ -1,6 +1,6 @@
-#include "../hsm-client/include/crypto_api.h"
+#include "crypto_api.h"
 #include <iostream>
-#include "../hsm-client/include/hsm_support.h"
+#include "hsm_support.h"
 #include <cstdlib>  // For std::atoi
 
 int main(int argc, char* argv[]) {

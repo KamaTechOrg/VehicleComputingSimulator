@@ -3,7 +3,7 @@
 
 Process::Process(int id, const QString &name, const QString &executionFile,
                  const QString &qemuPlatform,
-                 const QMap<KeyPermission, bool> &securityPermissions)
+                 const QMap<Key_Permission, bool> &securityPermissions)
     : id(id), name(name), executionFile(executionFile), 
       qemuPlatform(qemuPlatform), securityPermissions(securityPermissions)
 {
@@ -70,17 +70,17 @@ void Process::setQEMUPlatform(const QString &newQEMUPlatform)
     qemuPlatform = newQEMUPlatform;
 }
 
-bool Process::getSecurityPermission(KeyPermission key) const
+bool Process::getSecurityPermission(Key_Permission key) const
 {
     return securityPermissions.value(key, false);
 }
 
-void Process::setSecurityPermission(KeyPermission key, bool value)
+void Process::setSecurityPermission(Key_Permission key, bool value)
 {
     securityPermissions[key] = value;
 }
 
-QMap<KeyPermission, bool> Process::getSecurityPermissions() const
+QMap<Key_Permission, bool> Process::getSecurityPermissions() const
 {
     return securityPermissions;
 }

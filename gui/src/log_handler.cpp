@@ -169,7 +169,7 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
 
             int id = -1, x = 0, y = 0, width = 0, height = 0;
             QString name, cmakeProject, qemuPlatform;
-            QMap<KeyPermission, bool> permissionsMap;
+            QMap<Key_Permission, bool> permissionsMap;
 
             bson_iter_t docIter;
             bson_iter_init(&docIter, &document);
@@ -192,7 +192,7 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
                 else if (strcmp(key, "securityPermissions") == 0) {
                     bson_iter_t permIter;
                     bson_iter_recurse(&docIter, &permIter);
-                    QMap<KeyPermission, bool> permissionsMap;
+                    QMap<Key_Permission, bool> permissionsMap;
 
                     while (bson_iter_next(&permIter)) {
                         QString permKey = QString::fromUtf8(bson_iter_key(&permIter));
@@ -203,7 +203,7 @@ void LogHandler::analyzeLogEntries(QMainWindow *mainWindow,
                             MainWindow::guiLogger.logMessage(logger::LogLevel::ERROR, "Failed to convert permission key to integer.");
                             continue;
                         }
-                        KeyPermission perm = static_cast<KeyPermission>(permInt);                        
+                        Key_Permission perm = static_cast<Key_Permission>(permInt);                        
                         bool value = bson_iter_bool(&permIter);
                         permissionsMap.insert(perm, value);
                     }

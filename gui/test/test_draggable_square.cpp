@@ -28,10 +28,10 @@ void DraggableSquareTest::initTestCase()
     mainWindow = new MainWindow(parentWidget);
     mainWindow->resize(800, 600);
     parentWidget->show();
-    QMap<KeyPermission, bool> permissionsMap;
+    QMap<Key_Permission, bool> permissionsMap;
 
-    permissionsMap[KeyPermission::ENCRYPT] = true;
-    permissionsMap[KeyPermission::SIGN] = false;
+    permissionsMap[Key_Permission::ENCRYPT] = true;
+    permissionsMap[Key_Permission::SIGN] = false;
 
     testProcess = new Process(1, "Test Process", "../../src/dummy_program1",
                               "QEMUPlatform",permissionsMap);

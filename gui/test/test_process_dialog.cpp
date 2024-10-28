@@ -52,9 +52,9 @@ private slots:
         dialog.setExecutionFile("TestProject");
         dialog.setQEMUPlatform("x86");
 
-        QMap<KeyPermission, bool> permissions;
-        permissions.insert(KeyPermission::VERIFY, true);
-        permissions.insert(KeyPermission::SIGN, true);
+        QMap<Key_Permission, bool> permissions;
+        permissions.insert(Key_Permission::VERIFY, true);
+        permissions.insert(Key_Permission::SIGN, true);
         dialog.setSecurityPermissions(permissions);
 
         // Assuming true indicates validation success

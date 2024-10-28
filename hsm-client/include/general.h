@@ -26,7 +26,7 @@ constexpr CK_RV CKR_USER_NOT_AUTHORIZED = 0x00000100;  // 256
 /* Signature or hash did not match */
 constexpr CK_RV CKR_SIGNATURE_INVALID = 0x000000C0;  // 192
 
-enum KeyPermission { VERIFY, SIGN, ENCRYPT, DECRYPT, EXPORTABLE };
+enum class KeyPermission { VERIFY, SIGN, ENCRYPT, DECRYPT, EXPORTABLE };
 enum AsymmetricFunction { RSA, ECC };
 enum SHAAlgorithm { SHA_256, SHA_3_512 };
 enum AESChainingMode {

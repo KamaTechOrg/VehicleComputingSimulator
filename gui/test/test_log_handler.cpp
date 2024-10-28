@@ -52,9 +52,9 @@ void LogHandlerTests::testGetProcessSquares()
 {
     LogHandler logHandler;
 
-    QMap<KeyPermission, bool> permissionsMap;
-    permissionsMap[KeyPermission::ENCRYPT] = true;
-    permissionsMap[KeyPermission::SIGN] = false;
+    QMap<Key_Permission, bool> permissionsMap;
+    permissionsMap[Key_Permission::ENCRYPT] = true;
+    permissionsMap[Key_Permission::SIGN] = false;
 
     Process process1(1, "Process1", "CMakeProject1", "QEMUPlatform1",permissionsMap);
     DraggableSquare square1;

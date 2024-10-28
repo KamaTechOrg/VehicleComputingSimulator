@@ -7,9 +7,9 @@
 #include <vector>
 #include <memory>
 #include <grpcpp/grpcpp.h>
-#include "../proto/encryption.grpc.pb.h"
+#include "encryption.grpc.pb.h"
 #include "general.h"
-#include "../proto/encryption.pb.h"
+#include "encryption.pb.h"
 
 class CryptoClient {
    public:
@@ -26,9 +26,10 @@ class CryptoClient {
     }
     //config
     CK_RV configure(CryptoConfig config);
-    CK_RV bootSystem(
-        const std::map<int, std::vector<KeyPermission>> &usersIdspermissions);
-    CK_RV addProccess(int userId, std::vector<KeyPermission> &permissions);
+    CK_RV bootSystem(const std::map<uint32_t, std::vector<KeyPermission>>
+                         &usersIdspermissions);
+    CK_RV addProccess(int userId,
+                      const std::vector<KeyPermission> &permissions);
     //generate key
     std::string generateAESKey(AESKeyLength aesKeyLength,
                                std::vector<KeyPermission> permissions,
@@ -86,9 +87,10 @@ class CryptoClient {
 
     CK_RV encrypt(int receiverId, const void *in, size_t inLen, void *out,
                   size_t &outLen);
-    CK_RV decrypt(int receiverId, void *in, size_t inLen, void *out,
+    CK_RV decrypt(int receiverId, const void *in, size_t inLen, void *out,
                   size_t &outLen);
-    size_t getEncryptedLengthByEncrypted(void* data);
+    size_t getEncryptedLengthByEncrypted(void *data);
+
    private:
     int userId;
     std::unique_ptr<crypto::CryptoService::Stub> stub_;

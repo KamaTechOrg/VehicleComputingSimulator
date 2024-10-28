@@ -8,9 +8,7 @@
 # gtest files
 /gtest/
 
-#debug
-include/debug_utils.h
-src/debug_utils.cpp
+
 #clangd
 .cache
 .clang-format

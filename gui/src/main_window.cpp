@@ -49,6 +49,7 @@
 #include "frames.h"
 #include "log_handler.h"
 #include "compiler.h"
+#include "hsm_support.h"
 
 int sizeSquare = 120;
 int rotationTimerIntervals = 100;
@@ -201,12 +202,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         "  border-radius: 10px;"                  // Rounded corners
         "}";
 
-        QMap<KeyPermission, bool> allPermissions = {
-            {VERIFY, true},
-            {SIGN, true},
-            {ENCRYPT, true},
-            {DECRYPT, true},
-            {EXPORTABLE, true}
+        QMap<Key_Permission, bool> allPermissions = {
+            {Key_Permission::VERIFY, true},
+            {Key_Permission::SIGN, true},
+            {Key_Permission::ENCRYPT, true},
+            {Key_Permission::DECRYPT, true},
+            {Key_Permission::EXPORTABLE, true}
         };
 
     Process *mainProcess =
@@ -1061,7 +1062,9 @@ void MainWindow::runProjects()
             "MainWindow::runProjects Processing square with ID: " +
                 std::to_string(square->getId()) +
                 ", CMake path: " + executionFilePath.toStdString());
-
+    //------------
+    hsm::
+    //------------
         if (executionFilePath.endsWith(".sh")) {
              MainWindow::guiLogger.logMessage(
                 logger::LogLevel::ERROR,
@@ -1276,7 +1279,7 @@ void MainWindow::editSquare(int id)
             dialog.setExecutionFile(square->getProcess()->getExecutionFile());
             dialog.setQEMUPlatform(square->getProcess()->getQEMUPlatform());
 
-            QMap<KeyPermission, bool> currentPermissions =
+            QMap<Key_Permission, bool> currentPermissions =
                 square->getProcess()->getSecurityPermissions();
             dialog.setSecurityPermissions(currentPermissions); 
 

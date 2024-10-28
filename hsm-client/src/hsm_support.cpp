@@ -1,7 +1,8 @@
 #include <mutex>
-#include "../include/hsm_support.h"
-#include "../include/crypto_api.h"
-#include "../include/debug_utils.h"
+
+#include "hsm_support.h"
+#include "crypto_api.h"
+#include "debug_utils.h"
 
 namespace hsm {
 std::mutex cryptoMutex;
@@ -21,7 +22,7 @@ std::mutex cryptoMutex;
  */
 bool decryptData(void *data, uint32_t senderId, uint32_t myId)
 {
-    std::lock_guard<std::mutex> lock(cryptoMutex); 
+    std::lock_guard<std::mutex> lock(cryptoMutex);
     DEBUG_LOG("start");
     CryptoClient client(myId);
     size_t encryptedLength = client.getEncryptedLengthByEncrypted(data);
@@ -32,10 +33,14 @@ bool decryptData(void *data, uint32_t senderId, uint32_t myId)
 
     CK_RV decryptResult = client.decrypt(senderId, data, encryptedLength,
                                          decryptedData, decryptedLength);
-    if (decryptResult != CKR_OK)
+    if (decryptResult != CKR_OK) {
+        log(logger::LogLevel::ERROR, "HSM: The message dycryption failed");
         return false;
-    LOG_BUFFER_HEXA(decryptedData,decryptedLength,"got from "+ std::to_string(senderId),myId);
+    }
+    LOG_BUFFER_HEXA(decryptedData, decryptedLength,
+                    "got from " + std::to_string(senderId), myId);
     memcpy(data, decryptedData, decryptedLength);
+    log(logger::LogLevel::INFO, "HSM: The message dycrypted successfully");
     DEBUG_LOG("end");
     return true;
 }
@@ -58,14 +63,18 @@ bool decryptData(void *data, uint32_t senderId, uint32_t myId)
 bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
                  size_t encryptedLength, uint32_t myId, uint32_t receiverId)
 {
-    std::lock_guard<std::mutex> lock(cryptoMutex); 
+    std::lock_guard<std::mutex> lock(cryptoMutex);
     DEBUG_LOG("start");
-    LOG_BUFFER_HEXA(data,dataLen," send to "+std::to_string(receiverId),myId);
+    LOG_BUFFER_HEXA(data, dataLen, " send to " + std::to_string(receiverId),
+                    myId);
     CryptoClient client(myId);
     CK_RV encryptResult = client.encrypt(receiverId, data, dataLen,
                                          encryptedData, encryptedLength);
-    if (encryptResult != CKR_OK)
+    if (encryptResult != CKR_OK) {
+        log(logger::LogLevel::ERROR, "HSM: The message encryption failed");
         return false;
+    }
+    log(logger::LogLevel::INFO, "HSM: The message encrypted successfully");
     DEBUG_LOG("end");
     return true;
 }
@@ -82,12 +91,81 @@ bool encryptData(const void *data, int dataLen, uint8_t *encryptedData,
  */
 size_t getEncryptedLen(uint32_t myId, size_t dataLength)
 {
-    std::lock_guard<std::mutex> lock(cryptoMutex); 
+    std::lock_guard<std::mutex> lock(cryptoMutex);
     DEBUG_LOG("start");
     CryptoClient client(myId);
-    size_t len= client.getEncryptedLen(myId, dataLength);
+    size_t len = client.getEncryptedLen(myId, dataLength);
     DEBUG_LOG("end");
     return len;
+}
+
+bool configureUsers(const std::map<uint32_t, CryptoConfig> &userIdsConfigs)
+{
+    bool allSuccess = true;
+    for (const auto &[userId, config] : userIdsConfigs) {
+        CryptoClient client(userId);
+        CK_RV returnCode = client.configure(config);
+        if (returnCode != CKR_OK) {
+            log(logger::LogLevel::ERROR, "HSM: Configuration for userId " +
+                                             std::to_string(userId) +
+                                             " failed.");
+            allSuccess = false;
+        }
+        else {
+            log(logger::LogLevel::INFO, "HSM: Configured for userId " +
+                                            std::to_string(userId) +
+                                            " successfully.");
+        }
+    }
+    return allSuccess;
+}
+bool configureUser(uint32_t userId, const CryptoConfig &config)
+{
+    CryptoClient client(userId);
+    CK_RV returnCode = client.configure(config);
+    if (returnCode != CKR_OK) {
+        log(logger::LogLevel::ERROR, "HSM: Configuration for userId " +
+                                         std::to_string(userId) + " failed.");
+        return false;
+    }
+    else {
+        log(logger::LogLevel::INFO, "HSM: Configured for userId " +
+                                        std::to_string(userId) +
+                                        " successfully.");
+        return true;
+    }
+}
+
+bool generateKeys(
+    const std::map<uint32_t, std::vector<KeyPermission>> &userIdsPermissions)
+{
+    CryptoClient client(0);
+    CK_RV returnCode = client.bootSystem(userIdsPermissions);
+    if (returnCode != CKR_OK) {
+        log(logger::LogLevel::ERROR, "HSM: Keys generation failed.");
+        return false;
+    }
+    else {
+        log(logger::LogLevel::INFO, "HSM: Generated keys successfully.");
+        return true;
+    }
+}
+bool generateKeys(uint32_t userId,
+                  const std::vector<KeyPermission> &permissions)
+{
+    CryptoClient client(userId);
+    CK_RV returnCode = client.addProccess(userId, permissions);
+    if (returnCode != CKR_OK) {
+        log(logger::LogLevel::ERROR,
+            "HSM: Keys generation failed for userId " + std::to_string(userId));
+        return false;
+    }
+    else {
+        log(logger::LogLevel::INFO,
+            "HSM: Generated keys successfully for userId " +
+                std::to_string(userId));
+        return true;
+    }
 }
 
 }  // namespace hsm
