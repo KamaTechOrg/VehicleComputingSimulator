@@ -40,7 +40,7 @@ void processData(uint32_t senderId, void *data) {
 
 int main() {
   // Preparing the parameters for the message
-  uint32_t destID = 1;
+  uint32_t destID = 3;
   cout << "srcID: " << srcID << endl;
 
   // Creating the communication object with the callback function to process the

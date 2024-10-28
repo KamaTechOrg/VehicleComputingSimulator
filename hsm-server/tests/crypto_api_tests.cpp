@@ -5,8 +5,8 @@
 
 class CryptoAPIFixture : public ::testing::Test {
    protected:
-    int user1 = 1;
-    int user2 = 2;
+    int sender = 1;
+    int receiver = 2;
     size_t counter = 1;
     std::pair<std::string, std::string> rsaKeyIds;
     std::pair<std::string, std::string> eccKeyIds;
@@ -18,21 +18,21 @@ class CryptoAPIFixture : public ::testing::Test {
 
     void SetUp() override
     {
-        rsaKeyIds = generateRSAKeyPair(1, permissions);
-        eccKeyIds = generateECCKeyPair(1, permissions);
+        rsaKeyIds = generateRSAKeyPair(receiver, permissions);
+        eccKeyIds = generateECCKeyPair(receiver, permissions);
     }
 
     void TearDown() override {}
 };
 
-//#define RSA_TEST
-// #define ECC_TEST
+// #define RSA_TEST
+#define ECC_TEST
 // #define SIGN_VERIFY_TEST
 
 #ifdef RSA_TEST
 TEST_F(CryptoAPIFixture, rsa)
 {
-    // Generate RSA key pair for user1
+    // Generate RSA key pair for sender
 
     uint8_t data[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t dataLen = 6;
@@ -41,16 +41,16 @@ TEST_F(CryptoAPIFixture, rsa)
     size_t encryptedLen = getRSAencryptedLength();
     uint8_t *encrypted = new uint8_t[encryptedLen];
 
-    // RSA encryption: user2 -> user1
-    CK_RV rv2 = RSAencrypt(user2, rsaKeyIds.first, data, dataLen, encrypted,
+    // RSA encryption: sender -> receiver
+    CK_RV rv2 = RSAencrypt(sender, rsaKeyIds.first, data, dataLen, encrypted,
                            encryptedLen);
     EXPECT_EQ(CKR_OK, rv2);
 
     size_t decryptedLen = getRSAdecryptedLength();
     uint8_t *decrypted = new uint8_t[decryptedLen];
 
-    // RSA decryption: user1
-    CK_RV rv3 = RSAdecrypt(user1, rsaKeyIds.second, encrypted, encryptedLen,
+    // RSA decryption: receiver
+    CK_RV rv3 = RSAdecrypt(receiver, rsaKeyIds.second, encrypted, encryptedLen,
                            decrypted, &decryptedLen);
     EXPECT_EQ(CKR_OK, rv3);
 
@@ -65,34 +65,32 @@ TEST_F(CryptoAPIFixture, rsa)
 #ifdef ECC_TEST
 TEST_F(CryptoAPIFixture, ecc)
 {
-    // Generate ECC key pair for user1
+    const char *inputData = "Hello, World!";
+    size_t dataLen = strlen(inputData);
 
-    size_t dataLen = 16;
-    uint8_t data[dataLen];
-    memset(data, 1, dataLen);
-
-    printBufferHexa(data, dataLen, "ecc plain data");
+    printBufferHexa(reinterpret_cast<const uint8_t *>(inputData), dataLen,
+                    "ecc plain data");
 
     size_t encryptedLen = getECCencryptedLength();
     uint8_t *encrypted = new uint8_t[encryptedLen];
 
-    // ECC encryption: user2 -> user1
-    CK_RV rv2 = ECCencrypt(user2, eccKeyIds.first, data, dataLen, encrypted,
-                           encryptedLen);
-    printBufferHexa(encrypted, encryptedLen, "ecc encrypted");
+    // ECC encryption: sender -> receiver
+    CK_RV rv2 = ECCencrypt(sender, eccKeyIds.first, (void *)inputData, dataLen,
+                           encrypted, encryptedLen);
     EXPECT_EQ(CKR_OK, rv2);
 
     size_t decryptedLen = getECCdecryptedLength();
     uint8_t *decrypted = new uint8_t[decryptedLen];
 
-    // ECC decryption: user1
-    CK_RV rv3 = ECCdecrypt(user1, eccKeyIds.second, encrypted, encryptedLen,
+    // ECC decryption: receiver
+    CK_RV rv3 = ECCdecrypt(receiver, eccKeyIds.second, encrypted, encryptedLen,
                            decrypted, decryptedLen);
     EXPECT_EQ(CKR_OK, rv3);
 
     printBufferHexa(decrypted, decryptedLen, "ecc decrypted");
 
-    EXPECT_EQ(0, memcmp(data, decrypted, dataLen));
+    EXPECT_EQ(0, memcmp(inputData, decrypted, dataLen));
+    EXPECT_EQ(decryptedLen, dataLen);
 
     delete[] encrypted;
     delete[] decrypted;
@@ -121,23 +119,23 @@ TEST_F(CryptoAPIFixture, SignVerifySingleChunkTest)
     // Sign the single chunk
     std::cout << "Signing a single chunk..." << std::endl;
     size_t offset = 0;  // No offset needed for a single chunk
-    rv = signUpdate(user1, &singleChunkData[offset], singleChunkDataLen,
+    rv = signUpdate(receiver, &singleChunkData[offset], singleChunkDataLen,
                     SHA_256, 0);  // Only one call to signUpdate
     EXPECT_EQ(CKR_OK, rv) << "signUpdate failed for the single chunk";
 
     // Finalize signing
-    rv =
-        signFinalize(user1, signature, signatureLen, SHA_256, rsaKeyIds.second);
+    rv = signFinalize(receiver, signature, signatureLen, SHA_256,
+                      rsaKeyIds.second);
     EXPECT_EQ(CKR_OK, rv) << "signFinalize failed";
 
     // Verify the single chunk
     std::cout << "Verifying a single chunk..." << std::endl;
-    rv = verifyUpdate(user2, &singleChunkData[offset], singleChunkDataLen,
+    rv = verifyUpdate(sender, &singleChunkData[offset], singleChunkDataLen,
                       SHA_256, 0);  // Only one call to verifyUpdate
     EXPECT_EQ(CKR_OK, rv) << "verifyUpdate failed for the single chunk";
 
     // Finalize verifying
-    rv = verifyFinalize(user2, signature, signatureLen, SHA_256,
+    rv = verifyFinalize(sender, signature, signatureLen, SHA_256,
                         rsaKeyIds.first);
     EXPECT_EQ(CKR_OK, rv) << "verifyFinalize failed";
 
@@ -170,14 +168,14 @@ TEST_F(CryptoAPIFixture, SignVerifyChunkedTest)
         size_t offset = i * chunkSize;
         size_t currentChunkSize = std::min(
             chunkSize, largeDataLen - offset);  // Handle last chunk size
-        rv =
-            signUpdate(user1, &largeData[offset], currentChunkSize, SHA_256, i);
+        rv = signUpdate(receiver, &largeData[offset], currentChunkSize, SHA_256,
+                        i);
         EXPECT_EQ(CKR_OK, rv) << "signUpdate failed for chunk " << i;
     }
 
-    // Finalize signing, user1
-    rv =
-        signFinalize(user1, signature, signatureLen, SHA_256, rsaKeyIds.second);
+    // Finalize signing, sender
+    rv = signFinalize(receiver, signature, signatureLen, SHA_256,
+                      rsaKeyIds.second);
     EXPECT_EQ(CKR_OK, rv) << "signFinalize failed";
 
     // Now, let's verify in chunks
@@ -185,13 +183,13 @@ TEST_F(CryptoAPIFixture, SignVerifyChunkedTest)
     for (size_t i = 0; i < numChunks; ++i) {
         size_t offset = i * chunkSize;
         size_t currentChunkSize = std::min(chunkSize, largeDataLen - offset);
-        rv = verifyUpdate(user2, &largeData[offset], currentChunkSize, SHA_256,
-                          i);
+        rv = verifyUpdate(sender, &largeData[offset], currentChunkSize,
+                          SHA_256, i);
         EXPECT_EQ(CKR_OK, rv) << "verifyUpdate failed for chunk " << i;
     }
 
     // Finalize verifying
-    rv = verifyFinalize(user2, signature, signatureLen, SHA_256,
+    rv = verifyFinalize(sender, signature, signatureLen, SHA_256,
                         rsaKeyIds.first);
     EXPECT_EQ(CKR_OK, rv) << "verifyFinalize failed";
 
@@ -202,14 +200,15 @@ TEST_F(CryptoAPIFixture, SignVerifyChunkedTest)
 #endif  // SIGN_VERIFY_TEST
 void testEncryptionDecryptionAPI(AESChainingMode mode, AESKeyLength keyLength)
 {
-    int user1 = 1;
-    int user2 = 2;
+    int sender = 1;
+    int receiver = 2;
     size_t counter = 1;
     std::vector<KeyPermission> permissions = {
         KeyPermission::DECRYPT, KeyPermission::ENCRYPT, KeyPermission::SIGN,
         KeyPermission::VERIFY, KeyPermission::EXPORTABLE};
     AESChainingMode chainingMode = mode;  // Change as needed
-    std::string keyId = generateAESKey(user1, keyLength, permissions, user2);
+    std::string keyId =
+        generateAESKey(sender, keyLength, permissions, receiver);
     size_t inputLength1 = 64;
     unsigned char inputData1[inputLength1];
     memset(inputData1, 0x02, inputLength1);
@@ -229,22 +228,22 @@ void testEncryptionDecryptionAPI(AESChainingMode mode, AESKeyLength keyLength)
     counter = 3;
 
     // Encrypt the data
-    CK_RV result1 = AESencrypt(user1, user2, (void *)inputData1, inputLength1,
-                               encryptedData1, encryptedLength1, keyLength,
-                               chainingMode, counter, keyId);
+    CK_RV result1 = AESencrypt(sender, receiver, (void *)inputData1,
+                               inputLength1, encryptedData1, encryptedLength1,
+                               keyLength, chainingMode, counter, keyId);
 
     // Check for successful encryption
     EXPECT_EQ(result1, CKR_OK);
     // Encrypt the data
-    CK_RV result2 = AESencrypt(user1, user2, (void *)inputData2, inputLength2,
-                               encryptedData2, encryptedLength2, keyLength,
-                               chainingMode, counter, keyId);
+    CK_RV result2 = AESencrypt(sender, receiver, (void *)inputData2,
+                               inputLength2, encryptedData2, encryptedLength2,
+                               keyLength, chainingMode, counter, keyId);
 
     // Check for successful encryption
     EXPECT_EQ(result2, CKR_OK);  // Encrypt the data
-    CK_RV result3 = AESencrypt(user1, user2, (void *)inputData3, inputLength3,
-                               encryptedData3, encryptedLength3, keyLength,
-                               chainingMode, counter, keyId);
+    CK_RV result3 = AESencrypt(sender, receiver, (void *)inputData3,
+                               inputLength3, encryptedData3, encryptedLength3,
+                               keyLength, chainingMode, counter, keyId);
 
     // Check for successful encryption
     EXPECT_EQ(result3, CKR_OK);
@@ -256,30 +255,25 @@ void testEncryptionDecryptionAPI(AESChainingMode mode, AESKeyLength keyLength)
         getAESdecryptedLength(encryptedLength2, false, mode);
     size_t decryptedLength3 =
         getAESdecryptedLength(encryptedLength3, false, mode);
-    printBufferHexa(encryptedData1, encryptedLength1,
-                    "Encrypted data1 aes through api");
-    printBufferHexa(encryptedData2, encryptedLength2,
-                    "Encrypted data2 aes through api");
-    printBufferHexa(encryptedData3, encryptedLength3,
-                    "Encrypted data3 aes through api");
+
     uint8_t decryptedData1[decryptedLength1];
     uint8_t decryptedData2[decryptedLength2];
     uint8_t decryptedData3[decryptedLength3];
 
-    result1 = AESdecrypt(user1, user2, encryptedData1, encryptedLength1,
+    result1 = AESdecrypt(sender, receiver, encryptedData1, encryptedLength1,
                          decryptedData1, decryptedLength1, keyLength,
                          chainingMode, counter, keyId);
     EXPECT_EQ(result1, CKR_OK);
     printBufferHexa(inputData1, inputLength1, "Original Data1: ");
     printBufferHexa(decryptedData1, decryptedLength1, "Decrypted Data1: ");
-    result2 = AESdecrypt(user1, user2, encryptedData2, encryptedLength2,
+    result2 = AESdecrypt(sender, receiver, encryptedData2, encryptedLength2,
                          decryptedData2, decryptedLength2, keyLength,
                          chainingMode, counter, keyId);
     EXPECT_EQ(result2, CKR_OK);
 
     printBufferHexa(inputData2, inputLength2, "Original Data2: ");
     printBufferHexa(decryptedData2, decryptedLength2, "Decrypted Data2: ");
-    result3 = AESdecrypt(user1, user2, encryptedData3, encryptedLength3,
+    result3 = AESdecrypt(sender, receiver, encryptedData3, encryptedLength3,
                          decryptedData3, decryptedLength3, keyLength,
                          chainingMode, counter, keyId);
     printBufferHexa(inputData3, inputLength3, "Original Data3: ");
@@ -297,7 +291,7 @@ void testEncryptionDecryptionAPI(AESChainingMode mode, AESKeyLength keyLength)
     EXPECT_EQ(inputLength3, decryptedLength3);
 };
 
-    //#define AES_TESTS
+// #define AES_TESTS
 
 #ifdef AES_TESTS
 TEST(KeyLengthsAPI, KeyLength128_ECB)
@@ -378,17 +372,17 @@ TEST(KeyLengthsAPI, KeyLength256_CTR)
 void GenericEncryptionDecryptionTest(CryptoConfig config)
 {
     try {
-        int user1 = 1;
-        int user2 = 2;
+        int sender = 1;
+        int receiver = 2;
 
         std::vector<KeyPermission> permissions = {
             KeyPermission::DECRYPT, KeyPermission::ENCRYPT, KeyPermission::SIGN,
             KeyPermission::VERIFY, KeyPermission::EXPORTABLE};
 
-        configure(user1, config);  //give encrypt-decrypt behavior
-        configure(user2, config);  //give encrypt-decrypt behavior
-        bootSystem({{user1, permissions},
-                    {user2, permissions}});  //generate keys with permissions
+        configure(sender, config);    //give encrypt-decrypt behavior
+        configure(receiver, config);  //give encrypt-decrypt behavior
+        bootSystem({{sender, permissions},
+                    {receiver, permissions}});  //generate keys with permissions
 
         size_t inputLength1 = 32;
         unsigned char inputData1[inputLength1];
@@ -400,35 +394,35 @@ void GenericEncryptionDecryptionTest(CryptoConfig config)
         unsigned char inputData3[inputLength3];
         memset(inputData3, 0x03, inputLength3);
 
-        size_t encryptedLength1 = getEncryptedLen(user1, inputLength1, true);
+        size_t encryptedLength1 = getEncryptedLen(sender, inputLength1, true);
         uint8_t encryptedData1[encryptedLength1];
-        size_t encryptedLength2 = getEncryptedLen(user1, inputLength2, false);
+        size_t encryptedLength2 = getEncryptedLen(sender, inputLength2, false);
         uint8_t encryptedData2[encryptedLength2];
-        size_t encryptedLength3 = getEncryptedLen(user1, inputLength3, false);
+        size_t encryptedLength3 = getEncryptedLen(sender, inputLength3, false);
         uint8_t encryptedData3[encryptedLength3];
         size_t counter = 3;
 
         size_t signatureLen = getSignatureLength();
         uint8_t *signature = new uint8_t[signatureLen];
         // Encrypt the data
-        CK_RV result1 = encrypt(user1, user2, (void *)inputData1, inputLength1,
-                                encryptedData1, encryptedLength1, signature,
-                                signatureLen, counter);
+        CK_RV result1 = encrypt(sender, receiver, (void *)inputData1,
+                                inputLength1, encryptedData1, encryptedLength1,
+                                signature, signatureLen, counter);
         // printBufferHexa(encryptedData1, encryptedLength1,
         //                 "Encrypted data1 aes through api");
         // Check for successful encryption
         EXPECT_EQ(result1, CKR_OK);
         // Encrypt the data
-        CK_RV result2 = encrypt(user1, user2, (void *)inputData2, inputLength2,
-                                encryptedData2, encryptedLength2, signature,
-                                signatureLen, counter);
+        CK_RV result2 = encrypt(sender, receiver, (void *)inputData2,
+                                inputLength2, encryptedData2, encryptedLength2,
+                                signature, signatureLen, counter);
         // printBufferHexa(encryptedData2, encryptedLength2,
         //                 "Encrypted data2 aes through api");
         // Check for successful encryption
         EXPECT_EQ(result2, CKR_OK);  // Encrypt the data
-        CK_RV result3 = encrypt(user1, user2, (void *)inputData3, inputLength3,
-                                encryptedData3, encryptedLength3, signature,
-                                signatureLen, counter);
+        CK_RV result3 = encrypt(sender, receiver, (void *)inputData3,
+                                inputLength3, encryptedData3, encryptedLength3,
+                                signature, signatureLen, counter);
         // Check for successful encryption
         EXPECT_EQ(result3, CKR_OK);
 
@@ -436,34 +430,34 @@ void GenericEncryptionDecryptionTest(CryptoConfig config)
         //                 "Encrypted data3 aes through api");
         // Decrypt the data
         size_t decryptedLength1 =
-            getDecryptedLen(user1, encryptedLength1, true);
+            getDecryptedLen(sender, encryptedLength1, true);
         size_t decryptedLength2 =
-            getDecryptedLen(user1, encryptedLength2, false);
+            getDecryptedLen(sender, encryptedLength2, false);
         size_t decryptedLength3 =
-            getDecryptedLen(user1, encryptedLength3, false);
+            getDecryptedLen(sender, encryptedLength3, false);
 
         uint8_t decryptedData1[decryptedLength1];
         uint8_t decryptedData2[decryptedLength2];
         uint8_t decryptedData3[decryptedLength3];
 
-        result1 =
-            decrypt(user1, user2, encryptedData1, encryptedLength1, signature,
-                    signatureLen, decryptedData1, decryptedLength1, counter);
+        result1 = decrypt(sender, receiver, encryptedData1, encryptedLength1,
+                          signature, signatureLen, decryptedData1,
+                          decryptedLength1, counter);
         EXPECT_EQ(result1, CKR_OK);
-        printBufferHexa(inputData1, inputLength1, "Original Data1: ");
-        printBufferHexa(decryptedData1, decryptedLength1, "Decrypted Data1: ");
-        result2 =
-            decrypt(user1, user2, encryptedData2, encryptedLength2, signature,
-                    signatureLen, decryptedData2, decryptedLength2, counter);
+        // printBufferHexa(inputData1, inputLength1, "Original Data1: ");
+        // printBufferHexa(decryptedData1, decryptedLength1, "Decrypted Data1: ");
+        result2 = decrypt(sender, receiver, encryptedData2, encryptedLength2,
+                          signature, signatureLen, decryptedData2,
+                          decryptedLength2, counter);
         EXPECT_EQ(result2, CKR_OK);
-        printBufferHexa(inputData2, inputLength2, "Original Data2: ");
-        printBufferHexa(decryptedData2, decryptedLength2, "Decrypted Data2: ");
-        result3 = result1 =
-            decrypt(user1, user2, encryptedData3, encryptedLength3, signature,
-                    signatureLen, decryptedData3, decryptedLength3, counter);
+        // printBufferHexa(inputData2, inputLength2, "Original Data2: ");
+        // printBufferHexa(decryptedData2, decryptedLength2, "Decrypted Data2: ");
+        result3 = result1 = decrypt(sender, receiver, encryptedData3,
+                                    encryptedLength3, signature, signatureLen,
+                                    decryptedData3, decryptedLength3, counter);
 
-        printBufferHexa(inputData3, inputLength3, "Original Data3: ");
-        printBufferHexa(decryptedData3, decryptedLength3, "Decrypted Data3: ");
+        // printBufferHexa(inputData3, inputLength3, "Original Data3: ");
+        // printBufferHexa(decryptedData3, decryptedLength3, "Decrypted Data3: ");
 
         // Check for successful decryption
         EXPECT_EQ(result3, CKR_OK);
@@ -482,8 +476,8 @@ void GenericEncryptionDecryptionTest(CryptoConfig config)
 }
 
 // Control macros to enable or disable RSA and ECC tests
-//#define RUN_RSA_TESTS  // Set to 1 to run RSA tests, 0 to skip
-#define RUN_ECC_TESTS  // Set to 1 to run ECC tests, 0 to skip
+// #define RUN_RSA_TESTS  // Set to 1 to run RSA tests, 0 to skip
+// #define RUN_ECC_TESTS  // Set to 1 to run ECC tests, 0 to skip
 
 //AES_128 combinations
 #ifdef RUN_RSA_TESTS

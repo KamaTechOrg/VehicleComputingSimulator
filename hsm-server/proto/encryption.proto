@@ -49,12 +49,14 @@ message AsymetricDecryptRequest{
     string keyId = 3;
     bytes data = 4;
     string messageId = 5;
+
 }
 message GetHashLengthRequest{
     int32 senderId = 1;
     SHAAlgorithm func = 2;
     int32 dataLen = 3;
     string messageId = 4;
+
 }
 message GetAESLengthRequest{
     int32 senderId = 1;
@@ -62,17 +64,20 @@ message GetAESLengthRequest{
    bool isFirst = 3;
    AESChainingMode chainingMode = 4;
     string messageId = 5;
+
 }
 message AsymetricDecryptResponse{
     bytes decryptedData = 1;
+    int32 decryptedLength = 2;
 }
 message GetLengthRequest {
    int32 senderId = 1;
    int32 inLen = 2;
    string messageId = 3;
+   
 }
 message GetLengthResponse {
-   int32 len = 1;
+   int32 length = 1;
 }
 message GetWholeLength{
     int32 senderId = 1;
@@ -80,6 +85,8 @@ message GetWholeLength{
     bool isFirst = 3;
     string messageId = 4;
     int32 userId = 5;
+
+
 }
 message GenerateAESKeyRequest {
     int32 userId = 1;
@@ -87,6 +94,7 @@ message GenerateAESKeyRequest {
     AESKeyLength keyLength = 3;
     int32 destUserId = 4;
     string messageId = 5;
+
 }
 message GenerateAESKeyResponse {
     string aesKey = 1;
@@ -95,6 +103,7 @@ message GenerateKeyPairRequest {
     int32 userId = 1;
     repeated KeyPermission permissions = 2;
     string messageId = 3;
+
 }
 message GenerateKeyPairResponse {
     string publicKey = 1;
@@ -107,6 +116,7 @@ message SignRequest {
     int64 counter = 5;
     string keyId = 6;
     string messageId = 7;
+
 }
 message SignResponse {
     bytes signature = 1;
@@ -120,6 +130,7 @@ message VerifyRequest {
     string keyId = 6;
     int32 counter = 7;
     string messageId = 8;
+
 }
 message VerifyResponse {
     bool valid = 1;
@@ -140,6 +151,7 @@ message UserKeyPermissions {
 message BootSystemRequest {
   repeated UserKeyPermissions usersIdsPermissions = 1;
   string messageId = 5;
+
 }
 message Empty{
 }
@@ -185,6 +197,7 @@ message DecryptRequest {
 }
 message DecryptResponse {
     bytes decryptedData = 1;
+    int32 decryptedLength = 2;
 }
 message AESEncryptRequest {
     int32 senderId = 1;
@@ -197,6 +210,7 @@ message AESEncryptRequest {
     AESChainingMode chainingMode = 8;
     bool isFirst = 9;
     string messageId = 10;
+
 }
 message AESEncryptResponse {
     bytes encryptedData = 1;
@@ -215,9 +229,11 @@ message AESDecryptRequest {
     bool isFirst = 11;
     string messageId = 12;
     int32 userId = 13;
+
 }
 message AESDecryptResponse {
     bytes decrypteddata = 1;
+    int32 decryptedLength = 2;
 }
 enum KeyPermission {
     VERIFY = 0;

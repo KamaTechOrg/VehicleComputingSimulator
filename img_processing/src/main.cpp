@@ -5,7 +5,6 @@
 #include "log_manager.h"
 #include "distance.h"
 #include "hsm_support.h"
-#include "crypto_api.h"
 
 using json = nlohmann::json;
 using namespace std;
@@ -104,30 +103,6 @@ void mainDemo(Manager &manager)
 // }
 int main()
 {
-
-    // Convert arguments to uint32_t
-    uint32_t srcID = 8;
-    uint32_t destID = 1;
-
-    // Create and configure the CryptoClient
-    CryptoClient client1(srcID);
-    CryptoConfig config(SHAAlgorithm::SHA_256, AESKeyLength::AES_128,
-                        AESChainingMode::ECB, AsymmetricFunction::RSA);
-    client1.configure(config);
-
-    // Create the second CryptoClient
-    CryptoClient client2(destID);
-    client2.configure(config);
-
-    // Boot the system with permissions
-    client1.bootSystem(
-        {{srcID,
-          {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT,
-           KeyPermission::DECRYPT, KeyPermission::EXPORTABLE}},
-         {destID,
-          {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT,
-           KeyPermission::DECRYPT, KeyPermission::EXPORTABLE}}});
-
     int processID = readFromJson("ID");
 //     int destID = 1;
 //     Alert alert(false, 1, 2, 10.5, 5.5);

@@ -4,9 +4,9 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <ctime>
 #include "general.h"
-#include "aes_stream.h"
-#include "ecc.h"
 
 #define START_TIMER \
     auto start_timer = std::chrono::high_resolution_clock::now();
@@ -18,22 +18,27 @@
 
 void printBufferHexa(const uint8_t *buffer, size_t len, std::string message);
 
-void encryptStartPrintParams(unsigned char block[], unsigned int inLen,
-                             unsigned char *&out, unsigned int &outLen,
-                             unsigned char *key, AESKeyLength keyLength);
-void encryptContinuePrintParams(unsigned char block[], unsigned int inLen,
-                                unsigned char *&out, unsigned int &outLen);
-void printStreamAES(const StreamAES &obj, size_t blockSize,
-                    std::string message);
-void printEncryptedMessage(const EncryptedMessage &message);
-//Declaration of the debugLog functionvoid
 void debugLog(const std::string &message,
               const std::string &functionName);  // Macro for easier use
 #define DEBUG_LOG(msg) debugLog(msg, __func__)
-#define LOG_BUFFER_HEXA(buffer, len, message) \
-    logBufferHexa(buffer, len, message, __func__, __LINE__)
+#define LOG_BUFFER_HEXA(buffer, len, message, id) \
+    logBufferHexa(buffer, len, message, id, __func__, __LINE__)
 void logBufferHexa(const void *voidBuffer, size_t len,
-                   const std::string &message, const char *callingFunction,
-                   int line);
+                   const std::string &message, int id,
+                   const char *callingFunction, int line);
+#define LOG_FUNCTION_ENTRY() DEBUG_LOG("entered")
+class DebugLogger {
+   public:
+       static DebugLogger& getInstance() ;
+        DebugLogger(const DebugLogger&) = delete;
+    DebugLogger& operator=(const DebugLogger&) = delete;    
+    void log(const std::string &message);
+
+   private:
+    DebugLogger();
+    std::ofstream logFile;
+    //Function to get the current date/time as a string
+    std::string currentDateTime();
+};
 
 #endif  //  __DEBUG_UTILS_H__

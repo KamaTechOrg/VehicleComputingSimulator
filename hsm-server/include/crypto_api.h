@@ -14,7 +14,8 @@
 
 int getCountFromEncryptions(int userID);
 int getCountFromDecryptions(int userID);
-int getCountFromHashing(int userID);
+int getCountFromSigning(int userID);
+int getCountFromVerifying(int userID);
 CK_RV bootSystem(
     const std::map<int, std::vector<KeyPermission>> &usersIdspermissions);
 // generate key pair to each coponnet cinfigure the
