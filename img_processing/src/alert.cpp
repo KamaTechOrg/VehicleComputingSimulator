@@ -3,14 +3,14 @@
 
 using namespace std;
 
-Alert::Alert(){};
+Alert::Alert() {};
 
 Alert::Alert(bool messageType, int level, int type, float distance,
              float relativeVelocity)
     : alertDetails{messageType, static_cast<char>(level),
                    static_cast<char>(type)},
       objectDistance(distance),
-      relativeVelocity(relativeVelocity){};
+      relativeVelocity(relativeVelocity) {};
 
 int Alert::getMessageType() const
 {
@@ -42,10 +42,12 @@ std::vector<uint8_t> Alert::serialize()
     std::vector<uint8_t> buffer;
     // Serialize messageType, level, and objectType from AlertDetails
     char detailsByte = 0;
-    detailsByte |= (alertDetails.messageType & 0x01)
-                   << 7;                              // messageType (1 bit)
-    detailsByte |= (alertDetails.level & 0x07) << 4;  // level (3 bits)
-    detailsByte |= alertDetails.objectType & 0x0F;    // objectType (4 bits)
+    // messageType (1 bit)
+    detailsByte |= (alertDetails.messageType & 0x01) << 7;
+    // level (3 bits)
+    detailsByte |= (alertDetails.level & 0x07) << 4;
+    // objectType (4 bits)
+    detailsByte |= alertDetails.objectType & 0x0F;
     buffer.push_back(detailsByte);
     // Serialize objectDistance (32 bits, float, little-endian)
     float distance = objectDistance;
@@ -60,18 +62,3 @@ std::vector<uint8_t> Alert::serialize()
     // Ensure the total size is as expected based on your format
     return buffer;
 }
-
-void Alert::deserialize(const char *buffer)
-{
-    int place = 0;
-    // Deserialize alertDetails
-    memcpy(&alertDetails, buffer, sizeof(AlertDetails));
-    place += sizeof(AlertDetails);
-
-    // Deserialize distance
-    memcpy(&objectDistance, buffer + place, sizeof(float));
-    place += sizeof(float);
-
-    // Deserialize relativeVelocity
-    memcpy(&relativeVelocity, buffer + place, sizeof(float));
-};

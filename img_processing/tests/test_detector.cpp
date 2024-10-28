@@ -40,7 +40,7 @@ TEST(DetectorTest, DetectTwoCars)
 
     // Wrap it in a shared_ptr
     shared_ptr<Mat> frame = make_shared<Mat>(testImage);
-
+    vector<ObjectInformation> output;
     // Create Detector instance
     Detector detector;
 
@@ -48,10 +48,9 @@ TEST(DetectorTest, DetectTwoCars)
     detector.init(is_cuda);
 
     // Perform detection
-    detector.detect(frame, true);
+    detector.detect(frame, true, output);
 
     // Get output
-    const auto &output = detector.getOutput();
 
     // Check if output is not empty
     ASSERT_FALSE(output.empty());
@@ -93,17 +92,17 @@ TEST(DetectorTest, DetectThreeCars)
 
     // Wrap it in a shared_ptr
     shared_ptr<Mat> frame = make_shared<Mat>(testImage);
-
+    vector<ObjectInformation> output;
     // Create Detector instance
     Detector detector;
     bool is_cuda = false;  // or true, depending on your setup
     detector.init(is_cuda);
 
     // Perform detection
-    detector.detect(frame, true);
+    output.clear();
+    detector.detect(frame, true, output);
 
     // Get output
-    const auto &output = detector.getOutput();
 
     // Check if output is not empty
     ASSERT_FALSE(output.empty());
@@ -145,6 +144,7 @@ TEST(DetectorTest, DetectTwoPeoples)
 
     // Wrap it in a shared_ptr
     shared_ptr<Mat> frame = make_shared<Mat>(testImage);
+    vector<ObjectInformation> output;
 
     // Create Detector instance
     Detector detector;
@@ -152,10 +152,7 @@ TEST(DetectorTest, DetectTwoPeoples)
     detector.init(is_cuda);
 
     // Perform detection
-    detector.detect(frame, true);
-
-    // Get output
-    const auto &output = detector.getOutput();
+    detector.detect(frame, true, output);
 
     // Check if output is not empty
     ASSERT_FALSE(output.empty());
@@ -202,6 +199,8 @@ TEST(DetectorTest, DetectChangesTest)
     // Wrap it in a shared_ptr
     shared_ptr<Mat> firstFrame = make_shared<Mat>(first);
     shared_ptr<Mat> secondFrame = make_shared<Mat>(second);
+    vector<ObjectInformation> detectAllOutput;
+    vector<ObjectInformation> detectChangesOutput;
     // preper detectAll and detectChanges
     //  Create Detector instance
     Detector detectAll;
@@ -210,12 +209,9 @@ TEST(DetectorTest, DetectChangesTest)
     detectAll.init(is_cuda);
     detectChanges.init(is_cuda);
     // Perform detection
-    detectAll.detect(secondFrame, false);
-    detectChanges.detect(firstFrame, false);
-    detectChanges.detect(secondFrame, false);
+    detectChanges.detect(secondFrame, false, detectChangesOutput);
+    detectAll.detect(secondFrame, false, detectAllOutput);
     // Get output
-    const auto &detectAllOutput = detectAll.getOutput();
-    const auto &detectChangesOutput = detectChanges.getOutput();
     // Check if output is not empty
     ASSERT_FALSE(detectAllOutput.empty());
     ASSERT_FALSE(detectChangesOutput.empty());

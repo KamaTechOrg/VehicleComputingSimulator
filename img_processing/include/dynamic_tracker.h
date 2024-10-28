@@ -12,6 +12,8 @@ class DynamicTracker {
                        const std::vector<ObjectInformation> &detectionOutput);
     void tracking(const std::shared_ptr<cv::Mat> &frame,
                   std::vector<ObjectInformation> &objectInformation);
+   void drawTracking(const std::shared_ptr<cv::Mat> image,
+                     const std::vector<ObjectInformation> &objects) const;
 
    private:
     std::shared_ptr<cv::Mat> frame;

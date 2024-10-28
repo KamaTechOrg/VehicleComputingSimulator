@@ -1,0 +1,37 @@
+{
+    "endianness": "little",
+    "fields": [
+        { 
+        "fields": [ 
+            { 
+                "name": "MessageType",
+                "size": 1,
+                "type": "unsigned_int" 
+            },
+            {
+                "name": "Level",
+                "size": 3,
+                "type": "unsigned_int"
+            },
+            { 
+                "name": "ObjectType",
+                "size": 4,
+                "type": "unsigned_int"
+            }
+        ],
+            "name": "AlertDetails",
+            "size": 8,
+            "type": "bit_field"
+        },
+        {
+            "name": "objectDistance",
+            "size": 32,
+            "type": "float_fixed"
+        },
+        {
+            "name": "relativeVelocity",
+            "size": 32,
+            "type": "float_fixed"
+        }
+    ]
+}

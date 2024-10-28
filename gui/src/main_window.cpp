@@ -217,7 +217,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), timer(nullptr),sq
         sizeSquare, sizeSquare, styleSheet);
     addId(id++);
     Process *hsmProcess =
-        new Process(id, "HSM", "path/to/hsm/directory/CMakeLists.txt", "QEMUPlatform", allPermissions);
+        new Process(id, "HSM", "../../hsm-server/CMakeLists.txt", "QEMUPlatform", allPermissions);
     addProcessSquare(
         hsmProcess,
         QPoint((id % 2) * (sizeSquare + 10), (id / 2) * (sizeSquare + 10)),
@@ -721,7 +721,7 @@ QString MainWindow::getPathLogBus(const QString &pathFile)
             logger::LogLevel::ERROR,
             "Unable to open file: " + pathFile.toStdString());
     }
-
+    QString HSMFilePath = "../../hsm-server/sharedLogs/HSM_communication.log";
     QString fullPath = "../../main_bus/build/" + path;
     
     if (!QFile::exists(fullPath)) {
@@ -738,8 +738,12 @@ void MainWindow::showSimulation(bool isRealTime)
     if (isRealTime) {
         QString filePath = LOG_FILE_BUS_MANAGER_PATH;
         QString fullPath = getPathLogBus(filePath);
+        QString HSMFilePath = "../../hsm-server/sharedLogs/HSM_communication.log";
         QFuture<void> future = QtConcurrent::run([this, fullPath]() {
             logHandler.readLogFile(fullPath, true);
+        });
+        QFuture<void> future2 = QtConcurrent::run([this, HSMFilePath]() {
+            logHandler.readLogFile(HSMFilePath, true);
         });
         logHandler.analyzeLogEntries(this, &squares, nullptr);
         frames = new Frames(logHandler);  // Initialize Frames

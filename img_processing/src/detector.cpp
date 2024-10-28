@@ -6,29 +6,30 @@ using namespace std;
 using namespace cv;
 using namespace dnn;
 
-void Detector::detect(const shared_ptr<Mat> &frame, bool isTravel)
+void Detector::detect(const shared_ptr<Mat> &frame, bool isTravel,
+                      vector<ObjectInformation> &output)
 {
     // intialize variables
     idCounter = 0;
-    output.clear();
     this->prevFrame = this->currentFrame;
     this->currentFrame = frame;
     // alwais detect regulary
     if (isTravel)
-        detectObjects(currentFrame, Point(0, 0));
+        detectObjects(currentFrame, Point(0, 0), output);
     // detect just the first frame
     else {
         if (!prevFrame) {
-            detectObjects(currentFrame, Point(0, 0));
+            detectObjects(currentFrame, Point(0, 0), output);
         }
         else {
-            detectChanges();
+            detectChanges(output);
         }
     }
 }
 
 void Detector::detectObjects(const shared_ptr<Mat> &frame,
-                             const Point &position)
+                             const Point &position,
+                             vector<ObjectInformation> &output)
 {
     // Prepare a blob from the input image formatted for YOLOv5
     Mat blob;
@@ -115,7 +116,7 @@ void Detector::detectObjects(const shared_ptr<Mat> &frame,
     }
 }
 
-void Detector::detectChanges()
+void Detector::detectChanges(vector<ObjectInformation> &output)
 {
     const vector<Rect> changedAreas = findDifference();
     LogManager::logDebugMessage(DebugType::PRINT,
@@ -125,7 +126,7 @@ void Detector::detectChanges()
         int y = oneChange.y;
         Point position(x, y);
         Mat view(*currentFrame, oneChange);
-        detectObjects(make_shared<Mat>(view), position);
+        detectObjects(make_shared<Mat>(view), position, output);
     }
 }
 
@@ -198,11 +199,6 @@ vector<Rect> Detector::unionOverlappingRectangels(vector<Rect> allChanges)
     imshow("win", *currentFrame);
     waitKey();
     return unionRect;
-}
-
-vector<ObjectInformation> Detector::getOutput() const
-{
-    return output;
 }
 
 // A function that changes the image to fit the model
