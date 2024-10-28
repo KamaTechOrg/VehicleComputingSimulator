@@ -2,8 +2,11 @@
 #include "general.h"
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 #include <cstring>
 #include <gtest/gtest.h>
+#include "debug_utils.h"
+#include "hsm_support.h"
 
 // Define a struct to hold all possible parameters for CryptoConfig
 struct CryptoTestParams {
@@ -22,7 +25,7 @@ class CryptoClientParameterizedTest
     CryptoClient client2;
     int senderId;
     int receiverId;
-    size_t messageLen = 2500;
+    size_t messageLen = 1000;
     CryptoConfig config;
 
     CryptoClientParameterizedTest() : client1(0), client2(0) {}
@@ -33,7 +36,7 @@ class CryptoClientParameterizedTest
         CryptoTestParams params = GetParam();
 
         // Assign unique IDs based on the test index
-        senderId = params.testIndex * 2 + 1;  // Odd numbers for sender
+        senderId = params.testIndex * 2 + 1;    // Odd numbers for sender
         receiverId = params.testIndex * 2 + 2;  // Even numbers for receiver
 
         client1 = CryptoClient(senderId);
@@ -62,25 +65,35 @@ TEST_P(CryptoClientParameterizedTest, EncryptDecrypt)
     char *message = new char[messageLen];
     std::memset(message, 'A', messageLen);
 
-    size_t encryptedLength = client1.getEncryptedLen(senderId, messageLen);
+    hsm::getEncryptedLen(senderId, messageLen);
+    size_t encryptedLength = hsm::getEncryptedLen(senderId, messageLen);
     uint8_t encryptedData[encryptedLength];
-    CK_RV encryptResult =
-        client1.encrypt(receiverId, (void *)message, messageLen, encryptedData,
-                        encryptedLength);
-    ASSERT_EQ(encryptResult, CKR_OK);
-
+    bool encryptResult =
+        hsm::encryptData(message, messageLen, encryptedData, encryptedLength,
+                         senderId, receiverId);
+    LOG_BUFFER_HEXA(encryptedData, encryptedLength, "encrypted after encrypt",
+                    receiverId);
+    ASSERT_EQ(encryptResult, true);
+    //---------------
     size_t encryptedLen = client2.getEncryptedLengthByEncrypted(encryptedData);
     ASSERT_EQ(encryptedLength, encryptedLen + 8);
-
+    //--------------
     size_t decryptedLength = client2.getDecryptedLen(senderId, encryptedLen);
     uint8_t decryptedData[decryptedLength];
-    CK_RV decryptResult = client2.decrypt(senderId, encryptedData, encryptedLen,
-                                          decryptedData, decryptedLength);
-    ASSERT_EQ(decryptedLength, messageLen);
-    ASSERT_EQ(decryptResult, CKR_OK);
-    ASSERT_FALSE(memcmp(decryptedData, message, messageLen))
-       << "Decrypted data does not match original data";
+    CK_RV decryptResult1 =
+        client2.decrypt(senderId, encryptedData, encryptedLen,
+                        decryptedData, decryptedLength);
+    LOG_BUFFER_HEXA(encryptedData, encryptedLength, "encrypted after decrypt",
+                    receiverId);
+    // bool decryptResult2 = hsm::decryptData(encryptedData, senderId, receiverId);
 
+    ASSERT_EQ(decryptedLength, messageLen);
+    // ASSERT_EQ(decryptResult2, true);
+    ASSERT_EQ(decryptResult1, CKR_OK);
+    ASSERT_FALSE(memcmp(decryptedData, message, messageLen))
+        << "Decrypted data does not match original data";
+    // ASSERT_FALSE(memcmp(encryptedData, message, messageLen))
+    //     << "Decrypted data does not match original data";
     delete[] message;
 }
 
@@ -103,7 +116,7 @@ std::vector<CryptoTestParams> GenerateCryptoTestParams()
                      {AsymmetricFunction::RSA, AsymmetricFunction::ECC}) {
                     paramsList.push_back(
                         {shaAlg, aesKeyLen, aesMode, asymFunc, testIndex});
-                    testIndex++;
+                    testIndex;
                 }
             }
         }

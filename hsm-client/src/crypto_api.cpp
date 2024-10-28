@@ -27,7 +27,6 @@ constexpr size_t SIZE_OF_SIZE_T = sizeof(size_t);
 CK_RV CryptoClient::bootSystem(
     const std::map<int, std::vector<KeyPermission>> &usersIdspermissions)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::BootSystemRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + '1';
@@ -60,7 +59,6 @@ CK_RV CryptoClient::bootSystem(
 CK_RV CryptoClient::addProccess(int userId,
                                 std::vector<KeyPermission> &permissions)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::AddProcessRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + '2';
@@ -94,7 +92,6 @@ CK_RV CryptoClient::addProccess(int userId,
  */
 CK_RV CryptoClient::configure(CryptoConfig config)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::ConfigureRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + '3';
@@ -139,7 +136,6 @@ CK_RV CryptoClient::configure(CryptoConfig config)
 */
 std::string CryptoClient::getPublicECCKeyByUserId(int receiverId)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::KeyRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + "10";
@@ -181,7 +177,6 @@ std::string CryptoClient::getPublicECCKeyByUserId(int receiverId)
 */
 std::string CryptoClient::getPublicRSAKeyByUserId(int receiverId)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::KeyRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + "11";
@@ -228,7 +223,6 @@ std::string CryptoClient::generateAESKey(AESKeyLength aesKeyLength,
                                          std::vector<KeyPermission> permissions,
                                          int destUserId)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::GenerateAESKeyRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + '4';
@@ -275,7 +269,6 @@ std::string CryptoClient::generateAESKey(AESKeyLength aesKeyLength,
 std::pair<std::string, std::string> CryptoClient::generateRSAKeyPair(
     std::vector<KeyPermission> permissions)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::GenerateKeyPairRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + '5';
@@ -322,7 +315,6 @@ std::pair<std::string, std::string> CryptoClient::generateRSAKeyPair(
 std::pair<std::string, std::string> CryptoClient::generateECCKeyPair(
     std::vector<KeyPermission> permissions)
 {
-    LOG_FUNCTION_ENTRY();
     crypto::GenerateKeyPairRequest request;
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + '6';
@@ -1441,8 +1433,6 @@ CK_RV CryptoClient::verify(int senderId, void *in, size_t inLen, void *out,
 */
 size_t CryptoClient::getEncryptedLen(int senderId, size_t inLen, bool isfirst)
 {
-    LOG_FUNCTION_ENTRY();
-    DEBUG_LOG("call the server once");
     DEBUG_LOG(std::to_string(inLen));
     crypto::GetWholeLength request;
     std::string messageId =
@@ -1487,8 +1477,6 @@ size_t CryptoClient::getEncryptedLen(int senderId, size_t inLen, bool isfirst)
 size_t CryptoClient::getDecryptedLen(int senderId, size_t encryptedLength,
                                      bool isfirst)
 {
-    LOG_FUNCTION_ENTRY();
-    DEBUG_LOG("call the server once");
     DEBUG_LOG(std::to_string(encryptedLength));
     crypto::GetWholeLength request;
     std::string messageId =
@@ -1531,19 +1519,16 @@ size_t CryptoClient::getDecryptedLen(int senderId, size_t encryptedLength,
 */
 size_t CryptoClient::getEncryptedLen(int senderId, size_t inLen)
 {
-    LOG_FUNCTION_ENTRY();
     DEBUG_LOG(std::to_string(inLen));
     size_t length = 0;
-    DEBUG_LOG("starting a loop");
     for (int i = 0; i < inLen / MAX_BLOCK; i++)
         length += getEncryptedLen(senderId, MAX_BLOCK, i == 0);
 
     if (inLen % MAX_BLOCK)
         length +=
             getEncryptedLen(senderId, inLen % MAX_BLOCK, inLen < MAX_BLOCK);
-    length=length+getSignatureLength() + SIZE_OF_SIZE_T;
-    DEBUG_LOG("answer for all: "+std::to_string(length));
-    return length ;
+    length = length + getSignatureLength() + SIZE_OF_SIZE_T;
+    return length;
 }
 
 /**
@@ -1554,7 +1539,6 @@ size_t CryptoClient::getEncryptedLen(int senderId, size_t inLen)
 */
 size_t CryptoClient::getDecryptedLen(int senderId, size_t encryptedLength)
 {
-    LOG_FUNCTION_ENTRY();
     DEBUG_LOG(std::to_string(encryptedLength));
     size_t encryptBlock = getEncryptedLen(senderId, MAX_BLOCK, false);
     size_t firstBlock = getEncryptedLen(senderId, MAX_BLOCK, true);
@@ -1564,7 +1548,6 @@ size_t CryptoClient::getDecryptedLen(int senderId, size_t encryptedLength)
                   ? getDecryptedLen(senderId, encryptedLength, true)
                   : getDecryptedLen(senderId, firstBlock, true);
     if (encryptedLength > firstBlock) {
-    DEBUG_LOG("starting a loop");
         for (int i = 0; i < (encryptedLength - firstBlock) / encryptBlock; i++)
             length += getDecryptedLen(senderId, encryptBlock, i == 0);
     }
@@ -1572,7 +1555,6 @@ size_t CryptoClient::getDecryptedLen(int senderId, size_t encryptedLength)
         encryptedLength > firstBlock)
         length += getDecryptedLen(
             senderId, (encryptedLength - firstBlock) % encryptBlock, false);
-    DEBUG_LOG("answer for all: "+std::to_string(length));
     return length;
 }
 
@@ -1589,7 +1571,6 @@ size_t CryptoClient::getDecryptedLen(int senderId, size_t encryptedLength)
 CK_RV CryptoClient::encrypt(int receiverId, const void *in, size_t inLen,
                             void *out, size_t &outLen)
 {
-    LOG_FUNCTION_ENTRY();
     std::string messageId =
         std::to_string(userId) + std::to_string(getId()) + "26";
     crypto::EncryptResponse response;
@@ -1677,43 +1658,41 @@ CK_RV CryptoClient::encrypt(int receiverId, const void *in, size_t inLen,
  * @param outLen Reference to the length of the decrypted output.
  * @return CK_RV Status of the operation (CKR_OK on success).
  */
-CK_RV CryptoClient::decrypt(int senderId, void *in, size_t inLen, void *out,
-                            size_t &outLen)
+CK_RV CryptoClient::decrypt(int senderId, const void *in, size_t inLen,
+                            void *out, size_t &outLen)
 {
-    LOG_FUNCTION_ENTRY();
-    in = static_cast<char *>(in) + SIZE_OF_SIZE_T;
+    const uint8_t *offsetIn = static_cast<const uint8_t *>(in) + SIZE_OF_SIZE_T;
     std::string messageId = std::to_string(userId) + std::to_string(getId());
     size_t encryptBlock = getEncryptedLen(senderId, MAX_BLOCK, false);
     size_t signatureLen = getSignatureLength();
     uint8_t *signature = new uint8_t[signatureLen];
-    memcpy(signature, in, signatureLen);
+    memcpy(signature, offsetIn, signatureLen);
     inLen -= signatureLen;
-    in = (uint8_t *)in + signatureLen;
+    offsetIn += signatureLen;
     size_t firstBlock = getEncryptedLen(senderId, MAX_BLOCK, true);
     std::vector<std::uint8_t *> chunks;
     size_t i = 0;
     if (inLen > firstBlock) {
         chunks.push_back(new std::uint8_t[firstBlock]);
-        memcpy(chunks[i], in, firstBlock);
+        memcpy(chunks[i], offsetIn, firstBlock);
         i++;
         for (; i < 1 + (inLen - firstBlock) / encryptBlock; i++) {
             chunks.push_back(new std::uint8_t[encryptBlock]);
-            memcpy(chunks[i],
-                   (uint8_t *)in + ((i - 1) * encryptBlock) + firstBlock,
+            memcpy(chunks[i], offsetIn + ((i - 1) * encryptBlock) + firstBlock,
                    encryptBlock);
         }
         if ((inLen - firstBlock) % encryptBlock != 0) {
             chunks.push_back(
                 new std::uint8_t[((inLen - firstBlock) % encryptBlock)]);
             memcpy(chunks[i],
-                   (unsigned char *)in +
+                   offsetIn +
                        (i > 0 ? (((i - 1) * encryptBlock) + firstBlock) : 0),
                    ((inLen - firstBlock) % encryptBlock));
         }
     }
     else {
         chunks.push_back(new std::uint8_t[inLen]);
-        memcpy(chunks[i], (unsigned char *)in, inLen);
+        memcpy(chunks[i], offsetIn, inLen);
     }
     std::vector<std::uint8_t> outData;
     bool isFirst = true;
@@ -1785,10 +1764,9 @@ CK_RV CryptoClient::decrypt(int senderId, void *in, size_t inLen, void *out,
 size_t CryptoClient::getEncryptedLengthByEncrypted(void *data)
 {
     //returns the length without the SIZE_OF_SIZE_T
-    LOG_FUNCTION_ENTRY();
     size_t length;
     memcpy(&length, data, SIZE_OF_SIZE_T);
-    DEBUG_LOG("answer: "+std::to_string(length));
+    DEBUG_LOG("answer: " + std::to_string(length));
     return length;
 }
 #pragma endregion

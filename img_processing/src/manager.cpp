@@ -16,13 +16,13 @@ void processData(uint32_t srcId, void *data)
     std::cout << "img_processing got message from " << std::to_string(srcId)
               << std::endl;
     int processID = readFromJson("ID");
-     if (hsm::decryptData(data, srcId,8)) {
+    if (hsm::decryptData(data, srcId, 8)) {
         LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
-                                        "decription success!");
+                                    "decription success!");
     }
     else
-       LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
-                                        "decryption failed!");
+        LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+                                    "decryption failed!");
 }
 
 Manager::Manager(int processID)
@@ -218,13 +218,13 @@ void Manager::sendAlerts(vector<vector<uint8_t>> &alerts)
         if (hsm::encryptData((const void *)alertBuffer.data(),
                              alertBuffer.size(), encryptedData, encryptedLength,
                              processID, destID)) {
-            LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
-                                        "encryption success!");
+            LogManager::logInfoMessage(InfoType::ALERT_SENT,
+                                       "encryption success!");
             communication.sendMessage(encryptedData, encryptedLength, destID,
                                       processID, false);
         }
         else {
-            LogManager::logErrorMessage(ErrorType::IMAGE_ERROR,
+            LogManager::logErrorMessage(ErrorType::FILE_ERROR,
                                         "encryption fail!");
             communication.sendMessage(alertBuffer.data(), alertBuffer.size(),
                                       destID, processID, false);

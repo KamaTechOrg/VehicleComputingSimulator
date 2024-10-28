@@ -18,13 +18,7 @@
 #include <iomanip>
 #include "json.hpp"
 constexpr size_t RSA_KEY_SIZE = 1024;
-#ifdef NDEBUG
-const std::string KEYS_DIR = "keys/";
-const std::string KEYS_CONFIG_FILE = "keys/keys_config.json";
-#else
-const std::string KEYS_DIR = "../keys/";
-const std::string KEYS_CONFIG_FILE = "../keys/keys_config.json";
-#endif
+
 enum class KeyType { AES, RSA_PUB, RSA_PRIV, ECC_PUB, ECC_PRIV };
 
 class TempHsm {
@@ -49,7 +43,8 @@ class TempHsm {
     std::string getPublicKeyIdByUserId(int userId, AsymmetricFunction function);
     std::string getPrivateKeyIdByUserId(int userId,
                                         AsymmetricFunction function);
-    std::string getSymmetricKeyIdByUserId(int userId);
+    std::string getSymmetricKeyIdByUserIdAndKeySize(int userId,
+                                                    AESKeyLength aesKeyLength);
     void getKeyByKeyId(int userId, const std::string &keyId,
                        KeyPermission usage, uint8_t *keyBuffer, size_t keySize);
     size_t getKeyLengthByKeyId(const std::string &keyId);

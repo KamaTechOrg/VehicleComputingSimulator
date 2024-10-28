@@ -7,16 +7,17 @@
 
 class CryptoClientTest : public ::testing::Test {
    protected:
+    int senderId = 1;
+    int receiverId = 2;
     CryptoClient client1;
     CryptoClient client2;
-    int senderId = 2;
-    int receiverId = 3;
+
     size_t messageLen = 2500;
     CryptoConfig config;
 
     CryptoClientTest()
-        : client1(2),
-          client2(3),
+        : client1(senderId),
+          client2(receiverId),
           config(SHAAlgorithm::SHA_256, AESKeyLength::AES_128,
                  AESChainingMode::ECB, AsymmetricFunction::RSA)
     {
@@ -174,26 +175,30 @@ TEST_F(CryptoClientTest, RSAEncryptDecrypt)
     delete[] decryptedDataRSA;
 }
 
-TEST_F(CryptoClientTest, ECCEncryptDecrypt)
+TEST(CryptoClient_Test, ECCEncryptDecrypt)
 {
+    int sender = 1;
+    int receiver = 2;
+    CryptoClient client1(sender);
+    CryptoClient client2(receiver);
     const char *inputData = "Hello, World!";
     size_t inputDataLen = strlen(inputData);
-    auto eccKey = client1.generateECCKeyPair(
+    auto eccKey = client2.generateECCKeyPair(
         {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT,
          KeyPermission::DECRYPT, KeyPermission::EXPORTABLE});
     size_t encryptedDataLenECC = client1.getECCencryptedLength();
     uint8_t encryptedDataECC[encryptedDataLenECC];
+    std::string publicKeyId = client1.getPublicECCKeyByUserId(receiver);
 
     CK_RV eccEncryptResult =
-        client1.ECCencrypt(eccKey.second, (void *)inputData, inputDataLen,
+        client1.ECCencrypt(publicKeyId, (void *)inputData, inputDataLen,
                            encryptedDataECC, encryptedDataLenECC);
     ASSERT_EQ(eccEncryptResult, CKR_OK);
 
-    std::string publicKeyId = client2.getPublicECCKeyByUserId(senderId);
     size_t decryptedDataLenECC = client2.getECCdecryptedLength();
     uint8_t decryptedDataECC[decryptedDataLenECC];
     CK_RV eccDecryptResult =
-        client2.ECCdecrypt(publicKeyId, encryptedDataECC, encryptedDataLenECC,
+        client2.ECCdecrypt(eccKey.second, encryptedDataECC, encryptedDataLenECC,
                            decryptedDataECC, decryptedDataLenECC);
     ASSERT_EQ(decryptedDataLenECC, inputDataLen);
 
@@ -238,7 +243,8 @@ TEST_F(CryptoClientTest, AESncryptDecrypt)
     delete[] encryptedData;
     delete[] decryptedData;
 }
-TEST_F(CryptoClientTest,edge_cases){
+TEST_F(CryptoClientTest, edge_cases)
+{
     // size_t ans=client1.getEncryptedLen(senderId, -1);
 }
 int main(int argc, char **argv)

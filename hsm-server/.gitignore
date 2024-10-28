@@ -1,5 +1,6 @@
 # build system files & directories
 /build/
+/keys/
 /CMakeFiles/
 /CMakeCache.txt
 /cmake_install.cmake

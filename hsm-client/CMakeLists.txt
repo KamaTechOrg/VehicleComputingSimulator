@@ -75,13 +75,18 @@ target_link_libraries(hsm_client_lib
     PUBLIC
     ${Protobuf_LIBRARIES}
     gRPC::grpc++)
-set(TESTS_SRCS 
-    tests/client_tests.cpp 
-    # tests/client_tests_combinations.cpp
-    )
-add_executable(${PROJECT_NAME}_tests ${TESTS_SRCS})
+
+add_executable(${PROJECT_NAME}_tests tests/client_tests.cpp )
+add_executable(${PROJECT_NAME}_tests_combinations tests/client_tests_combinations.cpp)
+
 
 target_link_libraries(${PROJECT_NAME}_tests
+    PRIVATE
+    hsm_client_lib
+    GTest::gtest
+    GTest::gtest_main
+)
+target_link_libraries(${PROJECT_NAME}_tests_combinations
     PRIVATE
     hsm_client_lib
     GTest::gtest

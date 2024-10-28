@@ -86,9 +86,10 @@ class CryptoClient {
 
     CK_RV encrypt(int receiverId, const void *in, size_t inLen, void *out,
                   size_t &outLen);
-    CK_RV decrypt(int receiverId, void *in, size_t inLen, void *out,
+    CK_RV decrypt(int receiverId, const void *in, size_t inLen, void *out,
                   size_t &outLen);
-    size_t getEncryptedLengthByEncrypted(void* data);
+    size_t getEncryptedLengthByEncrypted(void *data);
+
    private:
     int userId;
     std::unique_ptr<crypto::CryptoService::Stub> stub_;

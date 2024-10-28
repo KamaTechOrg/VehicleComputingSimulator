@@ -1,5 +1,12 @@
+#include <filesystem>
 #include "temp_hsm.h"
-
+// #define DEBUG
+#ifdef DEBUG
+const std::string KEYS_DIR = "keys/";
+#else
+const std::string KEYS_DIR = "../keys/";
+#endif
+const std::string KEYS_CONFIG_FILE = KEYS_DIR + "keys_config.json";
 #pragma region UTILS
 void removePermissionsJson(const std::string &keyId)
 {
@@ -222,15 +229,16 @@ void TempHsm::configure(int userId, CryptoConfig config)
 {
     usersConfig[userId] = CryptoConfig(config);
 }
+
 std::string TempHsm::generateAESKey(
     int ownerId, AESKeyLength aesKeyLength,
     const std::vector<KeyPermission> &permissions, int destUserId)
 {
-    std::string keyId = getSymmetricKeyIdByUserId(ownerId);
+    std::string keyId =
+        getSymmetricKeyIdByUserIdAndKeySize(ownerId, aesKeyLength);
     if (keyId != "") {
-        std::cout << "User " << ownerId
-                  << " already has AES key. Skipping key creation."
-                  << std::endl;
+        std::cout << "User " << ownerId << " already has AES key of size"
+                  << aesKeyLength << " . Skipping key creation." << std::endl;
         return keyId;
     }
     keyId = generateTimestampedKeyID();
@@ -260,9 +268,6 @@ std::pair<std::string, std::string> TempHsm::generateRSAKeyPair(
 
     pubKeyId = generateTimestampedKeyID();
     privKeyId = generateTimestampedKeyID();
-    for (int i = 0; i < 50; i++) {
-        std::cout << generateTimestampedKeyID() << std::endl;
-    }
 
     // ASK:: does he give other premossions? and premissions to private and
     // public?
@@ -426,13 +431,14 @@ std::string TempHsm::getPrivateKeyIdByUserId(int userId,
     // Return an empty string if no matching key is found
     return "";
 }
-std::string TempHsm::getSymmetricKeyIdByUserId(int userId)
+std::string TempHsm::getSymmetricKeyIdByUserIdAndKeySize(
+    int userId, AESKeyLength aesKeyLength)
 {
     for (const auto &[keyId, keyInfo] : keyIdUsersPermissions)
         // Check if the key matches the desired type and owner ID
-        if (keyInfo.ownerId == userId)
-            if (keyInfo.keyType == KeyType::AES)
-                return keyId;
+        if (keyInfo.ownerId == userId && keyInfo.keySize == aesKeyLength &&
+            keyInfo.keyType == KeyType::AES)
+            return keyId;
 
     // Return an empty string if no matching key is found
     return "";
@@ -454,6 +460,7 @@ void TempHsm::getKeyByKeyId(int userId, const std::string &keyId,
     if (getKeyTypeById(keyId) == KeyType::AES &&
         usage == KeyPermission::DECRYPT) {
         // Remove the key file
+        fileName = KEYS_DIR + fileName;
         if (std::remove(fileName.c_str()) != 0) {
             throw std::runtime_error("Failed to delete key file: " + fileName);
         }
@@ -541,6 +548,11 @@ size_t TempHsm::getKeyLengthByKeyId(const std::string &keyId)
 }
 void TempHsm::loadPermissionsFromJson()
 {
+    // Ensure the directory exists
+    std::filesystem::path dir(KEYS_DIR);
+    if (!std::filesystem::exists(dir)) {
+        std::filesystem::create_directories(dir);
+    }
     std::ifstream file(KEYS_CONFIG_FILE);
     if (!file) {
         // If the file doesn't exist, create it

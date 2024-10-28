@@ -991,7 +991,8 @@ CK_RV AESdecrypt(int senderId, int receiverId, void *in, size_t inLen,
         else {
             symmetricKeyLength =
                 TempHsm::getInstance().getKeyLengthByKeyId(keyId);
-            retrieveAESKeyByKeyId(senderId, keyId, symmetricKey.data(),
+            symmetricKey.resize(symmetricKeyLength);
+            retrieveAESKeyByKeyId(receiverId, keyId, symmetricKey.data(),
                                   symmetricKeyLength, DECRYPT);
         }
         if (keyId != "")

@@ -94,7 +94,7 @@ add_executable(grpc_server_tests
 tests/crypto_api_tests.cpp
 ${SOURCES_FOR_TESTS})
 # Set debug-specific flags for tests only
-target_compile_options(grpc_server_tests PRIVATE -g -O0) # Enable debugging information
+# target_compile_options(grpc_server_tests PRIVATE -g -O0) # Enable debugging information
 
 target_link_libraries(grpc_server_tests 
     ${GMP_LIBRARY} 
