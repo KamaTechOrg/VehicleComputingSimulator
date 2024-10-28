@@ -1,15 +1,18 @@
 #include "global_properties.h"
+#include "hsm_support.h"
 using namespace std;
 
 void handleMesseage(uint32_t senderId,void *data)
 {
     GlobalProperties &instanceGP = GlobalProperties::getInstance();
+    GlobalProperties::controlLogger.logMessage(
+        logger::LogLevel::INFO, "Received message from id " + senderId);
 
-    GlobalProperties::controlLogger.logMessage(logger::LogLevel::INFO, "Received message from id " + senderId);
 
-    char * msg = "I got message";
-    size_t dataSize = strlen(msg) + 1;
-    instanceGP.comm->sendMessage((void*)msg, dataSize, senderId, instanceGP.srcID, false);
+   hsm::decryptData(data, senderId, instanceGP.srcID);
+   char * msg = "I got message";
+   size_t dataSize = strlen(msg) + 1;
+//    instanceGP.comm->sendMessage((void*)msg, dataSize, senderId, instanceGP.srcID, false);
     instanceGP.sensors[senderId]->handleMessage(data);
 
     for (int cId : instanceGP.trueConditions)

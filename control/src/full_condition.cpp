@@ -1,4 +1,5 @@
 #include "full_condition.h"
+#include "hsm_support.h"
 using namespace std;
 
 // Global pointer to the current sensor on which the condition is conditional
@@ -188,7 +189,23 @@ void FullCondition::activateActions()
         const char *message = action.second.c_str();
         size_t dataSize = strlen(message) + 1;
         uint32_t destID = action.first;
-        instanceGP.comm->sendMessage((void *)message, dataSize, destID,
-                                     instanceGP.srcID, false);
+            // Get the length of the encrypted data
+            size_t encryptedLength =
+                hsm::getEncryptedLen(instanceGP.srcID, dataSize);
+            uint8_t encryptedData[encryptedLength];
+
+            if (hsm::encryptData((const void *)message, dataSize, encryptedData,
+                                 encryptedLength, instanceGP.srcID, destID)) {
+                instanceGP.comm->sendMessage(encryptedData, encryptedLength,
+                                             destID, instanceGP.srcID, false);
+            }
+            else {
+               
+                instanceGP.comm->sendMessage((void *)message, dataSize, destID,
+                                             instanceGP.srcID, false);
+            }
+        }
+
+        
     }
-}
+

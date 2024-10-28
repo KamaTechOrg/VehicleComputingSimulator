@@ -108,6 +108,7 @@ private:
     void addProcessSquare(Process *process, QPoint position, int width,
                           int height, const QString &color);
     void compileProjects();
+    void runSingleProcess(DraggableSquare*square);
     void runProjects();
     QString getExecutableName(const QString &buildDirPath);
     Process *getProcessById(int id);

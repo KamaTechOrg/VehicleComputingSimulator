@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include "process_dialog.h"
 #include "main_window.h"
+// #include "general.h"
 
 bool ProcessDialog::addingNewProcess = true;
 
@@ -18,11 +19,11 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
                                      "Initializing ProcessDialog");
 
     permMap = {
-        {VERIFY, "Verify"},
-        {SIGN, "Sign"},
-        {ENCRYPT, "Encrypt"},
-        {DECRYPT, "Decrypt"},
-        {EXPORTABLE, "Exportable"}
+        {KeyPermission::VERIFY, "Verify"},
+        {KeyPermission::SIGN, "Sign"},
+        {KeyPermission::ENCRYPT, "Encrypt"},
+        {KeyPermission::DECRYPT, "Decrypt"},
+        {KeyPermission::EXPORTABLE, "Exportable"}
     };
 
     QLabel *idLabel = new QLabel("ID:");
@@ -98,7 +99,7 @@ ProcessDialog::ProcessDialog(QWidget *parent) : QDialog(parent)
     QGridLayout *permissionLayout = new QGridLayout();
     int row = 0;
     int col = 0;
-    for (auto permission : {VERIFY, SIGN, ENCRYPT, DECRYPT, EXPORTABLE}) {
+    for (auto permission : {KeyPermission::VERIFY, KeyPermission::SIGN, KeyPermission::ENCRYPT, KeyPermission::DECRYPT, KeyPermission::EXPORTABLE}) {
         if (col == 2) {
             col = 0;
             ++row;

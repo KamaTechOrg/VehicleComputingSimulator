@@ -2,11 +2,16 @@
 
 #include "manager.h"
 #include "alert.h"
-
+#include "hsm_support.h"
+#include "jsonUtils.h"
 using namespace std;
 using namespace cv;
 
-void processData(uint32_t srcId, void *data) {}
+void processData(uint32_t srcId, void *data)
+{
+    int processID = readFromJson("ID");
+    hsm::decryptData(data, srcId, processID);
+}
 
 Manager::Manager(int processID)
     : processID(processID), communication(processID, processData)
@@ -18,12 +23,22 @@ void Manager::init()
     string message = "Hello, I'm img_processing " + to_string(processID) +
                      " sending to process " + to_string(destID);
     size_t dataSize = message.length() + 1;
-    destID = 1;
+    destID = 3;
     // Starting communication with the server
     communication.startConnection();
     // Sending the message
-    communication.sendMessage((void *)message.c_str(), dataSize, destID,
-                              processID, false);
+   size_t encryptedLength = hsm::getEncryptedLen(processID, dataSize);
+    uint8_t encryptedData[encryptedLength];
+
+    if (hsm::encryptData((const void *)message.data(), dataSize, encryptedData,
+                         encryptedLength, processID, destID)) {
+        communication.sendMessage(encryptedData, encryptedLength, destID,
+                                  processID, false);
+    }
+    else {
+        communication.sendMessage((void *)message.c_str(), dataSize, destID,
+                                  processID, false);
+    }
 
     // calibration
     Mat calibrationImage = imread("../tests/images/black_line.JPG");
@@ -240,8 +255,20 @@ void Manager::drawOutput()
 void Manager::sendAlerts(vector<vector<uint8_t>> &alerts)
 {
     for (std::vector<uint8_t> &alertBuffer : alerts) {
-        communication.sendMessage(alertBuffer.data(), alertBuffer.size(),
-                                  destID, processID, false);
+         size_t encryptedLength =
+            hsm::getEncryptedLen(processID, alertBuffer.size());
+        uint8_t encryptedData[encryptedLength];
+
+        if (hsm::encryptData((const void *)alertBuffer.data(),
+                             alertBuffer.size(), encryptedData, encryptedLength,
+                             processID, destID)) {
+            communication.sendMessage(encryptedData, encryptedLength, destID,
+                                      processID, false);
+        }
+        else {
+            communication.sendMessage(alertBuffer.data(), alertBuffer.size(),
+                                      destID, processID, false);
+        }
     }
 }
 

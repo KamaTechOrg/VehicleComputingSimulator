@@ -1,0 +1,24 @@
+{
+    "name": "Main- dev container",
+    "dockerComposeFile": "../docker-compose.yml", // Reference to your Docker Compose file
+    "service": "app", // Name of the service defined in your YAML file
+    "workspaceFolder": "/app",
+    "settings": {
+        "C_Cpp.default.compilerPath": "/usr/bin/g++",
+        "C_Cpp.default.intelliSenseMode": "gcc-x64",
+        "terminal.integrated.defaultProfile.linux": "/bin/bash"
+    },
+    "extensions": [
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.cpptools", // C/C++ Extension
+        "ms-vscode.cpptools-extension-pack", // C/C++ Extension Pack
+        "TabNine.tabnine-vscode", // Optional: Tabnine for AI-based suggestions
+        "twxs.cmake" // CMake extension for colorful CMakeLists.txt    
+    ],
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached"
+    ],
+    "settings": {
+        "http.proxyStrictSSL": false
+    }
+}

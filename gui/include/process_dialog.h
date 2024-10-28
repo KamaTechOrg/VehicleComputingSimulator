@@ -11,14 +11,16 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QMap>
+#include "hsm_support.h"
+// #include "general.h"
 
-enum KeyPermission {
-        VERIFY,
-        SIGN,
-        ENCRYPT,
-        DECRYPT,
-        EXPORTABLE
-    };
+// enum KeyPermission {
+//         VERIFY,
+//         SIGN,
+//         ENCRYPT,
+//         DECRYPT,
+//         EXPORTABLE
+//     };
 
 class ProcessDialog : public QDialog {
     Q_OBJECT
