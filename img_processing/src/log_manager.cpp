@@ -17,6 +17,7 @@ string LogManager::enumTypeToString(T enumType)
             {ErrorType::DETECTION_ERROR, "DETECTION_ERROR"},
             {ErrorType::TRACKING_ERROR, "TRACKING_ERROR"},
             {ErrorType::MODEL_ERROR, "MODEL_ERROR"},
+            {ErrorType::SIZE_ERROR, "SIZE_ERROR"},
             {InfoType::MEDIA_FINISH, "MEDIA_FINISH"},
             {InfoType::ALERT_SENT, "ALERT_SENT"},
             {InfoType::CHANGED, "CHANGED"},
@@ -28,6 +29,7 @@ string LogManager::enumTypeToString(T enumType)
             {InfoType::TRACKING, "TRACKING"},
             {InfoType::DISTANCE, "DISTANCE"},
             {InfoType::MODE, "MODE"},
+            {DebugType::DRAW_PREV, "DRAW_PREV"},
             {DebugType::PRINT, "PRINT"}};
     auto it = enumTypeToStringMap.find(enumType);
     if (it != enumTypeToStringMap.end()) {

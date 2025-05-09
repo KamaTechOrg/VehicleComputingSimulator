@@ -5,10 +5,13 @@
 #include "alerter.h"
 #include "detector.h"
 #include "distance.h"
+#include "lane_detector.h"
 #include "dynamic_tracker.h"
 #include "log_manager.h"
 #include "velocity.h"
 #include "communication.h"
+#include "sun_detector.h"
+
 class Manager {
    public:
     static logger imgLogger;
@@ -30,6 +33,9 @@ class Manager {
     Velocity velocity;
     DynamicTracker dynamicTracker;
     Alerter alerter;
+    SunDetector sunDetector;
+    LaneDetector laneDetector;
+    int longTime;
     int iterationCnt;
     uint32_t destID;
     uint32_t processID;
@@ -42,7 +48,7 @@ class Manager {
     bool isResetTracker(bool isTravel);
     bool isTrack(bool isTravel);
     void sendAlerts(std::vector<std::vector<uint8_t>> &alerts);
-    void runOnVideo(std::string videoPath);
+    void runOnVideo(std::string videoPath, bool isTravel);
     int readIdFromJson(const char *target);
 };
 #endif  //__MANAGER_H__
